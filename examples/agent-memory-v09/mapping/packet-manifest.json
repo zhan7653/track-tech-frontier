@@ -1,0 +1,143 @@
+{
+  "all_entities": {
+    "count": 3128,
+    "path": "all-entities.jsonl",
+    "sha256": "7e22291eebafb44312a3be7fb05ebedda65ed01e13958e67b9bdba4c53ecd530"
+  },
+  "corpus": {
+    "entity_count": 3128,
+    "entity_type_counts": {
+      "paper": 1685,
+      "repository": 1443
+    },
+    "relevance_label_counts": {
+      "likely_relevant": 1181,
+      "low_signal_review": 354,
+      "possible_boundary": 1593
+    },
+    "source_stage_counts": {
+      "discovered": 3128
+    }
+  },
+  "generated_at": "2026-08-10T04:11:27Z",
+  "generator": {
+    "name": "build_mapping_packets.py",
+    "version": "1.0.0"
+  },
+  "inputs": {
+    "discovery_results": {
+      "count": 5415,
+      "path": "discovery_results.jsonl",
+      "sha256": "4ae9b8c5f4a1690ea162527593569c8b2a4dacef8c7b95bc353ab1024e9503e5"
+    },
+    "entities": {
+      "count": 3128,
+      "path": "entities.jsonl",
+      "sha256": "f658eb642451d8ee94dc1491f39a64066b81f80721381aa01242d679effbf3ab"
+    },
+    "queries": {
+      "count": 56,
+      "path": "queries.jsonl",
+      "sha256": "45712f8993859f31faddf8b59f709f36d757eaa6fc9948dbd0b3786d101a0649"
+    }
+  },
+  "invariants": {
+    "all_entities_equal_source_entities": true,
+    "auto_promoted_entity_count": 0,
+    "count_conservation": true,
+    "packets_mutually_exclusive": true,
+    "source_stages_preserved": true,
+    "utf8_without_bom": true
+  },
+  "packet_count": 6,
+  "packets": [
+    {
+      "count": 577,
+      "entity_type": "paper",
+      "first_entity_id": "E-00be1a71392db87ad100",
+      "last_entity_id": "E-ffd215c3a44175e73e4a",
+      "packet_id": "paper-01-of-03",
+      "path": "packets/paper-01-of-03.jsonl",
+      "sha256": "57e55305cb9f637b9a4e47880948100f2922d2d9fff4859c0827d285c93cd419",
+      "shard_count": 3,
+      "shard_index": 0,
+      "shard_number": 1
+    },
+    {
+      "count": 545,
+      "entity_type": "paper",
+      "first_entity_id": "E-00900f57531a91f4ab1e",
+      "last_entity_id": "E-ff7921cff43c304d88a2",
+      "packet_id": "paper-02-of-03",
+      "path": "packets/paper-02-of-03.jsonl",
+      "sha256": "40c5e5c439b2110d8745384e8bec1845bbacc62afd73621443ed6e8c990a0139",
+      "shard_count": 3,
+      "shard_index": 1,
+      "shard_number": 2
+    },
+    {
+      "count": 563,
+      "entity_type": "paper",
+      "first_entity_id": "E-00e12541107e40e2a5eb",
+      "last_entity_id": "E-ffa18fc662640af5178f",
+      "packet_id": "paper-03-of-03",
+      "path": "packets/paper-03-of-03.jsonl",
+      "sha256": "80553351171cc9fef502403ea8a9f594752fa8f214170ae96bea764c789237e5",
+      "shard_count": 3,
+      "shard_index": 2,
+      "shard_number": 3
+    },
+    {
+      "count": 483,
+      "entity_type": "repository",
+      "first_entity_id": "E-00e4d7412ecc6b97947b",
+      "last_entity_id": "E-fe99e62ed2489a8e3d37",
+      "packet_id": "repository-01-of-03",
+      "path": "packets/repository-01-of-03.jsonl",
+      "sha256": "54c77c2a828f110c2addc8a5be726a30dc87f2d24075341d56821634e36b98c3",
+      "shard_count": 3,
+      "shard_index": 0,
+      "shard_number": 1
+    },
+    {
+      "count": 501,
+      "entity_type": "repository",
+      "first_entity_id": "E-002ab81ac0b565fc4632",
+      "last_entity_id": "E-fffc93ac4bf562f17825",
+      "packet_id": "repository-02-of-03",
+      "path": "packets/repository-02-of-03.jsonl",
+      "sha256": "c17ce2136c87d2133f2c88dfe2a51e1f68e95c7473089650f4ec3ffc8fff4b7a",
+      "shard_count": 3,
+      "shard_index": 1,
+      "shard_number": 2
+    },
+    {
+      "count": 459,
+      "entity_type": "repository",
+      "first_entity_id": "E-009da0d49bbaefed84b5",
+      "last_entity_id": "E-ff4b7c47ce0c9afe2f02",
+      "packet_id": "repository-03-of-03",
+      "path": "packets/repository-03-of-03.jsonl",
+      "sha256": "d6d38dabf485f8e6114b9d688c21548f93d225bba47eb76c1e83f9d39dac4dbd",
+      "shard_count": 3,
+      "shard_index": 2,
+      "shard_number": 3
+    }
+  ],
+  "schema_version": "1.0",
+  "sharding": {
+    "algorithm": "int(sha256(utf8(entity_id)), big-endian) modulo 3",
+    "key": "entity_id",
+    "shards_per_entity_type": 3,
+    "stable_across_runs": true
+  },
+  "verification": {
+    "all_entity_count": 3128,
+    "auto_promoted_entity_count": 0,
+    "packet_count": 6,
+    "packet_entity_count": 3128,
+    "status": "passed",
+    "unique_packet_entity_count": 3128,
+    "utf8_without_bom": true
+  }
+}

@@ -1,0 +1,194 @@
+{
+  "candidate_id": "GRC049",
+  "error": null,
+  "http": {
+    "response_headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Mon, 10 Aug 2026 13:38:26 GMT",
+      "server": "nginx/1.25.3",
+      "x-ratelimit-limit": "600",
+      "x-ratelimit-remaining": "549"
+    },
+    "status": 200
+  },
+  "provider": "OSSInsight Public API",
+  "provider_response": {
+    "data": {
+      "columns": [
+        {
+          "col": "date",
+          "data_type": "VARCHAR",
+          "nullable": true
+        },
+        {
+          "col": "stargazers",
+          "data_type": "DECIMAL",
+          "nullable": true
+        }
+      ],
+      "result": {
+        "code": 200,
+        "end_ms": 1786369106591,
+        "latency": "33.717384ms",
+        "limit": 2000,
+        "message": "Query OK!",
+        "row_affect": 0,
+        "row_count": 34,
+        "start_ms": 1786369106558
+      },
+      "rows": [
+        {
+          "date": "2026-01-10",
+          "stargazers": "1"
+        },
+        {
+          "date": "2026-01-29",
+          "stargazers": "2"
+        },
+        {
+          "date": "2026-02-07",
+          "stargazers": "3"
+        },
+        {
+          "date": "2026-02-10",
+          "stargazers": "4"
+        },
+        {
+          "date": "2026-02-12",
+          "stargazers": "6"
+        },
+        {
+          "date": "2026-02-13",
+          "stargazers": "7"
+        },
+        {
+          "date": "2026-02-15",
+          "stargazers": "8"
+        },
+        {
+          "date": "2026-02-17",
+          "stargazers": "9"
+        },
+        {
+          "date": "2026-02-27",
+          "stargazers": "10"
+        },
+        {
+          "date": "2026-02-28",
+          "stargazers": "11"
+        },
+        {
+          "date": "2026-03-05",
+          "stargazers": "12"
+        },
+        {
+          "date": "2026-03-08",
+          "stargazers": "13"
+        },
+        {
+          "date": "2026-03-14",
+          "stargazers": "14"
+        },
+        {
+          "date": "2026-03-26",
+          "stargazers": "15"
+        },
+        {
+          "date": "2026-03-28",
+          "stargazers": "16"
+        },
+        {
+          "date": "2026-03-30",
+          "stargazers": "17"
+        },
+        {
+          "date": "2026-04-01",
+          "stargazers": "19"
+        },
+        {
+          "date": "2026-04-05",
+          "stargazers": "20"
+        },
+        {
+          "date": "2026-04-08",
+          "stargazers": "21"
+        },
+        {
+          "date": "2026-04-09",
+          "stargazers": "22"
+        },
+        {
+          "date": "2026-04-11",
+          "stargazers": "23"
+        },
+        {
+          "date": "2026-04-14",
+          "stargazers": "24"
+        },
+        {
+          "date": "2026-04-16",
+          "stargazers": "25"
+        },
+        {
+          "date": "2026-04-18",
+          "stargazers": "26"
+        },
+        {
+          "date": "2026-05-03",
+          "stargazers": "27"
+        },
+        {
+          "date": "2026-05-16",
+          "stargazers": "29"
+        },
+        {
+          "date": "2026-05-17",
+          "stargazers": "33"
+        },
+        {
+          "date": "2026-05-18",
+          "stargazers": "35"
+        },
+        {
+          "date": "2026-05-19",
+          "stargazers": "36"
+        },
+        {
+          "date": "2026-05-22",
+          "stargazers": "37"
+        },
+        {
+          "date": "2026-05-24",
+          "stargazers": "38"
+        },
+        {
+          "date": "2026-05-27",
+          "stargazers": "39"
+        },
+        {
+          "date": "2026-06-05",
+          "stargazers": "40"
+        },
+        {
+          "date": "2026-06-12",
+          "stargazers": "41"
+        }
+      ]
+    },
+    "type": "sql_endpoint"
+  },
+  "repository": "neo4j-labs/agent-memory",
+  "request": {
+    "finished_at_utc": "2026-08-10T13:38:29Z",
+    "method": "GET",
+    "parameters": {
+      "from": "2025-07-01",
+      "per": "day",
+      "to": "2026-08-10"
+    },
+    "started_at_utc": "2026-08-10T13:38:27Z",
+    "url": "https://api.ossinsight.io/v1/repos/neo4j-labs/agent-memory/stargazers/history/?per=day&from=2025-07-01&to=2026-08-10"
+  },
+  "response_text_if_unparsed": null,
+  "schema_version": "star-growth-packet/v1"
+}

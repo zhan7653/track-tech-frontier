@@ -1,0 +1,60 @@
+{
+  "as_of": "2026-08-10",
+  "important_cluster_policy": "saturated",
+  "lanes": [
+    "paper",
+    "github",
+    "benchmark",
+    "mechanism",
+    "history",
+    "negative",
+    "security",
+    "cost",
+    "product",
+    "standards",
+    "adoption"
+  ],
+  "required_deliverable_kinds": [
+    "readme",
+    "executive",
+    "field-tree",
+    "landscape",
+    "timeline",
+    "consensus",
+    "repository-radar",
+    "benchmark-map",
+    "security-failure",
+    "method",
+    "source-index",
+    "cluster-deep-dive",
+    "project-deep-dive"
+  ],
+  "schema_version": "2.0",
+  "targets": {
+    "claims": 120,
+    "clusters": 10,
+    "deep_papers": 40,
+    "deep_repositories": 30,
+    "deep_verified_entities": 75,
+    "deliverables": 24,
+    "discovered_entities": 900,
+    "evidence": 260,
+    "mapped_entities": 280,
+    "papers_discovered": 500,
+    "papers_mapped": 170,
+    "queries": 48,
+    "recent_discovered": 400,
+    "recent_mapped": 140,
+    "repositories_discovered": 320,
+    "repositories_mapped": 100,
+    "sources": 120
+  },
+  "time_windows": [
+    "W_FOUNDATION",
+    "W_2024_2025",
+    "W_ROLLING_12M",
+    "W_ROLLING_90D",
+    "W_FUTURE_METADATA"
+  ],
+  "topic": "AI Agent Memory"
+}

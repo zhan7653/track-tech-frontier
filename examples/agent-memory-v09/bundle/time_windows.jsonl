@@ -1,0 +1,5 @@
+{"window_id":"W_FOUNDATION","label":"Foundational work through 2023","start":"2000-01-01","end":"2023-12-31","kind":"foundational"}
+{"window_id":"W_2024_2025","label":"Established frontier from 2024 through the prior 12-month boundary","start":"2024-01-01","end":"2025-08-09","kind":"established"}
+{"window_id":"W_ROLLING_12M","label":"Rolling twelve-month frontier","start":"2025-08-10","end":"2026-08-10","kind":"recent-12m"}
+{"window_id":"W_ROLLING_90D","label":"Rolling ninety-day weak-signal window","start":"2026-05-13","end":"2026-08-10","kind":"recent-90d"}
+{"window_id":"W_FUTURE_METADATA","label":"Future-dated provider metadata after the research cutoff","start":"2026-08-11","end":"2100-12-31","kind":"custom"}

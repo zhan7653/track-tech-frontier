@@ -1,0 +1,134 @@
+{
+  "counts": {
+    "assignment_count": 2868,
+    "cluster_all_membership_counts": {
+      "MM-C01": 238,
+      "MM-C02": 55,
+      "MM-C03": 287,
+      "MM-C04": 90,
+      "MM-C05": 378,
+      "MM-C06": 274,
+      "MM-C07": 101,
+      "MM-C08": 210,
+      "MM-C09": 170,
+      "MM-C10": 250,
+      "MM-C11": 203,
+      "MM-C12": 183,
+      "MM-C13": 284,
+      "MM-C14": 73,
+      "MM-C15": 36,
+      "MM-C16": 36
+    },
+    "cluster_count": 21,
+    "cluster_primary_counts": {
+      "MM-C01": 171,
+      "MM-C02": 31,
+      "MM-C03": 99,
+      "MM-C04": 25,
+      "MM-C05": 116,
+      "MM-C06": 110,
+      "MM-C07": 35,
+      "MM-C08": 81,
+      "MM-C09": 119,
+      "MM-C10": 110,
+      "MM-C11": 90,
+      "MM-C12": 121,
+      "MM-C13": 117,
+      "MM-C14": 27,
+      "MM-C15": 24,
+      "MM-C16": 36
+    },
+    "exact_alias_count": 113,
+    "final_dispositions": {
+      "exclude": 1714,
+      "hold": 102,
+      "mapped": 1312
+    },
+    "important_cluster_count": 14,
+    "mapped_by_entity_type": {
+      "paper": 689,
+      "repository": 623
+    },
+    "mapped_by_window": {
+      "W_2024_2025": 170,
+      "W_FOUNDATION": 77,
+      "W_FUTURE_METADATA": 0,
+      "W_ROLLING_12M": 1065,
+      "W_ROLLING_90D": 551
+    },
+    "proposal_decisions": {
+      "deep-candidate": 457,
+      "defer": 105,
+      "exclude": 1682,
+      "map": 884
+    },
+    "screening_count": 3128,
+    "stage_event_count": 1312
+  },
+  "deviation_from_planner_only": {
+    "final_mapped": 1312,
+    "net": -6,
+    "planner_mapped": 1318,
+    "reason": "Independent audit overrides have highest precedence."
+  },
+  "generator": "materialize_mapping.py",
+  "inputs": {
+    "mapper_proposals": {
+      "count": 3128,
+      "path": "mapping/all-proposals.jsonl",
+      "sha256": "a216ee2ac95168c032fd39de0e7d99acba841fdca82d2f66a13be1de7bba4679"
+    },
+    "post_freshness_entities": {
+      "count": 3128,
+      "path": "freshness/entities-post-hardening.jsonl",
+      "sha256": "db4eadf4d4f01a52ea0e75b4628910e72944a5e74c8a552e3ca76294eeb701e5"
+    }
+  },
+  "invariants": {
+    "audit_precedence_applied": true,
+    "cluster_dag_acyclic": true,
+    "count_conservation": true,
+    "future_not_mapped": true,
+    "hold_exclude_unassigned": true,
+    "mapped_exactly_one_primary": true,
+    "mapped_stage_events_complete": true,
+    "no_deep_verified_stage": true,
+    "one_screening_per_entity": true,
+    "secondary_assignments_deduplicated": true
+  },
+  "manual_records": {
+    "audit_overrides": 20,
+    "planner_audit_overlap": [
+      "E-60cddee8f2a5b4e635aa",
+      "E-8b43b83e9e79a45268f2",
+      "E-b3f932d501501c7388f5",
+      "E-bdb4b8d16824080d992a"
+    ],
+    "planner_demotions": 23,
+    "planner_holds": 23
+  },
+  "materialized_at": "2026-08-10T05:00:00Z",
+  "outputs": {
+    "bundle/cluster_assignments.jsonl": "9519d30994e29761497aa6eb25c710aa8a334027e7b1b638b8d96e02d0de4bd6",
+    "bundle/cluster_coverage.jsonl": "ec29c482b1b3409928604eb14de3ad934008547dd1f5d4a8f5b1498b2beb91fd",
+    "bundle/clusters.jsonl": "543eb9d70ac6a26b3ec8c1bbd152fdbbd3a3979ff92834defc794e527adc74e1",
+    "bundle/entities.jsonl": "02033fd86f1c35a4ac4443457fd66e4a87b3d10291ab85f8da686d5659928c99",
+    "bundle/screening.jsonl": "09a0d5b7bfb23e5aad915ac50ef4b49819f6dc79c3783be8f8350f2871755489",
+    "bundle/stage_events.jsonl": "d882a446bf041419134dbce19fbbd19bbde3c5e20b66341f7be0ca2720d31ecc",
+    "mapping/reconciliation/audit-overrides.jsonl": "bedc113ea618c0090a159ca49218232ef6c38eb0e532e229c928dec2fef129a7",
+    "mapping/reconciliation/canonical-aliases.json": "d62e922c4c1a98a294d4c827f986dd687a8e0ea2d73fe009b2dfd33c6cf0bff1",
+    "mapping/reconciliation/coverage-counts.jsonl": "f280e41f404bdafa29e8f5bcdfa78b72ce020e5ebb5894f21a2b0dba97ebe837",
+    "mapping/reconciliation/decision-ledger.jsonl": "bf866924bf1b49f77f86118f05a16c89e0edb8ccbdedb77b9979b405db712cca",
+    "mapping/reconciliation/planner-demotions.jsonl": "f2bf010fb0482bdb1bd8bd3285ceaea0549b17bc77618c320dc6322d80b449e6",
+    "mapping/reconciliation/planner-holds.jsonl": "ba17b2bc6d8e48d97f05c00a4d764de31ab602fafd2456cd202fe8e1dba69c2c",
+    "mapping/reconciliation/reconciliation.md": "7144633d3cd2e85925f937fab41f53247b6876511585f54899f97d117481b29e"
+  },
+  "precedence": [
+    "mapper-exclude",
+    "mapper-defer-or-future-hold",
+    "planner-demotions-and-hold-confirmations",
+    "audit-overrides",
+    "exact-alias-reconciliation"
+  ],
+  "schema_version": "1.0"
+}

@@ -1,0 +1,186 @@
+{
+  "candidate_id": "GRC032",
+  "error": null,
+  "http": {
+    "response_headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Mon, 10 Aug 2026 13:38:22 GMT",
+      "server": "nginx/1.25.3",
+      "x-ratelimit-limit": "600",
+      "x-ratelimit-remaining": "563"
+    },
+    "status": 200
+  },
+  "provider": "OSSInsight Public API",
+  "provider_response": {
+    "data": {
+      "columns": [
+        {
+          "col": "date",
+          "data_type": "VARCHAR",
+          "nullable": true
+        },
+        {
+          "col": "stargazers",
+          "data_type": "DECIMAL",
+          "nullable": true
+        }
+      ],
+      "result": {
+        "code": 200,
+        "end_ms": 1786369102113,
+        "latency": "32.487299ms",
+        "limit": 2000,
+        "message": "Query OK!",
+        "row_affect": 0,
+        "row_count": 32,
+        "start_ms": 1786369102081
+      },
+      "rows": [
+        {
+          "date": "2025-07-14",
+          "stargazers": "118"
+        },
+        {
+          "date": "2025-07-25",
+          "stargazers": "119"
+        },
+        {
+          "date": "2025-08-04",
+          "stargazers": "120"
+        },
+        {
+          "date": "2025-08-08",
+          "stargazers": "121"
+        },
+        {
+          "date": "2025-08-31",
+          "stargazers": "122"
+        },
+        {
+          "date": "2025-09-01",
+          "stargazers": "123"
+        },
+        {
+          "date": "2025-09-02",
+          "stargazers": "124"
+        },
+        {
+          "date": "2025-09-06",
+          "stargazers": "125"
+        },
+        {
+          "date": "2025-09-07",
+          "stargazers": "126"
+        },
+        {
+          "date": "2025-09-14",
+          "stargazers": "127"
+        },
+        {
+          "date": "2025-09-15",
+          "stargazers": "128"
+        },
+        {
+          "date": "2025-09-19",
+          "stargazers": "129"
+        },
+        {
+          "date": "2025-09-21",
+          "stargazers": "130"
+        },
+        {
+          "date": "2025-09-24",
+          "stargazers": "131"
+        },
+        {
+          "date": "2025-10-08",
+          "stargazers": "132"
+        },
+        {
+          "date": "2025-10-22",
+          "stargazers": "133"
+        },
+        {
+          "date": "2025-10-28",
+          "stargazers": "134"
+        },
+        {
+          "date": "2025-10-29",
+          "stargazers": "135"
+        },
+        {
+          "date": "2025-11-18",
+          "stargazers": "136"
+        },
+        {
+          "date": "2025-11-20",
+          "stargazers": "137"
+        },
+        {
+          "date": "2025-11-23",
+          "stargazers": "138"
+        },
+        {
+          "date": "2025-11-25",
+          "stargazers": "139"
+        },
+        {
+          "date": "2025-11-28",
+          "stargazers": "140"
+        },
+        {
+          "date": "2025-12-11",
+          "stargazers": "141"
+        },
+        {
+          "date": "2025-12-23",
+          "stargazers": "142"
+        },
+        {
+          "date": "2026-01-12",
+          "stargazers": "144"
+        },
+        {
+          "date": "2026-01-28",
+          "stargazers": "145"
+        },
+        {
+          "date": "2026-02-01",
+          "stargazers": "146"
+        },
+        {
+          "date": "2026-02-21",
+          "stargazers": "147"
+        },
+        {
+          "date": "2026-03-04",
+          "stargazers": "148"
+        },
+        {
+          "date": "2026-04-10",
+          "stargazers": "149"
+        },
+        {
+          "date": "2026-04-19",
+          "stargazers": "150"
+        }
+      ]
+    },
+    "type": "sql_endpoint"
+  },
+  "repository": "AI-secure/AgentPoison",
+  "request": {
+    "finished_at_utc": "2026-08-10T13:38:24Z",
+    "method": "GET",
+    "parameters": {
+      "from": "2025-07-01",
+      "per": "day",
+      "to": "2026-08-10"
+    },
+    "started_at_utc": "2026-08-10T13:38:22Z",
+    "url": "https://api.ossinsight.io/v1/repos/AI-secure/AgentPoison/stargazers/history/?per=day&from=2025-07-01&to=2026-08-10"
+  },
+  "response_text_if_unparsed": null,
+  "schema_version": "star-growth-packet/v1"
+}

@@ -1,0 +1,522 @@
+{
+  "artifacts": {
+    "collector.py": "30e12f6778abff9373293a30f63007f1f195ba905916b038e7ab9db9b09da621",
+    "metrics.jsonl": "6d36562c85b2cf09a65312e4f4c1d4ee098e9e831c8c4f2246fdd9c39eb3e0f9",
+    "observations.jsonl": "89f65d1d1dafcb55d3cacaa4386582851b8918bf6406446794577ee7032e369e",
+    "report.md": "d8d3a8df5d7120cc4e98c2f24efaab208e90b0447d7822e5956f2be71c182442"
+  },
+  "generated_at_utc": "2026-08-10T13:38:36Z",
+  "input": {
+    "path": "C:\\Users\\Alan\\.codex\\skill-evals\\track-tech-frontier\\v09\\work\\github-radar\\repositories.jsonl",
+    "repository_count": 59,
+    "sha256": "e6c69daa3fc4a984f21052fbb88e318e014754d449db6080bc713f8e186a0f31"
+  },
+  "provider": {
+    "api_documentation": "https://ossinsight.io/docs/api",
+    "documentation": "https://ossinsight.io/docs/api/stargazers-history",
+    "name": "OSSInsight Public API",
+    "source_repository": "https://github.com/pingcap/ossinsight"
+  },
+  "purpose": "Bounded audit of whether OSSInsight history can recover comparable 90-day and 12-month star-event deltas for the existing 59-repository radar.",
+  "ranking_performed": false,
+  "ranking_reason": "disabled: only 1/59 histories passed strong coverage and both-baseline checks; cross-repository comparability is inadequate",
+  "raw_count": 59,
+  "raw_index": [
+    {
+      "candidate_id": "GRC001",
+      "completed_at_utc": "2026-08-10T13:38:13Z",
+      "path": "raw/GRC001.json",
+      "repository": "letta-ai/letta",
+      "requested_at_utc": "2026-08-10T13:38:10Z",
+      "sha256": "701618e6b1e51b1bc6278718c2f942cc34496ff49dbcb79e0e62f98f53bbb22b"
+    },
+    {
+      "candidate_id": "GRC002",
+      "completed_at_utc": "2026-08-10T13:38:15Z",
+      "path": "raw/GRC002.json",
+      "repository": "mem0ai/mem0",
+      "requested_at_utc": "2026-08-10T13:38:10Z",
+      "sha256": "577daa8e1c26162f33839baa4232df37566683a20f4f4cd54f1d9a29251b19be"
+    },
+    {
+      "candidate_id": "GRC003",
+      "completed_at_utc": "2026-08-10T13:38:13Z",
+      "path": "raw/GRC003.json",
+      "repository": "Sibyl-Labs/Sibyl-Memory",
+      "requested_at_utc": "2026-08-10T13:38:10Z",
+      "sha256": "83fde58706ee0928a763c1372aa9a68913e8f724ca2f030b6027cac5215056c3"
+    },
+    {
+      "candidate_id": "GRC004",
+      "completed_at_utc": "2026-08-10T13:38:13Z",
+      "path": "raw/GRC004.json",
+      "repository": "memvid/memvid",
+      "requested_at_utc": "2026-08-10T13:38:10Z",
+      "sha256": "ed5b02853262059673f88337388afec733abbad54db644cc037c7058f02285e1"
+    },
+    {
+      "candidate_id": "GRC005",
+      "completed_at_utc": "2026-08-10T13:38:15Z",
+      "path": "raw/GRC005.json",
+      "repository": "redis/agent-memory-server",
+      "requested_at_utc": "2026-08-10T13:38:10Z",
+      "sha256": "56fba42fe88d4d2bac571d84dcdacf41ac65930b026540dc2b5ed26c653f2fb7"
+    },
+    {
+      "candidate_id": "GRC006",
+      "completed_at_utc": "2026-08-10T13:38:12Z",
+      "path": "raw/GRC006.json",
+      "repository": "xerj-org/xerj",
+      "requested_at_utc": "2026-08-10T13:38:10Z",
+      "sha256": "b84e7c6f8330a547aa54df7815243453560f93f37487ca127f2cd2b0936e7ae6"
+    },
+    {
+      "candidate_id": "GRC007",
+      "completed_at_utc": "2026-08-10T13:38:20Z",
+      "path": "raw/GRC007.json",
+      "repository": "NTU-Siqiang-Group/AsterVec",
+      "requested_at_utc": "2026-08-10T13:38:12Z",
+      "sha256": "e6ec328f7cbf44d0958040d4c023e1f8ccc8f7152bb189d88ba4752c4945a9a1"
+    },
+    {
+      "candidate_id": "GRC008",
+      "completed_at_utc": "2026-08-10T13:38:15Z",
+      "path": "raw/GRC008.json",
+      "repository": "topoteretes/cognee",
+      "requested_at_utc": "2026-08-10T13:38:13Z",
+      "sha256": "ff6962c3897946d4347b816b41f34e3343ca6f63476927600ac4fc29267764b2"
+    },
+    {
+      "candidate_id": "GRC009",
+      "completed_at_utc": "2026-08-10T13:38:17Z",
+      "path": "raw/GRC009.json",
+      "repository": "OSU-NLP-Group/HippoRAG",
+      "requested_at_utc": "2026-08-10T13:38:13Z",
+      "sha256": "256ea36d648b0f2accbd46e3e48be3f786359377c402d20f008d9b3102ca3627"
+    },
+    {
+      "candidate_id": "GRC010",
+      "completed_at_utc": "2026-08-10T13:38:17Z",
+      "path": "raw/GRC010.json",
+      "repository": "JingxuanC/causal-memory",
+      "requested_at_utc": "2026-08-10T13:38:13Z",
+      "sha256": "a45d64e917b50e4ae118ebd056465197dd25d48212ed5c75a8d77fe7d239d248"
+    },
+    {
+      "candidate_id": "GRC011",
+      "completed_at_utc": "2026-08-10T13:38:16Z",
+      "path": "raw/GRC011.json",
+      "repository": "aiming-lab/SimpleMem",
+      "requested_at_utc": "2026-08-10T13:38:15Z",
+      "sha256": "172dfd0c4ac4c441d940f95ce058f9dba222b135960d86f1efcb382c7a1c4090"
+    },
+    {
+      "candidate_id": "GRC012",
+      "completed_at_utc": "2026-08-10T13:38:16Z",
+      "path": "raw/GRC012.json",
+      "repository": "noamschwartz/atlas-memory-demo",
+      "requested_at_utc": "2026-08-10T13:38:15Z",
+      "sha256": "a72e9e36b79ad2b317edf83ac1c9d96d7b7b4d62ba673af97dd2eb38162d058d"
+    },
+    {
+      "candidate_id": "GRC013",
+      "completed_at_utc": "2026-08-10T13:38:16Z",
+      "path": "raw/GRC013.json",
+      "repository": "noahshinn/reflexion-draft",
+      "requested_at_utc": "2026-08-10T13:38:15Z",
+      "sha256": "bb1fcfb441cc887e6ed2d3be838556cce989283570747a982f1741ffce72b328"
+    },
+    {
+      "candidate_id": "GRC014",
+      "completed_at_utc": "2026-08-10T13:38:17Z",
+      "path": "raw/GRC014.json",
+      "repository": "WujiangXu/A-mem",
+      "requested_at_utc": "2026-08-10T13:38:16Z",
+      "sha256": "d106a1be5413c0ba2f1f33347c0f80ef5c0df917b26245f308c4c91a546c3f6f"
+    },
+    {
+      "candidate_id": "GRC015",
+      "completed_at_utc": "2026-08-10T13:38:17Z",
+      "path": "raw/GRC015.json",
+      "repository": "mayiwen0212/MemChain",
+      "requested_at_utc": "2026-08-10T13:38:16Z",
+      "sha256": "d43709ed31b01e5deca0b16c4747051df22282a97c7fbbde1cdc458842924524"
+    },
+    {
+      "candidate_id": "GRC016",
+      "completed_at_utc": "2026-08-10T13:38:18Z",
+      "path": "raw/GRC016.json",
+      "repository": "volcengine/OpenViking",
+      "requested_at_utc": "2026-08-10T13:38:16Z",
+      "sha256": "3685bd0e8d4801a102606feac2a3f023ba33aa09f46aa68af42c3cdacc105f72"
+    },
+    {
+      "candidate_id": "GRC017",
+      "completed_at_utc": "2026-08-10T13:38:18Z",
+      "path": "raw/GRC017.json",
+      "repository": "MemTensor/MemRL",
+      "requested_at_utc": "2026-08-10T13:38:17Z",
+      "sha256": "bf8dd2aad8316a2cafe67e9fc8942cda092965de03b72390613c1ac170a7d5a3"
+    },
+    {
+      "candidate_id": "GRC018",
+      "completed_at_utc": "2026-08-10T13:38:18Z",
+      "path": "raw/GRC018.json",
+      "repository": "VictorTaelin/OptMem",
+      "requested_at_utc": "2026-08-10T13:38:17Z",
+      "sha256": "201bce9bcffde96b0356cde069efb9b901e2860a05523a9539b69d4cd476158f"
+    },
+    {
+      "candidate_id": "GRC019",
+      "completed_at_utc": "2026-08-10T13:38:20Z",
+      "path": "raw/GRC019.json",
+      "repository": "zjunlp/LightMem",
+      "requested_at_utc": "2026-08-10T13:38:17Z",
+      "sha256": "f1c1b9dbc199c6e958e32ea26767ee663b91754d9bb4727353b414dff574f98f"
+    },
+    {
+      "candidate_id": "GRC020",
+      "completed_at_utc": "2026-08-10T13:38:19Z",
+      "path": "raw/GRC020.json",
+      "repository": "thedotmack/claude-mem",
+      "requested_at_utc": "2026-08-10T13:38:17Z",
+      "sha256": "5f2b5c2697051d19ce11d77af18f9f5a1248678bc7542a172e77424337f991f4"
+    },
+    {
+      "candidate_id": "GRC021",
+      "completed_at_utc": "2026-08-10T13:38:20Z",
+      "path": "raw/GRC021.json",
+      "repository": "Mirix-AI/MIRIX",
+      "requested_at_utc": "2026-08-10T13:38:18Z",
+      "sha256": "88e6da4740d9dd848bd97faf7de68ae01455845de55118de4f675aa8b38cdacb"
+    },
+    {
+      "candidate_id": "GRC022",
+      "completed_at_utc": "2026-08-10T13:38:20Z",
+      "path": "raw/GRC022.json",
+      "repository": "zjunlp/LightMem-Ego",
+      "requested_at_utc": "2026-08-10T13:38:18Z",
+      "sha256": "2ae69baf8b5ac34f8c9c094f58f6e1e8c902637275f9483bd58e909dfa4495fd"
+    },
+    {
+      "candidate_id": "GRC023",
+      "completed_at_utc": "2026-08-10T13:38:22Z",
+      "path": "raw/GRC023.json",
+      "repository": "basicmachines-co/basic-memory",
+      "requested_at_utc": "2026-08-10T13:38:18Z",
+      "sha256": "d0539e0c92b2a0b14dcfcc24b555eec7228a258a5742c0b07ce93441ac207d94"
+    },
+    {
+      "candidate_id": "GRC024",
+      "completed_at_utc": "2026-08-10T13:38:22Z",
+      "path": "raw/GRC024.json",
+      "repository": "campfirein/byterover-cli",
+      "requested_at_utc": "2026-08-10T13:38:19Z",
+      "sha256": "f19d442daffbb57c6e8fc1b4b596ba54b5ea8a3ae258dcc75c165c8106abbed3"
+    },
+    {
+      "candidate_id": "GRC025",
+      "completed_at_utc": "2026-08-10T13:38:22Z",
+      "path": "raw/GRC025.json",
+      "repository": "memorax-ai/memorax-code",
+      "requested_at_utc": "2026-08-10T13:38:20Z",
+      "sha256": "c551ae4f4c8382e99ee388f957aa8d3bf052c2f6fb5f53c49ba4b6dc9bad45b8"
+    },
+    {
+      "candidate_id": "GRC026",
+      "completed_at_utc": "2026-08-10T13:38:22Z",
+      "path": "raw/GRC026.json",
+      "repository": "Coding-Dev-Tools/engraphis",
+      "requested_at_utc": "2026-08-10T13:38:20Z",
+      "sha256": "11f647a7f14adadb144debc2b693b6c5e503a091c0082e0f8789c7d5565ce76d"
+    },
+    {
+      "candidate_id": "GRC027",
+      "completed_at_utc": "2026-08-10T13:38:21Z",
+      "path": "raw/GRC027.json",
+      "repository": "CraftJarvis/JARVIS-1",
+      "requested_at_utc": "2026-08-10T13:38:20Z",
+      "sha256": "50160946185586c49984692cb79ae8d7352f8726451a7500164f97b5e9bf60c3"
+    },
+    {
+      "candidate_id": "GRC028",
+      "completed_at_utc": "2026-08-10T13:38:23Z",
+      "path": "raw/GRC028.json",
+      "repository": "shihao1895/MemoryVLA",
+      "requested_at_utc": "2026-08-10T13:38:20Z",
+      "sha256": "eef0d6b8e38073891cca96da08500c374eee767ccc2d01b01bd43eb5f00dcc26"
+    },
+    {
+      "candidate_id": "GRC029",
+      "completed_at_utc": "2026-08-10T13:38:22Z",
+      "path": "raw/GRC029.json",
+      "repository": "EverMind-AI/EverOS",
+      "requested_at_utc": "2026-08-10T13:38:21Z",
+      "sha256": "bb637c483585c0f34db5944d9f7b6a99c900f4c9e9ee57f425612e135ae60caa"
+    },
+    {
+      "candidate_id": "GRC030",
+      "completed_at_utc": "2026-08-10T13:38:23Z",
+      "path": "raw/GRC030.json",
+      "repository": "SMJAI/open-memory-protocol",
+      "requested_at_utc": "2026-08-10T13:38:22Z",
+      "sha256": "e068c78aad01acc2c644a8acbe60d58391c22ee8ca89a5622b603130c1acf348"
+    },
+    {
+      "candidate_id": "GRC031",
+      "completed_at_utc": "2026-08-10T13:38:23Z",
+      "path": "raw/GRC031.json",
+      "repository": "TencentCloud/TencentDB-Agent-Memory",
+      "requested_at_utc": "2026-08-10T13:38:22Z",
+      "sha256": "70b6e5bf05f4deaeb4af93f116a95b7be664b1048370cbcc4d555bc5dc00b75d"
+    },
+    {
+      "candidate_id": "GRC032",
+      "completed_at_utc": "2026-08-10T13:38:24Z",
+      "path": "raw/GRC032.json",
+      "repository": "AI-secure/AgentPoison",
+      "requested_at_utc": "2026-08-10T13:38:22Z",
+      "sha256": "94c29d7f84f71b1c6c09134db79a384a9a02ec7dc82025a0dee5c27bbec9d393"
+    },
+    {
+      "candidate_id": "GRC033",
+      "completed_at_utc": "2026-08-10T13:38:23Z",
+      "path": "raw/GRC033.json",
+      "repository": "OWASP/www-project-agent-memory-guard",
+      "requested_at_utc": "2026-08-10T13:38:22Z",
+      "sha256": "eb8a8b60f2a529534ede9a964bbfba1e2061d6f1a2726fe76fc7ed2651d3dcec"
+    },
+    {
+      "candidate_id": "GRC034",
+      "completed_at_utc": "2026-08-10T13:38:24Z",
+      "path": "raw/GRC034.json",
+      "repository": "Brain0-ai/brain0",
+      "requested_at_utc": "2026-08-10T13:38:22Z",
+      "sha256": "f72f046c1fa98d3016190d0be226055a61f737118a89f4384dff183f903ca66d"
+    },
+    {
+      "candidate_id": "GRC035",
+      "completed_at_utc": "2026-08-10T13:38:24Z",
+      "path": "raw/GRC035.json",
+      "repository": "HUST-AI-HYZ/MemoryAgentBench",
+      "requested_at_utc": "2026-08-10T13:38:23Z",
+      "sha256": "f81dea0f0334df85495a35f87be7ed98d28bcd9135669e863773be4ef947cfc6"
+    },
+    {
+      "candidate_id": "GRC036",
+      "completed_at_utc": "2026-08-10T13:38:25Z",
+      "path": "raw/GRC036.json",
+      "repository": "MemTensor/OmniMemEval",
+      "requested_at_utc": "2026-08-10T13:38:23Z",
+      "sha256": "9d85edcbe2f7214354b2277450ed1eaea37c1d9b9a1dea8cdedb426ab3c8d70d"
+    },
+    {
+      "candidate_id": "GRC037",
+      "completed_at_utc": "2026-08-10T13:38:25Z",
+      "path": "raw/GRC037.json",
+      "repository": "tenurehq/precisionMemBench",
+      "requested_at_utc": "2026-08-10T13:38:23Z",
+      "sha256": "95a0f040bb18fc5bc9cdcc50c15f1ff072a95bbfe374082ff3c13785a0c8e405"
+    },
+    {
+      "candidate_id": "GRC038",
+      "completed_at_utc": "2026-08-10T13:38:25Z",
+      "path": "raw/GRC038.json",
+      "repository": "MemPalace/mempalace",
+      "requested_at_utc": "2026-08-10T13:38:23Z",
+      "sha256": "c13ec52d2788052f32d616443fc33f1eae056a8eea8eecc9957e53f46303ecbf"
+    },
+    {
+      "candidate_id": "GRC039",
+      "completed_at_utc": "2026-08-10T13:38:25Z",
+      "path": "raw/GRC039.json",
+      "repository": "supermemoryai/supermemory",
+      "requested_at_utc": "2026-08-10T13:38:24Z",
+      "sha256": "eba04db3b0c510cbb574a6e196545e17debf517bafaa4affbb51e646af8dd08c"
+    },
+    {
+      "candidate_id": "GRC040",
+      "completed_at_utc": "2026-08-10T13:38:26Z",
+      "path": "raw/GRC040.json",
+      "repository": "headroomlabs-ai/headroom",
+      "requested_at_utc": "2026-08-10T13:38:24Z",
+      "sha256": "b0486556de76ac4c03cdb99bec30a15ee0a602aa28e6722fcd7461650d9d0167"
+    },
+    {
+      "candidate_id": "GRC041",
+      "completed_at_utc": "2026-08-10T13:38:27Z",
+      "path": "raw/GRC041.json",
+      "repository": "DeusData/codebase-memory-mcp",
+      "requested_at_utc": "2026-08-10T13:38:24Z",
+      "sha256": "37b01c14ebc087e450eb5d74233578f10202fdfdd3d0e3f1a9d3ff2ae5c6c18a"
+    },
+    {
+      "candidate_id": "GRC042",
+      "completed_at_utc": "2026-08-10T13:38:26Z",
+      "path": "raw/GRC042.json",
+      "repository": "tinyhumansai/openhuman",
+      "requested_at_utc": "2026-08-10T13:38:25Z",
+      "sha256": "d65bed60964fd5622cf3aeb513fa4542a6661832bb64934bcf91b0bf4d8a4a39"
+    },
+    {
+      "candidate_id": "GRC043",
+      "completed_at_utc": "2026-08-10T13:38:26Z",
+      "path": "raw/GRC043.json",
+      "repository": "vectorize-io/hindsight",
+      "requested_at_utc": "2026-08-10T13:38:25Z",
+      "sha256": "7ac28d69354b2d47aff68a989e7658cc08d34fe4f12e36365e4e4540a18524a2"
+    },
+    {
+      "candidate_id": "GRC044",
+      "completed_at_utc": "2026-08-10T13:38:27Z",
+      "path": "raw/GRC044.json",
+      "repository": "NevaMind-AI/memU",
+      "requested_at_utc": "2026-08-10T13:38:25Z",
+      "sha256": "4503cf4282cd08c0eb136589e587e1655edd7addd681ce227a9eec9dfeb96188"
+    },
+    {
+      "candidate_id": "GRC045",
+      "completed_at_utc": "2026-08-10T13:38:30Z",
+      "path": "raw/GRC045.json",
+      "repository": "MemTensor/MemOS",
+      "requested_at_utc": "2026-08-10T13:38:25Z",
+      "sha256": "a276761c679f90af77563f2fc0b7384b35cc3c9d907869ac67185692aea6f9b1"
+    },
+    {
+      "candidate_id": "GRC046",
+      "completed_at_utc": "2026-08-10T13:38:27Z",
+      "path": "raw/GRC046.json",
+      "repository": "MaxFreedomPollard/Compartment",
+      "requested_at_utc": "2026-08-10T13:38:26Z",
+      "sha256": "901148ba73cdcdfa9537a76d4ef9a475f8e3ea7abe51c0d589dc74861049f0f8"
+    },
+    {
+      "candidate_id": "GRC047",
+      "completed_at_utc": "2026-08-10T13:38:30Z",
+      "path": "raw/GRC047.json",
+      "repository": "AML-memory/agent-memory-leaderboard",
+      "requested_at_utc": "2026-08-10T13:38:26Z",
+      "sha256": "c00af88c769483d1bf4f9a1df13869483befe9bad7a4c6dc63444e0e62481145"
+    },
+    {
+      "candidate_id": "GRC048",
+      "completed_at_utc": "2026-08-10T13:38:27Z",
+      "path": "raw/GRC048.json",
+      "repository": "letta-ai/agent-file",
+      "requested_at_utc": "2026-08-10T13:38:26Z",
+      "sha256": "0f57a94fe74057016868ad2e40db2e4820ba86a1f8a5e6a7d53e3a0b2d9d5159"
+    },
+    {
+      "candidate_id": "GRC049",
+      "completed_at_utc": "2026-08-10T13:38:29Z",
+      "path": "raw/GRC049.json",
+      "repository": "neo4j-labs/agent-memory",
+      "requested_at_utc": "2026-08-10T13:38:27Z",
+      "sha256": "65c1ec7da78312c6cfe0170bca714db520c0b89baba664fc5c75f6401f3b2d34"
+    },
+    {
+      "candidate_id": "GRC050",
+      "completed_at_utc": "2026-08-10T13:38:30Z",
+      "path": "raw/GRC050.json",
+      "repository": "microsoft/kernel-memory",
+      "requested_at_utc": "2026-08-10T13:38:27Z",
+      "sha256": "7b3277a6d60fd119cd3fc30bf8ee5f5026e24390bdd3f699cdada843c5a91ab1"
+    },
+    {
+      "candidate_id": "GRC051",
+      "completed_at_utc": "2026-08-10T13:38:31Z",
+      "path": "raw/GRC051.json",
+      "repository": "mnemox-ai/tradememory-protocol",
+      "requested_at_utc": "2026-08-10T13:38:27Z",
+      "sha256": "5169778892532620d2a3fe224d7816751d3980f1098fe97f13d6bb982f1f78a7"
+    },
+    {
+      "candidate_id": "GRC052",
+      "completed_at_utc": "2026-08-10T13:38:36Z",
+      "path": "raw/GRC052.json",
+      "repository": "supermemoryai/memorybench",
+      "requested_at_utc": "2026-08-10T13:38:27Z",
+      "sha256": "02123237fca34627c3696dcc149d841e3c5655f962598d3c445a928d602ee29c"
+    },
+    {
+      "candidate_id": "GRC053",
+      "completed_at_utc": "2026-08-10T13:38:30Z",
+      "path": "raw/GRC053.json",
+      "repository": "CortexReach/memory-lancedb-pro",
+      "requested_at_utc": "2026-08-10T13:38:29Z",
+      "sha256": "cea3d35df6af285d855eae923ea229ed8093f44e3506c38c4d0893842d04980f"
+    },
+    {
+      "candidate_id": "GRC054",
+      "completed_at_utc": "2026-08-10T13:38:31Z",
+      "path": "raw/GRC054.json",
+      "repository": "jakops88-hub/Long-Term-Memory-API",
+      "requested_at_utc": "2026-08-10T13:38:30Z",
+      "sha256": "fb9e66087ad18939e97ab1858e5f3eb97039bbd75fa87c609bdd23b0815d336b"
+    },
+    {
+      "candidate_id": "GRC055",
+      "completed_at_utc": "2026-08-10T13:38:31Z",
+      "path": "raw/GRC055.json",
+      "repository": "activeloopai/hivemind",
+      "requested_at_utc": "2026-08-10T13:38:30Z",
+      "sha256": "6e992dd141b7f470ae26ac19306b31315dbb3a25279cfabc16591b736ae6ddb7"
+    },
+    {
+      "candidate_id": "GRC056",
+      "completed_at_utc": "2026-08-10T13:38:31Z",
+      "path": "raw/GRC056.json",
+      "repository": "Health-Yang/MineEcho",
+      "requested_at_utc": "2026-08-10T13:38:30Z",
+      "sha256": "f719695cf66de7fc52baba65f32bafe80eac44e5c54a311b71ff291277438be5"
+    },
+    {
+      "candidate_id": "GRC057",
+      "completed_at_utc": "2026-08-10T13:38:32Z",
+      "path": "raw/GRC057.json",
+      "repository": "410979729/scope-recall-hermes",
+      "requested_at_utc": "2026-08-10T13:38:30Z",
+      "sha256": "7d884af402c137dfbba4a1d8a5b9239f323ea5efbaeb6b2f9348d0d9b0226569"
+    },
+    {
+      "candidate_id": "GRC058",
+      "completed_at_utc": "2026-08-10T13:38:32Z",
+      "path": "raw/GRC058.json",
+      "repository": "atomicstrata/atomicmemory",
+      "requested_at_utc": "2026-08-10T13:38:31Z",
+      "sha256": "5340b1b9f7eda97d24d20b55afcd67d1c3b7f4e7c44063e3c194df35f8f722fe"
+    },
+    {
+      "candidate_id": "GRC059",
+      "completed_at_utc": "2026-08-10T13:38:32Z",
+      "path": "raw/GRC059.json",
+      "repository": "EverMind-AI/Raven",
+      "requested_at_utc": "2026-08-10T13:38:31Z",
+      "sha256": "cde80c6a96fb3ad232877e0c63ac0f01e22464df26760493a25e60fb85e1acec"
+    }
+  ],
+  "raw_index_sha256": "0b68d0c2cc62aa011421c3a4179352be5941279f2a94a25e641bd42e3b98dde6",
+  "request_window": {
+    "from": "2025-07-01",
+    "per": "day",
+    "to": "2026-08-10"
+  },
+  "schema_version": "star-growth-packet/v1",
+  "status_counts": {
+    "qualified": 3,
+    "unavailable": 55,
+    "usable": 1
+  },
+  "thresholds": {
+    "qualified_diagnostic_ratio": [
+      0.75,
+      1.2
+    ],
+    "ranking_minimum_usable_count": 48,
+    "rationale": "A conservative tolerance for event-history versus active-star semantics; values are audit gates, not confidence intervals.",
+    "usable_coverage_ratio": [
+      0.9,
+      1.1
+    ]
+  }
+}

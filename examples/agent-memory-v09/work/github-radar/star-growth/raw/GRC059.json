@@ -1,0 +1,114 @@
+{
+  "candidate_id": "GRC059",
+  "error": null,
+  "http": {
+    "response_headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Mon, 10 Aug 2026 13:38:30 GMT",
+      "server": "nginx/1.25.3",
+      "x-ratelimit-limit": "600",
+      "x-ratelimit-remaining": "539"
+    },
+    "status": 200
+  },
+  "provider": "OSSInsight Public API",
+  "provider_response": {
+    "data": {
+      "columns": [
+        {
+          "col": "date",
+          "data_type": "VARCHAR",
+          "nullable": true
+        },
+        {
+          "col": "stargazers",
+          "data_type": "DECIMAL",
+          "nullable": true
+        }
+      ],
+      "result": {
+        "code": 200,
+        "end_ms": 1786369110633,
+        "latency": "31.315753ms",
+        "limit": 2000,
+        "message": "Query OK!",
+        "row_affect": 0,
+        "row_count": 14,
+        "start_ms": 1786369110601
+      },
+      "rows": [
+        {
+          "date": "2026-07-01",
+          "stargazers": "3"
+        },
+        {
+          "date": "2026-07-02",
+          "stargazers": "13"
+        },
+        {
+          "date": "2026-07-04",
+          "stargazers": "16"
+        },
+        {
+          "date": "2026-07-05",
+          "stargazers": "22"
+        },
+        {
+          "date": "2026-07-07",
+          "stargazers": "24"
+        },
+        {
+          "date": "2026-07-08",
+          "stargazers": "27"
+        },
+        {
+          "date": "2026-07-09",
+          "stargazers": "30"
+        },
+        {
+          "date": "2026-07-10",
+          "stargazers": "31"
+        },
+        {
+          "date": "2026-07-12",
+          "stargazers": "33"
+        },
+        {
+          "date": "2026-07-15",
+          "stargazers": "34"
+        },
+        {
+          "date": "2026-07-16",
+          "stargazers": "35"
+        },
+        {
+          "date": "2026-07-17",
+          "stargazers": "36"
+        },
+        {
+          "date": "2026-07-26",
+          "stargazers": "37"
+        },
+        {
+          "date": "2026-08-06",
+          "stargazers": "38"
+        }
+      ]
+    },
+    "type": "sql_endpoint"
+  },
+  "repository": "EverMind-AI/Raven",
+  "request": {
+    "finished_at_utc": "2026-08-10T13:38:32Z",
+    "method": "GET",
+    "parameters": {
+      "from": "2025-07-01",
+      "per": "day",
+      "to": "2026-08-10"
+    },
+    "started_at_utc": "2026-08-10T13:38:31Z",
+    "url": "https://api.ossinsight.io/v1/repos/EverMind-AI/Raven/stargazers/history/?per=day&from=2025-07-01&to=2026-08-10"
+  },
+  "response_text_if_unparsed": null,
+  "schema_version": "star-growth-packet/v1"
+}

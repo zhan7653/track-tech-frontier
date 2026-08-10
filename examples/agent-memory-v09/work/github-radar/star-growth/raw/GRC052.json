@@ -1,0 +1,278 @@
+{
+  "candidate_id": "GRC052",
+  "error": null,
+  "http": {
+    "response_headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Mon, 10 Aug 2026 13:38:34 GMT",
+      "server": "nginx/1.25.3",
+      "x-ratelimit-limit": "600",
+      "x-ratelimit-remaining": "537"
+    },
+    "status": 200
+  },
+  "provider": "OSSInsight Public API",
+  "provider_response": {
+    "data": {
+      "columns": [
+        {
+          "col": "date",
+          "data_type": "VARCHAR",
+          "nullable": true
+        },
+        {
+          "col": "stargazers",
+          "data_type": "DECIMAL",
+          "nullable": true
+        }
+      ],
+      "result": {
+        "code": 200,
+        "end_ms": 1786369114261,
+        "latency": "31.13161ms",
+        "limit": 2000,
+        "message": "Query OK!",
+        "row_affect": 0,
+        "row_count": 55,
+        "start_ms": 1786369114230
+      },
+      "rows": [
+        {
+          "date": "2025-11-27",
+          "stargazers": "2"
+        },
+        {
+          "date": "2025-11-28",
+          "stargazers": "5"
+        },
+        {
+          "date": "2025-11-29",
+          "stargazers": "6"
+        },
+        {
+          "date": "2025-12-02",
+          "stargazers": "7"
+        },
+        {
+          "date": "2025-12-04",
+          "stargazers": "8"
+        },
+        {
+          "date": "2025-12-06",
+          "stargazers": "9"
+        },
+        {
+          "date": "2025-12-07",
+          "stargazers": "10"
+        },
+        {
+          "date": "2025-12-10",
+          "stargazers": "12"
+        },
+        {
+          "date": "2025-12-11",
+          "stargazers": "13"
+        },
+        {
+          "date": "2025-12-17",
+          "stargazers": "14"
+        },
+        {
+          "date": "2025-12-24",
+          "stargazers": "15"
+        },
+        {
+          "date": "2025-12-25",
+          "stargazers": "27"
+        },
+        {
+          "date": "2025-12-26",
+          "stargazers": "34"
+        },
+        {
+          "date": "2025-12-27",
+          "stargazers": "38"
+        },
+        {
+          "date": "2025-12-28",
+          "stargazers": "39"
+        },
+        {
+          "date": "2025-12-29",
+          "stargazers": "40"
+        },
+        {
+          "date": "2025-12-31",
+          "stargazers": "41"
+        },
+        {
+          "date": "2026-01-03",
+          "stargazers": "43"
+        },
+        {
+          "date": "2026-01-04",
+          "stargazers": "44"
+        },
+        {
+          "date": "2026-01-06",
+          "stargazers": "45"
+        },
+        {
+          "date": "2026-01-07",
+          "stargazers": "46"
+        },
+        {
+          "date": "2026-01-08",
+          "stargazers": "48"
+        },
+        {
+          "date": "2026-01-09",
+          "stargazers": "49"
+        },
+        {
+          "date": "2026-01-10",
+          "stargazers": "50"
+        },
+        {
+          "date": "2026-01-11",
+          "stargazers": "51"
+        },
+        {
+          "date": "2026-01-15",
+          "stargazers": "52"
+        },
+        {
+          "date": "2026-01-20",
+          "stargazers": "53"
+        },
+        {
+          "date": "2026-01-27",
+          "stargazers": "54"
+        },
+        {
+          "date": "2026-01-29",
+          "stargazers": "56"
+        },
+        {
+          "date": "2026-02-05",
+          "stargazers": "57"
+        },
+        {
+          "date": "2026-02-10",
+          "stargazers": "58"
+        },
+        {
+          "date": "2026-02-13",
+          "stargazers": "59"
+        },
+        {
+          "date": "2026-02-19",
+          "stargazers": "60"
+        },
+        {
+          "date": "2026-02-25",
+          "stargazers": "61"
+        },
+        {
+          "date": "2026-02-28",
+          "stargazers": "62"
+        },
+        {
+          "date": "2026-03-04",
+          "stargazers": "63"
+        },
+        {
+          "date": "2026-03-05",
+          "stargazers": "64"
+        },
+        {
+          "date": "2026-03-07",
+          "stargazers": "66"
+        },
+        {
+          "date": "2026-03-09",
+          "stargazers": "67"
+        },
+        {
+          "date": "2026-03-10",
+          "stargazers": "69"
+        },
+        {
+          "date": "2026-03-14",
+          "stargazers": "70"
+        },
+        {
+          "date": "2026-03-15",
+          "stargazers": "71"
+        },
+        {
+          "date": "2026-03-17",
+          "stargazers": "72"
+        },
+        {
+          "date": "2026-03-18",
+          "stargazers": "73"
+        },
+        {
+          "date": "2026-03-19",
+          "stargazers": "74"
+        },
+        {
+          "date": "2026-03-21",
+          "stargazers": "75"
+        },
+        {
+          "date": "2026-03-22",
+          "stargazers": "78"
+        },
+        {
+          "date": "2026-03-23",
+          "stargazers": "79"
+        },
+        {
+          "date": "2026-03-25",
+          "stargazers": "80"
+        },
+        {
+          "date": "2026-03-29",
+          "stargazers": "81"
+        },
+        {
+          "date": "2026-04-04",
+          "stargazers": "82"
+        },
+        {
+          "date": "2026-04-06",
+          "stargazers": "83"
+        },
+        {
+          "date": "2026-04-25",
+          "stargazers": "84"
+        },
+        {
+          "date": "2026-04-30",
+          "stargazers": "85"
+        },
+        {
+          "date": "2026-05-09",
+          "stargazers": "86"
+        }
+      ]
+    },
+    "type": "sql_endpoint"
+  },
+  "repository": "supermemoryai/memorybench",
+  "request": {
+    "finished_at_utc": "2026-08-10T13:38:36Z",
+    "method": "GET",
+    "parameters": {
+      "from": "2025-07-01",
+      "per": "day",
+      "to": "2026-08-10"
+    },
+    "started_at_utc": "2026-08-10T13:38:27Z",
+    "url": "https://api.ossinsight.io/v1/repos/supermemoryai/memorybench/stargazers/history/?per=day&from=2025-07-01&to=2026-08-10"
+  },
+  "response_text_if_unparsed": null,
+  "schema_version": "star-growth-packet/v1"
+}

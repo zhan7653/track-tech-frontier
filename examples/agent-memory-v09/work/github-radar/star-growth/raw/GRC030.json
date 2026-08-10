@@ -1,0 +1,62 @@
+{
+  "candidate_id": "GRC030",
+  "error": null,
+  "http": {
+    "response_headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Mon, 10 Aug 2026 13:38:21 GMT",
+      "server": "nginx/1.25.3",
+      "x-ratelimit-limit": "600",
+      "x-ratelimit-remaining": "567"
+    },
+    "status": 200
+  },
+  "provider": "OSSInsight Public API",
+  "provider_response": {
+    "data": {
+      "columns": [
+        {
+          "col": "date",
+          "data_type": "VARCHAR",
+          "nullable": true
+        },
+        {
+          "col": "stargazers",
+          "data_type": "DECIMAL",
+          "nullable": true
+        }
+      ],
+      "result": {
+        "code": 200,
+        "end_ms": 1786369101417,
+        "latency": "31.361572ms",
+        "limit": 2000,
+        "message": "Query OK!",
+        "row_affect": 0,
+        "row_count": 1,
+        "start_ms": 1786369101385
+      },
+      "rows": [
+        {
+          "date": "2026-08-07",
+          "stargazers": "1"
+        }
+      ]
+    },
+    "type": "sql_endpoint"
+  },
+  "repository": "SMJAI/open-memory-protocol",
+  "request": {
+    "finished_at_utc": "2026-08-10T13:38:23Z",
+    "method": "GET",
+    "parameters": {
+      "from": "2025-07-01",
+      "per": "day",
+      "to": "2026-08-10"
+    },
+    "started_at_utc": "2026-08-10T13:38:22Z",
+    "url": "https://api.ossinsight.io/v1/repos/SMJAI/open-memory-protocol/stargazers/history/?per=day&from=2025-07-01&to=2026-08-10"
+  },
+  "response_text_if_unparsed": null,
+  "schema_version": "star-growth-packet/v1"
+}

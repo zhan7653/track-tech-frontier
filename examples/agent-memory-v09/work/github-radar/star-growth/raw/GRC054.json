@@ -1,0 +1,114 @@
+{
+  "candidate_id": "GRC054",
+  "error": null,
+  "http": {
+    "response_headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Mon, 10 Aug 2026 13:38:30 GMT",
+      "server": "nginx/1.25.3",
+      "x-ratelimit-limit": "600",
+      "x-ratelimit-remaining": "541"
+    },
+    "status": 200
+  },
+  "provider": "OSSInsight Public API",
+  "provider_response": {
+    "data": {
+      "columns": [
+        {
+          "col": "date",
+          "data_type": "VARCHAR",
+          "nullable": true
+        },
+        {
+          "col": "stargazers",
+          "data_type": "DECIMAL",
+          "nullable": true
+        }
+      ],
+      "result": {
+        "code": 200,
+        "end_ms": 1786369110046,
+        "latency": "32.399158ms",
+        "limit": 2000,
+        "message": "Query OK!",
+        "row_affect": 0,
+        "row_count": 14,
+        "start_ms": 1786369110014
+      },
+      "rows": [
+        {
+          "date": "2025-11-26",
+          "stargazers": "1"
+        },
+        {
+          "date": "2025-11-27",
+          "stargazers": "2"
+        },
+        {
+          "date": "2025-11-28",
+          "stargazers": "6"
+        },
+        {
+          "date": "2025-11-29",
+          "stargazers": "7"
+        },
+        {
+          "date": "2025-11-30",
+          "stargazers": "10"
+        },
+        {
+          "date": "2025-12-01",
+          "stargazers": "11"
+        },
+        {
+          "date": "2025-12-03",
+          "stargazers": "18"
+        },
+        {
+          "date": "2025-12-07",
+          "stargazers": "20"
+        },
+        {
+          "date": "2025-12-12",
+          "stargazers": "22"
+        },
+        {
+          "date": "2025-12-13",
+          "stargazers": "23"
+        },
+        {
+          "date": "2025-12-22",
+          "stargazers": "24"
+        },
+        {
+          "date": "2026-01-02",
+          "stargazers": "25"
+        },
+        {
+          "date": "2026-02-05",
+          "stargazers": "26"
+        },
+        {
+          "date": "2026-02-25",
+          "stargazers": "27"
+        }
+      ]
+    },
+    "type": "sql_endpoint"
+  },
+  "repository": "jakops88-hub/Long-Term-Memory-API",
+  "request": {
+    "finished_at_utc": "2026-08-10T13:38:31Z",
+    "method": "GET",
+    "parameters": {
+      "from": "2025-07-01",
+      "per": "day",
+      "to": "2026-08-10"
+    },
+    "started_at_utc": "2026-08-10T13:38:30Z",
+    "url": "https://api.ossinsight.io/v1/repos/jakops88-hub/Long-Term-Memory-API/stargazers/history/?per=day&from=2025-07-01&to=2026-08-10"
+  },
+  "response_text_if_unparsed": null,
+  "schema_version": "star-growth-packet/v1"
+}

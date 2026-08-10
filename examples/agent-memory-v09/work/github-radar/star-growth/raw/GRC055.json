@@ -1,0 +1,138 @@
+{
+  "candidate_id": "GRC055",
+  "error": null,
+  "http": {
+    "response_headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Mon, 10 Aug 2026 13:38:29 GMT",
+      "server": "nginx/1.25.3",
+      "x-ratelimit-limit": "600",
+      "x-ratelimit-remaining": "543"
+    },
+    "status": 200
+  },
+  "provider": "OSSInsight Public API",
+  "provider_response": {
+    "data": {
+      "columns": [
+        {
+          "col": "date",
+          "data_type": "VARCHAR",
+          "nullable": true
+        },
+        {
+          "col": "stargazers",
+          "data_type": "DECIMAL",
+          "nullable": true
+        }
+      ],
+      "result": {
+        "code": 200,
+        "end_ms": 1786369109360,
+        "latency": "32.553519ms",
+        "limit": 2000,
+        "message": "Query OK!",
+        "row_affect": 0,
+        "row_count": 20,
+        "start_ms": 1786369109327
+      },
+      "rows": [
+        {
+          "date": "2026-04-14",
+          "stargazers": "1"
+        },
+        {
+          "date": "2026-04-17",
+          "stargazers": "2"
+        },
+        {
+          "date": "2026-04-19",
+          "stargazers": "3"
+        },
+        {
+          "date": "2026-05-13",
+          "stargazers": "5"
+        },
+        {
+          "date": "2026-05-14",
+          "stargazers": "8"
+        },
+        {
+          "date": "2026-05-16",
+          "stargazers": "9"
+        },
+        {
+          "date": "2026-05-23",
+          "stargazers": "10"
+        },
+        {
+          "date": "2026-05-27",
+          "stargazers": "12"
+        },
+        {
+          "date": "2026-06-07",
+          "stargazers": "14"
+        },
+        {
+          "date": "2026-06-08",
+          "stargazers": "18"
+        },
+        {
+          "date": "2026-06-09",
+          "stargazers": "22"
+        },
+        {
+          "date": "2026-06-10",
+          "stargazers": "27"
+        },
+        {
+          "date": "2026-06-11",
+          "stargazers": "33"
+        },
+        {
+          "date": "2026-06-14",
+          "stargazers": "36"
+        },
+        {
+          "date": "2026-06-15",
+          "stargazers": "37"
+        },
+        {
+          "date": "2026-06-16",
+          "stargazers": "38"
+        },
+        {
+          "date": "2026-06-18",
+          "stargazers": "39"
+        },
+        {
+          "date": "2026-06-20",
+          "stargazers": "40"
+        },
+        {
+          "date": "2026-07-02",
+          "stargazers": "41"
+        },
+        {
+          "date": "2026-08-07",
+          "stargazers": "42"
+        }
+      ]
+    },
+    "type": "sql_endpoint"
+  },
+  "repository": "activeloopai/hivemind",
+  "request": {
+    "finished_at_utc": "2026-08-10T13:38:31Z",
+    "method": "GET",
+    "parameters": {
+      "from": "2025-07-01",
+      "per": "day",
+      "to": "2026-08-10"
+    },
+    "started_at_utc": "2026-08-10T13:38:30Z",
+    "url": "https://api.ossinsight.io/v1/repos/activeloopai/hivemind/stargazers/history/?per=day&from=2025-07-01&to=2026-08-10"
+  },
+  "response_text_if_unparsed": null,
+  "schema_version": "star-growth-packet/v1"
+}
