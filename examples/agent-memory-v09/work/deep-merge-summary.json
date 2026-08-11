@@ -1,0 +1,90 @@
+{
+  "applied": true,
+  "counts": {
+    "claims.jsonl": 149,
+    "cluster_assignments.jsonl": 4184,
+    "discovery_results.jsonl": 7583,
+    "entities.jsonl": 4367,
+    "evidence.jsonl": 293,
+    "papers.jsonl": 64,
+    "queries.jsonl": 140,
+    "repositories.jsonl": 41,
+    "screening.jsonl": 4367,
+    "semantic_checks.jsonl": 149,
+    "sources.jsonl": 131,
+    "stage_events.jsonl": 2080
+  },
+  "deep_papers": 63,
+  "deep_repositories": 41,
+  "deep_verified_entities": 129,
+  "direct_open_entities": 0,
+  "entities_input_sha256": "9560931a7ac9e9ca5e0f57a9ccb65d7669fa3e9259ed71582e7f8d650e7fa479",
+  "generated_at": "2026-08-10T06:16:45Z",
+  "merged_source_aliases": [
+    {
+      "canonical_source_id": "EXP-S01",
+      "source_id": "FND-S04"
+    },
+    {
+      "canonical_source_id": "EXP-S03",
+      "source_id": "FND-S01"
+    },
+    {
+      "canonical_source_id": "EXP-S02",
+      "source_id": "FND-S05"
+    },
+    {
+      "canonical_source_id": "EXP-S04",
+      "source_id": "FND-S02"
+    },
+    {
+      "canonical_source_id": "EXP-S07",
+      "source_id": "FND-S06"
+    },
+    {
+      "canonical_source_id": "BEN-S03",
+      "source_id": "FND-S08"
+    },
+    {
+      "canonical_source_id": "FND-S14",
+      "source_id": "OPS-S14"
+    },
+    {
+      "canonical_source_id": "FND-S14",
+      "source_id": "REP-S19"
+    },
+    {
+      "canonical_source_id": "OPS-S13",
+      "source_id": "REP-S13"
+    }
+  ],
+  "output_sha256": {
+    "claims.jsonl": "d3bcae6994fa64a86b6bab56007d0ea0fc95dd3da1dd50708bc6bcc1e280a9bb",
+    "cluster_assignments.jsonl": "e4a21f207933df150a72108594ead29b13d2dd93383049440b3f8e1634248360",
+    "discovery_results.jsonl": "3cf1d72a3174e6c1ee40fe3d05b24492b6e125b7b3ea07561dc9e6c8cbf874ee",
+    "entities.jsonl": "9560931a7ac9e9ca5e0f57a9ccb65d7669fa3e9259ed71582e7f8d650e7fa479",
+    "evidence.jsonl": "3b793a7eb6e6b2b01897f28dabb64cdec13d568f23f4ce61b064ac9958c642c1",
+    "papers.jsonl": "b725e9c39fa6f66d82c82ffc559d5c69ef0e9e25e58f883866e39b1497342436",
+    "queries.jsonl": "37999bd01cadef524b0666a86ed0a18db493ed092329e87aaa61b8029f75a422",
+    "repositories.jsonl": "63c3e4eff39dd08231a121f4ace04ab6d510ba28e65ed28f8d0112614ce9858c",
+    "screening.jsonl": "928e567540b51794c25e861653eececad8bd213ac1d9db605d137f34db7c9bd0",
+    "semantic_checks.jsonl": "b78f5b8011e5fb051e22d787f5bab78d7b138f16528904b07e78e68eb98d4e75",
+    "sources.jsonl": "828d003bfb8cc47bcf2b8422cf63f9537fab7b2e654b22c508b265e9c4d528ec",
+    "stage_events.jsonl": "1cfdd290f57c78b31134e2fd0a308793fa72d5833d5edbd40a493dc6c5c3edf0"
+  },
+  "packets": [
+    "benchmarks-evaluation",
+    "experience-multiactor",
+    "foundations-lifecycle",
+    "representation-retrieval",
+    "security-operations",
+    "standards-adoption"
+  ],
+  "record_type": "v09-deep-packet-merge-preview",
+  "skipped_sources": [
+    {
+      "reason": "repository qinchonghanzuibang/ImplicitMemBench lacks a verified commit pin/pushed date",
+      "source_id": "BEN-S25"
+    }
+  ]
+}

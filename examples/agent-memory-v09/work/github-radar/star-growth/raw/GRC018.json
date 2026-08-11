@@ -1,0 +1,66 @@
+{
+  "candidate_id": "GRC018",
+  "error": null,
+  "http": {
+    "response_headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Mon, 10 Aug 2026 13:38:17 GMT",
+      "server": "nginx/1.25.3",
+      "x-ratelimit-limit": "600",
+      "x-ratelimit-remaining": "578"
+    },
+    "status": 200
+  },
+  "provider": "OSSInsight Public API",
+  "provider_response": {
+    "data": {
+      "columns": [
+        {
+          "col": "date",
+          "data_type": "VARCHAR",
+          "nullable": true
+        },
+        {
+          "col": "stargazers",
+          "data_type": "DECIMAL",
+          "nullable": true
+        }
+      ],
+      "result": {
+        "code": 200,
+        "end_ms": 1786369097181,
+        "latency": "31.664707ms",
+        "limit": 2000,
+        "message": "Query OK!",
+        "row_affect": 0,
+        "row_count": 2,
+        "start_ms": 1786369097150
+      },
+      "rows": [
+        {
+          "date": "2026-07-26",
+          "stargazers": "2"
+        },
+        {
+          "date": "2026-07-28",
+          "stargazers": "3"
+        }
+      ]
+    },
+    "type": "sql_endpoint"
+  },
+  "repository": "VictorTaelin/OptMem",
+  "request": {
+    "finished_at_utc": "2026-08-10T13:38:18Z",
+    "method": "GET",
+    "parameters": {
+      "from": "2025-07-01",
+      "per": "day",
+      "to": "2026-08-10"
+    },
+    "started_at_utc": "2026-08-10T13:38:17Z",
+    "url": "https://api.ossinsight.io/v1/repos/VictorTaelin/OptMem/stargazers/history/?per=day&from=2025-07-01&to=2026-08-10"
+  },
+  "response_text_if_unparsed": null,
+  "schema_version": "star-growth-packet/v1"
+}

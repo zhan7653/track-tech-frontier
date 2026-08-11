@@ -1,0 +1,4 @@
+interface:
+  display_name: "Track Tech Frontier"
+  short_description: "Broad frontier maps, trends, and deep cluster reports"
+  default_prompt: "Use $track-tech-frontier to map a technology broadly, track recent paper and GitHub trends, and deliver deep cluster-based research."

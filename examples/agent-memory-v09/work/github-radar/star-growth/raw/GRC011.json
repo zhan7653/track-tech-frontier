@@ -1,0 +1,534 @@
+{
+  "candidate_id": "GRC011",
+  "error": null,
+  "http": {
+    "response_headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Mon, 10 Aug 2026 13:38:14 GMT",
+      "server": "nginx/1.25.3",
+      "x-ratelimit-limit": "600",
+      "x-ratelimit-remaining": "586"
+    },
+    "status": 200
+  },
+  "provider": "OSSInsight Public API",
+  "provider_response": {
+    "data": {
+      "columns": [
+        {
+          "col": "date",
+          "data_type": "VARCHAR",
+          "nullable": true
+        },
+        {
+          "col": "stargazers",
+          "data_type": "DECIMAL",
+          "nullable": true
+        }
+      ],
+      "result": {
+        "code": 200,
+        "end_ms": 1786369094974,
+        "latency": "39.211975ms",
+        "limit": 2000,
+        "message": "Query OK!",
+        "row_affect": 0,
+        "row_count": 119,
+        "start_ms": 1786369094935
+      },
+      "rows": [
+        {
+          "date": "2026-01-06",
+          "stargazers": "1"
+        },
+        {
+          "date": "2026-01-07",
+          "stargazers": "14"
+        },
+        {
+          "date": "2026-01-08",
+          "stargazers": "82"
+        },
+        {
+          "date": "2026-01-09",
+          "stargazers": "157"
+        },
+        {
+          "date": "2026-01-10",
+          "stargazers": "201"
+        },
+        {
+          "date": "2026-01-11",
+          "stargazers": "286"
+        },
+        {
+          "date": "2026-01-12",
+          "stargazers": "323"
+        },
+        {
+          "date": "2026-01-13",
+          "stargazers": "354"
+        },
+        {
+          "date": "2026-01-14",
+          "stargazers": "387"
+        },
+        {
+          "date": "2026-01-15",
+          "stargazers": "413"
+        },
+        {
+          "date": "2026-01-16",
+          "stargazers": "442"
+        },
+        {
+          "date": "2026-01-17",
+          "stargazers": "461"
+        },
+        {
+          "date": "2026-01-18",
+          "stargazers": "489"
+        },
+        {
+          "date": "2026-01-19",
+          "stargazers": "544"
+        },
+        {
+          "date": "2026-01-20",
+          "stargazers": "593"
+        },
+        {
+          "date": "2026-01-21",
+          "stargazers": "625"
+        },
+        {
+          "date": "2026-01-22",
+          "stargazers": "637"
+        },
+        {
+          "date": "2026-01-23",
+          "stargazers": "649"
+        },
+        {
+          "date": "2026-01-24",
+          "stargazers": "676"
+        },
+        {
+          "date": "2026-01-25",
+          "stargazers": "739"
+        },
+        {
+          "date": "2026-01-26",
+          "stargazers": "791"
+        },
+        {
+          "date": "2026-01-27",
+          "stargazers": "822"
+        },
+        {
+          "date": "2026-01-28",
+          "stargazers": "846"
+        },
+        {
+          "date": "2026-01-29",
+          "stargazers": "856"
+        },
+        {
+          "date": "2026-01-30",
+          "stargazers": "861"
+        },
+        {
+          "date": "2026-01-31",
+          "stargazers": "875"
+        },
+        {
+          "date": "2026-02-01",
+          "stargazers": "885"
+        },
+        {
+          "date": "2026-02-02",
+          "stargazers": "890"
+        },
+        {
+          "date": "2026-02-03",
+          "stargazers": "899"
+        },
+        {
+          "date": "2026-02-04",
+          "stargazers": "906"
+        },
+        {
+          "date": "2026-02-05",
+          "stargazers": "912"
+        },
+        {
+          "date": "2026-02-06",
+          "stargazers": "917"
+        },
+        {
+          "date": "2026-02-07",
+          "stargazers": "919"
+        },
+        {
+          "date": "2026-02-08",
+          "stargazers": "923"
+        },
+        {
+          "date": "2026-02-09",
+          "stargazers": "929"
+        },
+        {
+          "date": "2026-02-10",
+          "stargazers": "934"
+        },
+        {
+          "date": "2026-02-11",
+          "stargazers": "942"
+        },
+        {
+          "date": "2026-02-12",
+          "stargazers": "964"
+        },
+        {
+          "date": "2026-02-13",
+          "stargazers": "969"
+        },
+        {
+          "date": "2026-02-14",
+          "stargazers": "970"
+        },
+        {
+          "date": "2026-02-15",
+          "stargazers": "972"
+        },
+        {
+          "date": "2026-02-16",
+          "stargazers": "976"
+        },
+        {
+          "date": "2026-02-17",
+          "stargazers": "984"
+        },
+        {
+          "date": "2026-02-18",
+          "stargazers": "988"
+        },
+        {
+          "date": "2026-02-19",
+          "stargazers": "993"
+        },
+        {
+          "date": "2026-02-20",
+          "stargazers": "997"
+        },
+        {
+          "date": "2026-02-21",
+          "stargazers": "1000"
+        },
+        {
+          "date": "2026-02-22",
+          "stargazers": "1001"
+        },
+        {
+          "date": "2026-02-24",
+          "stargazers": "1005"
+        },
+        {
+          "date": "2026-02-25",
+          "stargazers": "1012"
+        },
+        {
+          "date": "2026-02-26",
+          "stargazers": "1016"
+        },
+        {
+          "date": "2026-02-27",
+          "stargazers": "1017"
+        },
+        {
+          "date": "2026-02-28",
+          "stargazers": "1022"
+        },
+        {
+          "date": "2026-03-01",
+          "stargazers": "1025"
+        },
+        {
+          "date": "2026-03-02",
+          "stargazers": "1027"
+        },
+        {
+          "date": "2026-03-04",
+          "stargazers": "1028"
+        },
+        {
+          "date": "2026-03-05",
+          "stargazers": "1032"
+        },
+        {
+          "date": "2026-03-06",
+          "stargazers": "1034"
+        },
+        {
+          "date": "2026-03-07",
+          "stargazers": "1037"
+        },
+        {
+          "date": "2026-03-08",
+          "stargazers": "1047"
+        },
+        {
+          "date": "2026-03-09",
+          "stargazers": "1051"
+        },
+        {
+          "date": "2026-03-10",
+          "stargazers": "1053"
+        },
+        {
+          "date": "2026-03-11",
+          "stargazers": "1059"
+        },
+        {
+          "date": "2026-03-12",
+          "stargazers": "1063"
+        },
+        {
+          "date": "2026-03-13",
+          "stargazers": "1065"
+        },
+        {
+          "date": "2026-03-14",
+          "stargazers": "1067"
+        },
+        {
+          "date": "2026-03-15",
+          "stargazers": "1070"
+        },
+        {
+          "date": "2026-03-16",
+          "stargazers": "1071"
+        },
+        {
+          "date": "2026-03-17",
+          "stargazers": "1073"
+        },
+        {
+          "date": "2026-03-18",
+          "stargazers": "1074"
+        },
+        {
+          "date": "2026-03-19",
+          "stargazers": "1075"
+        },
+        {
+          "date": "2026-03-20",
+          "stargazers": "1076"
+        },
+        {
+          "date": "2026-03-21",
+          "stargazers": "1078"
+        },
+        {
+          "date": "2026-03-22",
+          "stargazers": "1079"
+        },
+        {
+          "date": "2026-03-24",
+          "stargazers": "1080"
+        },
+        {
+          "date": "2026-03-25",
+          "stargazers": "1081"
+        },
+        {
+          "date": "2026-03-28",
+          "stargazers": "1083"
+        },
+        {
+          "date": "2026-03-29",
+          "stargazers": "1085"
+        },
+        {
+          "date": "2026-03-31",
+          "stargazers": "1088"
+        },
+        {
+          "date": "2026-04-01",
+          "stargazers": "1089"
+        },
+        {
+          "date": "2026-04-02",
+          "stargazers": "1092"
+        },
+        {
+          "date": "2026-04-03",
+          "stargazers": "1096"
+        },
+        {
+          "date": "2026-04-04",
+          "stargazers": "1102"
+        },
+        {
+          "date": "2026-04-05",
+          "stargazers": "1103"
+        },
+        {
+          "date": "2026-04-06",
+          "stargazers": "1106"
+        },
+        {
+          "date": "2026-04-07",
+          "stargazers": "1107"
+        },
+        {
+          "date": "2026-04-08",
+          "stargazers": "1109"
+        },
+        {
+          "date": "2026-04-10",
+          "stargazers": "1111"
+        },
+        {
+          "date": "2026-04-11",
+          "stargazers": "1113"
+        },
+        {
+          "date": "2026-04-13",
+          "stargazers": "1117"
+        },
+        {
+          "date": "2026-04-14",
+          "stargazers": "1119"
+        },
+        {
+          "date": "2026-04-15",
+          "stargazers": "1122"
+        },
+        {
+          "date": "2026-04-16",
+          "stargazers": "1125"
+        },
+        {
+          "date": "2026-04-17",
+          "stargazers": "1127"
+        },
+        {
+          "date": "2026-04-18",
+          "stargazers": "1129"
+        },
+        {
+          "date": "2026-04-22",
+          "stargazers": "1131"
+        },
+        {
+          "date": "2026-04-23",
+          "stargazers": "1132"
+        },
+        {
+          "date": "2026-04-25",
+          "stargazers": "1133"
+        },
+        {
+          "date": "2026-04-26",
+          "stargazers": "1135"
+        },
+        {
+          "date": "2026-04-27",
+          "stargazers": "1136"
+        },
+        {
+          "date": "2026-04-28",
+          "stargazers": "1137"
+        },
+        {
+          "date": "2026-05-01",
+          "stargazers": "1138"
+        },
+        {
+          "date": "2026-05-10",
+          "stargazers": "1139"
+        },
+        {
+          "date": "2026-05-12",
+          "stargazers": "1140"
+        },
+        {
+          "date": "2026-05-13",
+          "stargazers": "1142"
+        },
+        {
+          "date": "2026-05-15",
+          "stargazers": "1144"
+        },
+        {
+          "date": "2026-05-16",
+          "stargazers": "1145"
+        },
+        {
+          "date": "2026-05-17",
+          "stargazers": "1146"
+        },
+        {
+          "date": "2026-05-19",
+          "stargazers": "1147"
+        },
+        {
+          "date": "2026-05-21",
+          "stargazers": "1148"
+        },
+        {
+          "date": "2026-05-23",
+          "stargazers": "1160"
+        },
+        {
+          "date": "2026-05-24",
+          "stargazers": "1165"
+        },
+        {
+          "date": "2026-05-25",
+          "stargazers": "1166"
+        },
+        {
+          "date": "2026-05-27",
+          "stargazers": "1167"
+        },
+        {
+          "date": "2026-06-07",
+          "stargazers": "1168"
+        },
+        {
+          "date": "2026-06-08",
+          "stargazers": "1169"
+        },
+        {
+          "date": "2026-06-09",
+          "stargazers": "1170"
+        },
+        {
+          "date": "2026-06-20",
+          "stargazers": "1171"
+        },
+        {
+          "date": "2026-08-03",
+          "stargazers": "1172"
+        }
+      ]
+    },
+    "type": "sql_endpoint"
+  },
+  "repository": "aiming-lab/SimpleMem",
+  "request": {
+    "finished_at_utc": "2026-08-10T13:38:16Z",
+    "method": "GET",
+    "parameters": {
+      "from": "2025-07-01",
+      "per": "day",
+      "to": "2026-08-10"
+    },
+    "started_at_utc": "2026-08-10T13:38:15Z",
+    "url": "https://api.ossinsight.io/v1/repos/aiming-lab/SimpleMem/stargazers/history/?per=day&from=2025-07-01&to=2026-08-10"
+  },
+  "response_text_if_unparsed": null,
+  "schema_version": "star-growth-packet/v1"
+}

@@ -1,0 +1,86 @@
+{
+  "candidate_id": "GRC056",
+  "error": null,
+  "http": {
+    "response_headers": {
+      "content-type": "application/json; charset=utf-8",
+      "date": "Mon, 10 Aug 2026 13:38:29 GMT",
+      "server": "nginx/1.25.3",
+      "x-ratelimit-limit": "600",
+      "x-ratelimit-remaining": "542"
+    },
+    "status": 200
+  },
+  "provider": "OSSInsight Public API",
+  "provider_response": {
+    "data": {
+      "columns": [
+        {
+          "col": "date",
+          "data_type": "VARCHAR",
+          "nullable": true
+        },
+        {
+          "col": "stargazers",
+          "data_type": "DECIMAL",
+          "nullable": true
+        }
+      ],
+      "result": {
+        "code": 200,
+        "end_ms": 1786369109732,
+        "latency": "29.201036ms",
+        "limit": 2000,
+        "message": "Query OK!",
+        "row_affect": 0,
+        "row_count": 7,
+        "start_ms": 1786369109703
+      },
+      "rows": [
+        {
+          "date": "2026-06-02",
+          "stargazers": "1"
+        },
+        {
+          "date": "2026-06-03",
+          "stargazers": "5"
+        },
+        {
+          "date": "2026-06-04",
+          "stargazers": "6"
+        },
+        {
+          "date": "2026-06-06",
+          "stargazers": "7"
+        },
+        {
+          "date": "2026-06-07",
+          "stargazers": "9"
+        },
+        {
+          "date": "2026-06-09",
+          "stargazers": "10"
+        },
+        {
+          "date": "2026-06-10",
+          "stargazers": "11"
+        }
+      ]
+    },
+    "type": "sql_endpoint"
+  },
+  "repository": "Health-Yang/MineEcho",
+  "request": {
+    "finished_at_utc": "2026-08-10T13:38:31Z",
+    "method": "GET",
+    "parameters": {
+      "from": "2025-07-01",
+      "per": "day",
+      "to": "2026-08-10"
+    },
+    "started_at_utc": "2026-08-10T13:38:30Z",
+    "url": "https://api.ossinsight.io/v1/repos/Health-Yang/MineEcho/stargazers/history/?per=day&from=2025-07-01&to=2026-08-10"
+  },
+  "response_text_if_unparsed": null,
+  "schema_version": "star-growth-packet/v1"
+}
