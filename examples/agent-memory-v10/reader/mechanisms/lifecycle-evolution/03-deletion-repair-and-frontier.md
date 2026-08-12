@@ -85,9 +85,9 @@ o* = argmax_o E[future utility | history, workload, o]
 - recoverable：consolidate/supersede，有 revision/snapshot可回退；
 - destructive/external：purge、share、procedure promotion、tool action。
 
-训练或在线探索应对风险分级，破坏性动作需要更强 policy/authorization/human gate。reward不能只看当前 task success，否则策略可能通过少写、过度删除或记住投机规则获得短期高分。
+已有受控设计按动作可逆性区分训练或在线探索表面：破坏性动作被放在更强的 policy、authorization 或 human gate 之后。其动机是，若 reward 只观察当前 task success，策略可能通过少写、过度删除或记住投机规则获得短期高分；这种分级仍属于设计模式，而不是已证实的统一安全架构。
 
-MemCon 将 retrieve、plan injection、re-retrieve、consolidate、forget 和 no-op 建模为在线 action；作者描述的实现使用 contextual bandit、UCB 和二值任务反馈。它是“operation selection”路线的清晰实例，却没有独立证明跨 backend 安全泛化。较可控的运行形态会让 learned controller 只产生 proposal：
+MemCon 将 retrieve、plan injection、re-retrieve、consolidate、forget 和 no-op 建模为在线 action；作者描述的实现使用 contextual bandit、UCB 和二值任务反馈。它是“operation selection”路线的清晰实例，却没有独立证明跨 backend 安全泛化。另一类受控运行形态把 learned controller 的输出限制为 proposal：
 
 ```text
 policy proposal
@@ -98,7 +98,7 @@ policy proposal
   → outcome + rollback receipt
 ```
 
-retrieve/no-op 可在线探索；supersede/consolidate 只有在 revision/snapshot 可回退时进入受控 canary；purge/share/action 等破坏性操作不应由稀疏 reward 自主探索。
+在这种形态中，retrieve/no-op 被视为较可逆的探索动作；supersede/consolidate 与可回退的 revision/snapshot、受控 canary 绑定；purge/share/action 则被排除在稀疏 reward 的自主探索空间之外。公开证据尚不能说明这套分级在何种 workload 下足够，也不能证明它是唯一可行边界。
 
 ## 6. 安全攻击为什么开始瞄准生命周期
 

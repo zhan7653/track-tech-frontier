@@ -116,10 +116,10 @@ source event e1
 
 [MemCon](https://arxiv.org/abs/2607.13591)等工作把 retrieve、plan injection、re-retrieve、consolidate、forget、no-op 设为 policy actions。策略根据任务、memory state、budget 与 outcome 选择。相对固定规则，它可能适应 query distribution；风险是 reward delay、policy drift 和不可逆 mutation。
 
-较安全的架构是：learned controller 只提出 operation，显式 primitive 检查 source、scope、version、permission、budget 和 rollback。控制器不能把模型生成的 free-form 指令直接变成删除或共享权限。
+当前较受控的一类研究形态把 learned controller 限定为 operation proposer，再由显式 primitive 检查 source、scope、version、permission、budget 和 rollback。它把“模型生成 free-form 指令”与“删除或改变共享权限”分成两道状态转换；但这种分层的实际安全收益仍缺跨后端实验。
 
 ## 9. 生命周期操作的可观测性
 
-每次 mutation 至少记录：object/revision、actor、operation、reason、source set、policy/model version、pre/post state hash、derived targets、projection status、cost、rollback point。否则无法区分“策略选择错误”“commit 部分失败”“投影 stale”和“Agent 继续使用旧状态”。
+能够区分 lifecycle 故障的实现通常会暴露 object/revision、actor、operation、reason、source set、policy/model version、pre/post state hash、derived targets、projection status、cost 与 rollback point。字段缺失时，“策略选择错误”“commit 部分失败”“投影 stale”和“Agent 继续使用旧状态”会在观测上混成同一种失败。
 
 继续阅读[生命周期系统 walkthrough](02-system-walkthroughs.md)和[删除、修复与研究前沿](03-deletion-repair-and-frontier.md)。

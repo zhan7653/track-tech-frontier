@@ -170,4 +170,4 @@ Memory 的成本不仅是一次向量查询。写入抽取、模型调用、图�
 - **30 分钟：** 本页 + 架构模型 + [近期变化](trends.md)。
 - **专题阅读：** 进入一个[机制分支](mechanisms/)或[场景视图](scenarios/)。
 - **工程阅读：** 先看[GitHub 候选雷达](github-radar.md)，再进入少量重点[项目报告](projects/)。
-- **研究边界：** [方法与范围](method-and-scope.md)、[旧分类到新结构的映射](old-to-new-map.md)和[人工评审清单](human-review.md)。
+- **研究边界：** [方法与范围](method-and-scope.md)和[人工评审清单](human-review.md)；内部分类映射保存在[审计目录](../audit/old-to-new-map.md)。

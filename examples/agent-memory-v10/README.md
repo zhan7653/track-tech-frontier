@@ -23,7 +23,7 @@ reader/projects/README.md        少量重点 GitHub 仓库工程案例
 reader/cross-cutting/README.md   评测、安全、成本、互操作等横切问题
 reader/human-review.md  少量可选的高影响人工评审事项
 reader/method-and-scope.md  证据、范围与写作边界
-reader/old-to-new-map.md    v10 结构与 v09 C01–C16 的映射
+audit/old-to-new-map.md     v10 结构与 v09 内部分类的审计映射
 audit/README.md             冻结证据与账本的审计入口
 
 ../agent-memory-v09/    保留的研究底稿、账本、原始读者报告与审计材料
@@ -35,4 +35,4 @@ audit/README.md             冻结证据与账本的审计入口
 
 本套件提供描述性技术分析：问题边界、方案机制、成立条件、成熟度、代价、失败模式、共识、争议与弱信号。它**不**提供技术选型建议、推荐组合、统一排行榜、默认架构或上线清单。这里的“通用架构模型”是对现有系统常见模块和数据流的解剖，不是推荐实施方案。
 
-若需复核 v10 的重组来源和已知边界，请读 [方法与范围](reader/method-and-scope.md) 及 [v09→v10 映射](reader/old-to-new-map.md)；仅当某一判断会实质改变阅读结论时，才进入 [人工评审](reader/human-review.md)。
+若需复核 v10 的重组来源和已知边界，请读 [方法与范围](reader/method-and-scope.md)；内部分类到读者结构的映射保存在[审计目录](audit/old-to-new-map.md)，不是阅读前提。仅当某一判断会实质改变阅读结论时，才进入 [人工评审](reader/human-review.md)。

@@ -150,6 +150,49 @@ class ReaderSuiteValidationTests(unittest.TestCase):
 
         self.assertIn("unlinked-deep-page", codes)
 
+    def test_rejects_non_object_branch_package_manifest(self) -> None:
+        temporary, root = self._suite()
+        self.addCleanup(temporary.cleanup)
+        manifest = root / validate_reader_suite.BRANCH_PACKAGE_MANIFEST
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text("[]", encoding="utf-8")
+
+        codes = {finding.code for finding in validate_reader_suite.validate_reader_suite(root)}
+
+        self.assertIn("branch-package-manifest", codes)
+
+    def test_rejects_branch_package_paths_outside_suite(self) -> None:
+        temporary, root = self._suite()
+        self.addCleanup(temporary.cleanup)
+        manifest = root / validate_reader_suite.BRANCH_PACKAGE_MANIFEST
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text(
+            '{"packages":[{"branch":"example","entry":"../outside.md",'
+            '"deep_pages":["reader/mechanisms/example/mechanism.md"]}]}',
+            encoding="utf-8",
+        )
+
+        codes = {finding.code for finding in validate_reader_suite.validate_reader_suite(root)}
+
+        self.assertIn("branch-package-path", codes)
+
+    def test_rejects_deep_page_path_outside_suite(self) -> None:
+        temporary, root = self._suite()
+        self.addCleanup(temporary.cleanup)
+        entry = root / "reader" / "mechanisms" / "example.md"
+        entry.write_text("# Example\n\n[Outside](../../../outside.md)\n", encoding="utf-8")
+        manifest = root / validate_reader_suite.BRANCH_PACKAGE_MANIFEST
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text(
+            '{"packages":[{"branch":"example","entry":"reader/mechanisms/example.md",'
+            '"deep_pages":["../outside.md"]}]}',
+            encoding="utf-8",
+        )
+
+        codes = {finding.code for finding in validate_reader_suite.validate_reader_suite(root)}
+
+        self.assertIn("branch-package-path", codes)
+
 
 if __name__ == "__main__":
     unittest.main()

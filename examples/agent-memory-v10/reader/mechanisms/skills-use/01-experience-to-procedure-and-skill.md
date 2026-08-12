@@ -101,7 +101,7 @@ draft → quarantined → replayed → sandbox-validated
 
 晋升条件可能包括来源多样性、最小成功/失败样本、静态检查、测试通过、允许 effect、人工 approval 或风险等级。`successful=true` 只说明一次 outcome，不足以证明跨任务复用。
 
-可执行工件还要冻结 environment fingerprint：tool/API version、dependency lock、data/schema version、OS/runtime、权限和模型。它们变化后，工件应进入 needs-revalidation，而不是继续以历史成功率排名。
+可执行工件常另存 environment fingerprint：tool/API version、dependency lock、data/schema version、OS/runtime、权限和模型。一类版本化实现会在这些条件变化后把工件转入 `needs-revalidation`，从而避免历史成功率掩盖环境漂移；这描述的是可见控制形态，不代表所有系统已具备该状态。
 
 ## 4. 技能检索：相似任务只是第一道门
 
@@ -115,7 +115,7 @@ draft → quarantined → replayed → sandbox-validated
 - historical success/failure 和反例；
 - composition conflict 与资源预算。
 
-然后才使用 lexical/dense/graph/learned ranker。返回可按 `fit × validation × recency × trust × cost` 排序，但各 component 必须可观察。一个高相似技能若依赖旧 API，应被版本门挡住，而不是靠 reranker 的“新鲜度”碰碰运气。
+在显式条件过滤之后，现有设计才接 lexical/dense/graph/learned ranker。`fit × validation × recency × trust × cost` 是一种可解释的分解方式，其价值在于暴露各 component，而不是给出通用公式。版本门会把依赖旧 API 的高相似技能排除在合法集合之外；只靠 reranker 的“新鲜度”则无法表达这种硬约束。
 
 ## 5. 组合与执行：技能库不是 prompt 片段集合
 

@@ -34,4 +34,6 @@ commit `6464350` 的六篇机制报告已经比 v10 初稿更完整，但仍属�
 
 目标：验证链接、UTF-8、arXiv 来源注册、读者结构、测试和 Git 差异；把分支 package 与输入吸收规则同步回通用 Skill；最后对冻结提交做独立只读复核。
 
-结果：读者套件结构检查覆盖 63 个 Markdown 文件；仓库测试 112 项通过，安装中的个人 Skill 回归测试 104 项通过，`git diff --check` 通过。18 篇深潜均已由专题清单登记并从对应入口直达。`skill-creator` 的 `quick_validate.py` 因当前两个 Python 运行时都缺少 PyYAML 而未执行；本轮没有改动 YAML/frontmatter，改以文件哈希一致性、既有 Skill 测试和结构检查覆盖相关风险。独立复核以候选 commit 与 clean worktree 为身份，不用绿色验证器代替内容判断。
+结果：读者套件结构检查覆盖 63 个 Markdown 文件；仓库测试在本轮扩充到 115 项并通过，安装中的个人 Skill 回归测试 104 项通过，`git diff --check` 通过。18 篇深潜均已由专题清单登记并从对应入口直达。`skill-creator` 的 `quick_validate.py` 因当前两个 Python 运行时都缺少 PyYAML 而未执行；本轮没有改动 YAML/frontmatter，改以文件哈希一致性、既有 Skill 测试和结构检查覆盖相关风险。
+
+首轮独立只读复核确认六个专题都已具有可重建的数据流、实质方案差异、工程边界和机制级研究议程，同时指出三类交付偏差：四处安全/控制文字仍写成架构或行动建议；旧内部分类映射仍位于 `reader/`；专题清单校验器未拒绝非 object 根和越界路径。后续候选将这些内容分别改为描述性设计模式、下沉到 `audit/`，并增加 manifest 根类型与 suite 路径约束及回归测试。复核以冻结 commit 与 clean worktree 为身份，不用绿色验证器代替内容判断。

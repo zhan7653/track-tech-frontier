@@ -103,6 +103,18 @@ def _relative(path: Path, root: Path) -> str:
     return path.relative_to(root).as_posix()
 
 
+def _suite_relative_path(root: Path, value: str) -> Path | None:
+    candidate = Path(value)
+    if candidate.is_absolute():
+        return None
+    resolved = (root / candidate).resolve()
+    try:
+        resolved.relative_to(root)
+    except ValueError:
+        return None
+    return resolved
+
+
 def validate_reader_suite(root: Path) -> list[Finding]:
     root = root.resolve()
     findings: list[Finding] = []
@@ -126,11 +138,18 @@ def validate_reader_suite(root: Path) -> list[Finding]:
         except (UnicodeDecodeError, json.JSONDecodeError) as error:
             findings.append(Finding("branch-package-manifest", BRANCH_PACKAGE_MANIFEST, str(error)))
         else:
-            packages = package_data.get("packages")
-            if not isinstance(packages, list):
+            if not isinstance(package_data, dict):
                 findings.append(
-                    Finding("branch-package-manifest", BRANCH_PACKAGE_MANIFEST, "packages must be an array")
+                    Finding("branch-package-manifest", BRANCH_PACKAGE_MANIFEST, "manifest root must be an object")
                 )
+                packages = None
+            else:
+                packages = package_data.get("packages")
+            if not isinstance(packages, list):
+                if isinstance(package_data, dict):
+                    findings.append(
+                        Finding("branch-package-manifest", BRANCH_PACKAGE_MANIFEST, "packages must be an array")
+                    )
             else:
                 seen_branches: set[str] = set()
                 for index, package in enumerate(packages):
@@ -181,7 +200,16 @@ def validate_reader_suite(root: Path) -> list[Finding]:
                         )
                         continue
 
-                    entry_path = root / entry
+                    entry_path = _suite_relative_path(root, entry)
+                    if entry_path is None:
+                        findings.append(
+                            Finding(
+                                "branch-package-path",
+                                BRANCH_PACKAGE_MANIFEST,
+                                f"{branch}.entry must stay inside the suite: {entry}",
+                            )
+                        )
+                        continue
                     if not entry_path.is_file():
                         findings.append(Finding("missing-branch-entry", entry, f"declared branch entry for {branch}"))
                         continue
@@ -198,7 +226,16 @@ def validate_reader_suite(root: Path) -> list[Finding]:
                         linked_paths.add((entry_path.parent / unquote(parsed.path)).resolve())
 
                     for deep_page in deep_pages:
-                        deep_path = (root / deep_page).resolve()
+                        deep_path = _suite_relative_path(root, deep_page)
+                        if deep_path is None:
+                            findings.append(
+                                Finding(
+                                    "branch-package-path",
+                                    BRANCH_PACKAGE_MANIFEST,
+                                    f"{branch}.deep_pages must stay inside the suite: {deep_page}",
+                                )
+                            )
+                            continue
                         if not deep_path.is_file():
                             findings.append(
                                 Finding("missing-deep-page", deep_page, f"declared deep-dive for {branch} is absent")
