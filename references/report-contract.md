@@ -1,8 +1,7 @@
 # Compatibility Report Contract
 
-The reader-facing contract is now [synthesis-and-deliverables.md](synthesis-and-deliverables.md). Keep `report.md` only as a compatibility index that links the full multi-file suite.
+The reader-facing contract is [synthesis-and-deliverables.md](synthesis-and-deliverables.md). Keep `report.md` as a small compatibility index; do not put the research result or new technical conclusions in it.
 
-Do not place the complete research result in this file. Include the topic, as-of date, run status, and relative links to the README, executive report, field tree, landscape synthesis, history, consensus/controversies, GitHub radar, benchmark map, method/limitations, cluster reports, and selected project reports.
+Include the topic, as-of date, run status, and relative links to the top-level README, `reader/README.md`, overview, general architecture model, solution landscape, scenario views, trends, GitHub radar, cross-cutting reports, consensus/open questions, method/scope, important mechanism reports, selected project reports, and audit entry.
 
-Technical claims belong in the manifested reader files and follow the deep evidence and synthesis-marker contracts. A compatibility index must not introduce new technical conclusions.
-
+Use compatibility aliases for legacy filenames only when a prior bundle or validator needs them. Do not let legacy terms such as “executive decision” imply selection advice. Technical claims belong in manifested reader files; audit IDs and detailed process records belong in the audit layer or unobtrusive source machinery.

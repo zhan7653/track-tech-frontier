@@ -1,29 +1,29 @@
 ---
 name: track-tech-frontier
-description: Build comprehensive, current technology-frontier research from a broad paper and GitHub corpus, then cluster the field, investigate trends, deeply analyze every important cluster, weigh consensus and contradictions, and deliver a multi-file evidence-backed research suite. Use for state-of-the-art reviews, technology landscapes, emerging-trend tracking, repository radars, benchmark maps, or updates to an earlier research snapshot; do not use for a quick single-fact lookup.
+description: Build a comprehensive, current, reader-first technology-frontier research suite from papers, GitHub, benchmarks, and other primary evidence. Use for state-of-the-art reviews, technology landscapes, emerging-trend tracking, repository radars, benchmark maps, or updates to an earlier research snapshot; do not use for a quick single-fact lookup.
 ---
 
 # Track Tech Frontier
 
-Produce the best defensible research result, not the cheapest acceptable memo. Separate high-recall discovery from deep verification, and separate both from synthesis. A fully cited list of projects is not a research report.
+Produce an evidence-backed **reader-facing explanation of a field**, not an inventory of sources or an audit ledger. The default reader is technically literate but new to the specialty. Its first reading should explain the real problem, the field's major mechanisms, how systems work, meaningful differences, recent movement, and unresolved uncertainty without requiring internal IDs or research-process knowledge.
 
 ## Choose the run mode
 
-- Use **snapshot** by default and build the field again from broad discovery.
-- Use **update** when an earlier bundle exists; re-run recent discovery, recheck mutable sources, update the field graph, and rewrite the full current synthesis plus a delta.
-- Use **rapid** only when the user explicitly requests a smaller result. Disclose every relaxed breadth, depth, freshness, or deliverable gate and never call it comprehensive.
+- Use **snapshot** by default for a current field map.
+- Use **update** when an earlier bundle exists; preserve the earlier bundle, refresh the current frontier, and rewrite affected reader material plus a dated delta.
+- Use **rapid** only when the user explicitly requests a smaller result. State every relaxed breadth, freshness, depth, or deliverable condition; do not call it comprehensive.
 
-Use the `comprehensive` profile for snapshot and update runs. Cost or runtime is not a stopping condition unless the user explicitly sets one.
+Use the `comprehensive` profile for snapshot and update runs. Cost or runtime is not a stopping condition unless the user sets one.
 
 Read these references before acting:
 
-- [research-architecture.md](references/research-architecture.md) for the three-level corpus, supervisor/work-unit model, clustering, deep research, and saturation;
-- [breadth-and-trends.md](references/breadth-and-trends.md) for paper/GitHub recall and freshness;
+- [research-architecture.md](references/research-architecture.md) for corpus levels, field mapping, mechanism branches, and stopping;
+- [breadth-and-trends.md](references/breadth-and-trends.md) for broad paper/GitHub discovery and current windows;
 - [search-routing.md](references/search-routing.md) for lane routing;
-- [source-and-evidence.md](references/source-and-evidence.md) for deep evidence and quality cards;
+- [source-and-evidence.md](references/source-and-evidence.md) for deep evidence and high-risk facts;
 - [synthesis-and-deliverables.md](references/synthesis-and-deliverables.md) before clustering and drafting;
 - [evaluation-gates.md](references/evaluation-gates.md) before declaring completion;
-- [reference-research-behaviors.md](references/reference-research-behaviors.md) for direct behavioral comparison with the inspected systems;
+- [reference-research-behaviors.md](references/reference-research-behaviors.md) for behavioral comparison;
 - [update-mode.md](references/update-mode.md) for an update.
 
 ## Initialize research state before discovery
@@ -38,75 +38,69 @@ For an update, also pass `--mode update --previous <prior-bundle>`. Read the gen
 
 ## Run the research program
 
-### 1. Freeze the user contract and run a pilot
+### 1. Freeze the reader contract and run a pilot
 
-Freeze the user's goal, audience, scope, named alternatives, required decisions, and time boundary. Build aliases, predecessors, acronym collisions, and adjacent concepts. Classify the evidence ecology as research-, standards-, implementation-, product-led, or mixed.
+Record the user's topic, audience, scope, named alternatives, time boundary, and non-negotiable questions. Define the reader's level and the default entry point. Do not infer a request for a recommendation, a ranking, a preferred architecture, deployment guidance, or an implementation checklist.
 
-Run a small multi-lane pilot only to estimate field scale and expose likely clusters. Then declare run-specific breadth, freshness, important-cluster, deep-selection, saturation, and deliverable targets in `research_plan.json`. These are calibration values, not universal quality claims. Do not make them artificially small to pass validation.
+Run a small multi-lane pilot to estimate field scale and reveal candidate mechanism branches. Declare calibrated breadth, freshness, deep-selection, saturation, and deliverable targets in `research_plan.json`; these guide research but never substitute for reader comprehension.
 
-### 2. Create perspectives and work units
+### 2. Discover broadly, then map the field
 
-Generate multiple stakeholder and technical perspectives before finalizing the map. Create independent work units for paper recall, GitHub/release discovery, benchmarks, negative evidence, products/standards/adoption when applicable, and every important cluster. Use parallel agents or equivalent isolated branches when available.
+Search independent paper, GitHub, benchmark, standards/product, adoption, and negative-evidence routes where relevant. Focus on current practice, the rolling 12-month frontier, and the rolling 90-day weak-signal window. Include older work only when it is necessary to explain a current route; do not create mandatory historical or foundational quotas.
 
-Each work unit must return discovered items, mapped entities, cluster proposals, primary sources, exclusions, contradictions, open gaps, and follow-up queries. The supervisor merges identities and evidence, not prose summaries.
+Keep exact queries, source snapshots, dates, and screening rationale. Separate discovered, mapped, and deep-verified entities. Discovery metadata and weak signals guide follow-up but cannot support reader-facing technical conclusions.
 
-### 3. Build the discovered corpus for recall
+Derive the reader map from the broad mapped corpus. Organize it as:
 
-Search multiple providers and query families across foundational, prior-frontier, rolling 12-month, and rolling 90-day windows. Keep exact query/request, provider, cursor/page, result count, UTC time, and normalized result snapshot. Preserve paper and GitHub lanes independently, plus benchmark, standards/product, adoption, and adversarial lanes when relevant.
+```text
+technology mechanisms (primary deep branches)
+→ application scenarios (cross-branch views)
+→ selected GitHub engineering cases
+```
 
-Do not require deep source cards at this level. Discovery metadata and weak signals may enter the corpus but may not support technical conclusions.
+Mechanism branches describe the system lifecycle: objects/scope; writing and extraction; representation, storage, and indexing; updating, consolidation, conflicts, and forgetting; retrieval/ranking/context construction; and use, feedback, or learned skills. Merge, split, or rename branches for technical coherence. Treat evaluation, security/privacy/permissions, cost/reliability/observability, and interoperability/integration as cross-cutting concerns. Cover adjacent technologies only as boundaries or alternatives unless they truly perform the field's core lifecycle role.
 
-### 4. Map, deduplicate, and cluster
+### 3. Continue breadth until the map is useful and stable
 
-Canonicalize entities, preserve aliases, and connect paper↔repository↔dataset↔benchmark↔product relations with explicit link evidence. Promote relevant entities to `mapped`, assign primary/secondary/bridge cluster memberships, and retain screening rationales.
+Use gap-directed expansion by mechanism branch, time window, citation, organization, repository topic, benchmark, and adversarial route. Treat the cluster × lane × time-window matrix as a blind-spot diagnostic, not a quota.
 
-Derive a field DAG from the mapped corpus. Iterate cluster merge/split and boundary decisions. Build the reader view as problem → mechanism/architecture → implementation pattern → evaluation/application. Keep unmapped high-signal entities visible.
+Stop expansion only when further likely searches no longer create a first-order mechanism branch, change a material boundary, uncover a representative current implementation, or alter a qualified conclusion. Make material gaps and weak signals visible. Do not claim exhaustive recall.
 
-### 5. Continue breadth until saturation
+### 4. Build the current-trend and GitHub radar
 
-Use cluster-specific, recent-window, citation, organization, repository-topic, benchmark, and adversarial expansions. Track information gain at field and important-cluster level: new first-order clusters, changed boundaries, important recent entities, credible new stances, and decision-changing evidence. Continue while a follow-up can materially change the map or a conclusion.
+Put new work back into its mechanism branch rather than isolating it as a list of news. Describe current practice, substantiate recent 12-month changes, and label recent 90-day items as weak signals until evidence supports more. Treat stars, rankings, or a single snapshot only as attention/discovery signals; require dated observations for growth claims.
 
-Use the cluster × lane × time-window matrix as a diagnostic for blind spots, not as a Cartesian-product quota. Report aggregate coverage and the material missing cells. Require replayable scope-level search and saturation evidence only when it protects a decision-critical conclusion, a disputed boundary, or a strong bounded-absence claim. For ordinary map completeness, an honest search log, representative sampling, and explicit blind spots are sufficient.
+Use two GitHub layers: a broad candidate radar for coverage and recency, followed by a small, information-rich set of genuine engineering deep dives. Select deep dives for distinctive architecture, implementation relevance, current activity, or counterexample value—not a fixed count or star rank.
 
-Never stop merely because three passes ran, a source count was reached, or deep verification is expensive.
+### 5. Deeply research important mechanism branches and projects
 
-### 6. Build the trend radar
+For each important mechanism branch, first synthesize its solution families and their differences, then deepen the evidence that makes the comparison useful. Explain the problem and boundary, how each family works, architecture/algorithm/data flow, important papers and implementations, maturity, costs, failure modes, consensus, counterevidence, and unresolved questions. Allocate space by importance, novelty, controversy, and engineering value; do not force a uniform template or source count.
 
-Collect dated repository observations and recent paper/release signals. Separate foundational, established-active, new/accelerating, and watchlist items. Require at least two observations or a replayable event history before claiming growth or acceleration. Treat stars and rankings only as discovery signals.
+Application scenarios are cross-branch views: explain which mechanisms are combined, replaced, or omitted and what constraints become salient. They are not recommendations. Promote a scenario to a primary mechanism branch only when it is itself a distinct technical route.
 
-Investigate every material signal and mark it confirmed, qualified, dismissed, or unresolved.
+For a selected repository, inspect pinned code and documentation closely enough to explain its actual components, write/store/index/retrieve/update/use data flow, dependencies and services, interfaces and integration boundaries, maintenance signals, and project-specific failure modes. Distinguish visible code facts, maintainer assertions, execution results, and unverified risks. Run code only if the result could change a material conclusion.
 
-### 7. Deeply research every important cluster
+### 6. Verify in layers and synthesize the reader suite
 
-Select a stratified deep set: foundations, current work, canonical or trend-triggered repositories, benchmark evidence, and strongest negative/contradictory work. Apply [source-and-evidence.md](references/source-and-evidence.md) only now at full strength.
+Apply strict direct evidence and precise locators to core conclusions, critical numbers, versions, comparisons, security/adoption facts, and consequential limitations. Use conservative citations and logical coherence for ordinary explanatory prose. Keep claims, evidence, screening, and saturation ledgers for traceability, but keep their IDs and process language out of reader prose.
 
-For each important cluster, produce a meaningful standalone analysis, a stratified selection of high-quality evidence, and an explicit gap list. Allocate depth in proportion to importance, novelty, controversy, and decision value; do not force equal detail into every cluster. Give repository architecture, implementation, release, maintenance, integration, license, and adoption evidence the same attention as papers. Selected engineering deep dives should have reciprocal `repository_engineering_profiles.jsonl` records with fixed-version component relationships, data flow, dependencies/services, constraints, maintenance boundaries, failure modes, adoption boundary, and useful locators. Running setup or tests is optional and reserved for cases where execution can change a material judgment.
+Draft the reader suite only after mapping and deep packets exist. Lead with the field answer, not corpus counts or internal taxonomy. Use the report contract to make the main report independently readable, present a descriptive **general architecture model** rather than a recommended architecture, and give each important mechanism branch a clear solution-family comparison. Describe applicability conditions, maturity, tradeoffs, failure modes, consensus, disputes, and uncertainty without telling the reader what to choose or deploy.
 
-### 8. Build claims, propositions, and consensus
+Complete the first reader-ready suite before creating an optional human-review list. Reserve that list for high-impact uncertainty, conflicting evidence, or genuinely subjective representative choices; never leave a branch as a placeholder awaiting approval.
 
-Register decision-critical external facts—numbers, versions, comparisons, security claims, current status, and consequential limitations—as atomic claims with precise evidence joins and semantic checks. Lower-risk descriptive facts may use paragraph-level primary citations when the wording is conservative and traceable. Then build cross-source propositions with supporting and opposing evidence, independent-group awareness, scoped assessments, minority views, unknowns, contradictions, tradeoffs, and causal/temporal relations. Consider directness, independence, publication/reproduction, comparability, recency, artifacts, negative evidence, and applicability conditions; never count links as votes.
+### 7. Audit the actual result
 
-### 9. Produce the multi-file synthesis
-
-Follow [synthesis-and-deliverables.md](references/synthesis-and-deliverables.md). Generate field tree, landscape, timeline, consensus/controversies, GitHub radar, benchmark map, important-cluster reports, and selected repository deep dives before the executive report. Organize writing around problems, mechanisms, architectures, implementations, and decisions—not source introductions.
-
-Allow coherent paragraphs to combine multiple audited claims. Use synthesis records and markers for analytical moves. Do not introduce source facts during drafting unless they first enter the deep evidence ledger.
-
-### 10. Audit the actual result
-
-Run the outcome gates from [evaluation-gates.md](references/evaluation-gates.md): breadth, freshness, field structure, selective depth, key-evidence reliability, and synthesis quality. These outcome gates are non-compensating, but optional bookkeeping does not become a hard gate by itself. Compare the output behavior with the reference research systems named in the method record: perspective expansion, gap-directed follow-up, supervisor/worker decomposition, compression, and final synthesis must be visible in the artifacts, not only claimed in a checklist.
-
-Run and save both deterministic validations:
+Run the outcome gates in [evaluation-gates.md](references/evaluation-gates.md) and both deterministic validations:
 
 ```text
 python <skill-dir>/scripts/research_bundle.py validate --root <bundle-dir>
 python <skill-dir>/scripts/research_bundle.py validate --root <bundle-dir> --strict
 ```
 
-Fix every real error. Review warnings by materiality and preserve honest advisories. Validate reader-file hashes, relative links, important-cluster reports, registered source/claim references, GitHub trend calculations, and the internal consistency of any optional detailed audit records that are supplied. A schema pass proves internal consistency only; the decisive test is whether the reader suite is broad, current, analytical, technically useful, and appropriately qualified.
+Fix real errors and preserve honest advisories. A schema pass, source count, claim count, file count, or green validator alone cannot establish completion. The decisive test is whether a new technical reader can understand the field from the default entry, independently understand each important mechanism branch, and trace key claims without audit machinery interrupting the narrative.
 
 ## Deliver
 
-Save the complete suite under `frontier-research/<topic-slug>/<as-of-date>/` unless the user requests another location. Return links to the README, executive report, field tree, landscape, GitHub radar, benchmark map, consensus report, and cluster directory. Report all three corpus counts, important clusters, recent-window coverage, validation results, independent quality-gate results, material unresolved gaps, and artifact hashes.
+Save the suite under `frontier-research/<topic-slug>/<as-of-date>/` unless the user requests another location. Return links to the reader entry, general architecture model, mechanism landscape, scenario views, current-trend radar, evidence/limitations material, branch reports, and selected project reports. Summarize recent-window coverage, verification status, important unresolved gaps, and any optional human-review questions.
 
-Return the suite in the user's language while preserving original technical and project names. Do not modify product source code or remote systems while researching.
+Return in the user's language while preserving original technical and project names. Do not modify product source code or remote systems while researching.

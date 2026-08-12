@@ -1,112 +1,80 @@
 # Research Architecture
 
-Use this architecture for every full snapshot or update. Optimize for the quality of the final research product, not for minimum runtime, token use, or source count.
+## Purpose and populations
 
-## Three corpus levels
+Optimize a full snapshot or update for the quality of the finished reader suite. Keep three populations separate:
 
-Keep these populations separate throughout the run:
+1. **Discovered** — high-recall metadata and weak signals that guide searching but cannot support technical conclusions.
+2. **Mapped** — deduplicated, identity-checked entities with dates, roles, branch memberships, and screening rationale. Use these to map the field and describe coverage.
+3. **Deep-verified** — selected papers, repositories, benchmarks, standards, products, and negative evidence with the evidence required for reader-facing conclusions.
 
-1. **Discovered** — high-recall metadata and weak signals. Search results, paper metadata, repository metadata, and trend leads may enter here without deep verification. They may shape follow-up searches but cannot support technical conclusions.
-2. **Mapped** — deduplicated, identity-checked entities assigned to one or more clusters with dates, roles, and screening rationales. Use this population to build the field map and measure breadth or freshness. Do not use mapped-only metadata to support high-risk claims.
-3. **Deep-verified** — selected papers, repositories, benchmarks, standards, products, and negative evidence that pass the source, quality-card, claim, evidence, and semantic-audit contracts. Only this level may support reader-facing technical conclusions.
+Do not hide a discovered or mapped item merely because it was not deeply verified. Keep the three populations in the audit layer; reader prose should use only the degree of process detail needed to interpret uncertainty.
 
-Never hide a discovered or mapped item merely because it was not selected for deep verification. Report all three population sizes and their date, lane, and cluster distributions.
+## Reader-first field structure
 
-## Supervisor and work units
+Build a readable field map before drafting. Its primary branches are technical mechanisms, not source types, product categories, or application names:
 
-For a full run, act as a research supervisor. Create independent work units for:
+```text
+mechanism branches
+→ scenario views that cross those branches
+→ selected repository engineering cases
+```
 
-- paper recall and citation expansion;
-- GitHub discovery and repository momentum;
-- benchmarks and comparability;
-- products, standards, or adoption when relevant;
-- negative evidence, security, failure, and lock-in;
-- each important field cluster;
-- independent synthesis and final audit.
+Use the following lifecycle as a starting point, not a fixed taxonomy:
 
-Use parallel agents or equivalent isolated research branches when available. Give each branch a scoped question, evidence lanes, time windows, expected artifacts, and completion signal. Require every branch to return its sources, exclusions, cluster suggestions, contradictions, and remaining gaps. Do not ask a worker merely to summarize a list of sources.
+```text
+memory objects and scope
+→ writing, extraction, and formation
+→ representation, storage, and indexing
+→ updating, consolidation, conflict handling, and forgetting
+→ retrieval, ranking, and context construction
+→ use, feedback, and experience/skill learning
+```
+
+Security, privacy, authorization, governance, evaluation, cost, reliability, observability, interoperability, and integration cut across the lifecycle. Merge, split, or rename branches only when the resulting mechanism is coherent. State each branch's inclusion, exclusion, relationships, implementation patterns, solution families, maturity, tradeoffs, failure modes, and evidence gaps.
+
+Use scenarios—such as personal assistants, coding agents, multi-agent systems, world-state systems, and embodied or multimodal systems—to show how mechanisms combine, replace, or disappear under different constraints. Do not repeat the mechanism explanation or convert a scenario view into advice. Make it a primary branch only if it introduces an independent technical route.
+
+Long context, ordinary RAG, parameter memory, continual learning, checkpoints, and workflow state are adjacent by default. Mention them as boundaries or alternatives; include them in the subject only when they perform the field's core cross-session state, lifecycle, retrieval/use, or evolution role.
 
 ## Workflow
 
-### 1. Freeze the user contract
+### 1. Freeze the research and reader contract
 
-Freeze only the user's goal, audience, scope, named alternatives, time boundary, and non-negotiable questions. Permit derived research questions to grow from discovery and clustering. Record every derived question with its origin and parent requirement.
+Record the user goal, intended reader, scope, named alternatives, time boundary, and non-negotiable questions. Let research questions evolve from the map. Record their origin and parent requirement.
 
-Define at least four time bands when the ecology permits:
+Prioritize current practice, the rolling 12-month frontier, and the rolling 90-day weak-signal window. Add older work only when it is necessary to explain a present route, claim, or contrast. Do not require a foundations section or a historical quota.
 
-- foundational work before the current frontier window;
-- established recent work;
-- the current rolling 12-month frontier;
-- the current rolling 90-day weak-signal window.
+After a small multi-lane pilot, declare calibrated breadth, freshness, importance, deep-selection, saturation, and deliverable targets in `research_plan.json`. They are planning signals, not proof that the reader outcome is complete.
 
-Declare breadth and freshness targets in `research_plan.json` after a small pilot query set reveals the field's scale. Treat targets as calibration for this run, not universal truth. Missing a declared target prevents a comprehensive claim unless the run documents credible ecosystem scarcity.
+### 2. Discover broadly and map carefully
 
-### 2. Discover broadly
+Run independent paper, GitHub, benchmark, product/standard, adoption, and negative-evidence routes as the topic warrants. Preserve exact queries, pages/cursors, snapshots, timestamps, and result counts before deduplicating.
 
-Run independent paper, GitHub, benchmark, standard/product, adoption, and negative-evidence lanes across all time bands. Expand aliases, surveys, references, forward citations, author and organization pages, benchmark names, paper titles, repository topics, releases, renamed predecessors, issues, and adjacent terminology.
+Connect paper ↔ repository ↔ dataset ↔ benchmark ↔ product relations. Map from the broad mapped corpus rather than a deep shortlist. Keep bridge and high-signal unmapped entities visible. Maintain a branch × lane × time-window matrix only to diagnose blind spots; do not make every cell an independent quota.
 
-Preserve raw or normalized result snapshots, exact queries, provider, page/cursor, execution time, and result count. Deduplicate only after recording discovery occurrences.
+### 3. Investigate current signals
 
-Maintain a cluster × lane × time-window matrix as a diagnostic view. Use it to reveal blind spots and report aggregate coverage; do not turn every cell into a mandatory independent research project. For decision-critical gaps, disputed boundaries, or bounded-absence conclusions, attach a replayable proof connecting the actual query, screening, mapped identity or scarcity audit, and conclusion. Treat future-dated metadata as quarantine, not current coverage.
+Separate attention/momentum, engineering maturity, and verified adoption. A single repository observation can establish only an observed state, not growth. End each material trend signal as `confirmed`, `qualified`, `dismissed`, or `unresolved` after follow-up.
 
-Do not stop because a bibliography looks large or a fixed pass count was reached. Stop when the field map and important-cluster conclusions have stabilized, recent signals have been investigated, and remaining material gaps are explicit.
+### 4. Deepen branches, scenarios, and projects
 
-### 3. Map the field
+Start each important mechanism branch with a solution-family synthesis, then select evidence that clarifies the mechanisms, comparisons, current movement, counterevidence, and open questions. Allocate effort by importance, novelty, controversy, and engineering value rather than equal source counts or lengths.
 
-Normalize identities and connect paper↔repository↔dataset↔benchmark↔product relations. Cluster from the broad mapped corpus, not from the deep shortlist. Use a DAG internally and expose a readable problem → mechanism/architecture → implementation → evaluation tree.
+Use a broad GitHub candidate radar followed by only a few genuine project reports. A project report requires a fixed-version inspection of component relationships, lifecycle data flow, dependencies/services, interfaces, integration and deployment constraints, maintenance boundaries, failure modes, and the distinction between code-visible facts, maintainer claims, executed results, and unknown risks. A directory list or README summary is a bounded project card, not a deep dive.
 
-Every important cluster card must state:
+### 5. Build descriptive propositions
 
-- the problem and boundary;
-- its main mechanism and architecture patterns;
-- implementation patterns and representative repositories;
-- evaluation tasks and benchmarks;
-- maturity, tradeoffs, and failure modes;
-- recent changes and trend signals;
-- consensus, disputes, and unknowns;
-- adjacent or overlapping clusters.
+Assess scoped propositions using independent evidence groups, directness, publication/reproduction status, protocol comparability, recency, artifacts, negative evidence, and applicability conditions. Classify them as `dominant`, `mixed`, `disputed`, or `evidence-thin`. Keep verified events, source-asserted influence, report inferences, and forecasts distinct.
 
-Iterate merge/split decisions and preserve the rationale. Keep `bridge` and `unmapped` entities visible rather than forcing a misleading category.
-
-### 4. Investigate trends
-
-Separate popularity/momentum, engineering maturity, and verified adoption.
-
-- A single GitHub snapshot can establish current stars, activity, or release state only.
-- Claim star growth or acceleration only from at least two dated observations or a replayable event history.
-- Use created/pushed/released windows, contributor activity, issue/PR health, and paper linkage to qualify attention signals.
-- Treat stars and trend rank as investigation triggers, never as evidence of technical quality, performance, or adoption.
-
-Every material trend signal must receive a follow-up and end as `confirmed`, `qualified`, `dismissed`, or `unresolved`.
-
-### 5. Select and run deep research
-
-Select a stratified deep set across the field and within decision-important clusters: foundational evidence, current work, canonical or accelerating repositories, benchmark evidence, and the strongest negative or contradictory result. Give repositories equal status with papers for implementation-led questions. Allocate effort by importance and uncertainty rather than equalizing source counts or report length.
-
-Produce a standalone cluster report and explicit gap list. Recurse on material gaps until the cluster reaches its stop condition. A project deep dive is required for decision-critical, architecture-representative, or trend-triggered repositories, not for every repository mechanically.
-
-### 6. Build propositions and consensus
-
-Abstract cross-source questions into scoped propositions. Record each independent evidence group's stance, directness, publication/reproduction status, protocol comparability, recency, and limitations. Classify the result as `dominant`, `mixed`, `disputed`, or `evidence-thin`; never count links as votes.
-
-Build longitudinal and causal relations as `precedes`, `enables`, `extends`, `replaces`, `complements`, `competes`, or `contradicts`. Distinguish verified events, source-asserted influence, report inference, and forecast. Temporal adjacency alone is not causality.
-
-### 7. Synthesize, then write the executive report
-
-Generate the field map, landscape, timeline, consensus, GitHub radar, benchmark map, and cluster reports before the executive report. The executive writer must synthesize those artifacts and may not introduce new facts directly from source cards.
+Describe what a route solves, the conditions in which it holds, maturity, cost, failure modes, consensus, disputes, and weak signals. Do not turn those descriptions into a ranking, a preferred configuration, deployment instructions, or an implementation checklist.
 
 ## Saturation and stopping
 
-Review saturation at field level and for each important cluster. Add lane-, window-, or perspective-specific records when that scope contains a material gap or supports a consequential absence claim. Continue when a new query can plausibly:
+Continue a scope while a credible follow-up could reveal a first-order branch, change a material boundary, identify a representative current implementation, add an independent opposing stance, or alter a qualified conclusion. Materialize expansion cycles affecting the map, an important branch, a high-impact proposition, or a consequential bounded-absence claim.
 
-- discover a new first-order cluster or change a cluster boundary;
-- close a user-required lane or recent window;
-- investigate a material trend signal;
-- add a credible opposing stance or independent reproduction;
-- change a decision-relevant conclusion.
+Stop ordinary discovery when the map and important branch conclusions stabilize and remaining gaps are explicit. For a consequential absence claim or disputed scope, use repeated targeted no-material cycles and preserve their query evidence. Cost or runtime can force a clearly marked incomplete result; it never proves coverage.
 
-Stop a scope only after consecutive expansion cycles yield no material new cluster, boundary, stance, representative implementation, or conclusion change and all remaining gaps are explicit. Stop the whole run only when all important clusters have deep packets, cross-cluster conflicts are resolved or preserved, and the reader-facing artifacts agree.
+## Writing order and review
 
-Materialize expansion cycles that affect the field map, an important cluster, a high-impact proposition, or a strong bounded-absence conclusion. Each event should identify the actual queries and whether the boundary, stance, representative set, or material conclusion changed. Two consecutive targeted no-material cycles are the recommended standard for a consequential bounded-absence claim; ordinary stopping may instead use transparent yield summaries and explicit residual gaps.
-
-Runtime or cost exhaustion may force a disclosed incomplete result; it never proves comprehensive coverage.
+Write the independently readable main report and complete branch and project reports from the map and deep packets. Only then produce an optional, small human-review list for high-impact uncertainty, evidence conflict, or genuinely subjective representative choices. A branch without human review still needs a complete, qualified first-version conclusion.

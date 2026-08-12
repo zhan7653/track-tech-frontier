@@ -1,6 +1,6 @@
 # Breadth Discovery and Trend Tracking
 
-Use this reference during discovery, mapping, and freshness analysis. Prefer official APIs and primary indexes; save exact requests and dated snapshots because live results drift.
+Use this reference during discovery, mapping, and freshness analysis. Prefer official APIs and primary indexes; save exact requests and dated snapshots because live results drift. Breadth exists to support a reader-first mechanism map, not to create a historical bibliography.
 
 ## Paper discovery
 
@@ -39,14 +39,13 @@ Never infer star velocity from a single cumulative count. Calculate velocity or 
 
 ## Time windows
 
-Always include explicit date-window discovery. A full frontier run normally inspects:
+Always include explicit date-window discovery. A full frontier run normally prioritizes:
 
 - the rolling 90-day weak-signal window;
 - the rolling 12-month frontier window;
-- the preceding 12–24 months;
-- foundational work before those windows.
+- enough pre-frontier material to explain current mechanism branches when necessary.
 
-Adjust the windows when the field moves more slowly or the user specifies another horizon, but record the choice before the breadth phase. Report unknown dates in denominators rather than silently dropping them.
+Do not create a mandatory foundations or history lane. Adjust the windows when the field moves more slowly or the user specifies another horizon, but record the choice before the breadth phase. Report unknown dates in denominators rather than silently dropping them.
 
 Provider metadata can be future-dated, incomplete, or internally inconsistent. Quarantine post-cutoff publication metadata in an explicit future/invalid bucket and screen it separately; never count it as current or recent evidence. Preserve failed, rate-limited, malformed, and superseded queries with their exact request and limitation so the apparent recall is not overstated.
 
@@ -55,7 +54,7 @@ Provider metadata can be future-dated, incomplete, or internally inconsistent. Q
 Screen in two steps:
 
 1. **Map promotion:** verify identity, relevance, date, item type, cluster membership, and why the item changes the map or fills a lane.
-2. **Deep promotion:** select for cluster importance, technical centrality, recent momentum, decision impact, evidence quality, independent contradiction, benchmark role, or implementation relevance.
+2. **Deep promotion:** select for mechanism-branch importance, technical centrality, current relevance, recent momentum, evidence quality, independent contradiction, benchmark role, or implementation relevance.
 
 Do not use a single quality score to collapse distinct dimensions. Preserve publication status, source directness, recency, reproducibility, code/data availability, independence, engineering maturity, and adoption separately.
 
@@ -83,4 +82,4 @@ Report freshness independently from general quality:
 - material trend signals investigated and unresolved;
 - current product/release/standard status checked as of the run date.
 
-Foundational evidence cannot compensate for a stale frontier window. Conversely, a new preprint or high-growth repository is a signal, not a mature conclusion.
+Older explanatory evidence cannot compensate for a stale frontier window. Conversely, a new preprint or high-growth repository is a signal, not a mature conclusion.
