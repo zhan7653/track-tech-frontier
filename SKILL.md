@@ -74,7 +74,9 @@ Use two GitHub layers: a broad candidate radar for coverage and recency, followe
 
 ### 5. Deeply research important mechanism branches and projects
 
-For each important mechanism branch, first synthesize its solution families and their differences, then deepen the evidence that makes the comparison useful. Explain the problem and boundary, how each family works, architecture/algorithm/data flow, important papers and implementations, maturity, costs, failure modes, consensus, counterevidence, and unresolved questions. Allocate space by importance, novelty, controversy, and engineering value; do not force a uniform template or source count.
+For each important mechanism branch, first synthesize its solution families and their differences, then **open each major family far enough that a reader can reconstruct how it works**. Explain its state model, write/manage/read/use steps, algorithms or control decisions, concrete engineering shape, applicability conditions, shifted costs, and characteristic failures. Connect representative papers and repositories to those mechanics instead of summarizing them one by one. End with a concrete recent research agenda: name which layer current work is changing, why earlier designs are insufficient, and which missing mechanism or experiment blocks the next conclusion. A comparison table plus a few summary paragraphs is an outline, not a deep report.
+
+Allocate space by importance, novelty, controversy, and engineering value; do not force a uniform template, source count, or length. However, hard-fail an important branch when its major families remain names with one-paragraph descriptions, when a generic diagram substitutes for family-specific data flows, or when “recent work is active” substitutes for explaining what current research is trying to solve.
 
 Application scenarios are cross-branch views: explain which mechanisms are combined, replaced, or omitted and what constraints become salient. They are not recommendations. Promote a scenario to a primary mechanism branch only when it is itself a distinct technical route.
 

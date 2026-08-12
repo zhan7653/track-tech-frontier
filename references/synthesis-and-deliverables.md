@@ -44,11 +44,14 @@ Organize each important report around a problem and its solution families, not a
 - the problem, a concrete motivating situation, and the boundary;
 - why a simple alternative does not cover the whole problem;
 - the main solution families, how they work, and their architecture, algorithms, data flow, and engineering patterns;
+- a substantive internal walkthrough of every major family: state representation, write/manage/read/use path, decision logic, concrete implementation shape, and where cost or correctness moves;
 - a clear comparison of families—table or an equally legible synthesis—covering what they solve, strengths, conditions, maturity, costs, and failure modes;
 - representative papers, repositories, benchmarks, and negative evidence as evidence and examples, with why they matter;
 - current mainstream practice, 12-month changes, and 90-day weak signals;
 - scoped consensus, counterevidence, disputes, and a qualified judgment of evidence strength and maturity;
 - unresolved questions explained as: what is unknown, why it remains unknown, what understanding it limits, and what evidence is missing.
+
+The comparison is the index to the analysis, not the analysis itself. After reading the report, a technically literate newcomer must be able to explain how several major families operate internally and what current research is changing in each. Reject a branch that only names families, gives each one a short paragraph, presents a generic lifecycle diagram without family-specific mechanics, or turns the recent frontier into a list of paper titles.
 
 State applicability conditions descriptively. Do not tell the reader which route to select, provide a deployment path, produce an implementation checklist, or rank routes as winners.
 

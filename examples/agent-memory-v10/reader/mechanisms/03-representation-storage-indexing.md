@@ -21,6 +21,44 @@
 
 这些路线不是“vector 对 graph”的二选一。混合系统常让关系库或日志承担权威版本，让向量、全文和图结构分别提供候选；真正需要检查的是来源、作用域、时间和版本是否在投影到上下文时仍然存在。
 
+## 六种底座的内部机制与数据流
+
+### 1. 追加日志与关系型状态：先保证可恢复的事实边界
+
+日志路线先为每次写入分配 revision/sequence，保存 payload、source、scope、time 和 operation；关系表再物化 current view、history 和对象关系。更新不是覆盖原行，而是 append revision 并改变“当前”指针。WAL、transaction 和 schema migration 解决的是原子性与恢复；全文/字段索引处理精确 ID、路径、日期和过滤。
+
+这类底座对审计、版本和删除语义最清楚，却不会自动理解语义相似或关系依赖。`Sibyl-Memory` 的固定代码检查显示 per-tenant SQLite、JSON/FTS5 与 rebuild 逻辑是一种 local-first 形状；`scope-recall-hermes` 让 SQLite journal 作为权威，LanceDB/PGVector 成为可替换 companion。工程重点是 commit watermark：读者要知道某个索引已追到哪个 revision，而不是假设所有副本瞬时一致。
+
+### 2. 向量/块式底座：把语义访问变成近邻搜索
+
+向量路线将 chunk、摘要或事实映射为 embedding，写入 ANN 结构；查询也嵌入后按 cosine/dot-product/L2 找近邻。HNSW 用多层小世界图近似搜索，IVF 先选粗粒度桶，磁盘型索引则在内存和 I/O 间折中。metadata filter 可以在 ANN 前缩小集合，也可能在 ANN 后过滤；后过滤若删掉大部分 top-k，会造成“库里有，但合法候选没进入结果”的 dilution。
+
+它适合语言改写和大规模候选生成，但 embedding 没有天然的时间、否定、主体或版本语义。更新模型或 embedding 版本后还要重嵌；删除可能只留下 tombstone；同一个 API 对不同后端的 filter、hybrid 和 consistency 能力并不相同。因而向量索引应返回 candidate + distance + index version + object revision，而不是被当作 truth store。
+
+### 3. 混合索引：多路召回，再做可解释融合
+
+混合路线通常并行运行 BM25/FTS、dense ANN、metadata/entity filter，有时再加 temporal decay，然后用 Reciprocal Rank Fusion、加权分数或 reranker 合并。RRF 的典型形式是 `score(d)=Σ 1/(k+rank_i(d))`，优点是不要求各路分数同量纲；学习型 reranker 能看 query-document 对，却增加模型调用和尾延迟。
+
+`Mem0` 公开 semantic、BM25、entity 与 temporal signal，`SimpleMem` 组合 semantic、lexical、structured view，`causal-memory` 则把 RRF 与 spreading activation 结合。真正的实现问题是候选去重和 provenance：同一对象可能由三路返回，融合器要保留每一路命中、revision 和过滤条件，才能解释最终排序。混合检索已是现实工程主流，但融合权重并没有跨任务的通用答案。
+
+### 4. 图与关系底座：通过路径而非单点相似度构造候选
+
+图路线从原文抽取实体、事实和 typed edge，建立 passage–entity–fact 或 event–decision–outcome 网络。查询先定位 seed，再做邻居扩展、路径搜索、Personalized PageRank 或 spreading activation；PPR 可写成 `r=(1-α)s+αPᵀr`，其中 seed `s` 表达当前查询，转移矩阵 `P` 沿关系传播相关性。
+
+[HippoRAG](https://github.com/OSU-NLP-Group/HippoRAG) 的 passage/entity/fact 多视图和 PPR 是检索型代表；`A-MEM` 的 note/link/evolution 是可变记忆代表；`causal-memory` 把 decision→outcome edge 与普通语义关系区分开。图的收益来自关系密集和多跳任务，成本来自 LLM/OpenIE 抽取、实体消歧、边更新和候选爆炸。错误高连接节点会放大污染，因此 graph 不能取代 source validation。
+
+### 5. 时间与版本底座：把 current、history 和 late evidence 分开
+
+版本化路线给逻辑对象稳定 ID，每次内容变化生成 revision；`valid_time` 表示现实何时成立，`transaction_time` 表示系统何时记录。查询“现在是什么”选择当前未撤销 revision；查询“当时认为是什么”按 transaction time；处理迟到证据则可以修正 valid interval 而不抹掉记录历史。
+
+[双时间图存储](https://arxiv.org/abs/2607.26520) 将 identity/version 与两类时间显式化；[MemTxn](https://arxiv.org/abs/2607.27834) 把 temporal resolver 放进提交/读取边界；[MemState/GEM](https://arxiv.org/abs/2605.26252) 的 topic field 保存值历史，并区分 association 与会触发修订的 extension edge。最新问题已经从“有没有 timestamp”转向 interval overlap、依赖传播、并发修订和 semantic+temporal 联合索引。
+
+### 6. 多层/多后端底座：按职责分层，而不是复制同一真相
+
+多层系统可能同时拥有：短期 active block、耐久 SQL/document state、向量和 FTS companion、关系图、对象存储中的原始工件、缓存与 prompt projection。`MemGPT/Letta` 的 core block 与 archival memory、`MemoryOS` 的 short/mid/long tier、`MemMachine` 的 episode graph/profile SQL/working memory 都体现了放置和对象职责分离。
+
+难点不是路由到哪个库，而是**哪一层有权威性、哪些层可重建**。若双写 SQL 和 vector 时进程中断，恢复应从 commit journal 重放索引，而不是猜哪个副本最新；若 backend 不支持 keyword search 或事务历史，统一 facade 必须暴露 capability degradation。多后端架构的最新研究议题包括 asynchronous construction 的 freshness/SLO、fleet 级索引重建、schema/embedding migration 和 derived deletion。
+
 ## 架构解剖：权威状态与可重建投影
 
 ```mermaid
@@ -73,6 +111,14 @@ flowchart TB
 当前工程主流是多表示而非单纯单库：关系或文档记录承载对象与元数据，向量/关键词提供快速召回，部分系统再增加实体或图导航。过去十二个月的实质变化在于从 chunk/summary 走向原子对象、关系化表示和可解析的时间/版本；近 90 天的双时间和事务性工作把“当前状态从何而来”推到架构前台。
 
 不过，表示复杂度没有已证实的单调收益。[LightMem 的独立复现](https://arxiv.org/abs/2607.29104) 在固定存储下发现检索器和候选深度可显著改变成绩，且匹配深度时原始历史常不弱；[双时间图存储研究](https://arxiv.org/abs/2607.26520) 也只在其特定样本与协议中报告结果。结论应保持在条件层面：结构和时间语义能表达 flat retrieval 不易表达的问题，但缺少覆盖同一数据、模型、候选预算和后端的广泛独立对照，无法给出普适性能排序。
+
+## 最新研究议程：数据库开始面对“状态轨迹”
+
+最近一年的变化可以压缩为四个真正的技术问题。第一，**construction cost 成为一等系统指标**：LLM 抽取、embedding、建图和 consolidation 可能把绝大多数成本搬到 query 之前；[系统表征研究](https://arxiv.org/abs/2606.06448) 已开始分 construction/retrieval/generation 记录调用、token、延迟和硬件活动。第二，**正确性从 record 升到 trajectory**：记录存在不等于当前视图、依赖传播和遗忘正确，[GEM/MemState](https://arxiv.org/abs/2605.26252) 试图把 content、structure、policy 与 state-level operators 放进同一抽象。
+
+第三，**索引需要联合语义、时间和结构**：现在常见做法是分别建 vector、temporal filter 和 graph，再在应用层拼接；新研究在问能否让 engine 原生表达 field history、typed dependency 和 semantic search。第四，**读取可能也是写入**：若一次访问会提升 salience、改变缓存或学习检索策略，read-only 数据库假设不再成立，并发、租户隔离和隐私侧信道随之出现。
+
+这些仍是研究议程而非行业事实。MemState 是 property-graph 原型，系统表征使用特定适配和硬件，双时间结果也来自有限协议。要把方向升级为成熟能力，还需要开放的 crash/recovery、schema migration、re-embedding、delete propagation、concurrent update 和跨租户 side-effect 实验。
 
 ## 成熟度、争议与未解问题
 

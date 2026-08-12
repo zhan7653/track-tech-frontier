@@ -60,6 +60,16 @@ REQUIRED_DIRECTORY_CONTENT = {
     "reader/projects": 1,
 }
 
+MECHANISM_REQUIRED_SIGNALS = (
+    "方案",
+    "数据流",
+    "实现",
+    "成本",
+    "失败",
+    "最新研究",
+)
+MECHANISM_MIN_H3 = 4
+
 MARKDOWN_LINK_RE = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 INTERNAL_MARKER_RE = re.compile(r"<!--\s*(?:claim|synthesis|process):", re.IGNORECASE)
 PLACEHOLDER_RE = re.compile(
@@ -151,24 +161,53 @@ def validate_reader_suite(root: Path) -> list[Finding]:
             if section not in text:
                 findings.append(Finding("missing-section", relative, section))
 
+    mechanism_dir = root / "reader" / "mechanisms"
+    if mechanism_dir.is_dir():
+        for path in sorted(mechanism_dir.glob("*.md")):
+            if path.name == "README.md":
+                continue
+            raw = path.read_bytes()
+            relative = _relative(path, root)
+            try:
+                text = raw.decode("utf-8", errors="strict")
+            except UnicodeDecodeError:
+                continue
+            h3_count = len(re.findall(r"^###\s+\S", text, re.MULTILINE))
+            if h3_count < MECHANISM_MIN_H3:
+                findings.append(
+                    Finding(
+                        "shallow-mechanism",
+                        relative,
+                        f"found {h3_count} family-level H3 sections; expected at least {MECHANISM_MIN_H3}",
+                    )
+                )
+            for signal in MECHANISM_REQUIRED_SIGNALS:
+                if signal not in text:
+                    findings.append(Finding("missing-mechanism-depth", relative, signal))
+
     # A reader recompile may rename a paper for clarity, but it must not silently
     # invent or transpose an arXiv ID when a frozen predecessor ledger exists.
-    source_ledger = root.parent / "agent-memory-v09" / "bundle" / "sources.jsonl"
-    if source_ledger.is_file():
+    source_ledgers = (
+        root.parent / "agent-memory-v09" / "bundle" / "sources.jsonl",
+        root / "audit" / "sources.jsonl",
+    )
+    existing_ledgers = [path for path in source_ledgers if path.is_file()]
+    if existing_ledgers:
         known_arxiv: set[str] = set()
-        try:
-            for line_number, raw_line in enumerate(
-                source_ledger.read_text(encoding="utf-8").splitlines(), start=1
-            ):
-                if not raw_line.strip():
-                    continue
-                source = json.loads(raw_line)
-                match = ARXIV_RE.search(str(source.get("url", "")))
-                if match:
-                    known_arxiv.add(match.group(1))
-        except (UnicodeDecodeError, json.JSONDecodeError) as error:
-            findings.append(Finding("source-ledger", _relative(source_ledger, root.parent), str(error)))
-        else:
+        ledgers_valid = True
+        for source_ledger in existing_ledgers:
+            try:
+                for raw_line in source_ledger.read_text(encoding="utf-8").splitlines():
+                    if not raw_line.strip():
+                        continue
+                    source = json.loads(raw_line)
+                    match = ARXIV_RE.search(str(source.get("url", "")))
+                    if match:
+                        known_arxiv.add(match.group(1))
+            except (UnicodeDecodeError, json.JSONDecodeError) as error:
+                ledgers_valid = False
+                findings.append(Finding("source-ledger", _relative(source_ledger, root.parent), str(error)))
+        if ledgers_valid:
             for path in _reader_markdown_files(root):
                 try:
                     text = path.read_text(encoding="utf-8")

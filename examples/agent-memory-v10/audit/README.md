@@ -15,3 +15,8 @@ v10 是基于 v09 冻结研究底稿的读者版重编，没有复制一套新�
 - [仓库工程 profiles](../../agent-memory-v09/bundle/repository_engineering_profiles.jsonl)
 
 若 v10 后续进行新的定向补查，新证据应在本目录按日期新增独立 delta，并链接回受影响的读者页面；不得静默改写 v09 快照。
+
+已登记的 v10 增量：
+
+- [2026-08-12 分支深度补查](2026-08-12-branch-depth-delta.md)
+- [v10 增量来源表](sources.jsonl)

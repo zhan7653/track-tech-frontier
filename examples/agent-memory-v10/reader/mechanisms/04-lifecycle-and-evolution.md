@@ -25,7 +25,7 @@
 
 图中最重要的不是层数，而是方向：原始记录可以支持重算；派生层不能悄悄覆盖原始记录。当某条事实被替代时，系统需要知道哪些摘要、索引项、缓存和计划依赖它。否则会出现“存储已改、行为未改”的陈旧前提问题。[v09 对陈旧行为的归纳](../../../agent-memory-v09/bundle/reports/08-security-and-failure.md)
 
-## 四类方案族
+## 五类方案族
 
 | 方案族 | 如何演化 | 擅长处理 | 主要代价与失败 |
 |---|---|---|---|
@@ -33,8 +33,41 @@
 | 摘要与合并 | 把多段经历压成较短、较抽象的对象 | 降低检索与上下文成本 | 不可逆的信息损失；摘要可能保留过期结论 |
 | 版本化修订 | 为更新建立新修订，标注替代关系和有效时间 | 当前/历史视图、冲突解释、回溯 | schema、索引和迁移更复杂；需要处理多写者并发 |
 | 日志与事务化变更 | 将接纳、校验、提交、投影更新和恢复作为可追踪操作 | 高影响更新、回滚、故障恢复 | 写入延迟、存储和工程复杂度上升；尚缺广泛独立复现 |
+| 学习型操作控制 | 根据任务、状态、反馈与预算选择 retrieve/consolidate/forget 等动作 | 负载变化与长程自适应 | 奖励延迟、误忘、不可逆探索和跨域漂移；研究早期 |
 
 这些路线可以出现在同一系统中，但不能据此得出某种组合“最好”。它们回答的约束不同：TTL 是保留边界，摘要是表示变换，版本化是语义变更，事务化则处理变更是否完整、可恢复。`causal-memory` 与 `scope-recall-hermes` 的静态工程检查展示了“日志为权威、索引可重建”的形状；Mem0 的公开实现则显示向量记忆、历史与实体集合可能是不同存储面。仓库表面能够说明组件关系，不能据此证明崩溃一致性或端到端删除已经成立。[v09 工程雷达](../../../agent-memory-v09/bundle/reports/06-github-trend-radar.md)
+
+## 五类方案内部怎样完成一次状态演化
+
+### 1. TTL、衰减与容量策略：只控制可见性和预算
+
+规则型方案为对象维护 `created_at / last_accessed / importance / size / ttl` 等指标，定时或在写入压力下执行降权、归档或清除。时间衰减常写成 `salience(t)=base·exp(-λΔt)`，访问或人工确认会重新增强；容量策略则在预算超限时淘汰最低分对象。`MemoryBank` 的遗忘/强化属于这条谱系，许多工程 API 的 TTL 和 retention policy 也是其控制表面。
+
+算法简单并不表示语义正确：近期不访问的医疗过敏信息可能仍很重要，频繁访问的错误事实反而被强化；TTL 也无法识别“新预算 3,000”已推翻“旧预算 5,000”。所以规则型策略适合生命周期上限和 cache-like tier，不足以单独处理事实修订。研究正在从单一 recency/importance score 转向分对象 retention、purpose-aware policy 和可恢复的分级 attenuation。
+
+### 2. 摘要、聚类与巩固：把多条经历变成较少对象
+
+巩固一般先按时间、主题、实体或相似度聚簇，再让 LLM/规则选择 `retain raw / merge / summarize / promote / drop`。输出可以是 session summary、长期 profile、事件层或高层 belief，同时保存 member IDs 和 source spans。多级方案把最近原文留在 hot tier，把较旧内容逐步压成摘要；新证据到来时可能重写已有摘要。
+
+这一操作不可避免地产生信息瓶颈。合并可能消除重复，也可能把两个相似主体误合；摘要能缩短上下文，也可能删除未来才重要的细节。[Retain or Consolidate?](https://arxiv.org/abs/2607.17545) 将 operator choice 与预算条件联系起来，[LightMem 复现](https://arxiv.org/abs/2607.29104) 则说明 raw/constructed 的相对结果会随检索深度和 token 预算反转。前沿问题因此是怎样预测 query-critical detail、保存可回退 provenance，并让 operator 在预算变化时切换，而不是寻找一个永久最优摘要器。
+
+### 3. 版本化修订与冲突图：保留历史，解析当前视图
+
+版本化方案不覆盖对象，而是创建 `revision_n`，写明 `supersedes / contradicts / derived_from` 和 valid/recorded time。current resolver 根据主体、scope、as-of、authority 和冲突策略选择可见 revision；未决冲突可以同时返回，而不是强行选一个。依赖对象则由 typed edge 标记为 `needs_revision`，避免把“相关”误作“必须传播”。
+
+[双时间图存储](https://arxiv.org/abs/2607.26520) 提供 current/historical 选择，[MemState/GEM](https://arxiv.org/abs/2605.26252) 用 field history 与 extension edge 表达依赖传播；`STALE` 类评测则把焦点移到更新后行为是否仍使用旧状态。最难的地方是 semantic conflict：时间较新不一定更权威，两个来源也可能只在不同条件下都成立。需要的是可解释 resolver 和 unresolved-state 表达，而不只是 last-write-wins。
+
+### 4. Journal、transaction 与 recovery：保证跨投影的完整变化
+
+事务型方案把一次 mutation 拆成 proposal、validation、commit、projection build 和 visibility。权威 journal 先写入 prepare/commit receipt，当前视图按 committed revision 切换；向量、图、摘要和缓存带 generation/watermark 异步追赶。若构建失败，worker 可重放；若逻辑判断错误，rollback 创建补偿 revision，而不是删除审计历史。
+
+[MemTxn](https://arxiv.org/abs/2607.27834) 是近期明确提出 transaction boundary 与 complete-state recovery 的工作。工程上应分别演练：ledger committed 但 index missing、dual-write 中断、stale embedding generation、schema migration 失败、delete 后旧 snapshot 回灌。v09 没有执行这些故障注入，因此这里只能说明所需机制和公开设计，不能声称现有项目已有 ACID-like 保证。
+
+### 5. 学习型生命周期控制：在约束内选择操作
+
+[MemCon](https://arxiv.org/abs/2607.13591) 把 retrieve、plan injection、re-retrieve、consolidate、forget 与 no-op 视为在线策略动作；AgeMem 一类系统则让模型通过 tool action 管理 short/long-term memory。state 可以包含当前任务、候选记忆、预算和历史反馈，reward 结合任务效果与成本。
+
+这条路线把固定阈值改为条件决策，却引入 credit assignment：一次错误遗忘可能到许多 session 后才显现；训练分布里的最优操作不一定能迁移到新用户或工具。最新问题是 constrained learning——controller 只能调用版本化、可撤销 primitive，不直接破坏权威状态；训练与评测也要覆盖长期 regret、误忘、恢复和对抗写入，而非只看平均 QA。
 
 ## 数据流中的关键分界
 
@@ -49,6 +82,18 @@
 生命周期成本至少包括写入抽取与校验、原始与修订存储、投影构建或重建、在线读取、人工复核、删除传播和故障修复。只报告 token 节省会遗漏索引重建、回滚和误忘的代价。当前没有在相同模型、后端、任务流和预算下，系统比较“纯原始记录、摘要、版本化和控制器”的独立完整成本数据；因此不能把单篇论文的节省外推为普遍收益。
 
 常见失败也各有不同来源：摘要在压缩时丢掉后来查询所需的细节；控制器选择了错误操作；并发或中断让权威状态与索引不一致；已替代事实仍在缓存或计划中起作用；删除 API 只清除了一个存储层。这里的共同点是，状态正确性不能只在数据库层验收，必须追到实际的读取和行动。
+
+## 最新研究议程：从“删掉一条”到验证整个状态轨迹
+
+当前最前沿的问题可落到五个可实现的研究方向：
+
+1. **Trajectory correctness。** 不只给最终答案打分，还要为每个时间点标注 current value、历史 revision、应被重新计算的依赖和 active footprint。[GEM/MemState](https://arxiv.org/abs/2605.26252) 明确提出这一缺口。
+2. **Dependency-aware repair。** 纠正事实后，哪些画像、摘要、图边、计划和技能必须失效或重算；普通相似边不能充当传播边。
+3. **Verifiable erasure。** 区分逻辑隐藏、检索移除、索引清除、备份/遥测处置和 derived influence，给每一步可测的 receipt 与 lag。
+4. **Crash/concurrency semantics。** 在多写者、异步索引和 backend capability 不同的条件下，current/history 如何恢复到可解释状态。
+5. **Safe adaptive control。** learned policy 怎样在事务、权限和回滚约束内探索，怎样用长期任务而非短期 token 奖励学习。
+
+这五项之所以仍未解决，是现有 benchmark 各自只覆盖 recall、incremental update、forgetting 或 action 的一段，开放仓库又很少发布故障恢复和 derived deletion 结果。下一步需要的是共同的长生命周期 event script 和状态/行动双重 oracle，而不是再增加一个只测“能否找到旧句子”的榜单。
 
 ## 共识、争议与未解问题
 

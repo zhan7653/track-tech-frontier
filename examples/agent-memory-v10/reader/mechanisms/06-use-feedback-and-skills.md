@@ -22,6 +22,38 @@ Agent 不只会记住“发生过什么”，也可能从一次成功或失败�
 
 这些类别不是从弱到强的单一路径。原始轨迹保留了最多证据，反思与流程提炼增加抽象，可执行技能则把抽象推到行动层；每前进一步，都需要更严格地表达前置条件、环境版本、依赖、允许的副作用和撤回方式。不存在现有证据支持的统一“最优记忆对象”。
 
+## 五类复用工件内部怎样运行
+
+### 1. 轨迹检索：把完整经验作为 in-context demonstration
+
+系统将任务描述、环境版本、观察、动作、工具参数、结果、错误和人工反馈组成 episode。读取时先用任务/状态 embedding 或结构字段找相似 episode，再把关键步骤或完整轨迹放进当前上下文，让模型自行类比。管理主要是去重、分段、标注 outcome 和控制容量；它不主动假设哪一步是因果关键。
+
+这种路线保留证据最完整，也最容易审计，但 token 成本高，失败步骤和成功步骤会一起进入 prompt。相似任务可能只在一个关键约束上不同，模型又可能复制过时参数。研究重点是 outcome-aware retrieval、counterexample pairing、trajectory segment credit 和首次行动评测，而不是单纯把成功轨迹数量做大。
+
+### 2. 反思记忆：把 outcome 解释为语言规则
+
+`Reflexion` 的循环是 `attempt → evaluator feedback → verbal reflection → next attempt`：反思被保存在 episodic buffer 中，下次与任务一起输入，而不更新模型权重。反思通常是自然语言诊断，例如“先检查 API 返回 schema，再生成调用参数”，读取时按任务或最近失败加载。
+
+它实现简单、无可执行副作用，但抽象边界模糊：反思可能把偶然相关当成因果，也可能在不同任务中互相冲突。更严谨的管理需要让反思携带 source attempts、适用条件、支持/反例、版本与 confidence；多次重复也不能自动当作独立证据。当前工作正在研究 evaluator 质量、反思选择与跨任务迁移，而不是继续无限追加 self-critique。
+
+### 3. 指令和流程提炼：从 trajectory 抽出有结构的 procedure
+
+流程路线将多条轨迹对齐，识别稳定步骤、输入/输出 schema、分支条件和错误恢复，生成 instruction、script 或 playbook。`MemP` 明确区分 trajectory、step-by-step instruction 和 high-level script，并为不同工件设置构建、检索与更新流程。读取先匹配任务和前置条件，再参数化变量；执行结果回写到该 procedure 的 success/failure history。
+
+相比反思，它更节省 token，也更容易做静态检查；但 distillation 可能删掉少见而关键的分支。最新 [AFTER/procedural-memory 研究](https://arxiv.org/abs/2606.23127) 用 382 个任务、六种角色和 22 类技能，将 local improvement、cross-task、cross-role 与 cross-model transfer 分开，显示有些技能能迁移，有些会角色特化。这个结果属于作者协议，但它把“技能是否可复用”从单任务成功推进到受控迁移评测。
+
+### 4. 可执行技能：把经验编译为代码或工具模板
+
+可执行技能通常是带 manifest 的函数、脚本或 workflow：声明入口、参数、依赖、工具/API 版本、允许的资源和测试。`Voyager` 在 Minecraft 中让 curriculum 产生任务，迭代生成可执行代码，验证成功后把技能按描述嵌入并存入 library；复杂任务再组合已有技能。现实 Coding Agent 还会把技能落为 repository-local command、hook 或 MCP tool。
+
+可执行性带来可组合和可测试，也让 memory 直接靠近副作用。检索到技能只产生行为候选：当前 principal 仍需重新授权文件、网络、凭据和支付权限；依赖和 schema 要在运行前核验；失败要区分代码缺陷、环境漂移和任务不适用。沙箱测试也不证明 production 数据和权限下安全。研究前沿正集中在 typed effect、capability manifest、sandbox-to-live promotion、dependency repair 和撤销传播。
+
+### 5. 元技能与管理策略：学习“如何形成和治理其他记忆”
+
+`MemSkill` 把两层演化分开：task-level skill 解决任务，meta-memory skill 学习怎样抽取、合并和修剪记忆；`MemCon`/AgeMem 一类控制器则学习何时调用 retrieve、consolidate、forget 等操作。它们的 state 包括任务、已有记忆、预算和历史反馈，policy 输出 memory operation，结果再用于更新 policy。
+
+这是能力最广也最难归因的路线。若最终任务成功，无法直接知道是技能内容、检索器还是 memory policy 起作用；若 policy 删除了未来有用内容，反事实很晚才出现。更可控的方向是让元策略只操作可版本化 primitive，用 policy log 记录每次 proposal 和结果，并在 offline replay、shadow mode 或可回滚范围内学习。
+
 ## 一条可解释的数据流
 
 ```text
@@ -54,6 +86,26 @@ Agent 不只会记住“发生过什么”，也可能从一次成功或失败�
 成本不能只算取回时的 token：还包括轨迹存储、提炼模型调用、验证和沙箱运行、注册表与索引、当前环境中的参数适配、人工审核、回滚以及受污染工件的处置。当前没有同一任务、模型、预算下比较轨迹、反思、流程、代码技能和元策略的完整成本账本。因而“自我演化一定降低成本”在现有证据下并不成立。
 
 典型失败包括：把一次成功错误地推广到不同工具版本；从相似但越界的用户或团队迁移做法；技能依赖在环境更新后失效；重复或协调的轨迹把恶意规则伪装成共识；可执行工件获得了它本不应有的行动权；仓库只发布评估快照而未公开真正的在线学习路径。`JARVIS-1` 的公开快照即提醒读者：有“记忆”目录或论文 lineage，并不等于完整的可运行持续演化系统。[v09 工程边界记录](../../../agent-memory-v09/bundle/clusters/mm-c06-experience-procedural-memory-skills.md)
+
+## 真实工程形状：研究算法怎样落到运行时
+
+工程系统通常把四个表面分开：host loop 捕获 turn/tool outcome；memory backend 保存 episode 与对象；skill registry 管理可复用工件；runtime 在当前权限下加载和执行。固定版本的 `Raven` 就将 host loop、MemoryBackend protocol、plugin discovery 与 skill synthesis 分开，turn 前 recall、turn 后写回；[OpenViking](../projects/volcengine--openviking.md) 将 resource、memory 和 skill 放在统一资产层，内容先持久化，再异步生成多层语义表示；处理未完成时可能暂时不可召回。
+
+这种分层暴露出具体集成边界：backend adapter 要维持 user/agent identity；异步 pipeline 要提供 processing state 和 watermark；registry 要保留 source、version 与 deprecation；host 不可把 skill payload 当成权限。当前开源仓库能展示这些接口和固定代码路径，却很少公开跨版本 migration、sandbox escape、安全 promotion 或独立生产采用结果。
+
+## 最新研究议程：从“记住经验”到可治理的能力供应链
+
+近 12 个月的重点已经明显转移：
+
+| 研究问题 | 旧评测的不足 | 新方向 | 仍缺的证据 |
+|---|---|---|---|
+| 什么是可复用单位 | 只比较有/无 memory | trajectory、reflection、instruction、script、skill 分层 | 同轨迹、同预算的独立消融 |
+| 能否迁移 | 只在原任务重试 | cross-task、cross-role、cross-model、组合技能 | 工具/API 漂移和长期迁移 |
+| 如何晋升 | 成功一次就写入 | 多来源支持、测试、risk state、shadow/promotion | 何种证据阈值能抑制误晋升 |
+| 如何治理执行 | 把技能文本直接塞进 prompt | manifest、typed effect、沙箱、action-time authorization | 从 recall 到真实副作用的端到端安全实验 |
+| 如何自我演化 | 只优化任务 reward | constrained meta-policy、version/rollback、trajectory metrics | 长期 regret、不可逆操作和分布外稳定性 |
+
+2026 年 8 月的 [PoisonedEvolution](https://arxiv.org/html/2608.05563v2) 将不可信轨迹写入持久技能的风险变成了可测信号；AFTER 将技能迁移拆成多个维度。下一步不是证明“Agent 会写 skill 文件”，而是建立从 evidence → distillation → validation → promotion → retrieval → authorized execution → outcome → deprecation 的完整、可归因供应链。
 
 ## 如何判断它真的帮助了 Agent
 

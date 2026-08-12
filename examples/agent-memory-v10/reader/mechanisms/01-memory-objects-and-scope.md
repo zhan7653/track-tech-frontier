@@ -10,6 +10,25 @@
 
 当前较稳定的看法并不是一套唯一分类法，而是用三个正交维度描述状态：**对象**（保存的内容及其行为语义）、**操作**（它如何形成、变化和消失）、**控制信息**（主体、时间、来源、版本、权限和预算）。[MemoryBank](https://arxiv.org/abs/2305.10250) 已将存储、检索和更新分开，并同时处理对话、事件摘要与人格评估；[MemTxn](https://arxiv.org/abs/2607.27834) 则把来源支持、时间版本和恢复日志放到回答模型之外。它们并未证明全行业已有统一标准，但共同说明：对象、操作和控制信息不能再由一个 `text + embedding` 字段代替。
 
+从实现角度看，一个最小对象不应只有正文。更接近真实系统的形状是：
+
+```text
+MemoryObject {
+  immutable_id
+  kind                  # event / fact / profile / relation / procedure / ...
+  subject, owner, tenant
+  payload_or_pointer
+  observed | asserted | inferred
+  source_receipts[]
+  valid_time, recorded_time
+  revision, supersedes[], conflicts_with[]
+  visibility, allowed_purposes[], retention
+  derivation_links[], index_generation
+}
+```
+
+这些字段不是建议所有系统照抄的 schema，而是用来检查语义有没有丢失：若一个实现没有不可变身份，就很难把“同一事实的新版本”和“两条独立事实”分开；没有 source receipt，就无法从摘要回到原始证据；没有作用域和用途，检索层只能事后过滤；没有 derivation link，纠正或删除便不知道要失效哪些摘要、向量、图边和技能。
+
 ## 方案空间：对象不是按数据库品牌划分
 
 下表是读者理解当前系统的一个实用谱系。一个系统可以同时拥有多类对象；它们不应被理解为彼此竞争的“产品类型”。
@@ -24,6 +43,44 @@
 | 控制元数据 | 来源、主体、版本、保留期、策略、索引版本、回滚点 | 它决定内容是否可用、可审计和可恢复 | 与任一对象一同传递 | 常被遗漏；职责层面已形成较强共识 |
 
 这里的“事实”也不等于客观真理。它更准确地说是某个来源、某个主体、某段有效时间内可被系统引用的陈述。把 `observed`（直接观察到）、`asserted`（某人声称）、`inferred`（模型推断）分开，能避免把一次猜测写成永久画像。对世界状态和项目状态，观察位置、分支、提交版本、可见性及不确定性同样是内容的一部分，而非可选标签。
+
+## 六类对象内部到底怎样工作
+
+### 1. 事件和证据：用追加事实保留“发生过什么”
+
+事件对象的核心不是一段聊天文本，而是不可变回执：输入、工具调用、结果、发生时间、主体、环境和来源指针。写入通常是 append，不尝试立即解决全部语义；管理阶段可以分段、归档或生成摘要，但保留能回放的原始顺序；读取既可以直接取原文，也可以作为派生事实的证据回填。它的优势是最少引入模型判断，代价是增长快、隐私面大、后续查询需要昂贵筛选。
+
+`Generative Agents` 的 observation stream 和 `MemoryBank` 的 conversation/event summaries 是这一层的早期形状。到了工程系统，日志常成为可恢复的权威层：例如 v09 检查到的 `scope-recall-hermes` 先保留 journal，再把内容晋升为 durable fact。这里最新的研究问题不是“还要不要日志”，而是怎样给高吞吐工具轨迹建立统一 receipt、如何在不保留敏感明文的情况下维持可追溯性，以及怎样把一次事件精确关联到它后来产生的画像、图边和技能。
+
+### 2. 事实、画像和信念：维护一个可纠正的当前视图
+
+事实对象需要做 entity resolution：先确定陈述说的是谁或什么，再判断新陈述是新增、强化、矛盾还是替代。常见实现会把原对话交给 LLM 抽取原子事实，用现有候选作为上下文，让模型或规则返回 `ADD / UPDATE / DELETE / NOOP`，最后保存当前值与历史修订。画像则把多个事实组织成面向某主体的属性集合；信念还要显式保留置信度和推断来源。
+
+[Mem0](https://github.com/mem0ai/mem0) 是这种 consolidating fact store 的工程代表：固定版本中，写入按 user/agent/run 过滤已有候选，再抽取事实并执行更新决策，同时保留历史；这说明 identity filter、fact extraction 和 consolidation 是不同步骤。`MemoryBank` 的 evolving personality assessment 则说明画像会随观察变化。二者共同的薄弱点是：LLM 判断“这是同一事实”可能误合并，推断可能被升级为真值，后端差异也会改变过滤和历史能力。
+
+### 3. 关系、时间和世界状态：保存“什么依赖什么、何时成立”
+
+当查询涉及多跳关系、项目依赖或历史状态时，单个事实值不够。结构化路线会把实体和断言设为稳定节点，把 `supports`、`depends_on`、`supersedes`、`causes`、`located_at` 等关系设为有类型边；每条边也携带来源、方向、有效时间和版本。读取时可以沿边扩展、做 PPR/spreading activation，或先解析 as-of 再选择版本。
+
+[A-MEM](https://arxiv.org/abs/2502.12110) 会为新 note 生成结构属性、寻找相关历史并更新相邻表示；[Hindsight](https://arxiv.org/abs/2512.12818) 把 world facts、experiences、entity summaries 与 beliefs 分到不同逻辑网络；[双时间图存储](https://arxiv.org/abs/2607.26520) 则把有效时间和系统记录时间分开。近期 [MemState/GEM](https://arxiv.org/abs/2605.26252) 更进一步区分 association edge 与会触发修订传播的 extension edge：相关不等于依赖。其研究议程正从“能建图”转向 typed dependency propagation、语义与历史联合索引，以及读取引起 salience 更新时的一致性。
+
+### 4. 程序、反思和技能：保存“下一次可能怎样做”
+
+程序性对象至少包含任务模式、前置条件、步骤或代码、工具/API 版本、依赖、历史结果、失败反例、风险等级和弃用状态。写入不是把成功轨迹原样复制，而是从带结果的 trajectory 中提炼候选；管理阶段验证、版本化和晋升；读取先匹配适用条件，再匹配语义；使用时仍要重新授权。它和事实对象的根本差异在于：一次误用可能产生副作用，而不只是回答错误。
+
+`Reflexion` 保存语言反思，`Voyager` 保存可组合代码技能，`MemP` 区分 trajectory、instruction 与 script，`MemSkill` 还学习管理这些工件的策略。2026 年的新研究重点已转向**迁移边界**和**晋升安全**：技能能否跨任务、角色、模型和工具版本复用，来自多个轨迹的共识是否真的可靠，以及不可信经验怎样在进入注册表前被阻断。这部分在[使用、反馈与技能分支](06-use-feedback-and-skills.md)展开。
+
+### 5. 共享和组织状态：同一内容产生多个授权视图
+
+共享记忆不是把 `user_id` 换成 `team_id`。它必须同时表示 actor、subject、owner、tenant、private/shared scope、用途、版本、authority、冲突和撤销。写入时先进入私有或证据区，通过显式 transition 才能分享；读取时根据当前 principal 和 purpose 生成视图；撤销时既要停止新读取，也要处理已派生的索引、缓存和下游副本。
+
+当前协议线仍很早：W3C 的 Agent Memory Interop 是 Community Group，SAIHM 是 individual Internet-Draft，若干 AMP/OMP/UMP 是项目级草案；它们不能合称成熟标准。工程难点集中在身份映射、scope 保真、schema 往返、冲突合并和可验证撤销，而不是 JSON 字段是否相同。[v09 共享与可移植报告](../../../agent-memory-v09/bundle/clusters/mm-c11-shared-distributed-portable-memory.md) 的采用审计只找到弱集成信号，尚无跨实现的当前版本一致性证明。
+
+### 6. 控制元数据：让其他对象具有可治理行为
+
+控制元数据是独立 plane，而非业务内容附注。它包括 admission policy、retention/TTL、risk state、revision graph、index watermark、model/prompt version、transaction receipt 和 rollback point。它在 write 时决定候选能否提交，在 manage 时约束 merge/forget，在 read 时约束 visibility/as-of，在 action 时约束用途与权限。
+
+[MemTxn](https://arxiv.org/abs/2607.27834) 将 source-supported admission、temporal resolver 与 durable snapshot journal 放在回答模型之外；[MemCon](https://arxiv.org/abs/2607.13591) 则把 retrieve、re-retrieve、consolidate、forget、no-op 等操作变成可学习控制动作。当前前沿不是让 learned controller 绕过规则，而是研究如何让它只能在可审计、可回滚的 primitive 内探索。
 
 ## 一条对象如何走过系统
 
@@ -74,6 +131,21 @@ flowchart LR
 当前主流已从“把会话切块后向量检索”扩展为至少区分事件、语义/画像、过程性经验和控制元数据；存储、检索、更新的职责分离也较常见。过去十二个月的实质变化集中在三处：原子化与关系化的对象构造、带版本/有效时间的状态表达，以及把记忆操作本身当作受控动作。近 90 天内，MemTxn、双时间图存储与围绕控制面的工作是强信号，但大多仍是作者预印本或静态工程检查，尚未形成跨后端的统一对象协议。
 
 成熟度应拆开看：对象与控制信息的职责分层可视为较成熟的架构共识；profile、事件和混合访问已在工程中常见；双时间、可移植共享语义和自动化的对象演化仍是中早期。没有足够的同任务、同预算、跨实现对照来证明“对象越结构化越好”，也没有公开证据证明任何现有接口已完整处理版本、撤销、物理删除与行动影响。
+
+## 最新研究议程：从对象命名走向可执行语义
+
+当前工作已不缺 episodic、semantic、procedural 等分类名称，真正缺的是把分类变成可运行且可测试的合同：
+
+| 研究层 | 正在解决什么 | 为什么旧表示不够 | 决定性缺口 |
+|---|---|---|---|
+| Identity 与粒度 | stable object、atomic fact、topic/field 边界 | chunk 无法区分同一事实修订与相似事实 | 粒度变化下的 source coverage、merge/split error |
+| Time 与 revision | valid/recorded time、current/history、late evidence | timestamp + last-write-wins 无法解释历史 | 多写者、冲突与迟到证据的共同语义 |
+| Typed dependency | association 与会触发修订的依赖边分离 | 相似关系无法指导更新传播 | dependency ground truth 与 repair benchmark |
+| Scope 与 portability | owner/tenant/purpose/revocation 随对象跨系统传播 | namespace 或 `user_id` 不等于授权合同 | 当前版本跨实现 round-trip/conformance |
+| Procedure applicability | 工具版本、前置条件、effect 与 deprecation | 语义相似不表示技能可安全执行 | 跨任务/角色/模型/环境迁移和 action safety |
+| Policy-bearing state | retention、admission、forget、retrieve side effect | 外部脚本和 prompt 约定无法验证状态轨迹 | policy language、commit enforcement 与隐私隔离 |
+
+[GEM/MemState](https://arxiv.org/abs/2605.26252) 是该转向的鲜明例子：它把 memory state 表成 content、structure、policy 的组合，并将 ingestion、revision、forgetting、retrieval 视为状态级 operator；其 property-graph 原型只是可行性草图，尚未证明这是最终抽象。下一步研究需要让不同 backend 能表达同样的对象/操作语义，并通过 trajectory benchmark 检查当前值、依赖传播、活跃 footprint 和派生删除。
 
 ## 共识、争议与未解问题
 

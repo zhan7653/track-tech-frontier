@@ -22,6 +22,38 @@
 
 这些不是互斥“产品类别”。同一个读取请求常经历硬过滤、多个候选路由、融合重排，再进入上下文编译。`Mem0` 的公开资料展示语义、关键词、实体和时间信号的组合；`A-MEM` 展示可调候选数与结构链接；`HippoRAG` 使用知识图与个性化 PageRank；`MemCon` 则把再次检索纳入在线决策。它们展示机制的存在与工程方向，所用数据、模型和预算却不同，不能据此排定赢家。[v09 方案与工程证据](../../../agent-memory-v09/bundle/clusters/mm-c04-retrieval-ranking-active-navigation.md)
 
+## 五类读取路线到底怎样工作
+
+### 1. 词法、向量与混合召回：建立低成本候选池
+
+词法检索把 token 映射到倒排表，BM25 同时考虑词频、文档频率和长度，因而擅长函数名、订单号、错误码等精确项；向量检索把 query 与 memory object 映射到稠密空间，通过 ANN 找语义近邻。两者并行后可用 RRF、归一化加权或 cross-encoder reranker 合并。工程上还常加入 recency、importance 和 object type 作为独立 feature。
+
+该路线的关键不是“top-k 取多少”一个参数。chunk/object 粒度决定索引单位，pre-filter 与 post-filter 决定合法候选是否在 ANN 截断前保留，fusion 决定罕见精确项是否被语义项淹没，reranker 又决定延迟和 token 开销。`Mem0` 与 `SimpleMem` 展示了不同 multi-route 组合；[LightMem 复现](https://arxiv.org/abs/2607.29104) 则提醒：仅换 retriever 与 matched depth 就可能反转 raw/constructed 的表面胜负。
+
+### 2. 结构化和时间检索：先求合法状态，再谈相似度
+
+结构化路线把 query 解析为 subject/tenant、object type、valid-time/as-of、revision status、purpose 和精确字段。SQL/DSL 先筛出当前或历史合法集合，再对其做词法或向量召回。若查询“去年 12 月项目负责人是谁”，resolver 不能直接返回最新 profile，而要选择该时间区间有效的 revision；若存在冲突，则上下文应携带两个版本及来源。
+
+最常见的工程错误是后过滤：先对全库取 top-10，再删掉其他租户或旧版本，结果可能只剩一条；正确做法是让权限/时间进入候选生成或扩大取样并记录 dilution。时间检索的前沿在于 valid time 与 recorded time 联合解析、迟到证据、interval overlap，以及同一查询中 current/historical evidence 的组合。
+
+### 3. 图与关系导航：从 seed 沿结构扩展证据
+
+图导航先用关键词/embedding 找 seed entity、passage 或 fact，再沿 typed edge 扩展一至多跳。BFS/beam search 控制路径深度，Personalized PageRank 将 query seed 的概率沿图传播，spreading activation 则结合边权、衰减和节点新鲜度。最后仍要回填原始 source passage；图节点或路径只是候选和解释结构，不是事实证明。
+
+[HippoRAG](https://github.com/OSU-NLP-Group/HippoRAG) 将 passage、entity、fact 连接并用 PPR 传播；`causal-memory` 组合 semantic/lexical 候选、RRF 和 activation；`A-MEM` 让历史链接随新 note 更新。这些实现适合多跳和关系问题，却容易受到 entity resolution、错误 hub、陈旧边和扩展预算影响。研究正在探索 query-conditioned edge selection、temporal graph traversal 和 graph+raw fallback，而非简单扩大邻居数量。
+
+### 4. 主动检索与导航：把“证据够不够”放入控制循环
+
+主动路线先生成 retrieval plan：查询需要哪类对象、哪些时间、是否要图/工具、停止条件是什么。首轮返回后，controller 估计 coverage 或 contradiction；若不足，改写 query、切换 route、沿实体继续查，或请求原始证据。`SimpleMem` 带有 intent-aware planning/reflective expansion，`MemCon` 将 retrieve 与 re-retrieve 视为策略动作，Letta/MemGPT 形态则让 Agent 自己调用 archival-memory tools。
+
+它比 single-shot 能处理长程信息缺口，但每轮都增加 LLM/tool latency，并可能陷入循环或被不可信候选引导。可靠实现需要 hard budget、route trace、evidence sufficiency 判据与 abstention；评测也要把“第一次就找到”“通过几轮找到”“最终仍没有足够证据”分开。当前还缺跨 backend 的独立对照，无法确定 learned planner 的净收益有多少来自更多调用预算。
+
+### 5. 上下文编译：把候选变成模型实际看见的证据
+
+编译器接收带 source、revision、score components 和冲突状态的候选，先去重和 grouping，再在 token budget 内选择原文、结构化字段、摘要或 relation path。常见策略包括按对象配额、MMR 多样化、层级摘要、query-focused compression 和 source-span fallback。最终 prompt 不应只是拼接文本，还可显式表达“当前值”“已替代历史”“冲突未决”“来源”和“截断原因”。
+
+编译失败常被错算成 retrieval 失败：索引已经找到正确证据，但摘要删掉了限定词，或预算分给多个冗余候选而漏掉原始片段。近期系统工作开始把 candidate budget 与 compiled-token budget 分开，并追踪 construction、retrieval、prompt assembly、generation 的成本。[系统表征研究](https://arxiv.org/abs/2606.06448) 显示不同 memory paradigm 会把工作负载搬到不同阶段，因此最终上下文短不等于系统整体便宜。
+
 ## 读取链路：授权不是排序后的注释
 
 ```text
@@ -45,6 +77,17 @@
 在当前工程实践中，词法与向量混合、metadata filter 和有限的 rerank 是最容易见到的读取形状。实体、时间、版本与冲突成为重要查询条件的系统，正把这些条件前置到召回之前。近 12 个月的实质变化包括：更显式的 retrieval planning、结构链接与图导航、将读取纳入在线 memory-operation policy，以及把上下文压缩视为独立的质量与成本控制点。研究截止日前约 90 天的信号主要来自新评测和主动控制/安全边界的加密，而非一个已经公认取代混合检索的新范式。[v09 历史与因果报告](../../../agent-memory-v09/bundle/reports/04-history-and-causality.md)
 
 成熟度不应由 star 或单次榜单决定。混合候选和过滤属于较成熟的工程手段；图导航在关系密集任务上有清晰动机，但建图和维护成本使其收益高度依赖任务；主动导航能表达“首轮不够时继续查”，却仍缺跨后端、匹配预算的独立净收益证据。可信检索——把授权、来源和撤销视为读路径的一部分——是明确的安全需求，但各实现的完整性边界仍需逐项检查。
+
+## 最新研究议程：优化目标从 recall 转向 evidence-to-action
+
+最近研究正在同时推进四层，而不是寻找单一新 retriever：
+
+- **候选层**研究 multi-route、图/时间导航和 query-dependent k，目标是提高 source-span coverage，而不是只提高 embedding 相似度。
+- **控制层**研究何时检索、换哪条 route、何时停止或 abstain；需要把额外调用预算和循环失败计入结果。
+- **编译层**研究在固定 token 下保留最小充分证据、冲突和 provenance，并能回退到原文。
+- **行动层**研究正确证据是否真的改变 tool selection、参数和后续状态；`Mem2ActBench`、`MemoryArena`、`LongMemEval-V2` 等正把评测从静态 QA 推向此处。
+
+下一步最缺的是一个可拆阶段的共同 harness：同一权威记忆、同一模型和预算下，分别替换 flat hybrid、typed temporal、graph、active planner 和 compiler；同时报告 candidate oracle recall、source-span survival、compiled evidence、answer/tool outcome、延迟和总成本。没有这个实验，大家仍会把“索引更丰富”“prompt 更短”或“最终分数更高”误当成同一件事。
 
 ## 代价、失败与评测
 

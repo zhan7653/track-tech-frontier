@@ -21,7 +21,18 @@ class ReaderSuiteValidationTests(unittest.TestCase):
         for directory in validate_reader_suite.REQUIRED_DIRECTORY_CONTENT:
             path = root / directory / "example.md"
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text("# Example\n\n完整内容。\n", encoding="utf-8")
+            if directory == "reader/mechanisms":
+                body = (
+                    "# Example\n\n"
+                    "## 方案与数据流\n\n"
+                    + "### 方案一\n\n实现、成本、失败与最新研究。\n\n"
+                    + "### 方案二\n\n具体机制。\n\n"
+                    + "### 方案三\n\n具体机制。\n\n"
+                    + "### 方案四\n\n具体机制。\n\n"
+                )
+                path.write_text(body, encoding="utf-8")
+            else:
+                path.write_text("# Example\n\n完整内容。\n", encoding="utf-8")
         return temporary, root
 
     def test_valid_minimal_suite(self) -> None:
@@ -71,6 +82,40 @@ class ReaderSuiteValidationTests(unittest.TestCase):
         codes = {finding.code for finding in validate_reader_suite.validate_reader_suite(suite)}
 
         self.assertIn("unknown-arxiv", codes)
+
+    def test_arxiv_link_can_be_registered_in_version_audit_sources(self) -> None:
+        temporary, root = self._suite()
+        self.addCleanup(temporary.cleanup)
+        suite = root / "agent-memory-v10"
+        suite.mkdir()
+        for child in list(root.iterdir()):
+            if child != suite:
+                child.rename(suite / child.name)
+        audit = suite / "audit"
+        (audit / "sources.jsonl").write_text(
+            '{"source_id":"D1","url":"https://arxiv.org/abs/2606.06448"}\n',
+            encoding="utf-8",
+        )
+        overview = suite / "reader" / "overview.md"
+        overview.write_text(
+            overview.read_text(encoding="utf-8")
+            + "\n[New evidence](https://arxiv.org/abs/2606.06448)\n",
+            encoding="utf-8",
+        )
+
+        codes = {finding.code for finding in validate_reader_suite.validate_reader_suite(suite)}
+
+        self.assertNotIn("unknown-arxiv", codes)
+
+    def test_rejects_shallow_mechanism_outline(self) -> None:
+        temporary, root = self._suite()
+        self.addCleanup(temporary.cleanup)
+        mechanism = root / "reader" / "mechanisms" / "example.md"
+        mechanism.write_text("# Thin\n\n## 方案\n\n只有一张表和几句话。\n", encoding="utf-8")
+
+        codes = {finding.code for finding in validate_reader_suite.validate_reader_suite(root)}
+
+        self.assertIn("shallow-mechanism", codes)
 
 
 if __name__ == "__main__":
