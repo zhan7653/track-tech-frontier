@@ -117,6 +117,39 @@ class ReaderSuiteValidationTests(unittest.TestCase):
 
         self.assertIn("shallow-mechanism", codes)
 
+    def test_requires_all_mechanism_deep_pages(self) -> None:
+        temporary, root = self._suite()
+        self.addCleanup(temporary.cleanup)
+        manifest = root / validate_reader_suite.BRANCH_PACKAGE_MANIFEST
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text(
+            '{"packages":[{"branch":"example","entry":"reader/mechanisms/example.md",'
+            '"deep_pages":["reader/mechanisms/example/missing.md"]}]}',
+            encoding="utf-8",
+        )
+
+        codes = {finding.code for finding in validate_reader_suite.validate_reader_suite(root)}
+
+        self.assertIn("missing-deep-page", codes)
+
+    def test_requires_branch_entry_to_link_declared_deep_page(self) -> None:
+        temporary, root = self._suite()
+        self.addCleanup(temporary.cleanup)
+        deep_page = root / "reader" / "mechanisms" / "example" / "mechanism.md"
+        deep_page.parent.mkdir(parents=True, exist_ok=True)
+        deep_page.write_text("# Mechanism\n\n完整分析。\n", encoding="utf-8")
+        manifest = root / validate_reader_suite.BRANCH_PACKAGE_MANIFEST
+        manifest.parent.mkdir(parents=True, exist_ok=True)
+        manifest.write_text(
+            '{"packages":[{"branch":"example","entry":"reader/mechanisms/example.md",'
+            '"deep_pages":["reader/mechanisms/example/mechanism.md"]}]}',
+            encoding="utf-8",
+        )
+
+        codes = {finding.code for finding in validate_reader_suite.validate_reader_suite(root)}
+
+        self.assertIn("unlinked-deep-page", codes)
+
 
 if __name__ == "__main__":
     unittest.main()

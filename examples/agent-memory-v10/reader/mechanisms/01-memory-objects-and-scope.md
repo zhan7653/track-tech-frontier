@@ -1,5 +1,7 @@
 # 记忆对象与作用域：先回答“记的是什么、属于谁”
 
+> **深潜阅读路径：** 本页先画对象与作用域地图。对象内部字段、粒度和状态语义见[对象模型与状态语义](objects-scope/01-object-models-and-state-semantics.md)；身份、双时间、冲突、共享和可移植语义见[身份、时间与共享 authority](objects-scope/02-identity-time-and-shared-authority.md)；MineEcho、OpenViking、Letta、Mem0、Sibyl 与 OMP 的固定版本实现见[系统 walkthrough 与前沿](objects-scope/03-system-walkthroughs-and-frontier.md)。
+
 > 本文面向已了解 Agent 与 LLM 的读者。它讨论跨会话、可更新、会影响后续推理或行动的外部 Memory；一次请求内的上下文、普通 RAG 文档库和模型参数本身只作为边界参照。证据与旧分类可回溯到 [v09 的基础分类报告](../../../agent-memory-v09/bundle/clusters/mm-c14-foundations-theory-taxonomies.md)、[结构化状态报告](../../../agent-memory-v09/bundle/clusters/mm-c03-structured-relational-temporal-memory.md) 和 [共享状态报告](../../../agent-memory-v09/bundle/clusters/mm-c11-shared-distributed-portable-memory.md)。
 
 ## 从一个看似简单的偏好开始

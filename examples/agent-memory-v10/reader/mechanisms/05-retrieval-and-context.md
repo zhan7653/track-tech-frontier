@@ -1,5 +1,7 @@
 # 检索与上下文构造：从“找到相似文本”到“给行动提供合格证据”
 
+> **深潜阅读路径：** 本页是读取链地图。query plan、硬过滤、BM25/ANN、RRF、图传播、主动检索和上下文编译见[候选生成、排序与导航](retrieval-context/01-candidate-generation-ranking-and-navigation.md)；Causal Memory、OpenViking、Engraphis、Mem0、claude-mem 和 Raven 的固定版本路径见[系统 walkthrough](retrieval-context/02-system-walkthroughs.md)；LongMemEval、MemoryAgentBench、Mem2ActBench、LightMem 反证、成本和最新研究见[基准与前沿](retrieval-context/03-benchmarks-cost-and-frontier.md)。
+
 当 Agent 问“客户上次确认的交付日期是什么？”时，困难不是只在历史中找一段相似对话。系统还要排除其他客户的数据，区分旧日期和新日期，在冲突时保留不确定性，并把有限 token 用在足以支撑回答或工具调用的证据上。检索因此不只是向量数据库的 `top-k`：它是一条把记忆变成上下文和行动依据的读取链路。
 
 本专题的边界是候选生成、筛选、排序、导航与上下文编译。写入时怎样抽取对象属于形成机制；版本替代和删除属于生命周期；模型怎样从上下文学习技能属于经验/技能机制。三者会在读取路径上相遇，但不能彼此替代。

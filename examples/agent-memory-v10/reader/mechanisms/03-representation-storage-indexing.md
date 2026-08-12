@@ -1,5 +1,7 @@
 # 表示、存储与索引：把状态保存下来，不等于已经能正确使用
 
+> **深潜阅读路径：** 本页解释底座方案全景。关系库/WAL、FTS/BM25、HNSW/IVF、混合融合、图和双时间索引的内部机制见[权威状态与索引算法](storage-indexing/01-authoritative-state-and-index-algorithms.md)；Sibyl、xerj、Causal Memory、OpenViking、Engraphis、Compartment 与 AtomicMemory 的固定版本路径见[工程 walkthrough](storage-indexing/02-engineering-walkthroughs.md)；多后端一致性、迁移、删除与恢复见[一致性与研究前沿](storage-indexing/03-consistency-recovery-and-frontier.md)。
+
 > 本文讨论 Memory 的耐久底座和访问结构：文本/事件、关系、时间与版本如何表达，怎样落入存储，以及索引怎样从权威状态派生。它不把向量数据库、普通 RAG 或任意图数据库本身视为完整 Agent Memory。延伸证据见 [v09 存储与索引报告](../../../agent-memory-v09/bundle/clusters/mm-c02-agent-memory-storage-indexing.md)、[结构化/时间状态报告](../../../agent-memory-v09/bundle/clusters/mm-c03-structured-relational-temporal-memory.md) 和 [生命周期报告](../../../agent-memory-v09/bundle/clusters/mm-c05-lifecycle-consolidation-forgetting.md)。
 
 ## 真实问题：下一次要找的是“正确版本的正确状态”

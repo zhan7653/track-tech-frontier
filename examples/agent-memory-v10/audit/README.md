@@ -20,3 +20,7 @@ v10 是基于 v09 冻结研究底稿的读者版重编，没有复制一套新�
 
 - [2026-08-12 分支深度补查](2026-08-12-branch-depth-delta.md)
 - [v10 增量来源表](sources.jsonl)
+- [2026-08-13 六分支输入吸收矩阵](2026-08-13-branch-absorption-matrix.md)
+- [2026-08-13 分支深度迭代记录](2026-08-13-branch-depth-iterations.md)
+- [2026-08-13 六分支输入吸收复核](2026-08-13-branch-absorption-review.md)
+- [2026-08-13 机制专题读者复述抽查](2026-08-13-reader-reconstruction-review.md)

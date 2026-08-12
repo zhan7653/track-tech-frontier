@@ -31,6 +31,7 @@ Agent Memory 研究的是：一个会跨会话、跨任务或跨执行环境行�
 | 怎样从事件形成可用记忆，并修正或遗忘 | [写入与形成](mechanisms/02-write-and-formation.md) 与 [生命周期与演化](mechanisms/04-lifecycle-and-evolution.md) |
 | 怎样保存、索引、检索并编译为工作上下文 | [表示、存储与索引](mechanisms/03-representation-storage-indexing.md) 与 [检索与上下文](mechanisms/05-retrieval-and-context.md) |
 | 怎样把经验变成程序、技能或项目连续性 | [使用、反馈与技能](mechanisms/06-use-feedback-and-skills.md) |
+| 六个方向的算法、固定版本工程和研究前沿分别在哪 | [技术机制深潜索引](mechanisms/README.md) |
 | 多主体、世界状态或可移植共享状态 | [多 Agent 共享 Memory](scenarios/03-multi-agent-shared-memory.md)、[世界状态与具身](scenarios/04-world-state-embodied-multimodal.md)及[互操作专题](cross-cutting/04-interoperability-and-integration.md) |
 | 评测是否真的测到了 Memory，或安全成本如何影响链路 | [横切议题](cross-cutting/README.md) |
 | 一个具体 GitHub 项目代码实际上怎样运转 | [重点工程案例](projects/README.md) |
@@ -43,6 +44,6 @@ Agent Memory 研究的是：一个会跨会话、跨任务或跨执行环境行�
 
 ## 证据与版本
 
-本读者层由 v09 材料重编；[v09](../../agent-memory-v09/README.md) 仍是冻结于 2026-08-10 的证据、输入审计和可追溯账本所在地。本版本尚未在本目录中记录新的定向补查。因此，正文若未明确注明后续复核，不能被理解为对 2026-08-10 之后动态项目状态的断言。
+本读者层由 v09 材料重编；[v09](../../agent-memory-v09/README.md) 仍是冻结于 2026-08-10 的主要证据、输入审计和可追溯账本所在地。2026-08-12 的窄幅补查只增加三项机制论文，没有重新核验所有动态项目；具体查询和来源见[v10 审计入口](../audit/README.md)。因此，除明确链接该增量的论文机制外，正文不能被理解为对 2026-08-10 之后仓库、发布、标准或采用状态的全面更新。
 
 需要核对结构来源时，读 [v09→v10 映射](old-to-new-map.md)；只有少量足以改变重点或判断的事项进入 [人工评审](human-review.md)，且评审不是阅读本套件的前置条件。

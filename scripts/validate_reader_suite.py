@@ -60,6 +60,8 @@ REQUIRED_DIRECTORY_CONTENT = {
     "reader/projects": 1,
 }
 
+BRANCH_PACKAGE_MANIFEST = "audit/mechanism-packages.json"
+
 MECHANISM_REQUIRED_SIGNALS = (
     "方案",
     "数据流",
@@ -117,6 +119,98 @@ def validate_reader_suite(root: Path) -> list[Finding]:
                 Finding("empty-section", relative, f"expected at least {minimum} substantive Markdown file(s), found {count}")
             )
 
+    package_manifest = root / BRANCH_PACKAGE_MANIFEST
+    if package_manifest.is_file():
+        try:
+            package_data = json.loads(package_manifest.read_text(encoding="utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as error:
+            findings.append(Finding("branch-package-manifest", BRANCH_PACKAGE_MANIFEST, str(error)))
+        else:
+            packages = package_data.get("packages")
+            if not isinstance(packages, list):
+                findings.append(
+                    Finding("branch-package-manifest", BRANCH_PACKAGE_MANIFEST, "packages must be an array")
+                )
+            else:
+                seen_branches: set[str] = set()
+                for index, package in enumerate(packages):
+                    if not isinstance(package, dict):
+                        findings.append(
+                            Finding(
+                                "branch-package-manifest",
+                                BRANCH_PACKAGE_MANIFEST,
+                                f"packages[{index}] must be an object",
+                            )
+                        )
+                        continue
+                    branch = package.get("branch")
+                    entry = package.get("entry")
+                    deep_pages = package.get("deep_pages")
+                    if not isinstance(branch, str) or not branch.strip():
+                        findings.append(
+                            Finding(
+                                "branch-package-manifest",
+                                BRANCH_PACKAGE_MANIFEST,
+                                f"packages[{index}].branch must be a non-empty string",
+                            )
+                        )
+                        continue
+                    if branch in seen_branches:
+                        findings.append(
+                            Finding("branch-package-manifest", BRANCH_PACKAGE_MANIFEST, f"duplicate branch: {branch}")
+                        )
+                    seen_branches.add(branch)
+                    if not isinstance(entry, str) or not entry.strip():
+                        findings.append(
+                            Finding(
+                                "branch-package-manifest",
+                                BRANCH_PACKAGE_MANIFEST,
+                                f"{branch}.entry must be a non-empty path",
+                            )
+                        )
+                        continue
+                    if not isinstance(deep_pages, list) or not deep_pages or not all(
+                        isinstance(path, str) and path.strip() for path in deep_pages
+                    ):
+                        findings.append(
+                            Finding(
+                                "branch-package-manifest",
+                                BRANCH_PACKAGE_MANIFEST,
+                                f"{branch}.deep_pages must be a non-empty path array",
+                            )
+                        )
+                        continue
+
+                    entry_path = root / entry
+                    if not entry_path.is_file():
+                        findings.append(Finding("missing-branch-entry", entry, f"declared branch entry for {branch}"))
+                        continue
+                    try:
+                        entry_text = entry_path.read_text(encoding="utf-8")
+                    except UnicodeDecodeError:
+                        entry_text = ""
+                    linked_paths: set[Path] = set()
+                    for match in MARKDOWN_LINK_RE.finditer(entry_text):
+                        target = match.group(1).strip()
+                        parsed = urlsplit(target)
+                        if parsed.scheme or target.startswith("#") or not parsed.path:
+                            continue
+                        linked_paths.add((entry_path.parent / unquote(parsed.path)).resolve())
+
+                    for deep_page in deep_pages:
+                        deep_path = (root / deep_page).resolve()
+                        if not deep_path.is_file():
+                            findings.append(
+                                Finding("missing-deep-page", deep_page, f"declared deep-dive for {branch} is absent")
+                            )
+                        elif deep_path not in linked_paths:
+                            findings.append(
+                                Finding(
+                                    "unlinked-deep-page",
+                                    entry,
+                                    f"branch entry for {branch} does not link to {deep_page}",
+                                )
+                            )
     for path in _reader_markdown_files(root):
         relative = _relative(path, root)
         raw = path.read_bytes()

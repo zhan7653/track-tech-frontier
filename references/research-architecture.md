@@ -61,6 +61,8 @@ Separate attention/momentum, engineering maturity, and verified adoption. A sing
 
 Start each important mechanism branch with a solution-family synthesis, then select evidence that clarifies the mechanisms, comparisons, current movement, counterevidence, and open questions. Allocate effort by importance, novelty, controversy, and engineering value rather than equal source counts or lengths.
 
+Use a branch package when one page would force the overview and the implementation detail to compete. A common shape is a short entry map plus separate mechanism/algorithm, engineering, and frontier/counterevidence reports, but the split follows the topic rather than a fixed file count. Cross-link the package so a reader can orient from the entry and then reconstruct the system in the deep pages. Splitting an inventory into several files is not depth.
+
 Use a broad GitHub candidate radar followed by only a few genuine project reports. A project report requires a fixed-version inspection of component relationships, lifecycle data flow, dependencies/services, interfaces, integration and deployment constraints, maintenance boundaries, failure modes, and the distinction between code-visible facts, maintainer claims, executed results, and unknown risks. A directory list or README summary is a bounded project card, not a deep dive.
 
 ### 5. Build descriptive propositions
@@ -78,3 +80,5 @@ Stop ordinary discovery when the map and important branch conclusions stabilize 
 ## Writing order and review
 
 Write the independently readable main report and complete branch and project reports from the map and deep packets. Only then produce an optional, small human-review list for high-impact uncertainty, evidence conflict, or genuinely subjective representative choices. A branch without human review still needs a complete, qualified first-version conclusion.
+
+Before final reader editing, compare the important branch inputs against the actual prose. Treat a paper, repository, benchmark, or negative result as absorbed only when it changes a mechanism explanation, engineering walkthrough, experimental boundary, judgment, or research agenda. Preserve unabsorbed long-tail items in the map/audit rather than padding reader pages with names.

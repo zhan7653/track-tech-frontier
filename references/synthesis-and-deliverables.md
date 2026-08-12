@@ -24,6 +24,8 @@ A comprehensive run produces a navigable suite under `reader/`, important mechan
 
 The suite may add topic-specific reader files. `report.md`, numbered `reports/`, or legacy `clusters/` paths may remain as compatibility surfaces for older bundles, but current reader navigation must point to the semantic `reader/` structure above.
 
+An important branch may be a package rather than a single file. In that case, keep a reader-oriented branch entry and link focused deep pages for the internal mechanisms, fixed-version engineering, and frontier/counterevidence dimensions that the topic needs. The package as a whole must satisfy the standalone branch contract; no required technical depth may exist only in audit files.
+
 ## Main-report contract
 
 The overview must stand alone for a technical reader who has not seen the research process. Within a short first read, that reader should be able to explain:
@@ -52,6 +54,8 @@ Organize each important report around a problem and its solution families, not a
 - unresolved questions explained as: what is unknown, why it remains unknown, what understanding it limits, and what evidence is missing.
 
 The comparison is the index to the analysis, not the analysis itself. After reading the report, a technically literate newcomer must be able to explain how several major families operate internally and what current research is changing in each. Reject a branch that only names families, gives each one a short paragraph, presents a generic lifecycle diagram without family-specific mechanics, or turns the recent frontier into a list of paper titles.
+
+When using a branch package, reject it if the entry and child pages merely redistribute the same summary or group sources by type. A useful package separates reader jobs: the entry orients, mechanism pages reconstruct state and algorithms, engineering pages follow real component/data flows, and frontier pages connect counterevidence, costs, failures, and current experiments.
 
 State applicability conditions descriptively. Do not tell the reader which route to select, provide a deployment path, produce an implementation checklist, or rank routes as winners.
 

@@ -1,5 +1,7 @@
 # 记忆的生命周期与演化：怎样让长期状态可以纠正、压缩和遗忘
 
+> **深潜阅读路径：** 本页提供 lifecycle 地图。amend/merge/supersede/conflict、TTL/衰减、journal 和 learned controller 的状态机见[mutation state machines](lifecycle-evolution/01-mutation-state-machines.md)；scope-recall-hermes、Engraphis、Mem0、Sibyl 与 Compartment 的固定版本实现见[系统 walkthrough](lifecycle-evolution/02-system-walkthroughs.md)；派生删除、STALE 行为修复、故障矩阵和近期研究见[删除、修复与前沿](lifecycle-evolution/03-deletion-repair-and-frontier.md)。
+
 长期记忆最棘手的问题不在于“能不能写入一条内容”，而在于一条内容后来被证伪、权限被收回、细节需要压缩，或系统在更新中断后，Agent 还能不能基于正确的状态行动。比如用户先说“预算是 5,000”，后来改为“这次上限是 3,000”；如果旧摘要、向量索引和已经生成的计划仍把 5,000 当作现行事实，数据库里的更新即使成功，Agent 的行为仍可能过时。
 
 这里讨论的是记忆的**生命周期**：接纳、修订、合并、压缩、失效、隐藏、删除、恢复，以及这些操作怎样传播到所有派生表示。它不等同于普通的存储或检索；也不把单纯的上下文截断当作遗忘。权限攻击属于安全主题，但一旦攻击通过写入改变了后续行动，它也是生命周期问题的一部分。

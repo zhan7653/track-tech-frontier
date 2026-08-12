@@ -8,6 +8,7 @@ Evaluate a full run with independent, outcome-oriented gates. Evidence volume or
 - The main report leads with the answer, uses a concrete-problem → intuitive explanation → mechanism → precise-term progression, and does not require cluster IDs, claim IDs, schema fields, mapping labels, or saturation terminology.
 - Every important mechanism branch is independently readable and presents its problem, solution families, operation, comparison, engineering patterns, maturity, tradeoffs, failure modes, evidence strength, and unresolved questions.
 - For every important branch, a reader can reconstruct how its major solution families work: state/data structures, write/manage/read/use flow, algorithms or control decisions, concrete implementations, shifted costs, and failure conditions. A table plus short summaries does not pass this gate.
+- A large branch may satisfy this across an entry map and linked deep pages. The package must be navigable, non-duplicative, and independently understandable; file count or aggregate length is not evidence of depth.
 - Each important branch explains the current research agenda in mechanism terms—what layer is changing, why prior designs are insufficient, and what missing implementation or experiment blocks progress—instead of listing recent papers or calling the area active.
 - Scenario views synthesize across mechanism branches without becoming recommendation documents; selected project reports show actual fixed-version engineering evidence rather than README paraphrase.
 - The reader can distinguish descriptive applicability conditions from advice. No report recommends a route, declares a universal winner, ranks alternatives as a selection aid, gives a default architecture, or offers deployment/onboarding validation guidance unless the user explicitly changes the contract.
@@ -39,6 +40,7 @@ Use an independent-reader test when available. Its absence is an advisory, not a
 - Define scoped propositions with independent support/opposition, conditions, limitations, minority view, unknowns, and reversal evidence. Do not call repeated or protocol-incomparable evidence consensus.
 - Apply direct, precise evidence controls to core conclusions, key numbers, versions/status, consequential comparisons, security/adoption facts, and material limitations. Use conservative, traceable citations for ordinary explanatory prose.
 - Organize the main report and branches around problems, mechanisms, architectures, implementations, comparisons, tradeoffs, and temporal change. Reject source-by-source summaries, audit-led openings, and prose dominated by project introductions.
+- Verify input absorption by branch: selected deep sources must materially affect a mechanism, engineering walkthrough, experimental boundary, qualified judgment, or research agenda. Names that appear only in tables or lists do not satisfy this gate; broad long-tail coverage may remain in the audit/radar.
 - Keep internal claim/evidence/synthesis markers and audit logs out of reader narration. They may appear in the audit layer or unobtrusive source machinery needed for traceability.
 
 ## Deliverable integrity and review

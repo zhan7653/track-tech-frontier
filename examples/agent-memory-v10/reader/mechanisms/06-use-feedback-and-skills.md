@@ -1,5 +1,7 @@
 # 使用、反馈与技能记忆：经历何时能变成可复用的行为资产
 
+> **深潜阅读路径：** 本页先画经验复用地图。trajectory、reflection、procedure、executable skill、meta-policy 的形成和执行机制见[从经历到程序和技能](skills-use/01-experience-to-procedure-and-skill.md)；Causal Memory、Raven、OpenViking、claude-mem、Engraphis 与 JARVIS-1 的固定版本边界见[系统 walkthrough](skills-use/02-system-walkthroughs.md)；Mem2ActBench、AFTER、PoisonedEvolution、迁移和供应链安全见[迁移、安全与前沿](skills-use/03-transfer-safety-and-frontier.md)。
+
 Agent 不只会记住“发生过什么”，也可能从一次成功或失败中保留“下次怎样做”。例如，Agent 调用一个接口失败后，可以保存一段反思文字；也可以提炼成带前置条件的操作步骤；在更强的形态中，它会保存可执行脚本或能管理其他记忆的元技能。这些对象都会改变后续行为，因此它们比对话摘要多了一层风险：错误经验可能被迁移到新的任务和环境中。
 
 本专题讨论**经验如何在使用后的反馈中演化成程序性记忆或技能**。它不包括只在当前会话存在的推理草稿和计划，也不把用户画像、共享权限或底层删除语义作为主体；但它与生命周期、安全、检索密切相连，因为任何可复用工件都需要版本、适用条件、撤回路径和受限执行。

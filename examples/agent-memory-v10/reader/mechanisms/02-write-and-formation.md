@@ -1,5 +1,7 @@
 # 写入与记忆形成：什么内容有资格成为未来状态
 
+> **深潜阅读路径：** 本页保留形成路线的整体地图。capture、分段、抽取、旧状态检索、mutation 和 admission 的内部算法见[形成机制](writing-formation/01-capture-extraction-and-consolidation.md)；Mem0、scope-recall-hermes、Causal Memory、OpenViking 和 Engraphis 的固定版本写入链见[系统 walkthrough](writing-formation/02-system-walkthroughs.md)；raw/structured 反证、成本、投毒与近期研究见[失败与前沿](writing-formation/03-cost-security-and-frontier.md)。
+
 > 本文关注 Memory 的写入入口：从对话、工具结果或环境观察到可被后续使用的持久状态。它不把“模型生成了一段摘要”自动等同于“系统形成了可靠记忆”。底稿见 [v09 生命周期报告](../../../agent-memory-v09/bundle/clusters/mm-c05-lifecycle-consolidation-forgetting.md)、[控制面报告](../../../agent-memory-v09/bundle/clusters/mm-c01-memory-services-control-planes.md) 和 [个性化报告](../../../agent-memory-v09/bundle/clusters/mm-c08-personalization-identity-conversational-continuity.md)。
 
 ## 为什么 `add(memory)` 不够
