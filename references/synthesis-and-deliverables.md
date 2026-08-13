@@ -1,99 +1,93 @@
 # Synthesis and Deliverables
 
-Use the field map and cluster deep packets as the writing inputs. Do not write the final suite directly from source cards.
+Write from the field map and deep packets, never directly from source cards. The result is a reader-first suite: evidence remains traceable, but corpus metrics, claim IDs, packets, cluster IDs, screening terms, and saturation records stay in an appendix or audit layer unless they are essential to explain uncertainty.
 
 ## Reader-facing suite
 
-A full run produces a navigable multi-file suite under `reports/` plus deep reports under `clusters/` and selected project reports under `projects/`:
+A comprehensive run produces a navigable suite under `reader/`, important mechanism reports under `reader/mechanisms/`, scenario reports under `reader/scenarios/`, selected project reports under `reader/projects/`, cross-cutting reports under `reader/cross-cutting/`, and auditable source material under `audit/` or the bundle ledger.
 
-1. `README.md` — entry point, as-of, status, reading paths, artifact navigation, IDs, and unresolved gaps; no new technical conclusions.
-2. `01-executive-decision.md` — cross-cluster conclusions, important changes, decision implications, uncertainty, and next actions.
-3. `02-field-tree.md` — the field DAG rendered as a readable tree/graph with definitions, boundaries, overlaps, corpus counts, and recent coverage.
-4. `03-landscape-synthesis.md` — what the field is doing, organized by cluster; problem, architecture, implementation, maturity, and tradeoffs.
-5. `04-history-and-causality.md` — verified events, source-asserted influence, report inferences, and forecasts kept distinct.
-6. `05-consensus-controversies.md` — scoped propositions, supporting and opposing independent groups, conditions, minority views, and reversal criteria.
-7. `06-github-trend-radar.md` — foundational, established-active, new/accelerating, and watchlist repositories; momentum, maturity, and adoption in separate columns.
-8. `07-benchmark-map.md` — task tree, datasets/versions, memory or system setup, metrics/judges, protocol fingerprints, comparability groups, and gaps.
-9. an optional topic-specific report such as security/failure, standards, or products when material;
-10. `09-method-and-limitations.md` — discovery, screening, clustering, selection, execution, saturation, exclusions, and bias;
-11. `10-source-index.md` — navigation only, grouped by cluster, type, date, and role;
-12. one `clusters/<id>-<slug>.md` for every important cluster;
-13. `projects/<owner>--<repo>.md` for decision-critical, representative, or trend-triggered repositories.
+1. `README.md` — top-level topic/version entry, scope, evidence date, and link to the reader suite.
+2. `reader/README.md` — default reading paths. Lead with the field question and what the reader will understand; do not make internal artifact navigation the primary content.
+3. `reader/overview.md` — independently readable field map: why the field exists, its state objects and central problems, major mechanism branches, their relationship, current practice, 12-month movement, 90-day weak signals, maturity, consensus, disputes, and major unknowns.
+4. `reader/architecture.md` — a descriptive general architecture model or architecture anatomy. Show the normal write/manage/store/retrieve/use/feedback flow, cross-cutting concerns, and variants that replace or omit modules. Never label a recommended route, default combination, or best architecture.
+5. `reader/solution-landscape.md` — cross-branch solution families, how they differ, which mechanism branch each addresses, and the important tradeoffs and failure modes.
+6. `reader/scenarios.md` plus `reader/scenarios/*.md` — cross-branch views for material scenarios. Explain how mechanisms are combined, replaced, or omitted under each scenario's constraints; do not repeat the branches or recommend a configuration.
+7. `reader/trends.md` — current mainstream practice, substantive changes in the last 12 months, and clearly qualified 90-day signals, placed back into their technical context.
+8. `reader/github-radar.md` — broad candidates grouped by mechanism branch and current signal status. Keep attention, activity, maturity, and verified adoption distinct.
+9. `reader/cross-cutting/*.md` — benchmark/evaluation, security/governance, cost/reliability/observability, interoperability/integration, or other material cross-cutting analysis.
+10. `reader/consensus-and-open-questions.md` — scoped consensus, counterevidence, disputes, evidence-thin questions, and unresolved problems in plain language.
+11. `reader/method-and-scope.md` — discovery, screening, clustering, selection, scope, exclusions, and bias. This is the audit bridge, not required reading for a field overview.
+12. `reader/human-review.md` — optional high-impact review items only after the complete reader suite exists.
+13. `reader/mechanisms/<slug>.md` — a standalone reader report for every important mechanism branch.
+14. `reader/projects/<owner>--<repo>.md` — a small number of real engineering analyses for selected repositories.
+15. `audit/README.md` — navigation to evidence authority, ledgers, and any dated update deltas; no new technical conclusions.
 
-The artifact manifest may add topic-specific files. A single `report.md` may exist as a compatibility index, but it is not the only inspected output.
+The suite may add topic-specific reader files. `report.md`, numbered `reports/`, or legacy `clusters/` paths may remain as compatibility surfaces for older bundles, but current reader navigation must point to the semantic `reader/` structure above.
 
-## Cluster report contract
+An important branch may be a package rather than a single file. In that case, keep a reader-oriented branch entry and link focused deep pages for the internal mechanisms, fixed-version engineering, and frontier/counterevidence dimensions that the topic needs. The package as a whole must satisfy the standalone branch contract; no required technical depth may exist only in audit files.
 
-Every important cluster report must answer:
+## Main-report contract
 
-- What problem does this cluster solve, and what is outside its boundary?
-- What are the dominant mechanism, architecture, and implementation patterns?
-- Why did these patterns emerge historically?
-- Which papers, repositories, benchmarks, and products are representative, and why?
-- What do high-quality sources agree on within a stated scope?
-- Which results conflict, and are differences explained by task, data, model, protocol, cost, or incentives?
-- What is the strongest negative result or failure mode?
-- How closely do repositories implement the published ideas?
-- What changed in the recent window, and which signals remain weak?
-- What is known, unknown, and the next decisive test?
-- What should a technical decision-maker do with this cluster?
+The overview must stand alone for a technical reader who has not seen the research process. Within a short first read, that reader should be able to explain:
 
-Do not create a paragraph per source. Use sources as evidence inside an argument organized around the questions above.
+- why the field needs persistent or evolving state;
+- what kinds of state it handles and its principal lifecycle;
+- the major mechanism branches and their relationships;
+- the descriptive general architecture model;
+- what is mainstream, what changed in the last 12 months, and what is only a 90-day weak signal;
+- maturity, costs, failure modes, consensus, disputes, and unresolved questions.
 
-## Project report contract
+Start from the domain answer and use a plain-language-to-technical progression: concrete problem or scenario → intuitive explanation → mechanism → precise term. Present at least one reader-oriented map that relates real problems, state objects, lifecycle, mechanism branches, solution families, and cross-cutting evaluation/security/cost concerns. It must not be a corpus DAG or internal taxonomy visualization.
 
-A selected repository report is a fixed-version engineering analysis, not a quality card with extra prose. For every project deep dive:
+## Mechanism-branch report contract
 
-- pin the exact commit/release and separate repository-created, recently-pushed, and release dates;
-- explain project-specific component relationships and the write → authoritative state → derived index → read/context/action data flow, naming inspected paths or interfaces;
-- inspect actual dependencies, backing services, protocols, adapters, and deployment assumptions from pinned README/manifests/code—not merely manifest filenames;
-- state concrete integration constraints such as runtime/database/provider requirements, migration/version boundaries, tenant/permission assumptions, or index/rebuild behavior;
-- analyze maintenance evidence beyond a star snapshot: recent commits/contributors plus issue/PR/release signals when observed, with unmeasured latency, close rate, bus factor, and support boundaries left explicitly unknown;
-- identify project-specific failure modes, verification steps, and the exact evidence that would reverse the engineering judgment;
-- distinguish README/maintainer assertions, visible code surface, executed results, independent integrations, and production adoption;
-- attach precise README/tree/manifest/code/API locators and mark any reconstructed data flow as an inspection-based inference.
+Organize each important report around a problem and its solution families, not a sequence of papers or repositories. Its shape may vary by branch, but it must independently explain:
 
-Hard-fail a supposed project deep dive that is only top-level directories, manifest/workflow/test path lists, generic cluster risks, and a reusable validation template. If the evidence does not support a real deep dive, publish a bounded project card or gap instead of calling it deep.
+- the problem, a concrete motivating situation, and the boundary;
+- why a simple alternative does not cover the whole problem;
+- the main solution families, how they work, and their architecture, algorithms, data flow, and engineering patterns;
+- a substantive internal walkthrough of every major family: state representation, write/manage/read/use path, decision logic, concrete implementation shape, and where cost or correctness moves;
+- a clear comparison of families—table or an equally legible synthesis—covering what they solve, strengths, conditions, maturity, costs, and failure modes;
+- representative papers, repositories, benchmarks, and negative evidence as evidence and examples, with why they matter;
+- current mainstream practice, 12-month changes, and 90-day weak signals;
+- scoped consensus, counterevidence, disputes, and a qualified judgment of evidence strength and maturity;
+- unresolved questions explained as: what is unknown, why it remains unknown, what understanding it limits, and what evidence is missing.
 
-## Synthesis blocks
+The comparison is the index to the analysis, not the analysis itself. After reading the report, a technically literate newcomer must be able to explain how several major families operate internally and what current research is changing in each. Reject a branch that only names families, gives each one a short paragraph, presents a generic lifecycle diagram without family-specific mechanics, or turns the recent frontier into a list of paper titles.
 
-Keep atomic claims as the source-level audit unit, but allow a coherent paragraph to combine them. Mark a cross-source analytical block with a stable synthesis ID and the claims it depends on, for example:
+When using a branch package, reject it if the entry and child pages merely redistribute the same summary or group sources by type. A useful package separates reader jobs: the entry orients, mechanism pages reconstruct state and algorithms, engineering pages follow real component/data flows, and frontier pages connect counterevidence, costs, failures, and current experiments.
 
-```html
-<!-- synthesis:Y042 claims:C017,C031,C088 clusters:CL03 -->
-```
+State applicability conditions descriptively. Do not tell the reader which route to select, provide a deployment path, produce an implementation checklist, or rank routes as winners.
 
-The corresponding synthesis record must state the proposition or analytical move, a disjoint synthesis-level partition of supporting and opposing evidence IDs, their canonical independent groups, assessment (`dominant`, `mixed`, `disputed`, or `evidence-thin`), minority view, unknowns, weighting method, confidence, conditions, limitations, and reversal criteria. Claim-level `supports`/`contradicts` relations cannot be reused as synthesis stance automatically: a source may support a negative atomic claim while opposing the higher-level proposition. A paragraph may contain multiple sentence-level claim markers. Each marker still immediately follows the exact supported factual sentence, but it no longer has to be the only prose in the paragraph. Register and mark all high-risk or decision-critical source facts; lower-risk connective analysis may remain unmarked when it is conservative, traceable at paragraph level, and introduces no consequential new fact.
+## Scenario-view contract
 
-A `cross-source synthesis` proposition must be an actual analytical judgment and use at least two canonical evidence groups. It may not equal or embed one underlying atomic claim, contain an HTML claim marker, or masquerade a repository metadata snapshot as consensus. Use an evidence-aggregation action for a single project or single-family inspection.
+Use scenarios as cross-branch explanatory lenses. For each material scenario, identify the relevant state, which mechanism modules are combined/replaced/omitted, the special constraints, and the branches where detail lives. Avoid restating every base mechanism or implying a recommended stack. Promote the scenario only when it is a distinct technical mechanism rather than a combination of existing branches.
 
-Every substantive block must either:
+## Project-report contract
 
-- perform a named synthesis action and cite its underlying claims;
-- contain one or more evidence-backed atomic claims;
-- be a narrowly marked method, limitation, or navigation block.
+A selected repository report is a fixed-version engineering analysis, not a quality card with extra prose. Explain:
 
-Reject consecutive project-introduction paragraphs, source-by-source summaries, or prose that merely restates metadata without explaining a mechanism, pattern, comparison, conflict, or implication.
+- the mechanism route and scenario relationships it embodies, plus what differentiates it from similar projects;
+- actual component relationships and the write → authoritative state → derived index → retrieve/context → update/use data flow, with inspected paths or interfaces;
+- actual dependencies, backing services, protocols, adapters, deployment assumptions, and integration boundaries from pinned README, manifests, and code;
+- maintenance, releases, tests, and version signals without treating attention as adoption;
+- project-specific failure modes, maintenance or extension boundaries, and evidence that would reverse the analysis;
+- the distinction between code-visible facts, maintainer assertions, executed results, independent integrations, and unverified risk.
 
-## Consensus weighting
+Hard-fail a supposed deep dive that is only directories, manifest/workflow/test lists, generic branch risks, or a reusable validation template. If evidence is thin, publish a bounded project card or a gap instead. Do not select projects mechanically by Star count or a fixed quota.
 
-Assess consensus at the proposition level. Consider:
+## Evidence and synthesis
 
-- number of genuinely independent evidence groups;
-- primary evidence versus survey or vendor repetition;
-- peer review and publication status;
-- independent reproduction and public artifacts;
-- protocol relevance and comparability;
-- freshness and version alignment;
-- credible contradictory or negative evidence;
-- applicability conditions and population boundaries.
+Keep atomic claims and evidence records as the audit unit. Require direct support and precise locators for core conclusions, critical numbers, current versions/status, consequential comparisons, security/adoption facts, and material limitations. Ordinary mechanism explanation may use conservative paragraph-level citations when it is reasonable and traceable.
 
-Use `dominant`, `mixed`, `disputed`, or `evidence-thin`, with a rationale. Preserve the strongest minority view and the evidence that would reverse the assessment. Never use citation, source, or star counts as a vote by themselves.
+Use synthesis records for consequential cross-source analytical judgments. Their internal markers belong in the audit layer, footnotes, or unobtrusive source machinery—not reader-facing headings, tables, or narrative. A synthesis must state the scoped proposition, independent support and opposition, assessment (`dominant`, `mixed`, `disputed`, or `evidence-thin`), conditions, limitations, confidence, minority view, unknowns, and reversal evidence. Do not count links, citations, or stars as votes.
 
 ## Benchmark synthesis
 
-Assign a protocol fingerprint and comparability group before comparing results. At minimum record task, dataset/version, input construction, model, prompt, retrieval/tool budget, context limit, judge, metric, runtime/hardware when relevant, and artifact version. Quantitatively rank only within a compatible group. Across groups, compare coverage, assumptions, and failure modes instead of headline scores.
+Assign a protocol fingerprint and comparability group before comparing results. Record task, dataset/version, input construction, model, prompt, retrieval/tool budget, context limit, judge, metric, runtime/hardware when relevant, and artifact version. Rank only within a compatible group. Across groups, compare coverage, assumptions, and failure modes instead of headline scores.
 
-## Executive synthesis
+## Review and completion
 
-Write the executive report last. Each conclusion must link to at least one cluster report and one closed synthesis/claim chain. It must state the current field-level judgment, what changed recently, what is mature, what remains disputed, and which next test or adoption action follows. The executive writer may not introduce new source facts.
+Write the complete reader suite before preparing an optional human-review list. Reserve it for a small set of high-impact conflicts, low-confidence emerging signals, or subjective representative choices. Lack of review must not leave an empty section, suspended conclusion, or incomplete branch report.
+
+Completion is a reader outcome, not a ledger total: a new technical reader should understand the default entry without the audit files, each important mechanism report should stand on its own, selected project reports should describe actual engineering rather than README claims, and key facts should remain traceable. File, source, project, claim, or validation counts alone cannot prove this outcome.

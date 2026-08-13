@@ -1,78 +1,52 @@
 # Evaluation Gates
 
-Evaluate a full run with independent, outcome-oriented gates. A high evidence score cannot rescue insufficient breadth, freshness, field structure, selective depth, or synthesis. Missing optional bookkeeping is not itself a hard failure when the report remains honest and the key judgments are auditable.
+Evaluate a full run with independent, outcome-oriented gates. Evidence volume or a green schema cannot rescue an unreadable, stale, shallow, or misleading suite. Missing optional bookkeeping is not itself a hard failure when the report is honest and key judgments remain auditable.
 
-## Breadth
+## Reader outcome (decisive)
 
-- Report discovered, mapped, and deep-verified counts separately by entity type, lane, cluster, and time window.
-- Meet the run-specific targets declared after the pilot, or downgrade the result from comprehensive with a credible scarcity explanation.
-- Cover every user-required lane and every important cluster in aggregate across the applicable paper, GitHub, benchmark, product/standard, adoption, and negative-evidence ecology. Use the grid to diagnose skew; do not require a full Cartesian product when a cell is immaterial or the lane is not independently meaningful for that cluster.
-- Report material partial/gap cells and their effect on conclusions. A replayable cell-level coverage proof is optional except for decision-critical missing evidence, disputed boundaries, or strong bounded-absence claims.
-- State bounded scarcity as a research limitation with aliases, date bounds, search routes, high-signal exclusions, and blind spots. Use multiple independent routes or repeated no-material cycles when the absence materially drives a decision; do not attempt to prove universal nonexistence.
-- Inspect high-signal exclusions, deferred items, unmapped items, and name collisions.
-- Demonstrate that the field map and important-cluster conclusions stabilized through information-gain summaries and explicit residual gaps. Require replayable consecutive no-material cycles only for consequential bounded-absence or disputed-scope conclusions.
+- A technical reader new to the specialty can use the default entry alone to explain the field's problem, state/lifecycle, general architecture model, main mechanism branches and relations, current practice, recent movement, and key uncertainty.
+- The main report leads with the answer, uses a concrete-problem → intuitive explanation → mechanism → precise-term progression, and does not require cluster IDs, claim IDs, schema fields, mapping labels, or saturation terminology.
+- Every important mechanism branch is independently readable and presents its problem, solution families, operation, comparison, engineering patterns, maturity, tradeoffs, failure modes, evidence strength, and unresolved questions.
+- For every important branch, a reader can reconstruct how its major solution families work: state/data structures, write/manage/read/use flow, algorithms or control decisions, concrete implementations, shifted costs, and failure conditions. A table plus short summaries does not pass this gate.
+- A large branch may satisfy this across an entry map and linked deep pages. The package must be navigable, non-duplicative, and independently understandable; file count or aggregate length is not evidence of depth.
+- Each important branch explains the current research agenda in mechanism terms—what layer is changing, why prior designs are insufficient, and what missing implementation or experiment blocks progress—instead of listing recent papers or calling the area active.
+- Scenario views synthesize across mechanism branches without becoming recommendation documents; selected project reports show actual fixed-version engineering evidence rather than README paraphrase.
+- The reader can distinguish descriptive applicability conditions from advice. No report recommends a route, declares a universal winner, ranks alternatives as a selection aid, gives a default architecture, or offers deployment/onboarding validation guidance unless the user explicitly changes the contract.
 
-## Freshness
+Use an independent-reader test when available. Its absence is an advisory, not a reason to withhold a complete first version. Counts, hashes, manifests, claim totals, and validator status are supporting evidence only, never substitutes for this gate.
 
-- Report recent absolute counts and proportions by important cluster.
-- Track the latest deeply verified evidence date and repository observation date per cluster.
-- Investigate every material recent paper/repository signal or leave it explicitly unresolved.
-- Recheck mutable product, standard, release, repository, and benchmark state at the actual as-of date.
+## Breadth and boundaries
 
-## Map quality
+- Cover all user-required lanes and all important mechanism branches in aggregate across relevant papers, GitHub, benchmarks, products/standards, adoption, and negative evidence. Use branch × lane × time-window coverage to diagnose skew, not as a Cartesian quota.
+- Report discovered, mapped, and deep-verified populations separately in the audit or method material. Keep material gaps, high-signal exclusions, deferred items, unmapped items, collisions, and their effects visible.
+- Focus discovery on current practice, the rolling 12-month frontier, and the rolling 90-day weak-signal window. Include old work only when it explains a current route; do not require a foundations section or source quota.
+- Establish stabilization through information-gain summaries and residual gaps. Use repeated no-material cycles only for consequential bounded-absence or disputed-scope conclusions; never claim universal nonexistence.
 
-- Define every cluster's inclusion, exclusion, parent/adjacent relations, problem, architecture, implementation pattern, and tradeoffs.
-- Ensure every mapped entity is assigned, marked as a bridge, or left explicitly unmapped.
-- Use the broad corpus, not only the deep shortlist, to derive cluster sizes and trends.
-- Preserve merge/split rationale and reject circular taxonomy relations.
+## Freshness and trends
 
-## Depth
+- Explain recent activity by important mechanism branch: substantive 12-month changes, 90-day signals, and the date of latest deep verification or repository observation where material.
+- Investigate material new papers and repositories or mark them unresolved. Recheck mutable product, standard, release, repository, and benchmark state as of the actual run date.
+- Keep attention/momentum, engineering maturity, and verified adoption separate. Growth/acceleration claims need at least two observations or replayable history; stars and rankings alone prove none of quality, performance, adoption, or readiness.
 
-- Produce a meaningful standalone report for every important cluster or declare an incomplete gap; allocate depth by importance, novelty, controversy, and decision value rather than equal page counts.
-- Select foundational, recent, implementation, benchmark, and negative evidence when applicable.
-- Give GitHub architecture and engineering analysis equal weight to papers for implementation-led claims.
-- Preserve exact source access, paper/repository identity, relevant commit/version, execution truth when execution occurred, and benchmark conditions for compared results.
-- For selected repositories, require a reciprocal structured engineering profile with project-specific components, data flow, actual dependencies/services, integration constraints, maintenance boundaries, failure modes, adoption boundary, and useful fixed-version locators. Directory/manifest lists plus cluster-generic prose do not pass this gate, but execution is not required unless it can change the judgment.
+## Map, depth, and engineering quality
 
-## Consensus and contradiction
+- Define each branch's inclusion, exclusion, adjacent relation, problem, solution families, architecture/implementation patterns, tradeoffs, and failures. Derive the map from the broad corpus, preserve merge/split rationale, and retain bridge or unmapped items.
+- Allocate depth by importance, novelty, controversy, and engineering value rather than equal report length, fixed source numbers, or a mandatory historic set.
+- Give GitHub engineering analysis equal weight to papers for implementation-led claims. A deep project report must provide project-specific components, lifecycle data flow, dependencies/services, integration/deployment constraints, maintenance boundaries, failure modes, adoption boundary, and useful fixed-version locators. Directory/manifest lists plus generic prose do not pass.
+- Use a broad GitHub radar plus a small number of information-rich deep dives; neither Stars nor fixed quotas determine selection.
 
-- Define scoped propositions and independent evidence-group stances.
-- State weighting basis, conditions, minority views, unknowns, and reversal criteria.
-- Partition supporting and opposing evidence at synthesis level; do not infer proposition stance from an evidence join's relation to a differently worded atomic claim.
-- Do not label a proposition consensus when evidence is repeated from one group or remains protocol-incomparable.
+## Consensus, evidence, and synthesis
 
-## Synthesis
+- Define scoped propositions with independent support/opposition, conditions, limitations, minority view, unknowns, and reversal evidence. Do not call repeated or protocol-incomparable evidence consensus.
+- Apply direct, precise evidence controls to core conclusions, key numbers, versions/status, consequential comparisons, security/adoption facts, and material limitations. Use conservative, traceable citations for ordinary explanatory prose.
+- Organize the main report and branches around problems, mechanisms, architectures, implementations, comparisons, tradeoffs, and temporal change. Reject source-by-source summaries, audit-led openings, and prose dominated by project introductions.
+- Verify input absorption by branch: selected deep sources must materially affect a mechanism, engineering walkthrough, experimental boundary, qualified judgment, or research agenda. Names that appear only in tables or lists do not satisfy this gate; broad long-tail coverage may remain in the audit/radar.
+- Keep internal claim/evidence/synthesis markers and audit logs out of reader narration. They may appear in the audit layer or unobtrusive source machinery needed for traceability.
 
-- Organize the main landscape and cluster reports around problems, mechanisms, architectures, implementations, tradeoffs, and causal/temporal relations.
-- Require each substantive analytical block to combine or contrast evidence, explain a pattern, identify a condition, or derive a decision implication.
-- Reject a report dominated by paper/repository introductions or consecutive source-named paragraphs.
-- Verify the executive report was derived from the cluster and synthesis artifacts and introduces no new source facts.
+## Deliverable integrity and review
 
-## Engineering usefulness
+- Validate manifest paths, hashes, IDs, relative links, and the internal consistency of supplied audit records. Treat deterministic validation as a check for consistency, not quality completion.
+- Provide a default reading path plus links to the general architecture model, mechanism landscape, scenario views, trends, evidence/limitations, branch reports, and selected project reports.
+- Produce a complete, coherent reader suite before an optional human-review list. Limit review to high-impact conflicts, low-confidence signals, or subjective representative choices; it must only trigger incremental revision.
 
-- Separate repository attention/momentum, engineering maturity, and verified adoption.
-- Include current and recent repositories, not only historical foundations.
-- Record architecture/code layout, setup, tests/CI, releases, maintenance, license, integration constraints, and available deployment evidence for deep repositories. Inspect key fixed-version files; run code only when doing so resolves a material uncertainty.
-- Require at least two observations for growth/acceleration claims and keep such metrics signal-only.
-
-## Evidence correctness
-
-Apply strict evidence controls to high-risk and decision-critical claims:
-
-- high-risk facts need an opened direct-support T1 source and precise locator;
-- every registered high-risk claim has a closed evidence/semantic audit; lower-risk factual prose may use conservative paragraph-level citations and sampled checking;
-- research logs support only bounded-search inferences;
-- unsupported claims stay ledger-only;
-- publication status, current version/date, numerical units, baselines, and protocol boundaries remain explicit;
-- benchmarks outside a comparability group are not ranked;
-- repository existence or stars do not prove capability, performance, adoption, or production readiness.
-- every claim marker that is used in a manifested reader file must immediately follow the ledger-exact statement; marker-ID reciprocity alone is insufficient.
-
-## Deliverable integrity
-
-- Validate every manifest path, hash, ID reference, and relative link.
-- Allow claims to be reused across reader files while keeping one evidence authority.
-- Require every important cluster to link its report and relevant reader files; synthesis records should cover the conclusions that actually drive the executive view.
-- Provide 5-minute executive, 30-minute landscape, and expert cluster reading paths.
-
-Record each gate as `pass`, `partial`, or `fail` with direct artifact evidence. Do not collapse the gates into one score that can hide a failure.
+Record each gate as `pass`, `partial`, or `fail` with direct artifact evidence. Do not collapse the gates into one score that hides a reader-outcome failure.

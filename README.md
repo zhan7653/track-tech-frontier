@@ -1,15 +1,15 @@
 # Track Tech Frontier
 
-`track-tech-frontier` 是一个面向技术前沿调研的 Codex Skill。它先以高召回方式收集论文、GitHub 仓库、标准、产品与反面证据，再构建领域树、识别重要分支、做重点深挖，最终输出多文件研究套件，而不是链接清单或项目简介合集。
+`track-tech-frontier` 是一个面向技术前沿调研的 Codex Skill。它先以高召回方式收集论文、GitHub 仓库、标准、产品与反面证据，再构建领域地图、按技术机制综合方案空间，并将重要方向和少量工程项目做深，最终交付面向读者的多文件研究套件，而不是链接清单、项目简介合集或审计账本。
 
 ## 能做什么
 
 - 广泛发现论文和 GitHub 项目，并保留可复查的查询与筛选记录。
-- 按机制、架构、实现、评测、安全、成本与采用情况聚类。
-- 区分“广度地图”和“重点深挖”，对每个重要分支形成独立分析。
+- 按“技术机制主分支 → 应用场景视图 → 重点 GitHub 工程案例”组织读者内容。
+- 区分“广度地图”和“重点深挖”，先综合方案家族，再分析代表性机制与真实实现。
 - 同时追踪论文前沿与近期 GitHub 工程趋势。
-- 显式整理共识、争议、反例、证据空白和后续验证问题。
-- 生成字段树、全景分析、时间线、benchmark map、GitHub radar、cluster deep dives 和 repository deep dives。
+- 显式整理共识、争议、反例、证据空白和未解决问题。
+- 输出独立可读的总览、通用架构模型、机制报告、场景视图、GitHub radar 与项目工程报告；审计材料下沉。
 
 ## 仓库结构
 
@@ -19,6 +19,7 @@ agents/openai.yaml               Codex 展示与默认提示
 references/                      方法、证据、GitHub、综合与交付规范
 scripts/                         corpus discovery、bundle 管理与测试
 examples/agent-memory-v09/       Agent Memory 前沿调研最终快照
+examples/agent-memory-v10/       基于 v09 重编的读者版参考实现
 ```
 
 ## 安装
@@ -39,17 +40,18 @@ git clone https://github.com/zhan7653/track-tech-frontier.git "$HOME\.codex\skil
 
 ## Agent Memory 调研
 
-本仓库包含截至 **2026-08-10** 的完整可读研究快照。建议从 [Memory 研究入口](examples/agent-memory-v09/bundle/reports/README.md) 开始：
+本仓库包含截至 **2026-08-10** 的 Agent Memory 研究底稿，以及 2026-08-12 完成的读者版重编。建议从 [Memory v10 读者入口](examples/agent-memory-v10/reader/README.md) 开始：
 
-- [执行结论](examples/agent-memory-v09/bundle/reports/01-executive-decision.md)
-- [字段树](examples/agent-memory-v09/bundle/reports/02-field-tree.md)
-- [架构全景](examples/agent-memory-v09/bundle/reports/03-landscape-synthesis.md)
-- [共识与争议](examples/agent-memory-v09/bundle/reports/05-consensus-controversies.md)
-- [GitHub 趋势雷达](examples/agent-memory-v09/bundle/reports/06-github-trend-radar.md)
-- [14 个技术分支深挖](examples/agent-memory-v09/bundle/clusters/)
-- [16 个仓库深挖](examples/agent-memory-v09/bundle/projects/)
-- [输入审计](examples/agent-memory-v09/bundle/reports/12-input-audit.md)
-- [方法与限制](examples/agent-memory-v09/bundle/reports/09-method-and-limitations.md)
+- [领域总览](examples/agent-memory-v10/reader/overview.md)
+- [通用架构模型](examples/agent-memory-v10/reader/architecture.md)
+- [方案全景](examples/agent-memory-v10/reader/solution-landscape.md)
+- [当前主流与近期变化](examples/agent-memory-v10/reader/trends.md)
+- [六个技术机制分支](examples/agent-memory-v10/reader/mechanisms/README.md)
+- [四个应用场景](examples/agent-memory-v10/reader/scenarios/README.md)
+- [GitHub 候选雷达](examples/agent-memory-v10/reader/github-radar.md)
+- [八个重点工程案例](examples/agent-memory-v10/reader/projects/README.md)
+
+[v09](examples/agent-memory-v09/README.md) 完整保留为广度语料、固定证据、结构化账本、旧版专题和研究过程的权威快照。v10 没有复制 278 MiB 的完整工作目录，而是通过 [审计入口](examples/agent-memory-v10/audit/README.md)连接到 v09。
 
 Git 历史保存最终报告、结构化账本以及报告链接所需的关键过程材料。完整约 278 MiB 的研究工作目录（包含大体积 raw snapshots、全部中间产物与验证材料）作为 GitHub Release `agent-memory-v09` 的压缩附件发布，避免让普通 clone 承担实验归档体积。
 
@@ -61,7 +63,15 @@ Skill 脚本仅依赖 Python 标准库。运行测试：
 python -m unittest discover -s scripts -p "test_*.py"
 ```
 
-Memory 快照还附带独立评审、完成度审计和最终完整性清单：
+验证 Memory v10 的读者套件结构、UTF-8、相对链接、占位内容和内部审计标记：
+
+```powershell
+python scripts/validate_reader_suite.py --root examples/agent-memory-v10
+```
+
+该检查只验证读者交付的基本完整性；内容是否真正讲清领域，仍需按 `references/evaluation-gates.md` 做抽样阅读或独立读者复核，不能由绿色检查替代。
+
+v09 快照还附带独立评审、完成度审计和最终完整性清单：
 
 - [独立评审](examples/agent-memory-v09/review.md)
 - [完成度审计](examples/agent-memory-v09/COMPLETION_AUDIT.md)
