@@ -34,7 +34,7 @@ Agent Memory 研究的是：一个会跨会话、跨任务或跨执行环境行�
 | 六个方向的算法、固定版本工程和研究前沿分别在哪 | [技术机制深潜索引](mechanisms/README.md) |
 | 多主体、世界状态或可移植共享状态 | [多 Agent 共享 Memory](scenarios/03-multi-agent-shared-memory.md)、[世界状态与具身](scenarios/04-world-state-embodied-multimodal.md)及[互操作专题](cross-cutting/04-interoperability-and-integration.md) |
 | 评测是否真的测到了 Memory，或安全成本如何影响链路 | [横切议题](cross-cutting/README.md) |
-| 一个具体 GitHub 项目代码实际上怎样运转 | [重点工程案例](projects/README.md) |
+| 一个具体 GitHub 项目代码实际上怎样运转 | [重点工程案例](projects/README.md)；当前 Codex 见 [Codex 本地 Memory 系统](projects/openai--codex.md) |
 
 每个专题都应可独立阅读：先给场景和问题，再解释方案族与机制，最后说明工程实现、比较、失败模式、成熟度和仍不确定之处。没有页面需要读者理解 v09 的 cluster ID、claim ID 或研究流程。
 
@@ -44,6 +44,6 @@ Agent Memory 研究的是：一个会跨会话、跨任务或跨执行环境行�
 
 ## 证据与版本
 
-本读者层由 v09 材料重编；[v09](../../agent-memory-v09/README.md) 仍是冻结于 2026-08-10 的主要证据、输入审计和可追溯账本所在地。2026-08-12 的窄幅补查只增加三项机制论文，没有重新核验所有动态项目；具体查询和来源见[v10 审计入口](../audit/README.md)。因此，除明确链接该增量的论文机制外，正文不能被理解为对 2026-08-10 之后仓库、发布、标准或采用状态的全面更新。
+本读者层由 v09 材料重编；[v09](../../agent-memory-v09/README.md) 仍是冻结于 2026-08-10 的主要证据、输入审计和可追溯账本所在地。2026-08-12 的窄幅机制补查增加三项论文；2026-08-23 的第二个定向增量只深查 `openai/codex` 的本地 Memory 源码、官方文档和当前 issues。具体查询和来源见[v10 审计入口](../audit/README.md)。因此，正文不能被理解为对所有 2026-08-10 之后仓库、发布、标准或采用状态的全面更新。
 
 需要核对范围与证据边界时，读 [方法与范围](method-and-scope.md)；内部分类映射已下沉到[审计目录](../audit/old-to-new-map.md)。只有少量足以改变重点或判断的事项进入 [人工评审](human-review.md)，且评审不是阅读本套件的前置条件。
