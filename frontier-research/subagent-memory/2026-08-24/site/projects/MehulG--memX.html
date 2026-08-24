@@ -34,7 +34,7 @@
         <p>固定版本： MehulG/memX@86aeffe 观察： 2026-08-24；无 release；MIT；最近 push 2026-01-12，最近90天commit为0。未启动服务。</p>
       </header>
       <nav class="section-map" aria-label="本页理解地图"><span class="section-map-label">本页理解地图</span><div><a href="#结论"><span>01</span><strong>结论</strong></a><a href="#写入数据流"><span>02</span><strong>写入数据流</strong></a><a href="#schema-与-acl"><span>03</span><strong>Schema 与 ACL</strong></a><a href="#通知实现"><span>04</span><strong>通知实现</strong></a><a href="#依赖测试与维护"><span>05</span><strong>依赖、测试与维护</strong></a><a href="#项目特有失败模式"><span>06</span><strong>项目特有失败模式</strong></a></div></nav>
-      <div class="article-body"><p><strong>固定版本：</strong> <a href="https://github.com/MehulG/memX/tree/86aeffed547e9978d214f2a101136d955042301f" data-link-kind="external" target="_blank" rel="noopener noreferrer">@@FRONTIERHTML0@@</a> <strong>观察：</strong> 2026-08-24；无 release；MIT；最近 push 2026-01-12，最近90天commit为0。未启动服务。</p>
+      <div class="article-body"><p><strong>固定版本：</strong> <a href="https://github.com/MehulG/memX/tree/86aeffed547e9978d214f2a101136d955042301f" data-link-kind="external" target="_blank" rel="noopener noreferrer"><code>MehulG/memX@86aeffe</code></a> <strong>观察：</strong> 2026-08-24；无 release；MIT；最近 push 2026-01-12，最近90天commit为0。未启动服务。</p>
 <h2 id="结论"><a class="heading-anchor" href="#结论" aria-label="链接到本节">#</a>结论</h2>
 <p>memX是一个小而清晰的 shared typed state service：FastAPI鉴权、Redis authoritative value/schema、server timestamp LWW、JSON Schema和WebSocket通知。它适合共享当前键值，不是完整长期 Memory：没有history、provenance、semantic retrieval、conflict object、forgetting或belief commit。README称 Redis pub/sub，但固定代码的 subscriber registry是进程内 Python dict；多 worker/host通知不会自动共享。</p>
 <h2 id="写入数据流"><a class="heading-anchor" href="#写入数据流" aria-label="链接到本节">#</a>写入数据流</h2>
@@ -45,12 +45,12 @@
 → Redis WATCH current key
 → compare server time, MULTI/SET value+ts
 → in-process publish to WebSocket subscribers</code></pre></figure>
-<p><a href="https://github.com/MehulG/memX/blob/86aeffed547e9978d214f2a101136d955042301f/store.py#L25" data-link-kind="external" target="_blank" rel="noopener noreferrer">@@FRONTIERHTML0@@</a>用Redis WATCH/MULTI重试并写 <code>{value, ts}</code>。timestamp由API进程生成；它实现确定的最后写入值，不保留loser或说明哪个Agent更可信。</p>
+<p><a href="https://github.com/MehulG/memX/blob/86aeffed547e9978d214f2a101136d955042301f/store.py#L25" data-link-kind="external" target="_blank" rel="noopener noreferrer"><code>store.set_value</code></a>用Redis WATCH/MULTI重试并写 <code>{value, ts}</code>。timestamp由API进程生成；它实现确定的最后写入值，不保留loser或说明哪个Agent更可信。</p>
 <h2 id="schema-与-acl"><a class="heading-anchor" href="#schema-与-acl" aria-label="链接到本节">#</a>Schema 与 ACL</h2>
 <p>Schema以 <code>memx:schema:&lt;key&gt;</code>存在Redis，Draft7验证发生在写 value前。Supabase <code>api_keys</code>可给 read/write glob patterns和 user_id；如果Supabase查询失败，代码回退本地 <code>config/acl.json</code>。这便于dev可用性，也意味着本地 key在中心鉴权故障时仍可生效。</p>
 <p>带 user_id时真实Redis key使用前8字符prefix；scope检查也对同一prefix执行。它不是 tenant/Agent/project多维 identity，prefix碰撞和 key naming discipline由部署者负责。</p>
 <h2 id="通知实现"><a class="heading-anchor" href="#通知实现" aria-label="链接到本节">#</a>通知实现</h2>
-<p><a href="https://github.com/MehulG/memX/blob/86aeffed547e9978d214f2a101136d955042301f/pubsub.py" data-link-kind="external" target="_blank" rel="noopener noreferrer">@@FRONTIERHTML0@@</a>维护 <code>subscriptions[event][key] -&gt; websocket list</code>，publish逐连接 <code>send_json</code>并移除失败socket。没有Redis channel、持久offset、ack、replay或跨process fan-out。WebSocket loop只sleep等待断开；schema和value使用两个event type。</p>
+<p><a href="https://github.com/MehulG/memX/blob/86aeffed547e9978d214f2a101136d955042301f/pubsub.py" data-link-kind="external" target="_blank" rel="noopener noreferrer"><code>pubsub.py</code></a>维护 <code>subscriptions[event][key] -&gt; websocket list</code>，publish逐连接 <code>send_json</code>并移除失败socket。没有Redis channel、持久offset、ack、replay或跨process fan-out。WebSocket loop只sleep等待断开；schema和value使用两个event type。</p>
 <h2 id="依赖测试与维护"><a class="heading-anchor" href="#依赖测试与维护" aria-label="链接到本节">#</a>依赖、测试与维护</h2>
 <p>依赖FastAPI、Redis、jsonschema、optional Supabase、requests/websockets SDK、Docker Compose。仓库有SDK tests和smoke/example，但无大量并发/ACL/多worker测试，未见release。单点Stars不用于质量判断。</p>
 <h2 id="项目特有失败模式"><a class="heading-anchor" href="#项目特有失败模式" aria-label="链接到本节">#</a>项目特有失败模式</h2>

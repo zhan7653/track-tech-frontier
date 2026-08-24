@@ -34,7 +34,7 @@
         <p>固定版本： caura-ai/caura@54dd6d4 观察： 2026-08-24；release plugin-v2.17.0；Apache-2.0。未启动 Postgres/Redis或执行 tests。</p>
       </header>
       <nav class="section-map" aria-label="本页理解地图"><span class="section-map-label">本页理解地图</span><div><a href="#结论"><span>01</span><strong>结论</strong></a><a href="#部署组件"><span>02</span><strong>部署组件</strong></a><a href="#写入路径"><span>03</span><strong>写入路径</strong></a><a href="#搜索路径"><span>04</span><strong>搜索路径</strong></a><a href="#contradiction-与-lifecycle"><span>05</span><strong>Contradiction 与 lifecycle</strong></a><a href="#身份治理与安全"><span>06</span><strong>身份、治理与安全</strong></a><a href="#维护测试与失败模式"><span>07</span><strong>维护、测试与失败模式</strong></a></div></nav>
-      <div class="article-body"><p><strong>固定版本：</strong> <a href="https://github.com/caura-ai/caura/tree/54dd6d4f2075ca428b1f3a5a8c50114351ea4755" data-link-kind="external" target="_blank" rel="noopener noreferrer">@@FRONTIERHTML0@@</a> <strong>观察：</strong> 2026-08-24；release <code>plugin-v2.17.0</code>；Apache-2.0。未启动 Postgres/Redis或执行 tests。</p>
+      <div class="article-body"><p><strong>固定版本：</strong> <a href="https://github.com/caura-ai/caura/tree/54dd6d4f2075ca428b1f3a5a8c50114351ea4755" data-link-kind="external" target="_blank" rel="noopener noreferrer"><code>caura-ai/caura@54dd6d4</code></a> <strong>观察：</strong> 2026-08-24；release <code>plugin-v2.17.0</code>；Apache-2.0。未启动 Postgres/Redis或执行 tests。</p>
 <h2 id="结论"><a class="heading-anchor" href="#结论" aria-label="链接到本节">#</a>结论</h2>
 <p>Caura不是简单 memory API，而是 API gateway + write/search pipeline + Postgres/pgvector/FTS + Redis/worker + identity/trust/audit/contradiction服务。它把 tenant/fleet/agent/visibility写入权威 row，并区分快速、强、STM和普通 persist路径。能力丰富也带来主要风险：同一语义散布在多个 route、write mode、background worker和 storage API，任何 path漏掉 scope或顺序都会造成能力漂移。</p>
 <h2 id="部署组件"><a class="heading-anchor" href="#部署组件" aria-label="链接到本节">#</a>部署组件</h2>
@@ -54,7 +54,7 @@
     API --&gt; AUD</code></pre></details></details></figure>
 <p>Docker Compose固定 Postgres 16 + pgvector、Redis 7、core API/storage/worker等服务。数据库初始 schema的 <code>memories</code>含 tenant、fleet、agent、type、content、embedding、FTS、status、visibility、supersedes、timestamps；另有 entities/relations/agent/audit/fleet/document tables。</p>
 <h2 id="写入路径"><a class="heading-anchor" href="#写入路径" aria-label="链接到本节">#</a>写入路径</h2>
-<p><a href="https://github.com/caura-ai/caura/blob/54dd6d4f2075ca428b1f3a5a8c50114351ea4755/core-api/src/core_api/pipeline/compositions/write.py" data-link-kind="external" target="_blank" rel="noopener noreferrer">@@FRONTIERHTML0@@</a>把责任顺序写成显式 pipeline：</p>
+<p><a href="https://github.com/caura-ai/caura/blob/54dd6d4f2075ca428b1f3a5a8c50114351ea4755/core-api/src/core_api/pipeline/compositions/write.py" data-link-kind="external" target="_blank" rel="noopener noreferrer"><code>write.py</code></a>把责任顺序写成显式 pipeline：</p>
 <h3 id="strong-mode"><a class="heading-anchor" href="#strong-mode" aria-label="链接到本节">#</a>Strong mode</h3>
 <figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">length → tenant config → deterministic PII scan
 → business/personal pregate → hash
@@ -67,7 +67,7 @@
 <h3 id="stm-mode"><a class="heading-anchor" href="#stm-mode" aria-label="链接到本节">#</a>STM mode</h3>
 <p>只做 length、deterministic scan、resolve target、write ephemeral note，不运行完整 enrichment。不同 mode并非同一安全/一致性保证。</p>
 <h2 id="搜索路径"><a class="heading-anchor" href="#搜索路径" aria-label="链接到本节">#</a>搜索路径</h2>
-<p><a href="https://github.com/caura-ai/caura/blob/54dd6d4f2075ca428b1f3a5a8c50114351ea4755/core-api/src/core_api/pipeline/compositions/search.py" data-link-kind="external" target="_blank" rel="noopener noreferrer">@@FRONTIERHTML0@@</a>执行 profile → temporal hint → query class → parallel embedding/entity boost → scored search → rerank → post-filter → serialize → STM injection → recall tracking/audit。</p>
+<p><a href="https://github.com/caura-ai/caura/blob/54dd6d4f2075ca428b1f3a5a8c50114351ea4755/core-api/src/core_api/pipeline/compositions/search.py" data-link-kind="external" target="_blank" rel="noopener noreferrer"><code>search.py</code></a>执行 profile → temporal hint → query class → parallel embedding/entity boost → scored search → rerank → post-filter → serialize → STM injection → recall tracking/audit。</p>
 <p>REST <code>agent_id</code>既可能是 visibility identity，也有独立 <code>written_by</code> author filter；显式 scope支持 <code>agent/fleet/all</code> trust ladder。当前代码优先使用 authenticated agent identity，避免 query param伪装 peer；agent scope、fleet enforcement和 cross-tenant widen有多处分支与 audit。</p>
 <h2 id="contradiction-与-lifecycle"><a class="heading-anchor" href="#contradiction-与-lifecycle" aria-label="链接到本节">#</a>Contradiction 与 lifecycle</h2>
 <p>write后 background detector通过 entity/RDF overlap或其他 trigger寻找候选，记录 conflict、status和 <code>supersedes_id</code>；storage batch status update提供 expected supersedes CAS。当前仓库有大量 contradiction、dedup、retraction、scope、hard purge和 concurrency tests。</p>

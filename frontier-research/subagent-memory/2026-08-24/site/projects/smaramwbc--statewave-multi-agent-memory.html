@@ -34,7 +34,7 @@
         <p>固定版本： smaramwbc/statewave-multi-agent-memory@7f16415 观察： 2026-08-24；无 GitHub release；Apache-2.0。该仓库是 demo/client，非 Statewave runtime源码；未执行外部服务。</p>
       </header>
       <nav class="section-map" aria-label="本页理解地图"><span class="section-map-label">本页理解地图</span><div><a href="#结论"><span>01</span><strong>结论</strong></a><a href="#组件与数据流"><span>02</span><strong>组件与数据流</strong></a><a href="#并发真实边界"><span>03</span><strong>并发真实边界</strong></a><a href="#conflict-demo-与来源"><span>04</span><strong>Conflict demo 与来源</strong></a><a href="#依赖测试与维护"><span>05</span><strong>依赖、测试与维护</strong></a></div></nav>
-      <div class="article-body"><p><strong>固定版本：</strong> <a href="https://github.com/smaramwbc/statewave-multi-agent-memory/tree/7f16415176f7a8cc5ead659a7e8ee09fa031ce76" data-link-kind="external" target="_blank" rel="noopener noreferrer">@@FRONTIERHTML0@@</a> <strong>观察：</strong> 2026-08-24；无 GitHub release；Apache-2.0。该仓库是 demo/client，非 Statewave runtime源码；未执行外部服务。</p>
+      <div class="article-body"><p><strong>固定版本：</strong> <a href="https://github.com/smaramwbc/statewave-multi-agent-memory/tree/7f16415176f7a8cc5ead659a7e8ee09fa031ce76" data-link-kind="external" target="_blank" rel="noopener noreferrer"><code>smaramwbc/statewave-multi-agent-memory@7f16415</code></a> <strong>观察：</strong> 2026-08-24；无 GitHub release；Apache-2.0。该仓库是 demo/client，非 Statewave runtime源码；未执行外部服务。</p>
 <h2 id="结论"><a class="heading-anchor" href="#结论" aria-label="链接到本节">#</a>结论</h2>
 <p>项目清楚展示三个 API：append raw episode、compile subject、retrieve token-bounded context。但 conflict extraction、Jaccard/supersession和 ranking实际位于外部 <code>statewave-client</code>连接的服务，不在本仓库。因此本报告能深入分析集成与并发边界，不能把 README算法主张当作本仓库代码实现。</p>
 <h2 id="组件与数据流"><a class="heading-anchor" href="#组件与数据流" aria-label="链接到本节">#</a>组件与数据流</h2>
@@ -48,7 +48,7 @@
 → synthesis Agent receives assembled_context</code></pre></figure>
 <p><code>AsyncStatewaveClient</code>是 SDK薄封装；<code>statewave_tools.py</code>提供同步 <code>remember/compile/recall</code>。<code>server.py</code>用FastAPI启动 analyst并通过 SSE广播；synthesis只看到 external runtime返回的 active context。</p>
 <h2 id="并发真实边界"><a class="heading-anchor" href="#并发真实边界" aria-label="链接到本节">#</a>并发真实边界</h2>
-<p><a href="https://github.com/smaramwbc/statewave-multi-agent-memory/blob/7f16415176f7a8cc5ead659a7e8ee09fa031ce76/agents/analyst.py#L112" data-link-kind="external" target="_blank" rel="noopener noreferrer">@@FRONTIERHTML0@@</a>显式用一个 <code>asyncio.Lock</code>串行化 <code>post → compile → diff</code>。代码注释说明 compile会处理该 subject全部 uncompiled episodes；若两个 Agent race，可能 double-compile并产生 duplicate memories/diffs。</p>
+<p><a href="https://github.com/smaramwbc/statewave-multi-agent-memory/blob/7f16415176f7a8cc5ead659a7e8ee09fa031ce76/agents/analyst.py#L112" data-link-kind="external" target="_blank" rel="noopener noreferrer"><code>agents/analyst.py</code></a>显式用一个 <code>asyncio.Lock</code>串行化 <code>post → compile → diff</code>。代码注释说明 compile会处理该 subject全部 uncompiled episodes；若两个 Agent race，可能 double-compile并产生 duplicate memories/diffs。</p>
 <p>这与 README“compile idempotent”的概括存在张力：demo本身仍需要应用级 lock。该 lock只在单进程内有效，跨 process/host需要 runtime transaction/idempotency提供保证，本仓库无法验证。</p>
 <h2 id="conflict-demo-与来源"><a class="heading-anchor" href="#conflict-demo-与来源" aria-label="链接到本节">#</a>Conflict demo 与来源</h2>
 <p>三份 source JSON故意构造 Stripe旧/新价格；candidate builder是 deterministic，不调用 LLM。README描述 external compiler用词重叠/Jaccard阈值和时间顺序 supersede旧值；runtime实现不可见。<code>get_memory_diff</code>只根据 before ids和 after status分类 new/superseded/unchanged，不验证 supersession理由。</p>

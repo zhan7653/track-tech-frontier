@@ -666,11 +666,6 @@ class MarkdownRenderer:
             tokens.append(rendered)
             return token
 
-        def code_replace(match: re.Match[str]) -> str:
-            return stash(f'<code>{html.escape(match.group(1))}</code>')
-
-        value = re.sub(r"`([^`]+)`", code_replace, value)
-
         def image_replace(match: re.Match[str]) -> str:
             alt, target = match.group(1), match.group(2)
             href, kind = self.rewrite_target(target)
@@ -685,7 +680,7 @@ class MarkdownRenderer:
         def link_replace(match: re.Match[str]) -> str:
             label, target = match.group(1), match.group(2)
             href, kind = self.rewrite_target(target)
-            safe_label = html.escape(plain_inline(label))
+            safe_label = self.inline(label)
             if href is None:
                 if kind == "workspace":
                     return stash(f'<span class="workspace-link" title="仅在源工作区可用：{html.escape(target, quote=True)}">{safe_label}<small>（源工作区）</small></span>')
@@ -696,6 +691,11 @@ class MarkdownRenderer:
             return stash(f'<a {" ".join(attributes)}>{safe_label}</a>')
 
         value = MARKDOWN_LINK_RE.sub(link_replace, value)
+
+        def code_replace(match: re.Match[str]) -> str:
+            return stash(f'<code>{html.escape(match.group(1))}</code>')
+
+        value = re.sub(r"`([^`]+)`", code_replace, value)
         value = html.escape(value, quote=False)
         value = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", value)
         value = re.sub(r"__(.+?)__", r"<strong>\1</strong>", value)
@@ -1151,6 +1151,8 @@ def collect_site_html(destination: Path) -> tuple[dict[Path, LinkCollector], lis
             continue
         if "\ufffd" in text:
             errors.append(f"{path.relative_to(destination)}: replacement character found")
+        if "@@FRONTIERHTML" in text:
+            errors.append(f"{path.relative_to(destination)}: unresolved renderer token found")
         if len(re.findall(r"<h1\b", text, flags=re.I)) != 1:
             errors.append(f"{path.relative_to(destination)}: expected exactly one H1")
         parser = LinkCollector()

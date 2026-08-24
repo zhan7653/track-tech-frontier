@@ -8,7 +8,7 @@
   },
   "copied_assets": [],
   "entry": "index.html",
-  "generated_at": "2026-08-24T14:47:16Z",
+  "generated_at": "2026-08-24T15:00:27Z",
   "generated_by": "track-tech-frontier/render_reader_html.py",
   "page_count": 54,
   "pages": [
@@ -107,7 +107,7 @@
     {
       "headings": 5,
       "output": "github-radar.html",
-      "output_sha256": "e98276531dfe9dc7e0263408d453dee0bc323470a18c89e9ae5e436f9a7cfe0b",
+      "output_sha256": "a0c8210f0b0d9de7640d73df2108229573762de7eb42a32c22aa6b1abf269a18",
       "page_type": "radar",
       "source": "reader/github-radar.md",
       "source_sha256": "074f80c0809d7a5e4c480bda523e2718162b0f470edb38c61bd8e6bfa8ecd618",
@@ -317,7 +317,7 @@
     {
       "headings": 10,
       "output": "projects/caura-ai--caura.html",
-      "output_sha256": "635c025e3e1083b4bd78692357b7d3f0ce5ca2f59cd326144d800bc1b90eeaf9",
+      "output_sha256": "dde4706d627f66a12edba61465f11cc663bd74049c50f9415cc55375d7effb6e",
       "page_type": "project",
       "source": "reader/projects/caura-ai--caura.md",
       "source_sha256": "84d9af8220c7693cdad155b5496f4bfc34d66296df3b3801942fdb2d1b226bb9",
@@ -327,7 +327,7 @@
     {
       "headings": 6,
       "output": "projects/kimdanny--matm.html",
-      "output_sha256": "e2e14c23ccbd68005cecd03517cac87859a6bbc77ce20f32ce83bdaf67eafb08",
+      "output_sha256": "22b0e81f7b580a83ee3aef32305022a7bad0f3c8ed15da567ed55678e7afddb9",
       "page_type": "project",
       "source": "reader/projects/kimdanny--matm.md",
       "source_sha256": "7fe5001a7d3d0399858429708586d4864b2e10c8b2c93888db5db3918cb77ba4",
@@ -337,7 +337,7 @@
     {
       "headings": 6,
       "output": "projects/langchain-ai--deepagents.html",
-      "output_sha256": "da3e9990aa583216fef298a7b2b8b714d06f5fba44d3d30f6922895b87860744",
+      "output_sha256": "24ff51f2760342540de8e35e4b9247b1c5a69c4beb8698af4057da45bf3fbdcc",
       "page_type": "project",
       "source": "reader/projects/langchain-ai--deepagents.md",
       "source_sha256": "c343bf173b64e3af1124b39bdf7ee902434988e254c85a6c45921db5d6e64a12",
@@ -347,7 +347,7 @@
     {
       "headings": 6,
       "output": "projects/langchain-ai--langgraph.html",
-      "output_sha256": "95e3d449da6ebbc26b6b303f2c82f18390b3dec0000e19c8b24038d7a44d3c54",
+      "output_sha256": "2ff87eab144901fe315cd44613dcdc130c25fc145ee676039ef6a44073fdfd89",
       "page_type": "project",
       "source": "reader/projects/langchain-ai--langgraph.md",
       "source_sha256": "8cff81950c50a12e77df2515a575663e4162ab52c38fc32588fac7bb3eaa9ed7",
@@ -357,7 +357,7 @@
     {
       "headings": 6,
       "output": "projects/MehulG--memX.html",
-      "output_sha256": "e7d72f717fcd413afb689d8043922f6b2365c437c7b8e94f0c309635e04df3c9",
+      "output_sha256": "b7e3bd29b9dff257ed7c57fc733fec0d76c6eee6471029bbce44dc4dfed79275",
       "page_type": "project",
       "source": "reader/projects/MehulG--memX.md",
       "source_sha256": "4163597a6657f4a3e93a5cc7f64eb2138220c93ae56b794e705a120bb3e95c2e",
@@ -367,7 +367,7 @@
     {
       "headings": 6,
       "output": "projects/microsoft--autogen.html",
-      "output_sha256": "413d1af3ba5a7cef9bb6ff75528a2479c1866bf6eccdb048b50de93b1b1b6afc",
+      "output_sha256": "83e4ae17bb11e28c07604e3edc257c90ccfc46a6a9e3998f330939ce501e8382",
       "page_type": "project",
       "source": "reader/projects/microsoft--autogen.md",
       "source_sha256": "b3f8282936af870243386bf085ea518eebff90f32b14a69d18c6b7d12686e9fb",
@@ -377,7 +377,7 @@
     {
       "headings": 6,
       "output": "projects/microsoft--UFO.html",
-      "output_sha256": "87b72b0f49b2fbde6eb733d07a22896ee1884962aba4677a3f9e435172d913b9",
+      "output_sha256": "c029a559532971ed2b7074b6a509495aca255d4b4ed1a393c7462e576a89e560",
       "page_type": "project",
       "source": "reader/projects/microsoft--UFO.md",
       "source_sha256": "c8a1eb39db9fd4f213af24e65c3af2b01dcd7d23db721ce5842e7129c8354512",
@@ -387,7 +387,7 @@
     {
       "headings": 8,
       "output": "projects/openai--codex.html",
-      "output_sha256": "04e1f02c94e931aa1c80708317f65461fa6b2f10df515ee3b336c822ba0b4565",
+      "output_sha256": "6657c0fc992143d60ea883f81d25d8b8cf63857e37f4d99651fe4b37a3282a90",
       "page_type": "project",
       "source": "reader/projects/openai--codex.md",
       "source_sha256": "3a15cd3ed04c57eeeca676378fe97e05524291d0fbd543afc2ef8dda00d81dbc",
@@ -397,7 +397,7 @@
     {
       "headings": 9,
       "output": "projects/openai--openai-agents-python.html",
-      "output_sha256": "432ca32bd3f36604fb7166bc5d1d47fc954a31ffe87985b6f4a3d0dbbbd82640",
+      "output_sha256": "07df47ff715aa32e7f5175da8a4d3b5c7315e817b7ad5fdfc1db076b5ea7da83",
       "page_type": "project",
       "source": "reader/projects/openai--openai-agents-python.md",
       "source_sha256": "af36e8c35426e9b4999a0e71c7d4cfd11ee28ff064510069ad3ed1af9997041e",
@@ -417,7 +417,7 @@
     {
       "headings": 5,
       "output": "projects/smaramwbc--statewave-multi-agent-memory.html",
-      "output_sha256": "da14c9873033509c746d112f466647a572045753155e61d20653b7e404abd647",
+      "output_sha256": "82a8c6a7eb72aeb8322fa57570d1b86089eba661b22e10652bf44f86b953204a",
       "page_type": "project",
       "source": "reader/projects/smaramwbc--statewave-multi-agent-memory.md",
       "source_sha256": "5d6f9416ae0cdc84840c77f5669bc82f01ab95f86062bf6abe6c0d02c8ed43fc",
@@ -507,7 +507,7 @@
     {
       "headings": 3,
       "output": "source-index.html",
-      "output_sha256": "fecd07cad999fcf34daa9f870139cc5bfb6c59deec60b858f298f01d60d5cf41",
+      "output_sha256": "34c6bc06fd2e30e840f613158d58594e5a0dddd109e6f0c2e41ae2773ec74245",
       "page_type": "report",
       "source": "reader/source-index.md",
       "source_sha256": "d70e515e439618cbcd30fa06b33d9cb7869775aa7ab2e4853d36a8bb14770f19",

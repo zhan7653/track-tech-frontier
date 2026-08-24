@@ -94,6 +94,26 @@ flowchart LR
 
         self.assertIn('href="overview.html"', entry)
 
+    def test_inline_code_link_preserves_code_markup_without_renderer_tokens(self) -> None:
+        temporary, root, output = self._suite()
+        self.addCleanup(temporary.cleanup)
+        overview = root / "reader" / "overview.md"
+        overview.write_text(
+            overview.read_text(encoding="utf-8")
+            + "\n[`openai/codex@2161ec2`](https://github.com/openai/codex/tree/2161ec2)\n",
+            encoding="utf-8",
+        )
+
+        target.build_site(root, output)
+        rendered = (output / "overview.html").read_text(encoding="utf-8")
+
+        self.assertIn(
+            '<a href="https://github.com/openai/codex/tree/2161ec2" data-link-kind="external" '
+            'target="_blank" rel="noopener noreferrer"><code>openai/codex@2161ec2</code></a>',
+            rendered,
+        )
+        self.assertNotIn("@@FRONTIERHTML", rendered)
+
     def test_duplicate_headings_receive_stable_suffixes(self) -> None:
         temporary, root, output = self._suite()
         self.addCleanup(temporary.cleanup)
@@ -127,6 +147,19 @@ flowchart LR
         errors = target.validate_site(output)
 
         self.assertTrue(any("unsafe or unsupported scheme" in error for error in errors))
+
+    def test_site_validator_rejects_unresolved_renderer_token(self) -> None:
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        output = Path(temporary.name)
+        (output / "index.html").write_text(
+            "<!doctype html><html><body><h1>One</h1><p>@@FRONTIERHTML0@@</p></body></html>",
+            encoding="utf-8",
+        )
+
+        errors = target.validate_site(output)
+
+        self.assertTrue(any("unresolved renderer token" in error for error in errors))
 
     def test_source_asset_cannot_override_renderer_javascript(self) -> None:
         temporary, root, output = self._suite()
