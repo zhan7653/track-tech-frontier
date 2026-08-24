@@ -1,14 +1,14 @@
 {
   "asset_count": 4,
   "assets": {
-    "assets/favicon.svg": "705e9cd4a070a24bd67554e401e9d08d95d68810212d5aa4f8e1fc37a3abd9d8",
+    "assets/favicon.svg": "8a735ccb226aabd4ced526ca0a20814c4878521451b3343d2b6bcd556b921df7",
     "assets/search-index.js": "85de4539940b1ccbd72c4d4aaf985fbc38d8ef86fc79fd0b6fcfb90ea6d5019b",
-    "assets/site.css": "a73874a1511d8a8340cbdd456fb37048e9966a41a2edc10efc321466c5e534ee",
-    "assets/site.js": "493594439525b60ea3e3b32dd4f7176f5c99b750b1800c630710cc5c89ec5a8c"
+    "assets/site.css": "d2512c6aa4a3d84dadfed124ac857d77a354e21a1864fb673501ebb1087f1fc9",
+    "assets/site.js": "34989123d1ba6683041d755a96683401a2ccdb1ce88f250a4c69664f1d1101eb"
   },
   "copied_assets": [],
   "entry": "index.html",
-  "generated_at": "2026-08-24T14:43:36Z",
+  "generated_at": "2026-08-24T14:47:16Z",
   "generated_by": "track-tech-frontier/render_reader_html.py",
   "page_count": 54,
   "pages": [
@@ -510,7 +510,7 @@
       "output_sha256": "fecd07cad999fcf34daa9f870139cc5bfb6c59deec60b858f298f01d60d5cf41",
       "page_type": "report",
       "source": "reader/source-index.md",
-      "source_sha256": "4f0ae34cf75e4c403331970364a782d7174765cdd9025ad706a081c4a15b2b6c",
+      "source_sha256": "d70e515e439618cbcd30fa06b33d9cb7869775aa7ab2e4853d36a8bb14770f19",
       "warnings": [],
       "workspace_links": []
     },
