@@ -643,11 +643,11 @@ class MarkdownRenderer:
             if candidate.is_dir():
                 self.page.workspace_links.append(target)
                 return None, "workspace"
+            published_roots = (self.root / "reader", self.root / "audit")
+            if not any(_inside(candidate, published_root) for published_root in published_roots):
+                self.page.workspace_links.append(target)
+                return None, "workspace"
             if candidate.suffix.casefold() not in SAFE_ASSET_SUFFIXES:
-                published_roots = (self.root / "reader", self.root / "audit")
-                if not any(_inside(candidate, published_root) for published_root in published_roots):
-                    self.page.workspace_links.append(target)
-                    return None, "workspace"
                 raise RenderError(
                     f"unsupported local asset type in {self.page.relative_source}: {target}; "
                     f"allowed: {', '.join(sorted(SAFE_ASSET_SUFFIXES))}"
