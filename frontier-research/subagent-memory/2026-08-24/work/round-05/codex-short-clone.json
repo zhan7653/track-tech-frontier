@@ -1,0 +1,9 @@
+{
+  "repository": "openai/codex",
+  "status": "cloned-no-checkout",
+  "path": "C:\\Users\\Alan\\AppData\\Local\\Temp\\codex-r5b",
+  "commit": "2161ec272a7d6b775c9c721e6206f4fe63e383f2",
+  "tree": "7472d7e85f527e57957db52acd9aa676b2725ae9",
+  "commit_time": "2026-08-23T17:02:21Z",
+  "note": "The first long-path working-tree checkout failed on Windows; a short-path partial clone with no checkout succeeded, and fixed blobs are inspected with git show."
+}

@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T16:35:43Z",
+  "from": "2000-01-01",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 21,
+  "pages": 2,
+  "provider": "arxiv",
+  "query": "(\"shared memory\" OR \"collective memory\" OR \"collaborative memory\") AND (\"LLM agent\" OR \"language model agent\")",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T16:35:41Z",
+      "page": 1,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:((\"shared memory\" OR \"collective memory\" OR \"collaborative memory\") AND (\"LLM agent\" OR \"language model agent\")) AND submittedDate:[200001010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 0
+      },
+      "provider": "arxiv",
+      "query": "(\"shared memory\" OR \"collective memory\" OR \"collaborative memory\") AND (\"LLM agent\" OR \"language model agent\")",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-01\\pilot\\raw\\P02\\arxiv-001-4c02f2d5fdbf2ffccaaf993e6e7b25d280930837f6eb6c236899dc36112a4743.raw",
+      "reported_total": 21,
+      "response_sha256": "4c02f2d5fdbf2ffccaaf993e6e7b25d280930837f6eb6c236899dc36112a4743",
+      "result_count": 21,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%28%22shared+memory%22+OR+%22collective+memory%22+OR+%22collaborative+memory%22%29+AND+%28%22LLM+agent%22+OR+%22language+model+agent%22%29%29+AND+submittedDate%3A%5B200001010000+TO+202608242359%5D&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T16:35:43Z",
+      "page": 2,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:((\"shared memory\" OR \"collective memory\" OR \"collaborative memory\") AND (\"LLM agent\" OR \"language model agent\")) AND submittedDate:[200001010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 100
+      },
+      "provider": "arxiv",
+      "query": "(\"shared memory\" OR \"collective memory\" OR \"collaborative memory\") AND (\"LLM agent\" OR \"language model agent\")",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-01\\pilot\\raw\\P02\\arxiv-002-2ffec59e79ea4b4521314c6c074e3718ea9aeea755994f2316d698b41346b913.raw",
+      "reported_total": 21,
+      "response_sha256": "2ffec59e79ea4b4521314c6c074e3718ea9aeea755994f2316d698b41346b913",
+      "result_count": 0,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%28%22shared+memory%22+OR+%22collective+memory%22+OR+%22collaborative+memory%22%29+AND+%28%22LLM+agent%22+OR+%22language+model+agent%22%29%29+AND+submittedDate%3A%5B200001010000+TO+202608242359%5D&start=100&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T16:35:41Z",
+  "to": "2026-08-24"
+}

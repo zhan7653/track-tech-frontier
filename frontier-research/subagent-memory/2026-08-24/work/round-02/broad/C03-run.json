@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:07:13Z",
+  "from": "2023-01-01",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "crossref",
+  "query": "transactive memory artificial intelligence agents",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:11Z",
+      "page": 1,
+      "params": {
+        "filter": "from-pub-date:2023-01-01,until-pub-date:2026-08-24",
+        "offset": 0,
+        "query.bibliographic": "transactive memory artificial intelligence agents",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "transactive memory artificial intelligence agents",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\C03\\crossref-001-418d78977896ce39c3e43d113909541ba3c845004af8aea3fe4ee0f5e247582b.raw",
+      "reported_total": 760006,
+      "response_sha256": "418d78977896ce39c3e43d113909541ba3c845004af8aea3fe4ee0f5e247582b",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=transactive+memory+artificial+intelligence+agents&rows=100&offset=0&filter=from-pub-date%3A2023-01-01%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:13Z",
+      "page": 2,
+      "params": {
+        "filter": "from-pub-date:2023-01-01,until-pub-date:2026-08-24",
+        "offset": 100,
+        "query.bibliographic": "transactive memory artificial intelligence agents",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "transactive memory artificial intelligence agents",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\C03\\crossref-002-13be2eb6c6aee3e459cf92ccc26633230d9c49ba010b84db3888a17002f9baae.raw",
+      "reported_total": 760006,
+      "response_sha256": "13be2eb6c6aee3e459cf92ccc26633230d9c49ba010b84db3888a17002f9baae",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=transactive+memory+artificial+intelligence+agents&rows=100&offset=100&filter=from-pub-date%3A2023-01-01%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:07:11Z",
+  "to": "2026-08-24"
+}

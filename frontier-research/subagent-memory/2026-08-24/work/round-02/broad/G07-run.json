@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:08:30Z",
+  "from": null,
+  "github_date_field": "created",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "agent memory provenance",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:08:24Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "agent memory provenance"
+      },
+      "provider": "github-search",
+      "query": "agent memory provenance",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G07\\github-search-001-c565d996000d9e5e5f26b0834afaf84775f60d3325c90d7e67056b823f7b000c.raw",
+      "reported_total": 288,
+      "response_sha256": "c565d996000d9e5e5f26b0834afaf84775f60d3325c90d7e67056b823f7b000c",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=agent+memory+provenance&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:08:30Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "agent memory provenance"
+      },
+      "provider": "github-search",
+      "query": "agent memory provenance",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G07\\github-search-002-c38e1a8dc632941738b479d96ddcd1ac012a5562785b7872a337a3a6fd596096.raw",
+      "reported_total": 288,
+      "response_sha256": "c38e1a8dc632941738b479d96ddcd1ac012a5562785b7872a337a3a6fd596096",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=agent+memory+provenance&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:08:24Z",
+  "to": null
+}

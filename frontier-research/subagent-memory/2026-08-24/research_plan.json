@@ -1,0 +1,56 @@
+{
+  "as_of": "2026-08-24",
+  "important_cluster_policy": "saturated",
+  "lanes": [
+    "paper",
+    "github",
+    "repository",
+    "benchmark",
+    "product",
+    "adoption",
+    "negative"
+  ],
+  "required_deliverable_kinds": [
+    "readme",
+    "executive",
+    "field-tree",
+    "landscape",
+    "timeline",
+    "repository-radar",
+    "benchmark-map",
+    "security-failure",
+    "consensus",
+    "method",
+    "cluster-deep-dive",
+    "project-deep-dive",
+    "source-index",
+    "report"
+  ],
+  "schema_version": "2.0",
+  "targets": {
+    "claims": 50,
+    "clusters": 8,
+    "deep_papers": 40,
+    "deep_repositories": 10,
+    "deep_verified_entities": 50,
+    "deliverables": 30,
+    "discovered_entities": 4000,
+    "evidence": 50,
+    "mapped_entities": 200,
+    "papers_discovered": 2000,
+    "papers_mapped": 60,
+    "queries": 100,
+    "recent_discovered": 3000,
+    "recent_mapped": 100,
+    "repositories_discovered": 2000,
+    "repositories_mapped": 130,
+    "sources": 50
+  },
+  "time_windows": [
+    "W_PRE_FRONTIER",
+    "W_ROLLING_12M",
+    "W_ROLLING_90D",
+    "W_FUTURE_INVALID"
+  ],
+  "topic": "Subagent Memory"
+}

@@ -1,0 +1,620 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/uGeGewfz59KA0pRBYBrierZ2Haw</id>
+  <title>arXiv Query: search_query=( (all:"shared memory" OR all:"collective memory" OR all:"collaborative memory") AND (all:"LLM agent" OR all:"language model agent") ) AND submittedDate:"200001010000 TO 202608242359"&amp;id_list=&amp;start=0&amp;max_results=100</title>
+  <updated>2026-08-23T16:35:40Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=((all:%22shared+memory%22+OR+(all:%22collective+memory%22+OR+all:%22collaborative+memory%22))+AND+(all:%22LLM+agent%22+OR+all:%22language+model+agent%22))+AND+submittedDate:%22200001010000+TO+202608242359%22&amp;start=0&amp;max_results=100&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>100</opensearch:itemsPerPage>
+  <opensearch:totalResults>21</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2608.10509v1</id>
+    <title>MAP-Graph: Provenance-Aware Shared Memory for Multi-Agent Workflows</title>
+    <updated>2026-08-11T05:31:18Z</updated>
+    <link href="https://arxiv.org/abs/2608.10509v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2608.10509v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Shared memory helps language-model agents reuse information across long workflows, yet relevant evidence may not be admissible for a particular agent or action. Because restrictions propagate through derivations, summaries can conceal private, poisoned, untrusted, or revoked sources, enabling unauthorized reads or unsafe actions. Existing approaches provide semantic retrieval, scoped access, or lineage tracking, but do not clearly separate hard authorization from graded trust or adapt evidence requirements to action risk. We introduce MAP-Graph, a provenance-aware memory layer that represents agents, sources, memories, claims, and actions in a typed execution graph. It traces ancestry, excludes permission-ineligible records, reranks eligible memories by semantic similarity and multiplicative path trust, and applies a risk-sensitive gate before action execution while retaining affected lineage for audit. On a controlled benchmark of 2,700 synthetic tasks per method across three domains, MAP-Graph achieves 94.96\% overall task success, 72.70\% exact decision accuracy, and 90.22\% in the clean setting, where success requires a correct \textsc{Allow} rather than a safe intervention. Ablations isolate the roles of permission filtering, path trust, and action gating, while transfer tests with two additional backbones preserve the exact-decision and access-control advantages. These results support provenance as an operational control signal, rather than only post-hoc audit metadata, within the evaluated setting.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-08-11T05:31:18Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Yiqi Wang</name>
+    </author>
+    <author>
+      <name>Zihao Yan</name>
+    </author>
+    <author>
+      <name>Jiaqi Zhang</name>
+    </author>
+    <author>
+      <name>Zhangkai Wu</name>
+    </author>
+    <author>
+      <name>Mingkai Zheng</name>
+    </author>
+    <author>
+      <name>Zequn Sun</name>
+    </author>
+    <author>
+      <name>Yanming Zhu</name>
+    </author>
+    <author>
+      <name>Taotao Cai</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2608.08131v1</id>
+    <title>Compositional Threat Analysis of Latent Compromise in LLM Agent Systems: The Order 66 Scenario</title>
+    <updated>2026-08-08T13:35:35Z</updated>
+    <link href="https://arxiv.org/abs/2608.08131v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2608.08131v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>In the fictional Order 66, catastrophe does not arise from a powerful command alone: a trusted population is preconditioned, a short directive activates the concealed condition, and protective authority turns against the system. This paper translates that mechanism into an origin-neutral security analysis of tool-using large language model (LLM) agents. A representative scenario combines a deployed artifact or shared memory bearing a dormant destructive rule, a later email, document, update, or peer message that activates it, and an agent harness granting operational and recovery authority. We introduce a compositional model explaining why no component is catastrophic alone, yet their conjunction can produce correlated destructive action. We separate three population-reach routes --- release-time pre-positioning, post-release durable seeding, and peer replication --- from a common core of dormancy, activation, authority, reachable targets, and failed recovery. This yields defensive cut sets and shows why checkpoint scanning or prompt filtering cannot close every route. A two-class example shows that cross-class feedback can sustain spread even when both within-class reproduction terms are below one; isolation and persistence controls suppress the loop. Published work instantiates constituent mechanisms, while incidents demonstrate autonomous boundary crossing, malicious agent extensions, agent-assisted reconnaissance, and public-package propagation, but not the full dormant-implant composition. We found no public observation, in evidence reviewed through 5 August 2026, traversing the complete Order 66 graph. The result is neither dismissal nor prediction: the scenario is componentwise credible under stated assumptions, damage depends on the harness, and the strongest defenses are capability mediation, durable-state provenance, propagation isolation, and protected recovery.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-08-08T13:35:35Z</published>
+    <arxiv:comment>Version 11.3, 33 pages</arxiv:comment>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Satoshi Matsuoka</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.24998v1</id>
+    <title>VPR-Evolve: Multi-Agent-Driven Algorithm Evolution for FPGA Place and Route</title>
+    <updated>2026-07-27T18:56:10Z</updated>
+    <link href="https://arxiv.org/abs/2607.24998v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.24998v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>CAD tools typically apply the same fixed, hand-designed algorithms across circuits with widely different structural and timing characteristics. A common way to specialize these one-size-fits-all flows to a target design is to tune the CAD tool's hyperparameters. However, hyperparameter tuning can only select among behaviors already implemented by the fixed algorithm, limiting the achievable quality of results while requiring many expensive place-and-route evaluations. We present VPR-Evolve, a multi-agent framework that specializes Versatile Place and Route (VPR), the open-source FPGA pack-place-and-route engine in the Verilog-to-Routing (VTR) flow, by evolving its source code for each design. VPR-Evolve uses LLM agents to propose, implement, and evaluate code-level modifications, while a shared memory records prior outcomes and guides subsequent evolution. Every candidate is evaluated through a complete VPR build and run, directly optimizing a composite score measured as a weighted function of critical-path delay (CPD), routed wirelength (WL), and tool runtime (RT). Across five VTR-9 benchmark circuits, VPR-Evolve improves the composite score by up to 2.7% over stock VPR in VTR-9. Relative to stock VPR, it reduces CPD by up to 9.8%, routed WL by up to 18.1%, and tool RT by up to 79.3%. VPR-Evolve reduces CPD by up to 6.0%, routed WL by up to 2.2%, and tool RT by up to 7.8% compared with a hyperparameter-tuning baseline.</summary>
+    <category term="cs.AR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-27T18:56:10Z</published>
+    <arxiv:primary_category term="cs.AR"/>
+    <author>
+      <name>Qihang Wu</name>
+    </author>
+    <author>
+      <name>Taizun Jafri</name>
+    </author>
+    <author>
+      <name>Aman Arora</name>
+    </author>
+    <author>
+      <name>Vidya A. Chhabria</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.23933v2</id>
+    <title>SpecBox: Speculative Sandbox Scheduling for Efficient LLM Agent Serving</title>
+    <updated>2026-08-05T01:08:13Z</updated>
+    <link href="https://arxiv.org/abs/2607.23933v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.23933v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>As LLM agents increasingly rely on the Model Context Protocol (MCP) to invoke isolated external sandboxes, disaggregated sandbox deployment introduces a fundamental tension between resource utilization and interactive tail latency. Persistent long-lived sandbox reservations incur excessive memory overhead at scale, while lazy on-demand instantiation generates severe cold-start penalties that degrade response performance under multi-tenant, multi-turn agent workloads. To resolve this dilemma, we present SpecBox, a runtime built around speculative sandbox preallocation tailored for dynamic LLM agent execution pipelines.
+  At its core, SpecBox implements keyword matching and streaming semantic embedding to enable intent-driven sandbox prewarming, which identifies pending tool execution demands mid-LLM token generation and fully overlaps sandbox bootstrapping with model inference. To extend prewarming windows across sequential agent steps, the framework leverages context-aware stochastic prefetching atop a sandbox dependency graph to probabilistically forecast future sandbox switches ahead of execution. We complement these speculative mechanisms with two orthogonal optimizations: a semantic result cache that prunes redundant repeated sandbox invocations, and a dedicated out-of-band shared-memory transport plane that bypasses conventional network serialization to deliver zero-copy artifact transfers. Evaluated on high-concurrency multi-turn agent traces, our prototype demonstrates that SpecBox cuts P99 end-to-end latency by up to $2.9\times$ relative to the on-demand sandbox baseline, while slashing peak memory consumption by $45.9\%$ compared to permanently reserved sandbox deployments.</summary>
+    <category term="cs.DC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.PF" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-27T02:10:35Z</published>
+    <arxiv:primary_category term="cs.DC"/>
+    <author>
+      <name>Yihui Zhang</name>
+      <arxiv:affiliation>Beihang University</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Tianyu Wo</name>
+      <arxiv:affiliation>Beihang University</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Jinghao Wang</name>
+      <arxiv:affiliation>Beihang University</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Xiaoyang Sun</name>
+      <arxiv:affiliation>University of Leeds</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Menghao Zhang</name>
+      <arxiv:affiliation>Beihang University</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Cangzhou Yuan</name>
+      <arxiv:affiliation>Beihang University</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Li Li</name>
+      <arxiv:affiliation>Beihang University</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Chunming Hu</name>
+      <arxiv:affiliation>Beihang University</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Albert Y. Zomaya</name>
+      <arxiv:affiliation>The University of Sydney</arxiv:affiliation>
+    </author>
+    <author>
+      <name>Renyu Yang</name>
+      <arxiv:affiliation>Beihang University</arxiv:affiliation>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.23929v2</id>
+    <title>MemTX: Transactional Belief Commit for Stateful Agent Memory</title>
+    <updated>2026-07-28T12:51:37Z</updated>
+    <link href="https://arxiv.org/abs/2607.23929v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.23929v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>LLM agents increasingly coordinate through persistent shared memory: one agent's write becomes another agent's premise, and eventually a tool call with real side effects. Current agent memory systems treat every accepted write as immediately actionable truth, so a polluted tool result, a stale update, or a teammate's half-finished note can silently drive an irreversible action. We argue that a memory write is not a belief commit. We present MemTX, a transactional belief-commit protocol. Each record carries evidence, permissions, provenance, and validity. Writes are staged inside snapshot-isolated transactions and admitted by a validate-and-commit pipeline, irreversible tool calls are gated on in-flight belief state, and retracting a belief triggers typed cascading repair of its derived records and tool side effects. Two invariants, action-safety gating and cascade-repair completeness, are machine-checked by property-based testing and bounded exhaustive enumeration of 5.5 million protocol states, with zero violations. Across five backbones from three model families, MemTX leads all eight baselines with paired-McNemar significance on four backbones and statistically ties the best baseline on the fifth and strongest, while remaining the only method with zero downstream harm on every backbone. Backbone capability does not substitute for commit discipline.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-27T01:57:39Z</published>
+    <arxiv:comment>Preprint</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Xiaoyang Li</name>
+    </author>
+    <author>
+      <name>Yiqi Wang</name>
+    </author>
+    <author>
+      <name>Haohui Lu</name>
+    </author>
+    <author>
+      <name>Zhi Chen</name>
+    </author>
+    <author>
+      <name>Mo Li</name>
+    </author>
+    <author>
+      <name>Pingan Song</name>
+    </author>
+    <author>
+      <name>Mingkai Zheng</name>
+    </author>
+    <author>
+      <name>Taotao Cai</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.18727v1</id>
+    <title>Formal Verification of an Out-of-Order Multiprocessor against an In-Order Weak-Memory ISA</title>
+    <updated>2026-07-21T05:40:33Z</updated>
+    <link href="https://arxiv.org/abs/2607.18727v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.18727v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Out-of-order multiprocessor is a critical piece of modern hardware, and their verification must solve the following challenges. First, inter-core interleaving, in which the order their reads and writes reach shared memory is unrestricted. Second, intra-core out-of-order execution, in which instructions fire out of program order. The combination of the two yields weak outcomes, which no sequential execution explains, and modern ISA allows such behaviors to account for them. However, the microarchitecture even exhibits excess out-of-order executions, temporarily entering states forbidden by the ISA. While discarded later, such states complicate reasoning about the core in full-system verification. Prior works verify a range of processor designs, while none have performed unbounded verification for out-of-order multiprocessor exhibiting such weak outcomes.
+  We present the first formal verification of an out-of-order multiprocessor against an in-order, weak-memory ISA. Our key idea is a well-designed core specification, which captures the essence of excess executions in a single list of instructions. Building upon this, we decompose the proof into two steps. The first is a core refinement, proving a core implementation against this specification, abstracting away every microarchitectural state except those necessary to reason about excess executions and the core interface. The second is a system inclusion, serializing the out-of-order memory executions and inter-core interleaving into the ISA, easily removing excess executions thanks to the core specification. All of our proofs are mechanized in Rocq, heavily utilizing large language model (LLM) agents to write proofs automatically.</summary>
+    <category term="cs.PL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-21T05:40:33Z</published>
+    <arxiv:primary_category term="cs.PL"/>
+    <author>
+      <name>Janggun Lee</name>
+    </author>
+    <author>
+      <name>Jeehoon Kang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.05318v1</id>
+    <title>PiSAs: Benchmarking Contextual Integrity in Multi-User Agentic Systems</title>
+    <updated>2026-07-06T16:57:24Z</updated>
+    <link href="https://arxiv.org/abs/2607.05318v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.05318v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>As LLM agents evolve from single-user assistants into shared organizational infrastructure, new privacy risks emerge: inappropriate information may not only be exposed through outputs for external recipients, but also internally across users through inter-agent messages, shared memory and agents. These data spillage risks are not captured by existing privacy benchmarks grounded in contextual integrity (CI) as they focus primarily on either single-user settings or interactions between independently owned agents. We introducePiSAs (Privacy in Shared Agentic systems), a benchmark for assessing unintentional leaks with dual CI annotations: whether an information is appropriate for the task, and which users may legitimately access it. This enables direct measurement of cross-user spillage across agentic system components and interfaces, such as outputs, inter-agent communication, and memory. PiSAsis system-agnostic and supports evaluation across different agent topologies and memory regimes. We find that, although system design improves CI compliance, results are bottlenecked by incorrect LLM judgment calls: even state-of-the-art models fail to reliably filter inappropriate content or restrict transmission to authorized users. Our findings underscore the need for privacy-preserving strategies, beyond those studied in this work.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-06T16:57:24Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Shubham Gupta</name>
+    </author>
+    <author>
+      <name>Nazanin Mohammadi Sepahvand</name>
+    </author>
+    <author>
+      <name>Abhinav Kumar</name>
+    </author>
+    <author>
+      <name>Cem Subakan</name>
+    </author>
+    <author>
+      <name>Spandana Gella</name>
+    </author>
+    <author>
+      <name>Pierre-André Noël</name>
+    </author>
+    <author>
+      <name>Perouz Taslakian</name>
+    </author>
+    <author>
+      <name>Eugene Bagdasarian</name>
+    </author>
+    <author>
+      <name>Valentina Zantedeschi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.18829v1</id>
+    <title>GateMem: Benchmarking Memory Governance in Multi-Principal Shared-Memory Agents</title>
+    <updated>2026-06-17T09:06:15Z</updated>
+    <link href="https://arxiv.org/abs/2606.18829v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.18829v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Memory benchmarks for LLM agents largely assume single-user settings, leaving shared assistants for hospitals, workplaces, campuses, and households understudied. In these deployments, multiple principals write to a common memory pool and query it under different roles, scopes, and relationships, so memory quality requires governance as well as recall. We introduce GateMem, a benchmark for multi-principal shared-memory agents. GateMem jointly evaluates utility for legitimate long-horizon requests with state updates, access control across contextual authorization boundaries, and agent-facing active forgetting after explicit deletion requests. It spans medical, office, education, and household domains, with long-form multi-party episodes, incremental memory injection, hidden checkpoints, structured judging, and leak-target annotations. Across diverse baselines and backbone models, no method simultaneously achieves strong utility, robust access control, and reliable forgetting. Long-context prompting often yields the best governance score at high token cost, while retrieval-based and external-memory methods reduce cost yet still leak unauthorized or deleted information. These results show current memory agents remain far from reliable shared institutional deployment.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-17T09:06:15Z</published>
+    <arxiv:comment>24 pages, 8 figures. Code and dataset are available at https://github.com/rzhub/GateMem and https://huggingface.co/datasets/Ray368/GateMem</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Zhe Ren</name>
+    </author>
+    <author>
+      <name>Yibo Yang</name>
+    </author>
+    <author>
+      <name>Yimeng Chen</name>
+    </author>
+    <author>
+      <name>Zijun Zhao</name>
+    </author>
+    <author>
+      <name>Benshuo Fu</name>
+    </author>
+    <author>
+      <name>Zhihao Shu</name>
+    </author>
+    <author>
+      <name>Bingjie Zhang</name>
+    </author>
+    <author>
+      <name>Yangyang Xu</name>
+    </author>
+    <author>
+      <name>Dandan Guo</name>
+    </author>
+    <author>
+      <name>Shuicheng Yan</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.14445v1</id>
+    <title>tap: A File-Based Protocol for Heterogeneous LLM Agent Collaboration</title>
+    <updated>2026-06-12T13:28:34Z</updated>
+    <link href="https://arxiv.org/abs/2606.14445v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.14445v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Existing multi-agent software development systems have proposed many forms of agent collaboration, including role-based collaboration and automated code review. However, many systems assume a common runtime, a central conversation server, or the same API family. Under these assumptions, LLM agents from different vendors cannot easily exchange messages directly from their own execution environments while dividing development and review work on a shared codebase. This paper presents tap, a file-based collaboration protocol that allows Claude (Anthropic) and Codex (OpenAI) to collaborate on one codebase without shared memory or an identical runtime. The core of tap is a file-first design that preserves markdown files with metadata as original messages, combines a file inspection path (file communication, Tier 1) with real-time notification paths for Claude and Codex (real-time communication, Tier 2), and isolates work through separate git worktrees. Even if real-time notification fails or a receiver restarts, the message file remains available and the same content can be inspected again. In a 27-day, 37-generation self-applied operation where tap was used to develop and review itself, we collected 209 tap-related pull requests and 717 operational artifacts. An analysis of 375 review artifacts showed that the share of reviews recording at least one defect or requested change was 69.8% for heterogeneous model pairs and 53.1% for homogeneous model pairs. These results show that tap, which combines file-based message preservation with real-time notification, operates in a real production repository, and that combining heterogeneous models and execution environments can broaden review perspectives. tap is distributed as the open-source npm package @hua-labs/tap (v0.5.2).</summary>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-12T13:28:34Z</published>
+    <arxiv:comment>Accepted to KCC 2026. English archival translation. 3 pages, 1 figure, 3 tables</arxiv:comment>
+    <arxiv:primary_category term="cs.SE"/>
+    <author>
+      <name>Minseo Kim</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.00756v1</id>
+    <title>CoMIC: Collaborative Memory and Insights Circulation for Long-Horizon LLM Agents in Cloud-Edge Systems</title>
+    <updated>2026-05-30T14:45:39Z</updated>
+    <link href="https://arxiv.org/abs/2606.00756v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.00756v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Deploying lightweight Large Language Model (LLM) agents on edge servers can reduce latency and move agentic services closer to users, but resource-constrained edge models often struggle with long-horizon tasks that require persistent memory, subgoal tracking, and reflection. Fine-tuning edge models after deployment is costly and difficult to scale across heterogeneous nodes, while purely local memory leaves agents with isolated experience and growing prompt context. We propose \textsc{CoMIC}, a parameter-update-free cloud-edge framework for Collaborative Memory and Insights Circulation. \textsc{CoMIC} follows a \textit{Centralized Reflection, Decentralized Execution} design: edge agents execute locally using subgoal-oriented hierarchical memory and selective re-expansion of relevant histories, while a cloud-side LLM critic asynchronously evaluates completed trajectories, filters reusable experience, and aggregates cross-agent guidance keyed by semantic subgoal identifiers. Across five long-horizon agent tasks spanning symbolic planning and text interaction, \textsc{CoMIC} improves progress rate and action grounding for weak edge agents and yields task-dependent success-rate gains without updating model parameters.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-30T14:45:39Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Yannan Wang</name>
+    </author>
+    <author>
+      <name>Longli Yang</name>
+    </author>
+    <author>
+      <name>Zhen Liu</name>
+    </author>
+    <author>
+      <name>Abhishek Kumar</name>
+    </author>
+    <author>
+      <name>Carsten Maple</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.21604v1</id>
+    <title>AgentKVShift: Efficient KV Cache Reuse for Agentic Memory Systems</title>
+    <updated>2026-05-15T16:29:36Z</updated>
+    <link href="https://arxiv.org/abs/2607.21604v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.21604v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Memory-augmented LLM agents maintain context across hundreds of interactions through agentic memory systems that actively curate retrieved content with LLM-generated metadata such as summaries, keywords, and tags. From an inference cost standpoint, every retrieval triggers a full re-encoding of these structured memory units into Key-Value (KV) states, which dominates prefill latency. Existing training-free KV reuse methods mitigate this by selectively recomputing a small fraction of tokens, but were designed for RAG-style raw passages and degrade on structured agentic memories. We present AgentKVShift, a training-free, probe-guided KV residual correction method that operates per retrieved memory unit. One of the crucial insights we demonstrate is that the per-memory KV reuse residual decomposes into a shared memory-level offset plus small token-wise fluctuations. Estimating this offset from a small probe set allows us to correct every reused token by a single weighted correction. Unlike prior reuse methods which decide which tokens to recompute and leave the rest of the cache stale, AgentKVShift also corrects the tokens it does not recompute, turning the refresh budget into useful signal across the entire chunk. Across four open-source LLMs spanning 3B to 32B parameters and two long-horizon agentic memory benchmarks (long-term dialogue and agentic applications), AgentKVShift achieves near full recompute performance while refreshing only 10-30% of the cache, outperforming baselines at the same recompute ratio. It requires up to 5x lower recompute to reach this near-full performance, which prior reuse methods only attain at 45-55% refresh. In this regime, AgentKVShift delivers prefill speedups of 2-3.5x over no-KV-reuse on a single A100. AgentKVShift orthogonally composes with KV cache quantization, retaining over 2x the F1 of prior reuse methods under aggressive 2- and 4-bit settings.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-15T16:29:36Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Nilesh Prasad Pandey</name>
+    </author>
+    <author>
+      <name>Jason Kong</name>
+    </author>
+    <author>
+      <name>Lanxiang Hu</name>
+    </author>
+    <author>
+      <name>Quanling Zhao</name>
+    </author>
+    <author>
+      <name>Yujie Zhao</name>
+    </author>
+    <author>
+      <name>Onat Gungor</name>
+    </author>
+    <author>
+      <name>Hao Zhang</name>
+    </author>
+    <author>
+      <name>Tajana Rosing</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.09504v2</id>
+    <title>AI Security Policy Should Assess Systems, Not Only Models</title>
+    <updated>2026-07-23T15:48:14Z</updated>
+    <link href="https://arxiv.org/abs/2605.09504v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.09504v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present swarm-attack, an open-source adversarial testing framework in which multiple lightweight LLM agents coordinate through shared memory, parallel exploration, and evolutionary optimization. Together, our results demonstrate that both safety bypass of frontier models and software vulnerability discovery, i.e., the capability class that motivated restricted release of Anthropic's Mythos Preview, are achievable at effectively zero cost using commodity hardware and openly available models. We report two experiments. In the first, five instances of a 1.2 billion parameter model conducted 225 jailbreak attacks each against GPT-4o and Claude Sonnet~4. Against GPT-4o, the swarm achieved an Effective Harm Rate of 45.8%, producing 49 critical-severity breaches; against Claude Sonnet-4, the Effective Harm Rate was 0% despite a 40% technical success rate. In the second experiment, the same models performed combined source code analysis and binary fuzzing against a vulnerable C application with 9 planted CWEs. With a hand-crafted exploit seed corpus, regex pattern detection, and AddressSanitizer-based crash classification, the pipeline recovers 9 of 9 vulnerabilities (100% recall) in approximately four minutes on a consumer MacBook. With those scaffold components disabled, the same model recovers 0 of 9 by crash verification and 2 of 9 by citation. The capability class that motivated restricted release of Anthropic's Mythos Preview is therefore reproducible at effectively zero cost; the important enabler is the system scaffold itself, which compensates for the limited reasoning capacity of small individual models.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-10T12:27:14Z</published>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Michael A. Riegler</name>
+    </author>
+    <author>
+      <name>Inga Strümke</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.08442v5</id>
+    <title>Injection-Execution Dissociation: A Mechanistic Evaluation of Persistent Memory Attacks and Defenses in Stateful LLM Agents</title>
+    <updated>2026-08-04T05:00:15Z</updated>
+    <link href="https://arxiv.org/abs/2605.08442v5" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.08442v5" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We discover that prompt-injection success and tool-execution success are separable safety properties: defenses that block injection do not necessarily block execution, and vice versa. We call this the injection-execution dissociation. In LLM agents with persistent memory, malicious instructions are stored at rates exceeding 97.5%, yet downstream execution ranges from 0% to 95% with no correlation to storage rate. This reframes the threat model: preventing storage alone is insufficient, and blocking execution requires structurally enforcing authority boundaries between memory ingestion and action execution.
+  We substantiate this through a 5,040-run factorial experiment across nine open-source models (N=40 per condition), evaluating six defenses at four architectural layers against delayed-trigger attacks that persist across session boundaries via RAG retrieval. Defense effectiveness is governed by where a defense sits relative to the attack's authority boundary, not by classifier quality. Only Memory Sandbox -- a tool-layer defense that structurally isolates recalled memory from executable context -- reduces attack success to 0% for eight of nine models. A reasoning-mode ablation reveals a double dissociation: no single schema-layer intervention is safe across both reasoning and non-reasoning model classes.
+  A loaded-corpus frontier evaluation (21 models, 3 providers; N=40 base, headline models topped up to N=172) reveals vendor-correlated patterns: Anthropic blocks predominantly at injection, OpenAI blocks at execution with variable generational hardening, and a pre-release Gemini endpoint exfiltrates in the majority of runs. Stored-but-dormant payloads constitute a compositional supply-chain risk in shared-memory deployments.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-08T20:04:57Z</published>
+    <arxiv:comment>v4: Added double dissociation (reasoning-mode ablation), content-layer defense (RATG), loaded-corpus frontier evaluation (21 models, 3 providers, N=40), 7B judge capability bound, reproducibility validity criterion, ethics/disclosure statement. Gemini 3.1 Pro Preview 95% ASR; GPT-5.1 regression (22.5%); tripartite vendor divergence. Code: github.com/junwenleong/stateful-agent-security-eval</arxiv:comment>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Jun Wen Leong</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.23234v2</id>
+    <title>MemCollab: Cross-Model Memory Collaboration via Contrastive Trajectory Distillation</title>
+    <updated>2026-05-28T08:28:11Z</updated>
+    <link href="https://arxiv.org/abs/2603.23234v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.23234v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>LLM agents increasingly rely on memory mechanisms to reuse knowledge from past problem-solving experiences. However, existing methods typically construct memory for a single agent and reuse it with the same underlying model, tightly coupling stored knowledge to model-specific reasoning styles. In heterogeneous deployments, where agents may be instantiated with backbone models of different sizes, architectures, or specializations, this raises a key question: can a single memory system be shared across agents with different backbone models? We find that naive cross-model memory transfer can degrade performance, because stored memories often entangle task-relevant knowledge with model-specific biases. To address this challenge, we propose MemCollab, a collaborative memory framework that builds shared cross-model memory by contrasting reasoning trajectories generated by different model-based agents on the same task. Through this contrastive process, MemCollab distills abstract reasoning constraints that capture shared task-level invariants while suppressing model-specific artifacts. We further introduce a task-aware retrieval mechanism that conditions memory access on task category, ensuring that only relevant constraints are retrieved at inference time. Experiments on mathematical reasoning and code generation benchmarks show that MemCollab consistently improves both accuracy and inference-time efficiency across diverse agents, including settings with different model families. These results demonstrate that collaboratively constructed cross-model memory can serve as a shared reasoning resource for heterogeneous LLM-based agents.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-24T14:05:47Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Yurui Chang</name>
+    </author>
+    <author>
+      <name>Yiran Wu</name>
+    </author>
+    <author>
+      <name>Qingyun Wu</name>
+    </author>
+    <author>
+      <name>Lu Lin</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2512.24008v3</id>
+    <title>SPARK: Search Personalization via Agent-Driven Retrieval and Knowledge-sharing</title>
+    <updated>2026-05-23T13:38:07Z</updated>
+    <link href="https://arxiv.org/abs/2512.24008v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2512.24008v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Personalized search demands the ability to model users' evolving, multi-dimensional information needs; a challenge for systems constrained by static profiles or monolithic retrieval pipelines. We present SPARK (Search Personalization via Agent-Driven Retrieval and Knowledge-sharing), a framework in which coordinated persona-based large language model (LLM) agents deliver task-specific retrieval and emergent personalization. SPARK formalizes a persona space defined by role, expertise, task context, and domain, and introduces a Persona Coordinator that dynamically interprets incoming queries to activate the most relevant specialized agents. Each agent executes an independent retrieval-augmented generation process, supported by dedicated long- and short-term memory stores and context-aware reasoning modules. Inter-agent collaboration is facilitated through structured communication protocols, including shared memory repositories, iterative debate, and relay-style knowledge transfer. Drawing on principles from cognitive architectures, multi-agent coordination theory, and information retrieval, SPARK models how emergent personalization properties arise from distributed agent behaviors governed by minimal coordination rules. The framework yields testable predictions regarding coordination efficiency, personalization quality, and cognitive load distribution, while incorporating adaptive learning mechanisms for continuous persona refinement. By integrating fine-grained agent specialization with cooperative retrieval, SPARK provides insights for next-generation search systems capable of capturing the complexity, fluidity, and context sensitivity of human information-seeking behavior.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-12-30T06:09:12Z</published>
+    <arxiv:comment>This is the author's preprint. Accepted to WEB&amp;GRAPH 2026 (co-located with WSDM 2026), Boise, Idaho, USA, Feb 26, 2026. Final version will appear in WSDM 2026 Companion Proceedings. Conf: https://wsdm-conference.org/2026/ Workshop: https://aiimlab.org/events/WSDM_2026_WEB_and_GRAPH_2026_Workshop_on_Web_and_Graphs_Responsible_Intelligence_and_Social_Media.html</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Gaurab Chhetri</name>
+    </author>
+    <author>
+      <name>Subasish Das</name>
+    </author>
+    <author>
+      <name>Tausif Islam Chowdhury</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2512.11303v1</id>
+    <title>Unifying Dynamic Tool Creation and Cross-Task Experience Sharing through Cognitive Memory Architecture</title>
+    <updated>2025-12-12T06:00:11Z</updated>
+    <link href="https://arxiv.org/abs/2512.11303v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2512.11303v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large Language Model agents face fundamental challenges in adapting to novel tasks due to limitations in tool availability and experience reuse. Existing approaches either rely on predefined tools with limited coverage or build tools from scratch without leveraging past experiences, leading to inefficient exploration and suboptimal performance. We introduce SMITH (Shared Memory Integrated Tool Hub), a unified cognitive architecture that seamlessly integrates dynamic tool creation with cross-task experience sharing through hierarchical memory organization. SMITH organizes agent memory into procedural, semantic, and episodic components, enabling systematic capability expansion while preserving successful execution patterns. Our approach formalizes tool creation as iterative code generation within controlled sandbox environments and experience sharing through episodic memory retrieval with semantic similarity matching. We further propose a curriculum learning strategy based on agent-ensemble difficulty re-estimation. Extensive experiments on the GAIA benchmark demonstrate SMITH's effectiveness, achieving 81.8% Pass@1 accuracy and outperforming state-of-the-art baselines including Alita (75.2%) and Memento (70.9%). Our work establishes a foundation for building truly adaptive agents that continuously evolve their capabilities through principled integration of tool creation and experience accumulation.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-12-12T06:00:11Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Jiarun Liu</name>
+    </author>
+    <author>
+      <name>Shiyue Xu</name>
+    </author>
+    <author>
+      <name>Yang Li</name>
+    </author>
+    <author>
+      <name>Shangkun Liu</name>
+    </author>
+    <author>
+      <name>Yongli Yu</name>
+    </author>
+    <author>
+      <name>Peng Cao</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2511.14780v1</id>
+    <title>Ask WhAI:Probing Belief Formation in Role-Primed LLM Agents</title>
+    <updated>2025-11-06T20:31:19Z</updated>
+    <link href="https://arxiv.org/abs/2511.14780v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2511.14780v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present Ask WhAI, a systems-level framework for inspecting and perturbing belief states in multi-agent interactions. The framework records and replays agent interactions, supports out-of-band queries into each agent's beliefs and rationale, and enables counterfactual evidence injection to test how belief structures respond to new information. We apply the framework to a medical case simulator notable for its multi-agent shared memory (a time-stamped electronic medical record, or EMR) and an oracle agent (the LabAgent) that holds ground truth lab results revealed only when explicitly queried. We stress-test the system on a multi-specialty diagnostic journey for a child with an abrupt-onset neuropsychiatric presentation. Large language model agents, each primed with strong role-specific priors ("act like a neurologist", "act like an infectious disease specialist"), write to a shared medical record and interact with a moderator across sequential or parallel encounters. Breakpoints at key diagnostic moments enable pre- and post-event belief queries, allowing us to distinguish entrenched priors from reasoning or evidence-integration effects. The simulation reveals that agent beliefs often mirror real-world disciplinary stances, including overreliance on canonical studies and resistance to counterevidence, and that these beliefs can be traced and interrogated in ways not possible with human experts. By making such dynamics visible and testable, Ask WhAI offers a reproducible way to study belief formation and epistemic silos in multi-agent scientific reasoning.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-11-06T20:31:19Z</published>
+    <arxiv:comment>Preprint. Accepted for publication at AIAS 2025</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Keith Moore</name>
+    </author>
+    <author>
+      <name>Jun W. Kim</name>
+    </author>
+    <author>
+      <name>David Lyu</name>
+    </author>
+    <author>
+      <name>Jeffrey Heo</name>
+    </author>
+    <author>
+      <name>Ehsan Adeli</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2509.18713v1</id>
+    <title>MemOrb: A Plug-and-Play Verbal-Reinforcement Memory Layer for E-Commerce Customer Service</title>
+    <updated>2025-09-23T06:57:07Z</updated>
+    <link href="https://arxiv.org/abs/2509.18713v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2509.18713v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large Language Model-based agents(LLM-based agents) are increasingly deployed in customer service, yet they often forget across sessions, repeat errors, and lack mechanisms for continual self-improvement. This makes them unreliable in dynamic settings where stability and consistency are critical. To better evaluate these properties, we emphasize two indicators: task success rate as a measure of overall effectiveness, and consistency metrics such as Pass$^k$ to capture reliability across multiple trials. To address the limitations of existing approaches, we propose MemOrb, a lightweight and plug-and-play verbal reinforcement memory layer that distills multi-turn interactions into compact strategy reflections. These reflections are stored in a shared memory bank and retrieved to guide decision-making, without requiring any fine-tuning. Experiments show that MemOrb significantly improves both success rate and stability, achieving up to a 63 percentage-point gain in multi-turn success rate and delivering more consistent performance across repeated trials. Our results demonstrate that structured reflection is a powerful mechanism for enhancing long-term reliability of frozen LLM agents in customer service scenarios.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-09-23T06:57:07Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Yizhe Huang</name>
+    </author>
+    <author>
+      <name>Yang Liu</name>
+    </author>
+    <author>
+      <name>Ruiyu Zhao</name>
+    </author>
+    <author>
+      <name>Xiaolong Zhong</name>
+    </author>
+    <author>
+      <name>Xingming Yue</name>
+    </author>
+    <author>
+      <name>Ling Jiang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2505.18279v1</id>
+    <title>Collaborative Memory: Multi-User Memory Sharing in LLM Agents with Dynamic Access Control</title>
+    <updated>2025-05-23T18:14:57Z</updated>
+    <link href="https://arxiv.org/abs/2505.18279v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2505.18279v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Complex tasks are increasingly delegated to ensembles of specialized LLM-based agents that reason, communicate, and coordinate actions-both among themselves and through interactions with external tools, APIs, and databases. While persistent memory has been shown to enhance single-agent performance, most approaches assume a monolithic, single-user context-overlooking the benefits and challenges of knowledge transfer across users under dynamic, asymmetric permissions. We introduce Collaborative Memory, a framework for multi-user, multi-agent environments with asymmetric, time-evolving access controls encoded as bipartite graphs linking users, agents, and resources. Our system maintains two memory tiers: (1) private memory-private fragments visible only to their originating user; and (2) shared memory-selectively shared fragments. Each fragment carries immutable provenance attributes (contributing agents, accessed resources, and timestamps) to support retrospective permission checks. Granular read policies enforce current user-agent-resource constraints and project existing memory fragments into filtered transformed views. Write policies determine fragment retention and sharing, applying context-aware transformations to update the memory. Both policies may be designed conditioned on system, agent, and user-level information. Our framework enables safe, efficient, and interpretable cross-user knowledge sharing, with provable adherence to asymmetric, time-varying policies and full auditability of memory operations.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-05-23T18:14:57Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Alireza Rezazadeh</name>
+    </author>
+    <author>
+      <name>Zichao Li</name>
+    </author>
+    <author>
+      <name>Ange Lou</name>
+    </author>
+    <author>
+      <name>Yuying Zhao</name>
+    </author>
+    <author>
+      <name>Wei Wei</name>
+    </author>
+    <author>
+      <name>Yujia Bao</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2504.17967v1</id>
+    <title>LLM Agent Swarm for Hypothesis-Driven Drug Discovery</title>
+    <updated>2025-04-24T22:27:50Z</updated>
+    <link href="https://arxiv.org/abs/2504.17967v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2504.17967v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Drug discovery remains a formidable challenge: more than 90 percent of candidate molecules fail in clinical evaluation, and development costs often exceed one billion dollars per approved therapy. Disparate data streams, from genomics and transcriptomics to chemical libraries and clinical records, hinder coherent mechanistic insight and slow progress. Meanwhile, large language models excel at reasoning and tool integration but lack the modular specialization and iterative memory required for regulated, hypothesis-driven workflows. We introduce PharmaSwarm, a unified multi-agent framework that orchestrates specialized LLM "agents" to propose, validate, and refine hypotheses for novel drug targets and lead compounds. Each agent accesses dedicated functionality--automated genomic and expression analysis; a curated biomedical knowledge graph; pathway enrichment and network simulation; interpretable binding affinity prediction--while a central Evaluator LLM continuously ranks proposals by biological plausibility, novelty, in silico efficacy, and safety. A shared memory layer captures validated insights and fine-tunes underlying submodels over time, yielding a self-improving system. Deployable on low-code platforms or Kubernetes-based microservices, PharmaSwarm supports literature-driven discovery, omics-guided target identification, and market-informed repurposing. We also describe a rigorous four-tier validation pipeline spanning retrospective benchmarking, independent computational assays, experimental testing, and expert user studies to ensure transparency, reproducibility, and real-world impact. By acting as an AI copilot, PharmaSwarm can accelerate translational research and deliver high-confidence hypotheses more efficiently than traditional pipelines.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-04-24T22:27:50Z</published>
+    <arxiv:comment>15 pages, 3 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Kevin Song</name>
+    </author>
+    <author>
+      <name>Andrew Trotter</name>
+    </author>
+    <author>
+      <name>Jake Y. Chen</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2407.14239v1</id>
+    <title>KoMA: Knowledge-driven Multi-agent Framework for Autonomous Driving with Large Language Models</title>
+    <updated>2024-07-19T12:13:08Z</updated>
+    <link href="https://arxiv.org/abs/2407.14239v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2407.14239v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large language models (LLMs) as autonomous agents offer a novel avenue for tackling real-world challenges through a knowledge-driven manner. These LLM-enhanced methodologies excel in generalization and interpretability. However, the complexity of driving tasks often necessitates the collaboration of multiple, heterogeneous agents, underscoring the need for such LLM-driven agents to engage in cooperative knowledge sharing and cognitive synergy. Despite the promise of LLMs, current applications predominantly center around single agent scenarios. To broaden the horizons of knowledge-driven strategies and bolster the generalization capabilities of autonomous agents, we propose the KoMA framework consisting of multi-agent interaction, multi-step planning, shared-memory, and ranking-based reflection modules to enhance multi-agents' decision-making in complex driving scenarios. Based on the framework's generated text descriptions of driving scenarios, the multi-agent interaction module enables LLM agents to analyze and infer the intentions of surrounding vehicles, akin to human cognition. The multi-step planning module enables LLM agents to analyze and obtain final action decisions layer by layer to ensure consistent goals for short-term action decisions. The shared memory module can accumulate collective experience to make superior decisions, and the ranking-based reflection module can evaluate and improve agent behavior with the aim of enhancing driving safety and efficiency. The KoMA framework not only enhances the robustness and adaptability of autonomous driving agents but also significantly elevates their generalization capabilities across diverse scenarios. Empirical results demonstrate the superiority of our approach over traditional methods, particularly in its ability to handle complex, unpredictable driving environments without extensive retraining.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-07-19T12:13:08Z</published>
+    <arxiv:comment>13 pages, 18 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Kemou Jiang</name>
+    </author>
+    <author>
+      <name>Xuan Cai</name>
+    </author>
+    <author>
+      <name>Zhiyong Cui</name>
+    </author>
+    <author>
+      <name>Aoyong Li</name>
+    </author>
+    <author>
+      <name>Yilong Ren</name>
+    </author>
+    <author>
+      <name>Haiyang Yu</name>
+    </author>
+    <author>
+      <name>Hao Yang</name>
+    </author>
+    <author>
+      <name>Daocheng Fu</name>
+    </author>
+    <author>
+      <name>Licheng Wen</name>
+    </author>
+    <author>
+      <name>Pinlong Cai</name>
+    </author>
+  </entry>
+</feed>

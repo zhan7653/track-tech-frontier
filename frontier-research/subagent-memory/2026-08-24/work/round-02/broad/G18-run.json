@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:09:46Z",
+  "from": "2026-05-27",
+  "github_date_field": "pushed",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "shared memory ai agents",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:42Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "shared memory ai agents pushed:2026-05-27..2026-08-24"
+      },
+      "provider": "github-search",
+      "query": "shared memory ai agents",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G18\\github-search-001-a68b77c59a9450e512ea5ccf5fbf2c849fdc0268777c2b43f59f59b673276b73.raw",
+      "reported_total": 523,
+      "response_sha256": "a68b77c59a9450e512ea5ccf5fbf2c849fdc0268777c2b43f59f59b673276b73",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=shared+memory+ai+agents+pushed%3A2026-05-27..2026-08-24&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:46Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "shared memory ai agents pushed:2026-05-27..2026-08-24"
+      },
+      "provider": "github-search",
+      "query": "shared memory ai agents",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G18\\github-search-002-7b458607bd91a82d4638c6ede1aac92616fa912e955d24c554beec4e111c67ad.raw",
+      "reported_total": 523,
+      "response_sha256": "7b458607bd91a82d4638c6ede1aac92616fa912e955d24c554beec4e111c67ad",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=shared+memory+ai+agents+pushed%3A2026-05-27..2026-08-24&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:09:42Z",
+  "to": "2026-08-24"
+}

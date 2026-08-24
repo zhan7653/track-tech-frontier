@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/CY6eH3YgHrZP24QJ2394lR0SFp8</id>
+  <title>arXiv Query: search_query=(all:"multi-agent" AND (all:blackboard OR all:"shared workspace" OR all:"shared state" OR all:"state synchronization") AND (all:LLM OR all:"language model") ) AND submittedDate:"202301010000 TO 202608242359"&amp;id_list=&amp;start=100&amp;max_results=100</title>
+  <updated>2026-08-23T17:06:06Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=(all:%22multi-agent%22+AND+((all:blackboard+OR+(all:%22shared+workspace%22+OR+(all:%22shared+state%22+OR+all:%22state+synchronization%22)))+AND+(all:LLM+OR+all:%22language+model%22)))+AND+submittedDate:%22202301010000+TO+202608242359%22&amp;start=100&amp;max_results=100&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>100</opensearch:itemsPerPage>
+  <opensearch:totalResults>34</opensearch:totalResults>
+  <opensearch:startIndex>100</opensearch:startIndex>
+</feed>

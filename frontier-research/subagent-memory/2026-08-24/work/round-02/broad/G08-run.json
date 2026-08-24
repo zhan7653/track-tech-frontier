@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:08:34Z",
+  "from": null,
+  "github_date_field": "created",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 13,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "multi-agent state synchronization",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:08:32Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "multi-agent state synchronization"
+      },
+      "provider": "github-search",
+      "query": "multi-agent state synchronization",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G08\\github-search-001-a7a6afcbdce33c96345fde33d90aa6c9dc5a88c9fb7a5899b2c1791272f642ad.raw",
+      "reported_total": 13,
+      "response_sha256": "a7a6afcbdce33c96345fde33d90aa6c9dc5a88c9fb7a5899b2c1791272f642ad",
+      "result_count": 13,
+      "url": "https://api.github.com/search/repositories?q=multi-agent+state+synchronization&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:08:34Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "multi-agent state synchronization"
+      },
+      "provider": "github-search",
+      "query": "multi-agent state synchronization",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G08\\github-search-002-dfa2e63f2e3be912f618f2ccd58e736c5a042bddfbdd387f37c2a354466857dc.raw",
+      "reported_total": 13,
+      "response_sha256": "dfa2e63f2e3be912f618f2ccd58e736c5a042bddfbdd387f37c2a354466857dc",
+      "result_count": 0,
+      "url": "https://api.github.com/search/repositories?q=multi-agent+state+synchronization&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:08:32Z",
+  "to": null
+}

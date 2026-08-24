@@ -1,0 +1,6 @@
+{"event_id":"EV-CODEX-001A","entity_id":"E-CODEX-REPO","from_stage":"discovered","to_stage":"mapped","rationale":"Canonical owner, node identity, license and fixed revision verified.","occurred_at":"2026-08-23T14:56:10Z"}
+{"event_id":"EV-CODEX-001B","entity_id":"E-CODEX-REPO","from_stage":"mapped","to_stage":"deep-verified","rationale":"Write/read/state/config/reset paths directly opened at fixed commit.","occurred_at":"2026-08-23T15:05:30Z"}
+{"event_id":"EV-CODEX-002A","entity_id":"E-CODEX-PRODUCT","from_stage":"discovered","to_stage":"mapped","rationale":"Official documentation identity and local-client scope verified.","occurred_at":"2026-08-23T15:15:45Z"}
+{"event_id":"EV-CODEX-002B","entity_id":"E-CODEX-PRODUCT","from_stage":"mapped","to_stage":"deep-verified","rationale":"Memories, AGENTS.md, subagent and worktree pages opened and reconciled with code.","occurred_at":"2026-08-23T15:16:00Z"}
+{"event_id":"EV-CODEX-003A","entity_id":"E-BAD-MEMORY","from_stage":"discovered","to_stage":"mapped","rationale":"arXiv identity, date and Codex-specific experimental scope verified.","occurred_at":"2026-08-23T15:16:35Z"}
+{"event_id":"EV-CODEX-003B","entity_id":"E-BAD-MEMORY","from_stage":"mapped","to_stage":"deep-verified","rationale":"Original abstract and experiment boundary opened; treated as preprint author evidence.","occurred_at":"2026-08-23T15:17:00Z"}

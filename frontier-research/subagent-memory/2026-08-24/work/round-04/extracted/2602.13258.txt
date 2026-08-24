@@ -1,0 +1,971 @@
+
+
+===== PAGE 1 =====
+
+MAPLE: A Sub-Agent Architecture for Memory, Learning, and
+Personalization in Agentic AI Systems
+Deepak Babu Piskala
+Seattle, WA, USA
+ABSTRACT
+Large language model (LLM) agents have emerged as powerful
+tools for complex tasks, yet their ability to adapt to individual users
+remains fundamentally limited. We argue this limitation stems from
+a critical architectural conflation: current systems treat memory,
+learning, and personalization as a unified capability rather than
+three distinct mechanisms requiring different infrastructure, op-
+erating on different timescales, and benefiting from independent
+optimization. We propose MAPLE (Memory-Adaptive Personalized
+LEarning)1, a principled decomposition where Memory handles
+storage and retrieval infrastructure; Learning extracts intelligence
+from accumulated interactions asynchronously; and Personaliza-
+tion applies learned knowledge in real-time within finite context
+budgets. Each component operates as a dedicated sub-agent with
+specialized tooling and well-defined interfaces. We ground our ar-
+chitecture in recent advances including neurobiologically-inspired
+memory [5], cognitive agent frameworks [23], and retrieval-augmented
+generation [4, 8]. Experimental evaluation on the MAPLE-Personas
+benchmark demonstrates that our decomposition achieves a 14.6%
+improvement in personalization score compared to a stateless base-
+line (𝑝< 0.01, Cohen’s𝑑= 0.95) and increases trait incorporation
+rate from 45% to 75%—enabling agents that genuinely learn and
+adapt.
+KEYWORDS
+LLM agents, memory systems, personalization, adaptive agents,
+context engineering, multi-agent architectures
+ACM Reference Format:
+Deepak Babu Piskala. 2026. MAPLE: A Sub-Agent Architecture for Memory,
+Learning, and Personalization in Agentic AI Systems. InSubmitted to the
+Adaptive and Learning Agents Workshop (ALA 2026) at AAMAS 2026, Paphos,
+Cyprus, May 25 – 26, 2026, IFAAMAS, 11 pages.
+1 INTRODUCTION
+Two employees open their company’s AI assistant on the same
+Monday morning. Sarah, a senior ML engineer with five years of
+experience building production systems, types: “What is a trans-
+former in AI?” Across the building, Marcus, a product manager
+three weeks into his first AI role, asks the exact same question.
+The assistant gives them identical responses—a high-level overview
+with basic analogies about attention mechanisms. Sarah sighs and
+closes the window; she wanted implementation details about multi-
+head attention for a deployment she’s debugging. Marcus copies the
+response but knows he’ll need a colleague to translate the technical
+terms he doesn’t recognize. This scene plays out thousands of times
+daily across enterprise AI deployments.
+1Code: https://github.com/prdeepakbabu/maple-framework
+Submitted to the Adaptive and Learning Agents Workshop (ALA 2026) at AAMAS 2026, ,
+May 25 – 26, 2026, Paphos, Cyprus. 2026.
+Here’s the frustrating part: Sarah had already expressed her pref-
+erences. Last week, she gave a thumbs-down to an oversimplified
+explanation of gradient descent. The system stored this feedback.
+Marcus had been consistently engaging more with responses that
+used analogies, asking follow-up questions whenever technical
+jargon appeared. The system had these signals too. It ignored both.
+When we say the AI “doesn’t remember, ” we’re actually point-
+ing at three different failures. We want it tostorewhat it learned
+about us—that’s memory. We want it toextract insightsfrom our
+interactions—that’s learning. And we want it tobehave differently
+based on who’s asking—that’s personalization. Most practitioners
+conflate these into one thing called “memory. ” That conflation is
+precisely why systems disappoint.
+1.1 The Three Capabilities
+Let us be precise using Sarah and Marcus as our running example.
+Memoryis infrastructure—the organizational component re-
+sponsible for storage and retrieval. When Sarah indicated frus-
+tration with simplified responses, memory preserves that signal.
+Memory answers: “What do we know about this user?” But memory
+doesn’t decide what to store or how to apply it.
+Learningextracts intelligence. When the system notices Sarah
+consistently skips introductions and jumps to code, learning identi-
+fies that as a meaningful pattern. When Marcus’s follow-ups keep
+asking for simpler explanations, learning concludes he prefers ac-
+cessible language. Learning answers: “What should we know based
+on what just happened?” But learning doesn’t apply insights in
+real-time.
+Personalizationapplies what we’ve learned. When Sarah asks
+about transformers, personalization retrieves her preference for
+technical depth and modifies the response. When Marcus asks,
+personalization shapes a different answer. Personalization answers:
+“Given what we know, how should we respond differently?”
+These three form a closed loop, but they must remainarchitec-
+turally distinct. Memory without learning means repeating errors
+forever—the system stores logs but never improves [14]. Learning
+without personalization means optimizing for an average user that
+doesn’t exist, frustrating everyone who deviates from the norm [20].
+And personalization without memory is simply impossible—you
+cannot adapt to someone you do not know.
+Memory stores what we know. Learning extracts what we
+should know. Personalization applies what we’ve learned. Each
+requires different infrastructure, operates on different timescales,
+and benefits from independent optimization.
+1.2 A Running Example
+Throughout this paper, we trace how MAPLE handles Sarah and
+Marcus differently. When Sarah asks about transformers:
+arXiv:2602.13258v1  [cs.AI]  3 Feb 2026
+
+===== PAGE 2 =====
+
+Figure 1: Personalization in action: Sarah (senior ML engi-
+neer) and Marcus (product manager) ask the same question
+about transformers. MAPLE retrieves different user profiles
+and generates tailored responses—technical implementation
+details for Sarah, conceptual analogies for Marcus.
+(1) Memoryretrieves her stored profile: senior ML engineer,
+PyTorch expertise, debugging a deployment, previously ex-
+pressed preference for code examples
+(2) Learning(having processed her past sessions) has extracted:
+“Sarah engages more with implementation details; simplified
+explanations correlate with negative feedback”
+(3) Personalizationassembles context emphasizing technical
+depth, then generates: “Here’s the PyTorch implementation
+of multi-head attention, with notes on the memory layout
+issues you’ll hit in production... ”
+For Marcus, the same architecture produces different behavior:
+(1) Memoryretrieves: product manager, new to AI, asked many
+follow-up questions about terminology
+(2) Learninghas extracted: “Marcus responds well to analogies;
+technical jargon without definition correlates with confu-
+sion”
+(3) Personalizationgenerates: “Think of a transformer like a
+team of readers, each focusing on different parts of a doc-
+ument simultaneously. The ‘attention’ mechanism is how
+they decide what’s most relevant... ”
+Same query, architecturally different responses, because the sys-
+tem decomposes adaptation into distinct capabilities.
+Figure 1 illustrates how the same query produces different re-
+sponses for Sarah and Marcus. The MAPLE architecture enables
+this differentiation through its decomposed approach to memory,
+learning, and personalization.
+2 BACKGROUND AND RELATED WORK
+2.1 Memory Architectures for LLM Agents
+MemGPT[ 14] introduces virtual context management inspired by
+operating system memory hierarchies. The key insight: LLMs face
+constraints analogous to limited RAM—the context window cannot
+hold all relevant information. MemGPT manages different memory
+tiers using the LLM itself to decide when to page information in and
+out. However, MemGPT focuses on thestoragedimension without
+distinguishing learning from personalization.
+Consider how MemGPT would handle Sarah. It might page in her
+recent conversation history when context fills up, but it wouldn’t
+extract that her negative feedback indicates a preference for tech-
+nical depth. The tiered storage is sophisticated; the intelligence
+extraction is absent.
+Generative Agents[ 15] present an architecture where agents
+maintain memory streams of all observations, synthesize memories
+into higher-level reflections, and retrieve relevant memories to
+plan behavior. Retrieval uses a scoring function combining recency,
+importance, and relevance. This work emphasizesreflection—what
+we term learning—but integrates it tightly with memory storage
+without clear architectural separation.
+HippoRAG[ 5] takes inspiration from hippocampal indexing
+theory of human long-term memory. The system orchestrates LLMs,
+knowledge graphs, and Personalized PageRank to mimic the differ-
+ent roles of neocortex (pattern storage) and hippocampus (index
+and retrieval). HippoRAG outperforms iterative retrieval methods
+while being 10-30x more efficient on multi-hop reasoning tasks.
+Recursive Summarization[ 27] addresses long-term dialogue
+memory by recursively generating summaries:𝑚𝑡+1 =summarize(𝑚 𝑡, 𝑐𝑡+1 ).
+This progressive compression informs our approach to hierarchical
+memory.
+2.2 Cognitive Architectures
+CoALA[ 23] draws on cognitive science to propose a systematic
+framework for language agents with modular memory compo-
+nents: working memory (current context), episodic memory (spe-
+cific events), semantic memory (general facts), and procedural mem-
+ory (skills). This cognitive typology, grounded in Tulving’s founda-
+tional work [24], provides valuable taxonomic grounding.
+ReAct[ 31] establishes the Thought-Action-Observation pattern
+for agent reasoning.Reflexion[ 21] enables agents to reflect on
+past episodes and verbal feedback, improving performance through
+self-reflection rather than weight updates. Our Learning component
+similarly performs reflection on interaction histories—extracting
+patterns without gradient-based training. Recent surveys [25, 30]
+identify memory as a key component of autonomous agents but
+treat it as monolithic. Multi-agent frameworks like AutoGen [29]
+and MetaGPT [6] provide infrastructure for agent coordination but
+treat personalization as implicit.
+2.3 Personalization in Language Models
+LaMP [20] benchmarks personalization across tasks, finding that
+retrieval-based personalization outperforms fine-tuning for many
+scenarios. PEARL [ 13] uses generation-calibrated retrievers for
+writing assistance. User modeling has deep roots [3, 19] predating
+LLMs. MAPLE reconnects with this tradition: our user models make
+preferences explicit and editable rather than opaque.
+Memory Infrastructure.Tools like Mem0 and LlamaIndex
+provide memory storage and retrieval infrastructure for LLM ap-
+plications. However, these systems implement only the storage
+dimension—they do not addresswhatto learn from stored data
+
+===== PAGE 3 =====
+
+Figure 2: The evolution from foundation models to person-
+alized agents. Base LLMs provide general capabilities; RAG
+adds knowledge retrieval; MAPLE introduces memory, learn-
+ing, and personalization as distinct architectural compo-
+nents, enabling agents that adapt to individual users over
+time.
+(Learning) orhowto apply retrieved information to personalize re-
+sponses (Personalization). MAPLE’s decomposition is orthogonal to
+such infrastructure; our Memory sub-agent could be implemented
+using any of these storage backends. Prior work on agent architec-
+ture design [16, 17] argues for file-based interfaces and principled
+decomposition of intelligence—perspectives that inform our ap-
+proach.
+Figure 2 positions our contribution within the landscape of foun-
+dation model capabilities. While base LLMs provide general in-
+telligence and RAG adds external knowledge retrieval, MAPLE
+introduces the critical layer of user-specific adaptation—enabling
+agents that remember, learn from, and personalize to individual
+users.
+3 THE MAPLE FRAMEWORK
+We now present our decomposition. The key insight: while Memory,
+Learning, and Personalization are functionally inter-dependent—
+forming a closed loop where memory enables learning enables
+personalization enables better memory—they require fundamen-
+tally different infrastructure. Figure 3 illustrates the architecture as
+a sequence diagram. The flow proceeds as follows: (1) a user query
+arrives at the Agent; (2) the Agent consults Personalization; (3) Per-
+sonalization retrieves relevant context from Memory; (4) the Agent
+generates a personalized response. Separately, a background learn-
+ing loop operates asynchronously: (5) Learning analyzes completed
+sessions to extract insights; (6) insights are written back to Mem-
+ory. This separation—real-time personalization in the request path,
+background learning outside it—is the key architectural distinction
+enabling both low latency and continuous improvement.
+3.1 Memory (M): Storage Infrastructure
+Memory is the infrastructure of an agentic system—the organiza-
+tional component responsible for storage and retrieval. If Learning
+determineswhatto store and Personalization governshow to apply
+what’s stored, Memory handles thehowof storage itself—the data
+structures, indexing mechanisms, and retrieval protocols.
+Think of Sarah’s interaction when she expressed frustration
+with an oversimplified response. Three different systems engage:
+Learning extracts the insight (“Sarah prefers technical depth”), Per-
+sonalization will eventually apply that insight to modify responses,
+but Memory is whatpreservesthe signal so it can be used later.
+Memory is the warehouse; Learning is the curator; Personalization
+is the shopper.
+3.1.1 Three Lenses for Classifying Memory.Recent research pro-
+poses viewing memory through complementary taxonomies [23,
+24]. Each lens reveals different architectural tradeoffs.
+Lens 1: By Form—What Carries the Memory?
+Token-level memory( M𝑇 ) consists of explicit, discrete units—text
+chunks, structured records, graph nodes. Sarah’s preference might
+be stored as:"prefers code examples over prose explanations" .
+Token-level memory offerstransparency(exactly what’s stored is
+visible),editability(Sarah can correct or delete), anddebuggability
+(check the retrieved context to explain behavior).
+Parametric memory( M𝜃 ) encodes information in model weights
+or LoRA adapters. A fine-tuned adapter might “know” to generate
+technical depth for users with Sarah’s profile. Parametric memory
+offersseamlessness—knowledge feels native—but sacrifices trans-
+parency.
+Latent memory( M𝑍 ) comprises hidden states, KV caches, and
+continuous embeddings persisting across turns [12]. Latent memory
+isefficientbutephemeral—typically lost when sessions end.
+Most production systems combine forms. Sarah’s explicit prefer-
+ences (M𝑇 ) coexist with a domain-adapted model (M𝜃 ) and session
+context (M𝑍 ).
+Lens 2: By Storage Structure (Within Token-level Memory)
+Flat (1D): Memories as unordered collections—vector databases,
+experience pools. Sarah’s preferences sit alongside Marcus’s in a
+single searchable index. Simple but relationships are implicit.
+Planar (2D): Single-layer structures with explicit relationships—
+knowledge graphs, trees. Sarah’s “prefers technical depth” connects
+to “ML engineer” connects to “five years experience. ” Relationships
+are queryable.
+Hierarchical (3D): Multi-layer structures with vertical abstrac-
+tion [5]. Raw interactions aggregate into session summaries, which
+aggregate into user models, which connect to cohort patterns (“se-
+nior engineers tend to prefer... ”).
+Lens 3: By Cognitive Analogy
+Following human memory research [22, 24]:
+Working memory: Current session context—what Sarah asked
+three turns ago.
+Episodic memory: Specific events with temporal anchoring. “Sarah
+asked about transformers on Monday while debugging a deploy-
+ment issue. ”
+Semantic memory: Abstracted facts, decontextualized knowledge.
+“Sarah is an ML engineer who prefers technical depth. ”
+Procedural memory: Skills and learned behaviors—templates that
+work well for users like Sarah.
+Critical insight: episodic captureswhat happened; semantic cap-
+tureswhat we’ve concluded. Systems need both. Episodic provides
+
+===== PAGE 4 =====
+
+Figure 3: MAPLE architecture as a sequence diagram showing the request-time flow (steps 1–4) and background learning loop
+(steps 5–6).
+material for Learning; semantic provides efficient input for Person-
+alization.
+Here’s the uncomfortable truth: most deployed AI systems don’t
+learn. They retrieve. They cache. They pattern-match. But they
+don’tchange behaviorbased on accumulated experience [7, 26].
+Our assistant might store every interaction Sarah ever had. But
+if it never extracts patterns, never identifies what made interactions
+successful, never generalizes—it has recall without growth. It’s an
+archive, not a learner.
+Memory is passive storage. Learning is active intelligence extrac-
+tion. When Sarah expresses frustration with a simplified response,
+memory stores that signal. Learning asks: what does this tell us
+about Sarah’s preferences? How should future behavior change?
+Does this pattern generalize to other users with similar profiles?
+Symbolic vs. Gradient-Based Learning.We explicitly dis-
+tinguish our approach from gradient-based learning that updates
+model parameters. MAPLE’s Learning component performssym-
+bolic learning—extracting and storing insights in external data struc-
+tures (knowledge graphs, user profiles) rather than updating neural
+network weights. This design choice offers two advantages: (1)
+No catastrophic forgetting—insights about Sarah don’t overwrite
+knowledge about Marcus, since they reside in separate database en-
+tries rather than shared parameters; (2)Immediate editability—users
+can inspect, correct, or delete learned preferences, enabling trans-
+parency and control that parametric approaches cannot provide.
+Following Reflexion [21], our Learning component reflects on inter-
+action histories through LLM-based analysis, storing conclusions
+as structured facts rather than weight updates.
+3.1.2 What Learning Extracts.Factsare objective truths. Learning
+infers that Sarah works on the ML platform team, has five years
+of experience, and is based in Seattle. Some facts come explicitly—
+Sarah states “I’m a senior ML engineer. ” Others require inference—
+detecting PyTorch familiarity from code-heavy questions.
+
+===== PAGE 5 =====
+
+The challenge: distinguishingsignalfromnoise. Sarah mention-
+ing she’s “grabbing coffee” doesn’t warrant storage; Sarah mention-
+ing she’s “switching from TensorFlow to JAX” does.
+Preferencescapture how users like to interact. Learning extracts
+that Sarah prefers code examples while Marcus prefers analogies.
+These emerge from:
+• Explicit signals: Sarah says “I prefer shorter responses” or
+clicks “technical” in settings
+• Implicit signals: Sarah consistently skips introductions ⇒
+prefers directness; Marcus’s follow-ups always ask for clari-
+fication when jargon appears ⇒ prefers accessible language
+Implicit learning captures what users wouldn’t think to state
+but carries risks: the system might misinterpret (Sarah skips intros
+because she’s time-pressed, not because she finds them condescend-
+ing).
+Experiencesare specific interactions worth preserving. Sarah’s
+transformer question worked with a code-heavy response—that
+episode becomes relevant context for similar future questions.
+3.1.3 Levels of Learning.Level 1—Replay: Store successful trajec-
+tories, retrieve by similarity. Sarah’s transformer question worked;
+imitate that pattern for attention mechanisms. This is case-based
+reasoning [25]—powerful when situations match, brittle otherwise.
+Level 2—Strategy Extraction: Identify patterns across cases.
+“Users asking about architecture while debugging prefer responses
+connecting theory to their specific errors. ” Requires metacognition—
+examining cases to extract generalizable principles.
+Level 3—Skill Synthesis: Create new capabilities [ 18, 28]. If
+the assistant repeatedly generates similar code transformations for
+Sarah, it might synthesize a utility function—expanding its action
+space through accumulated experience.
+3.1.4 Asynchronous Operation.Learning cannot happen in the real-
+time request path—it’s too slow. Instead, it operates asynchronously
+across three timescales. Atend-of-session, when Sarah closes chat,
+Learning processes the complete session to extract insights.Periodic
+batch jobs identify cross-user patterns, discovering that senior en-
+gineers generally prefer technical depth.Event-triggeredprocessing
+handles critical explicit feedback (e.g., thumbs down) that bypasses
+queues for immediate updates to avoid repeating egregious mis-
+takes.
+The key architectural insight: Personalization and Memory op-
+erate in the request path (milliseconds), while Learning operates in
+the background (minutes to hours).
+3.2 Personalization (P): Real-Time Adaptation
+Personalization is where memory and learning meet the individual
+user. It transforms “an AI assistant” into “yourAI assistant. ”
+3.2.1 Levels of Personalization.Surface personalization: Names
+and basic preferences. “Good morning, Sarah!” Using preferred
+communication style. This is memory without learning—storing
+and retrieving explicit facts. Valuable for rapport, but shallow in
+impact.
+Behavioral personalization: Adapting interaction patterns
+based on accumulated experience. The assistant learns that Sarah
+prefers code-first explanations while Marcus prefers conceptual
+overviews. For Sarah: lead with code examples, use technical ter-
+minology without definition, assume ML concept familiarity. For
+Marcus: start with analogies to business concepts, define technical
+terms on first use, build from basics to complexity.
+Goal personalization: Understanding not justhowSarah prefers
+information, butwhyshe’s asking. Is she debugging? Learning?
+Preparing a presentation? The underlying goal shapes what infor-
+mation is relevant. This borders on theory of mind—modeling what
+users want, believe, are trying to accomplish.
+3.2.2 User Model Structure.Effective personalization requires main-
+taining an explicit user model [3]:
+U𝑢 =(S 𝑢,D 𝑢,B 𝑢,G 𝑢 )(1)
+• S 𝑢: Static attributes (role, team, tenure)—things that rarely
+change
+• D 𝑢: Dynamic state (current goals, recent context, emotional
+tone)—Sarah was frustrated last session
+• B 𝑢: Behavioral patterns (interaction preferences, engage-
+ment signals)—Sarah asks short questions expecting detailed
+answers
+• G 𝑢: Predictive elements (anticipated needs)—Sarah’s been
+asking about deployment; she’ll probably want monitoring
+info soon
+3.2.3 The Personalization Mechanism.When Sarah submits her
+query about transformers, the system follows a specific sequence:
+(1) Context analysis: Analyze the current query—not just words,
+but signals about what Sarah might need
+(2) Selective retrieval: Query Memory for preferences relevant
+tothis specific question. Her preference for technical depth
+matters; her preferred meeting times don’t
+(3) Context assembly: Load retrieved preferences into the
+LLM’s context window as structured context: “User prefer-
+ences: prefers code over prose, expects implementation-level
+detail, has PyTorch expertise”
+(4) Instruction composition: System prompt instructs the
+LLM to apply preferences: “Adapt your response style based
+on user preferences. Lead with code examples and assume
+familiarity with ML concepts”
+(5) Generation: LLM generates a response reflecting Sarah’s
+preferences
+The same query from Marcus triggers different retrieval, loads
+different preferences, and produces a different response.
+3.3 The Closed Loop
+The system forms a closed feedback loop:
+M
+retrieves
+− − − − − − → P
+adapts
+− − − − →𝑟
+feedback
+− − − − − − → L
+writes
+− − − − → M(2)
+Experience leads to reflection, reflection produces insight, in-
+sight drives behavior change, changed behavior generates new
+experience. Each interaction improves understanding. When Sarah
+submits her next query, Memory contains updated insights from
+previous learning. This is continual learning [ 26]—ongoing im-
+provement without catastrophic forgetting.
+
+===== PAGE 6 =====
+
+4 SYSTEM ARCHITECTURE
+We have constructed an agentic system that decomposes “memory”
+into three architecturally distinct sub-agents. Each operates as an
+independent component with specialized responsibilities, dedicated
+tooling, and its own LLM instance.
+The Agentitself functions as an orchestrator with problem-
+solving capabilities. It maintains access to domain-specific tools
+(APIs, calculators, code executors) and knowledge bases. The Agent’s
+primary responsibility is solving the user’s problem. The P, M, L sub-
+agentsaugmentthis core capability by making behavior adaptive
+rather than generic.
+Memory (M)serves as storage and retrieval infrastructure. It
+maintains persistent user data across sessions—facts, preferences,
+interaction history. Memory answers “what do we know?” but
+makes no decisions about what deserves storage or how to apply it.
+Its tools include database connectors, vector stores, and knowledge
+graph interfaces.
+Learning (L)operates as the intelligence extraction engine. It
+analyzes interactions to derive actionable insights, identifying pat-
+terns in behavior, inferring unstated preferences, and extracting
+generalizable strategies. Learning answers “what should we know?”
+but does not apply insights in real-time. It employs analytics en-
+gines, pattern recognition algorithms, and feedback processors.
+Personalization (P)functions as the real-time adaptation layer.
+It retrieves relevant context from Memory and shapes system behav-
+ior. Personalization answers “how should we respond differently?”
+It operates through context managers, user model interfaces, and
+preference retrievers.
+4.1 Design Rationale
+The sub-agent architecture follows three principles.Separation of
+concerns: Memory does not decide what to learn, Learning does
+not apply insights during interactions, and Personalization does
+not determine what gets stored—enabling modular development
+and failure isolation.Asynchronous operation: Memory and Per-
+sonalization operate in the request path (adding 15-70ms latency
+through deterministic database queries), while Learning operates in
+the background (minutes to hours) with no impact on user-facing
+latency.Explicit user models: Structured representations where in-
+dividual preferences connect to role-based patterns, enabling both
+personalized and generalized reasoning.
+Why sub-agents?This decomposition provides practical ben-
+efits:modularity—Memory can be optimized for retrieval latency
+without affecting learning algorithms;specialization—Personalization
+might use a fast, smaller model while Learning uses a larger model
+for complex pattern recognition;failure isolation—if Learning en-
+counters errors during background processing, active sessions con-
+tinue unaffected; andobservability—each component’s performance
+(retrieval latency, pattern accuracy, personalization effectiveness)
+becomes a distinct, measurable metric.
+4.2 Implementation
+Our reference implementation demonstrates that MAPLE’s archi-
+tectural benefits emerge from the decomposition itself rather than
+sophisticated storage infrastructure [17]. The Memory sub-agent
+uses lightweight filesystem storage with JSON-serialized records
+organized into three directories: users/ (profile data), episodic/
+(session histories), and semantic/ (extracted insights). This deliber-
+ate simplicity—no vector databases, no embedding models—shows
+that personalization gains come from the M/L/P decomposition, not
+from retrieval optimization. Production deployments could substi-
+tute any storage backend (Mem0, LlamaIndex, PostgreSQL) without
+architectural changes.
+5 CONTEXT ENGINEERING
+The finite context window is the central constraint [1, 2]. System
+prompts, user context, retrieved documents, conversation history,
+tool definitions, and reasoning space all compete for limited at-
+tention. This is wherecontext engineeringdiverges from prompt
+engineering: while prompt engineering focuses onhowto phrase
+instructions, context engineering designs the architecture that feeds
+theright information at the right time—ensuring the model has the
+right textbook before it starts thinking.
+Bigger windows don’t solve fundamental problems—they enable
+new failure modes we collectively termcontext rot: poisoning (incor-
+rect information compounds errors), distraction (over-reliance on
+stale patterns), confusion (irrelevant retrievals crowd useful ones),
+and clash (contradictory signals without resolution) [11]. If Sarah’s
+preference was incorrectly recorded, every subsequent interaction
+reinforces that error. These failures cannot be fixed with better
+prompts; they require architecture that actively curates what enters
+context, resolves conflicts, and allocates space dynamically.
+MAPLE addresses context rot through intelligent context man-
+agement. The Personalization component performsselective re-
+trieval—Sarah’s technical depth preference matters for architecture
+questions; her meeting preferences don’t.Hierarchical compres-
+sion[ 27] keeps recent interactions in detail while summarizing
+older ones.Conflict resolutionreasons about context when signals
+contradict, prioritizing recent explicit feedback over old implicit
+signals. Figure 4 illustrates typical context window allocation where
+user preferences compete with other components within a finite
+budget.
+Figure 4: Context window budget allocation. The finite win-
+dow must accommodate system prompts (10%), conversation
+history (20%), tool declarations (10%), user preferences from
+memory (15%), the current query (5%), and unused context
+for reasoning (40%). Every token spent on personalization is
+unavailable for other components.
+6 EXPERIMENTAL EV ALUATION
+To empirically validate the MAPLE architecture, we conduct a con-
+trolled ablation study comparing systems with and without the
+
+===== PAGE 7 =====
+
+Memory-Learning-Personalization decomposition. Our experimen-
+tal design isolates the contribution of learned user context by eval-
+uating response quality on held-out conversational turns where the
+system must proactively apply previously observed preferences.
+6.1 The MAPLE-Personas Benchmark
+We constructMAPLE-Personas, a novel benchmark designed to
+measure an agent’s capacity for proactive personalization across
+multi-turn dialogues.2 The benchmark comprises 150 synthetically
+generated user personas, each characterized by a unique combi-
+nation of five behavioral and demographic traits. These traits are
+sampled from a pool of 20 attributes spanning dietary preferences
+(e.g., vegetarian, health-conscious), living situations (e.g., has young
+children, cares for elderly parents), professional contexts (e.g., soft-
+ware engineer, works from home), environmental factors (e.g., cold
+climate, urban dwelling), and lifestyle characteristics (e.g., night
+owl, socially active, pet owner). The combinatorial sampling en-
+sures diverse persona configurations that mirror the heterogeneity
+of real user populations.
+For each of the 150 personas, we employ Claude 3 Haiku to
+synthesize a complete 10-turn conversational trajectory. The gen-
+eration process is constrained to produce contextually coherent
+user utterances that organically reveal persona traits without ex-
+plicit enumeration. Turns 1 through 8 constitute thelearning phase,
+during which user messages naturally expose their characteristics
+through domain-appropriate queries. For instance, a persona with
+the “vegetarian” trait might inquire about restaurant recommenda-
+tions, while one with “young children” might ask about weekend
+activities. Turns 9 and 10 form theevaluation phase, comprising
+test queries deliberately unrelated to previously discussed topics.
+This design creates a rigorous evaluation criterion: the system must
+incorporate knowledge from the learning phase into responses for
+novel queries, demonstrating genuine preference transfer rather
+than mere conversational continuity.
+6.2 Experimental Protocol
+We evaluate two system configurations under identical inference
+conditions. TheBaselinecondition employs the same underlying
+LLM (Claude 3 Sonnet) without persistent memory or learned user
+context. Each response is generated solely from the current turn’s
+query, simulating a stateless assistant that treats every interac-
+tion as independent. TheMAPLEcondition activates the complete
+Memory-Learning-Personalization architecture. During the learn-
+ing phase (turns 1–8), the Learning sub-agent asynchronously ex-
+tracts user preferences and stores them via the Memory sub-agent.
+During the evaluation phase (turns 9–10), the Personalization sub-
+agent retrieves relevant context and injects it into the generation
+prompt, enabling preference-aware responses.
+Both conditions process the same conversational inputs and
+are evaluated on identical output criteria. The experimental isola-
+tion ensures that observed performance differences are attributable
+solely to the presence or absence of the M/L/P decomposition.
+2Dataset will be released at huggingface.co/datasets/maple-personas
+6.3 Evaluation Methodology
+We adopt the LLM-as-judge paradigm [10, 32] to assess personal-
+ization quality at scale. For each evaluation turn, an independent
+judge model (Claude 3 Haiku) receives three inputs: the complete
+list of user traits revealed during the learning phase, the current
+query, and the assistant’s response. The judge produces a structured
+assessment comprising a personalization score on a 5-point ordinal
+scale and a trait-level consistency analysis.
+ThePersonalization Scorecaptures the degree to which the re-
+sponse proactively incorporates learned user context. A score of
+5 indicates that multiple relevant traits are naturally woven into
+the response without explicit user prompting. A score of 4 reflects
+appropriate trait references that enhance relevance. A score of 3
+denotes a generic but helpful response that neither leverages nor
+contradicts known preferences. Scores of 2 and 1 indicate missed
+personalization opportunities and active contradiction of estab-
+lished preferences, respectively.
+TheTrait Consistency Analysisprovides a fine-grained decom-
+position of how each revealed trait manifests in the response. For
+each of the user’s five traits, the judge classifies it asincorporated
+(actively used to shape content),violated(contradicted by the re-
+sponse), orneutral(not relevant to the current query). This enables
+computation of a Trait Incorporation Rate: the proportion of query-
+relevant traits that are successfully reflected in the response.
+6.4 Quantitative Results
+Table 1 summarizes the primary experimental outcomes. Figure 5
+visualizes the effect size and score distributions.
+Table 1: Personalization quality comparison ( ∗∗∗𝑝<0.01).
+Metric Base. MAPLEΔ
+Judge Score (1–5)4.174.78+0.61 ∗∗∗
+Trait Incorp. 45%75%+30pp
+Perfect (5/5) 15%88%+73pp
+The results demonstrate a substantial and statistically significant
+advantage for MAPLE across all metrics. The mean personalization
+score improves from 4.17 to 4.78, representing a 14.6% relative gain.
+We assess statistical significance using Welch’s𝑡-test for unequal
+variances, obtaining 𝑡= 6.05with 74.5 degrees of freedom and
+𝑝< 0.001. The effect size, measured by Cohen’s𝑑= 0.95, exceeds
+the conventional threshold for a large effect (𝑑≥ 0.8), indicating
+that the performance difference is not merely statistically significant
+but practically meaningful.
+The Trait Incorporation Rate rises from 45% to 75%, a 30 per-
+centage point absolute improvement. Perhaps most strikingly, the
+proportion of responses receiving perfect personalization scores
+(5/5) increases from 15% to 88%, suggesting that MAPLE enables
+consistently high-quality personalized responses rather than occa-
+sional successes.
+
+===== PAGE 8 =====
+
+Figure 5: MAPLE vs Baseline across all metrics. Left axis: per-
+centage metrics (trait incorporation, perfect scores). Right
+axis: mean judge score (1–5 scale). MAPLE achieves statisti-
+cally significant improvements across all measures (Cohen’s
+𝑑=0.95,𝑝<0.01).
+6.5 Qualitative Analysis
+Beyond aggregate metrics, qualitative examination of individual
+responses reveals systematic behavioral differences between condi-
+tions. We present two representative examples that illustrate the
+nature of MAPLE’s personalization advantage.
+Example 1: Multi-constraint Synthesis.Consider a persona
+characterized by “has two young children, ” “lives in a big city, ” and
+“has a dog named Max. ” When asked for living room redecorating
+suggestions—a query unrelated to any topic discussed during the
+learning phase—MAPLE responds: “Based on your family situation
+with young children, a dog, and urban living, I recommend durable
+stain-resistant fabrics, pet-friendly materials that resist scratch-
+ing, and space-efficient storage solutions for city apartments. ” The
+baseline, lacking this context, provides generic trend-based advice:
+“Based on 2026 interior design trends, consider warm earth tones
+and statement lighting. ” MAPLE synthesizes three independent
+traits into a coherent, practically relevant response.
+Example 2: Implicit Need Anticipation.A persona with traits
+“lives alone, ” “cold climate, ” and “has a bad back” receives the same
+redecorating query. MAPLE’s response addresses implicit needs: “I
+recommend ergonomic seating options for back support, warm cozy
+color palettes suited to cold climates, and comfortable single-person
+arrangements. ” The baseline offers sophisticated color schemes
+without considering the user’s physical constraints or environmen-
+tal context. This example demonstrates MAPLE’s capacity to trans-
+late learned facts into actionable recommendations that anticipate
+unstated needs.
+Across all qualitative examples, we observe consistent patterns
+distinguishing MAPLE from baseline responses. MAPLE responses
+characteristically open with explicit trait acknowledgment (“Based
+on your... ”), whereas baseline responses reference external sources
+(“Based on trends... ”) or request information the system should
+already possess. MAPLE incorporates 2–4 traits per response on
+average, while baseline responses incorporate zero.
+7 DISCUSSION
+MAPLE embodies multi-agent design principles [6, 9, 29]: role spe-
+cialization, coordination through interfaces, asynchronous collabo-
+ration, and emergent adaptation.
+Limitations: Our evaluation relies on synthetic personas and
+LLM-as-judge methodology. While this approach enables controlled
+experimentation at scale, it introduces potential self-preference bias
+when Claude-family models generate responses that Claude judges.
+We mitigate this by using different model variants (Sonnet for
+generation, Haiku for judging) and focusing on structured trait-level
+assessments rather than open-ended quality ratings. Future work
+should validate these findings with human evaluation and diverse
+judge models. Additionally, three sub-agents require coordination
+infrastructure, personalization quality remains subjective, and cross-
+user learning requires careful anonymization.
+Future Work: Human evaluation studies to validate LLM judge
+assessments. Cross-model evaluation with diverse judge models
+(GPT-4, Llama) to test generalization. Federated learning for cross-
+user patterns with differential privacy. Longitudinal deployment
+studies in production environments.
+8 CONCLUSION
+We presented MAPLE, decomposing agent adaptation into Memory
+(storage infrastructure), Learning (intelligence extraction), and Per-
+sonalization (real-time application). Through Sarah and Marcus, we
+demonstrated how decomposition enables differentiated responses
+from the same architecture.
+The key insight: treating M, L, P as distinct subsystems with dif-
+ferent computational characteristics and timescales enables princi-
+pled development of agents that genuinely learn and adapt. MAPLE
+addresses the fundamental question for adaptive agents: not just
+what to remember, but what to learn from memories, and how to
+apply learning in the moment.
+REFERENCES
+[1] Shouyuan Chen, Sherman Wong, Liangjian Chen, and Yuandong Tian. 2023. Ex-
+tending Context Window of Large Language Models via Positional Interpolation.
+arXiv preprint arXiv:2306.15595(2023).
+[2] Yiran Ding, Li Lyna Zhang, Chengruidong Zhang, Yuanyuan Xu, Ning Shang,
+Jiahang Xu, Fan Yang, and Mao Yang. 2024. LongRoPE: Extending LLM Context
+Window Beyond 2 Million Tokens.arXiv preprint arXiv:2402.13753(2024).
+[3] Gerhard Fischer. 2001. User modeling in human–computer interaction.User
+Modeling and User-Adapted Interaction11, 1 (2001), 65–86.
+[4] Yunfan Gao, Yun Xiong, Xinyu Gao, Kangxiang Jia, Jinliu Pan, Yuxi Bi, Yi Dai,
+Jiawei Sun, and Haofen Wang. 2023. Retrieval-Augmented Generation for Large
+Language Models: A Survey.arXiv preprint arXiv:2312.10997(2023).
+[5] Bernal Jiménez Gutiérrez, Yiheng Shu, Yu Gu, Michihiro Yasunaga, and Yu Su.
+2024. HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Lan-
+guage Models. InAdvances in Neural Information Processing Systems (NeurIPS).
+[6] Sirui Hong, Mingchen Zhuge, Jonathan Chen, Xiawu Zheng, Yuheng Cheng,
+Ceyao Zhang, Jinlin Wang, Zili Wang, Steven Ka Shing Yau, Zijuan Lin, et al .
+2023. MetaGPT: Meta Programming for A Multi-Agent Collaborative Framework.
+arXiv preprint arXiv:2308.00352(2023).
+[7] Zixuan Ke, Yijia Shao, Haowei Lin, Tatsuya Konishi, Gyuhak Kim, and Bing Liu.
+2023. Continual Pre-training of Language Models.arXiv preprint arXiv:2302.03241
+(2023).
+[8] Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio Petroni, Vladimir Karpukhin,
+Naman Goyal, Heinrich Küttler, Mike Lewis, Wen-tau Yih, Tim Rocktäschel, et al.
+2020. Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. In
+Advances in Neural Information Processing Systems (NeurIPS).
+[9] Guohao Li, Hasan Abed Al Kader Hammoud, Hani Itani, Dmitrii Khizbullin, and
+Bernard Ghanem. 2023. CAMEL: Communicative Agents for “Mind” Exploration
+of Large Language Model Society.arXiv preprint arXiv:2303.17760(2023).
+
+===== PAGE 9 =====
+
+[10] Xuechen Li, Tianyi Zhang, Yann Dubois, Rohan Taori, Ishaan Gulrajani, Car-
+los Guestrin, Percy Liang, and Tatsunori B Hashimoto. 2023. AlpacaEval: An
+Automatic Evaluator of Instruction-following Models.GitHub repository(2023).
+[11] Hao Liu, Matei Zaharia, and Pieter Abbeel. 2024. Ring Attention with Blockwise
+Transformers for Near-Infinite Context.arXiv preprint arXiv:2310.01889(2024).
+[12] Tsendsuren Munkhdalai, Manaal Faruqui, and Siddharth Gopal. 2024. Leave No
+Context Behind: Efficient Infinite Context Transformers with Infini-attention.
+arXiv preprint arXiv:2404.07143(2024).
+[13] Sheshera Mysore, Nouha Dziri, Andrew McCallum, and Hamed Zamani. 2023.
+PEARL: Personalizing Large Language Model Writing Assistants with Generation-
+Calibrated Retrievers.arXiv preprint arXiv:2311.09180(2023).
+[14] Charles Packer, Sarah Wooders, Kevin Lin, Vivian Fang, Shishir G Patil, Ion Stoica,
+and Joseph E Gonzalez. 2023. MemGPT: Towards LLMs as Operating Systems.
+arXiv preprint arXiv:2310.08560(2023).
+[15] Joon Sung Park, Joseph C O’Brien, Carrie J Cai, Meredith Ringel Morris, Percy
+Liang, and Michael S Bernstein. 2023. Generative Agents: Interactive Simulacra
+of Human Behavior. InProceedings of the 36th Annual ACM Symposium on User
+Interface Software and Technology (UIST).
+[16] Deepak Babu Piskala. 2025. Where Should Intelligence Live? Agent-Centric
+vs. Environment-Centric Design in Agentic Systems.TechRxiv preprint(2025).
+https://doi.org/10.36227/techrxiv.176823084.40754167
+[17] Deepak Babu Piskala. 2026. From Everything-is-a-File to Files-Are-All-You-Need:
+How Unix Philosophy Informs the Design of Agentic AI Systems.arXiv preprint
+arXiv:2601.11672(2026).
+[18] Yujia Qin, Shihao Liang, Yining Ye, Kunlun Zhu, Lan Yan, Yaxi Lu, Yankai Lin,
+Xin Cong, Xiangru Tang, Bill Qian, et al. 2023. Tool Learning with Foundation
+Models.arXiv preprint arXiv:2304.08354(2023).
+[19] Elaine Rich. 1979. User modeling via stereotypes.Cognitive Science3, 4 (1979),
+329–354.
+[20] Alireza Salemi, Sheshera Mysore, Michael Bendersky, and Hamed Zamani. 2024.
+LaMP: When Large Language Models Meet Personalization.arXiv preprint
+arXiv:2304.11406(2024).
+[21] Noah Shinn, Federico Cassano, Ashwin Gopinath, Karthik Narasimhan, and
+Shunyu Yao. 2023. Reflexion: Language Agents with Verbal Reinforcement
+Learning. InAdvances in Neural Information Processing Systems (NeurIPS).
+[22] Larry R Squire, Craig EL Stark, and Robert E Clark. 2004. The medial temporal
+lobe.Annual Review of Neuroscience27 (2004), 279–306.
+[23] Theodore R Sumers, Shunyu Yao, Karthik Narasimhan, and Thomas L Griffiths.
+2023. Cognitive Architectures for Language Agents.Transactions on Machine
+Learning Research(2023).
+[24] Endel Tulving. 1972. Episodic and semantic memory.Organization of Memory
+(1972), 381–403.
+[25] Lei Wang, Chen Ma, Xueyang Feng, Zeyu Zhang, Hao Yang, Jingsen Zhang,
+Zhiyuan Chen, Jiakai Tang, Xu Chen, Yankai Lin, et al. 2023. A Survey on Large
+Language Model based Autonomous Agents.Frontiers of Computer Science(2023).
+[26] Liyuan Wang, Xingxing Zhang, Hang Su, and Jun Zhu. 2024. A Comprehensive
+Survey of Continual Learning: Theory, Method and Application.IEEE Transac-
+tions on Pattern Analysis and Machine Intelligence(2024).
+[27] Qingyue Wang, Liang Ding, Yiqun Cao, Zheng Tian, Shi Wang, and Dacheng
+Tao. 2023. Recursively Summarizing Enables Long-Term Dialogue Memory in
+Large Language Models.arXiv preprint arXiv:2308.15022(2023).
+[28] Xingyao Wang, Yangyi Chen, Lifan Yuan, Yizhe Zhang, Yunzhu Li, Hao Peng, and
+Heng Ji. 2024. Executable Code Actions Elicit Better LLM Agents. InInternational
+Conference on Machine Learning (ICML).
+[29] Qingyun Wu, Gagan Bansal, Jieyu Zhang, Yiran Wu, Beibin Li, Erkang Zhu,
+Li Jiang, Xiaoyun Zhang, Shaokun Zhang, Jiale Liu, et al . 2023. AutoGen: En-
+abling Next-Gen LLM Applications via Multi-Agent Conversation.arXiv preprint
+arXiv:2308.08155(2023).
+[30] Zhiheng Xi, Wenxiang Chen, Xin Guo, Wei He, Yiwen Ding, Boyang Hong, Ming
+Zhang, Junzhe Wang, Senjie Jin, Enyu Zhou, et al. 2023. The Rise and Potential of
+Large Language Model Based Agents: A Survey.arXiv preprint arXiv:2309.07864
+(2023).
+[31] Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan,
+and Yuan Cao. 2023. ReAct: Synergizing Reasoning and Acting in Language
+Models. InInternational Conference on Learning Representations (ICLR).
+[32] Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Siyuan Zhuang, Zhanghao Wu,
+Yonghao Zhuang, Zi Lin, Zhuohan Li, Dacheng Li, Eric P Xing, et al . 2023.
+Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena.arXiv preprint
+arXiv:2306.05685(2023).
+
+===== PAGE 10 =====
+
+A PROMPTS AND IMPLEMENTATION
+DETAILS
+This appendix provides the prompts used by the Learning and
+Personalization components, along with illustrative examples of
+their operation.
+A.1 Learning Component Prompt
+The Learning component uses the following prompt template to
+extract insights from each conversation turn:
+Analyze this conversation turn and extract
+insights about the user.
+User message: {user_message}
+Assistant response: {assistant_response}
+User feedback: {feedback}
+Extract ANY useful insights about the user:
+- PREFERENCE: How they want information
+presented (with citations, concise,
+detailed, code examples, etc.)
+- FACT: Information about them (role,
+expertise, company, domain interests)
+- BEHAVIOR: Communication patterns (asks
+follow-ups, prefers examples, etc.)
+IMPORTANT: If the user explicitly states a
+preference or request about how they want
+information, ALWAYS capture it.
+Return insights as JSON array:
+[
+{"type": "preference|fact|behavior",
+"content": "detailed insight text",
+"confidence": 0.0-1.0}
+]
+Example - If user says "I want URLs for
+sources", return:
+[{"type": "preference",
+"content": "User wants citation URLs and
+source links when facts are presented",
+"confidence": 0.95}]
+Return [] only if the message is a simple
+greeting with no information.
+A.2 Personalization Context Structure
+The Personalization component assembles user context into a struc-
+tured format injected into the LLM’s system prompt. The template
+below shows placeholder variables (in curly braces) for profile fields,
+with an example instantiation for Sarah’s context in the Facts, Pref-
+erences, and Summary sections:
+## User Context
+### User Profile
+- Role: {role}
+- Expertise: {expertise_level}
+- Preferred language: {language}
+- Preferred style: {response_style}
+- Appreciates code examples
+- Verbosity preference: {verbosity}
+### What You Know About This User
+Use these facts and preferences when
+responding:
+**Facts:**
+- User is a senior ML engineer
+- User works with PyTorch daily
+- User is debugging a production deployment
+**Preferences:**
+- User prefers code examples over prose
+- User wants technical depth without
+introductory explanations
+- User appreciates implementation details
+**Communication patterns:**
+- User asks short questions expecting
+detailed answers
+- User engages more with responses
+containing runnable code
+### Recent Conversation Summary
+- User asked about: transformer architecture
+- User asked about: attention mechanisms
+- User asked about: deployment optimization
+A.3 Illustrative Examples
+A.3.1 Example 1: Learning Extraction.User message:“I’m a data
+scientist at a biotech company. Can you explain how transformers
+work? I’d prefer code examples in Python. ”
+Learning output:
+[
+{"type": "fact",
+"content": "User is a data scientist",
+"confidence": 0.95},
+{"type": "fact",
+"content": "User works at a biotech
+company",
+"confidence": 0.95},
+{"type": "preference",
+"content": "User prefers code examples
+in Python",
+"confidence": 0.90}
+]
+A.3.2 Example 2: Personalization in Action.For Sarah (senior ML
+engineer), the Personalization component retrieves:
+• Facts: Senior ML engineer, PyTorch expertise, 5 years expe-
+rience
+• Preferences: Prefers code over prose, expects implementation-
+level detail
+• Behaviors: Gives negative feedback to oversimplified re-
+sponses
+The assembled context instructs the LLM:
+Adapt your response to this user's
+preferences. Lead with code examples, use
+technical terminology without definition,
+
+===== PAGE 11 =====
+
+assume familiarity with ML concepts. Avoid
+introductory explanations.
+For Marcus (product manager), different context is retrieved:
+•Facts: Product manager, new to AI, three weeks in role
+• Preferences: Appreciates analogies, needs definitions for jar-
+gon
+• Behaviors: Asks follow-up questions when technical terms
+appear
+The assembled context instructs the LLM:
+Adapt your response to this user's
+preferences. Start with analogies and
+conceptual explanations. Define technical
+terms on first use. Build from basics to
+complexity.
+A.3.3 Example 3: End-to-End Flow.Query:“What is a transformer
+in AI?”
+Sarah’s Response (MAPLE):
+Here’s the PyTorch implementation of multi-head attention:
+class MultiHeadAttention(nn.Module):
+def __init__(self, d_model, n_heads):
+super().__init__()
+self.d_k = d_model // n_heads
+self.W_q = nn.Linear(d_model, d_model)
+...
+Key implementation details for production: (1) Usescaled_dot_product_attention
+for memory efficiency; (2) Watch for the𝑂(𝑛 2 ) memory scal-
+ing with sequence length...
+Marcus’s Response (MAPLE):
+Think of a transformer like a team of readers working on a
+document together. Each reader (called an “attention head”)
+focuses on different aspects—one might track who is doing
+what, another might follow the timeline of events.
+The key innovation is “attention”—instead of reading word
+by word like earlier AI models, transformers can look at
+all words simultaneously and decide which ones are most
+relevant to understanding each part...
+Baseline Response (identical for both):
+A transformer is a type of neural network architecture intro-
+duced in the paper “Attention Is All You Need” (2017). It uses
+self-attention mechanisms to process sequential data. The
+key components include multi-head attention, feed-forward
+layers, and positional encodings...

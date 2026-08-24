@@ -1,0 +1,114 @@
+{
+  "queries": [
+    {
+      "query_id": "Q001",
+      "occurrence_jsonl": "P01.jsonl",
+      "run_metadata": "P01-run.json",
+      "stage": "pilot",
+      "lanes": ["paper"],
+      "windows": ["W_ROLLING_12M"],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Tests the direct multi-agent plus memory vocabulary in the current frontier window."
+    },
+    {
+      "query_id": "Q002",
+      "occurrence_jsonl": "P02.jsonl",
+      "run_metadata": "P02-run.json",
+      "stage": "pilot",
+      "lanes": ["paper"],
+      "windows": ["W_PRE_FRONTIER", "W_ROLLING_12M", "W_ROLLING_90D"],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Exposes shared, collective and collaborative memory terminology beyond the literal Subagent Memory phrase."
+    },
+    {
+      "query_id": "Q005",
+      "occurrence_jsonl": "P05.jsonl",
+      "run_metadata": "P05-run.json",
+      "stage": "pilot",
+      "lanes": ["paper"],
+      "windows": ["W_ROLLING_12M"],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Crossref current-window route tests venue and DOI coverage outside arXiv."
+    },
+    {
+      "query_id": "Q006",
+      "occurrence_jsonl": "P06.jsonl",
+      "run_metadata": "P06-run.json",
+      "stage": "pilot",
+      "lanes": ["paper"],
+      "windows": ["W_PRE_FRONTIER", "W_ROLLING_12M", "W_ROLLING_90D"],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Broad DOI-indexed route tests older collective and collaborative memory vocabulary."
+    },
+    {
+      "query_id": "Q007",
+      "occurrence_jsonl": "G01.jsonl",
+      "run_metadata": "G01-run.json",
+      "stage": "pilot",
+      "lanes": ["repository"],
+      "windows": ["W_PRE_FRONTIER", "W_ROLLING_12M", "W_ROLLING_90D"],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Direct implementation vocabulary yields broad multi-agent memory candidates."
+    },
+    {
+      "query_id": "Q008",
+      "occurrence_jsonl": "G02.jsonl",
+      "run_metadata": "G02-run.json",
+      "stage": "pilot",
+      "lanes": ["repository"],
+      "windows": ["W_PRE_FRONTIER", "W_ROLLING_12M", "W_ROLLING_90D"],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Shared-memory wording finds service and cross-tool implementations missed by paper terminology."
+    },
+    {
+      "query_id": "Q009",
+      "occurrence_jsonl": "G03.jsonl",
+      "run_metadata": "G03-run.json",
+      "stage": "pilot",
+      "lanes": ["repository"],
+      "windows": ["W_ROLLING_12M"],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Recently created repositories test whether subagent is an active implementation label."
+    },
+    {
+      "query_id": "Q010",
+      "occurrence_jsonl": "G04.jsonl",
+      "run_metadata": "G04-run.json",
+      "stage": "pilot",
+      "lanes": ["repository"],
+      "windows": ["W_ROLLING_90D"],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Recent activity around handoff plus memory exposes state-transfer implementations and terminology noise."
+    },
+    {
+      "query_id": "Q011",
+      "occurrence_jsonl": "G05.jsonl",
+      "run_metadata": "G05-run.json",
+      "stage": "pilot",
+      "lanes": ["repository"],
+      "windows": ["W_PRE_FRONTIER", "W_ROLLING_12M", "W_ROLLING_90D"],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Blackboard terminology identifies shared authoritative-state implementations distinct from vector-memory services."
+    },
+    {
+      "query_id": "Q012",
+      "occurrence_jsonl": "G06.jsonl",
+      "run_metadata": "G06-run.json",
+      "stage": "pilot",
+      "lanes": ["repository"],
+      "windows": ["W_ROLLING_90D"],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Recently created multi-agent memory repositories measure the weak-signal surface without interpreting stars as quality."
+    }
+  ]
+}

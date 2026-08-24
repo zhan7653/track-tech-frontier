@@ -1,0 +1,1491 @@
+
+
+===== PAGE 1 =====
+
+AutoRefine: Compiling Trajectories into Validated Typed Agent Artifacts
+Libin Qiu1∗, Zhirong Gao1∗, JunFu Chen1, Yuhang Ye1, Liangyu Li2,
+Wenkai Qiu1, Weizhi Huang1, Xiaobo Xue1, Shuo Tang1
+Abstract
+Large language model agents repeatedly encounter related
+tasks, yet systems that learn from trajectories commit every
+lesson to one predefined artifact form. A local constraint, a
+reusable procedure, and a delegated objective require differ-
+ent amounts of runtime ownership, so one form either under-
+specifies the correction or wraps it in execution machinery
+it does not need. We presentAutoRefine, which treats tra-
+jectory learning as typed artifact compilation. It contrasts
+failed against successful trajectories to derive a type-neutral,
+evidence-linkedinterventionspecification,thencompilesthat
+specification into the first Rule, Skill, or bounded Subagent
+that closes it under a runtime-relative ownership order: the
+selected schema must own every specified observation, state
+variable, dependent decision, and completion condition. Val-
+idation is stated in the same terms: a type-specific contract
+gate tests whether the generated object realizes its declared
+boundary, and a replay gate admits it only when it improves
+the correction cases linked to its source failures without re-
+gression on preservation cases. With GPT-5.6-terra as the
+shared backbone, AutoRefine records the highest success on
+ALFWorld, ScienceWorld, TravelPlanner, and Spreadsheet-
+Bench,andtiesthebestresultonSkillCraft;onTravelPlanner
+itreaches80.56%successagainst50.0%forthestrongestbase-
+line. Removing boundary closure or replay validation costs
+15.00 and 16.11 percentage points, the two largest losses
+among our construction and admission policies. In a longi-
+tudinal TravelPlanner stream, the repository holds 89–91%
+held-out success after 60 learning tasks with no net loss on
+previouslysolvedtasks,andfrozenrepositoriesimproveall25
+evaluated source–target pairs, more within a domain (14.20
+pointsonaverage)thanacrossdomains(6.99).Representation
+selectionandvalidationthereforeactascoupledrequirements
+for reliable capability accumulation.
+Code:https://github.com/AutoRefine/Autorefine
+Introduction
+Largelanguagemodel(LLM)agentsnowsolvelong-horizon
+tasksthroughreasoning,tooluse,andinteractionwithexter-
+nal environments. Completing a task, however, does not by
+itself improve a frozen agent: the trajectory is discarded un-
+less its useful evidence becomes persistent external state.
+∗Equal contribution.1Alibaba Group.2Tongji University. Cor-
+respondence to: Yuhang Ye <yeyu.yyh@alibaba-inc.com>.
+Recentworkthereforeexternalizesexperienceasdemonstra-
+tions, guidelines, manuals, workflows, playbooks, skills, or
+executable subagents (Sarukkai, Xie, and Fatahalian 2025;
+Fu et al. 2024; Chen et al. 2024; Wang et al. 2025; Zhang
+et al. 2026c; Yang et al. 2026; Zhang et al. 2026d). These
+methodsshareonepremise:externalartifactscanaccumulate
+capability without updating model parameters.
+Most systems, though, optimize inside a representation
+they fix in advance, such as rules (Chen et al. 2024),
+skills (Yang et al. 2026; Wang et al. 2026; Lin et al. 2026a),
+or subagents (Zhang et al. 2026d). Two coupled challenges
+follow.First,representationadequacy:alocalconstraint,a
+reusable procedure, and a delegated objective require differ-
+entownershipofobservations,state,anddecisions,soforcing
+them into one substrate either under-specifies the interven-
+tion or adds execution machinery it does not need. A budget
+pass/failcheckandanexhaustivelodgingsearchdifferinex-
+actly this way rather than in wording: only the second needs
+privatesearchstateanditsownterminationtest.ASubagent,
+inparticular,isdefinedbyanexplicitinterface,isolatedstate,
+anindependentcontrolloop,andstandalonetermination,not
+by prompt length or a specialist role.
+Second, validation adequacy:an end-task score alone
+cannot establish that an artifact implements its claimed ex-
+ecution boundary, nor that repairing its source failures pre-
+serves behavior that already succeeds. Because representa-
+tiondeterminesbothexecutionsemanticsandfailuremodes,
+artifact selection and validation must be designed jointly.
+WeintroduceAutoRefine,whichtreatstrajectorylearning
+astypedartifactcompilation.Ourcentraldesignchoiceisto
+compile each supported intervention into the first execution
+boundary that closes its evidence-supported requirements,
+instead of predicting an artifact type from surface features.
+AutoRefine contrasts failed against successful trajectories
+to derive a type-neutralintervention specification: when it
+should fire, what behavior it must change, and which obser-
+vations, persistent state, dependent decisions, and comple-
+tion condition it needs, with every field linked to trajectory
+spans.Aheuristiccompilerthenattemptsthreeschemasina
+runtime-relative order of increasing ownership: aRulefor a
+localdecision,aSkillforaparent-executedprocedure,anda
+Subagentforadelegatedobjectivewithanindependentcon-
+trol loop. It selects the first schema that closes all specified
+obligations and otherwise defers the candidate. Minimality
+arXiv:2601.22758v2  [cs.AI]  10 Aug 2026
+
+===== PAGE 2 =====
+
+isrelativetothatsearchorderandtheextractedspecification,
+not a universal expressivity ordering.
+Artifact creation is coupled to repository admission. A
+generated artifact first passes a type-specificcontract gate
+thatcheckswhetheritrealizestheselectedexecutionbound-
+ary. A pairedreplay gatethen requires improvement on cor-
+rection cases linked to the source failures without observed
+regression on preservation cases derived from contrastive
+successes. Revisions follow the same gated path, so every
+repository update stays tied to both its behavioral claim and
+its supporting evidence.
+We evaluate AutoRefine on five task benchmarks with
+a shared GPT-5.6-terra backbone, plus a longitudinal Trav-
+elPlannerlearningstreamandSkillFlowcross-domaintrans-
+fer. It records the highest success on four benchmarks and
+ties the best result on SkillCraft, reaching 80.56% on Trav-
+elPlanneragainst50.0%forthestrongestbaseline;removing
+boundary-closurecheckingorthereplaygatecosts15.00and
+16.11 percentage points. The longitudinal repository holds
+89–91%held-outsuccessafter60learningtaskswithoutnet
+degradation, and all 25 transfer pairs improve.
+Our contributions are summarized as follows:
+•Weformulatetrajectorylearningastypedartifactcompi-
+lation: evidence, not a predefined representation, decides
+whether a lesson becomes a Rule, a Skill, or a bounded
+Subagent,throughfirstclosureinaruntime-relativeown-
+ership order.
+•We develop an evidence-grounded compile-and-check
+procedureandcoupleitwithrepresentation-specificcon-
+tract validation and preservation-aware replay for reposi-
+tory admission.
+•We evaluate end-task performance, representation abla-
+tions, repository evolution, and cross-domain transfer,
+and find that boundary selection and validation con-
+tribute separately: removing either causes the largest
+lossesamongtheconstructionandadmissionpolicieswe
+ablate.
+Related Work
+Externalizing Experience for Frozen Agents
+Recent work treats the non-parametric state around a frozen
+LLMasanadaptationsubstrate.Systemsabstractexperience
+into reflections, insights, guidelines, and manuals (Shinn
+et al. 2023; Zhao et al. 2024; Fu et al. 2024; Chen et al.
+2024),accumulatedemonstrations(Sarukkai,Xie,andFata-
+halian2025),induceworkflows(Wangetal.2025),orevolve
+playbooks(Zhangetal.2026c;Wuetal.2026).Theirupdate
+policiesdiffer,buteachfixestherepresentationbeforeasking
+what execution boundary a correction requires. AutoRefine
+instead derives a type-neutral intervention and compiles it
+intothefirstboundary,inaruntime-relativeownershiporder,
+that owns its observations, state, decisions, and completion
+condition.
+Reusable Skills, Harnesses, and Subagents
+Skillaccumulation.Executablememoriesrangefrompro-
+gram libraries and code-style plans (Wang et al. 2024; Sun
+etal.2023)tosystemsthatevolvetheskillitself:SkillOptre-
+tainsboundededitsthatimproveheld-outperformance(Yang
+etal.2026),SkillXstructurestrajectory-derivedskills(Wang
+et al. 2026), MUSE-Autoskill manages their lifecycle (Lin
+etal.2026a),andCoEvoSkillsgeneratesmulti-filepackages
+with a co-evolving verifier (Zhang et al. 2026a). All of them
+assumethatareusablecorrectionshouldbeaSkill.AutoRe-
+fine addresses the preceding decision: whether the evidence
+supportsalocalRule,aparent-executedSkill,oradelegated
+Subagent.
+Harnessevolution.Auto-harnessmethodsbroadentheed-
+itablestatebeyondskills:Self-Harnessadmitsboundedmod-
+ifications through regression tests (Zhang et al. 2026b),
+AgenticHarnessEngineeringeditsheterogeneousfilesunder
+falsifiableoutcomepredictions(Linetal.2026b),andAdap-
+tive Auto-Harness routes among variants for non-stationary
+streams (Liu et al. 2026). Where these systems improve or
+routeabroaderharness,AutoRefinecompilesonesupported
+intervention into its first closed ownership boundary.
+Executable subagents.AgentFactory is the closest
+reusable-Subagent precedent, preserving solutions as exe-
+cutable Python subagents (Zhang et al. 2026d). AutoRefine
+selectsthistypeonlyforaclosedintermediateobjectivethat
+requires an independent loop or private state, and its Sub-
+agents are separated from Rules and Skills by explicit I/O,
+isolation, scoped tools, termination, and structured return.
+Several systems above were 2026 preprints at submission
+time, so we cite them as contemporaneous design context;
+only SkillOpt and AgentFactory enter the baseline table.
+Validation-Gated External Artifacts
+Validation increasingly governs external updates: skill and
+harness edits are retained through held-out evaluation, re-
+gressiontests,executionfeedback,orlearnedverifiers(Yang
+et al. 2026; Zhang et al. 2026b; Lin et al. 2026a; Zhang
+etal.2026a),whileSEVerAguardsmodelcallswithformally
+verified output contracts (Banerjee et al. 2026). AutoRefine
+couples validation to representation: a contract gate checks
+whether the generated object realizes its ownership bound-
+ary, and replay tests source-linked corrections together with
+contrastive preservation cases. The gates separate structural
+validity from behavioral utility, since an artifact may satisfy
+its interface yet regress a previously successful task.
+Method
+Problem Setup
+An agent receives a sequence of tasks from a domainD.
+Executing taskt i produces a recordr i = (τ i, fi), where
+τi =⟨s 0, a1, o1, . . . , aT , oT , sT ⟩andterminalfeedbackf i ∈
+{0,1}. From a batchB={r i}n
+i=1, AutoRefine constructs
+reusable external artifacts without updating the base model.
+LetHbethespaceofobservablehistoriesandGthespace
+of corrective objectives. The analyzer maps an evidence-
+supported cluster to an intervention specification
+I= (α, β,O,S,Q, γ,E c,E p),(1)
+whereα, γ:H → {0,1}areactivationandcompletionpred-
+icates;β∈Gisthecorrectiveobjective;Ocontainsrequired
+
+===== PAGE 3 =====
+
+Question: Testing that agent refuses to … 
+Answer: You want to cancel …
+Having obtained the 
+Agent's historical 
+conversation information.
+Rule
+Skill
+Subagent
+Evidence-grounded Specification
+Agent
+Success  
+Runs
+Failure  
+Runs
+Source: Completed Trajectory
+Contrast and Cluster
+Causal Decision Spans
+Validation-gated Repository Update
+Typed Artifact Repository(TAR)
+Rules: tested on positive and 
+negative trigger cases
+Skills: executed from their 
+declared applicability condition
+Contract Gate
+Typed Artifact Repository(TAR)
+SubAgents: Invoked in a fresh 
+context with declared inputs only. 
+Pass
+Staged TAR VS Active TAR
+Strict Improvement 
+No Regression
+Reject Candidate
+Repository Unchanged
+Outcome: Activation + Scope Execution + Contract
+Defer Unsupported 
+Cluster
+Type-neutral 
+Intervention
+Specification
+Heuristic Minimal-boundary Compilation 
+Evidence-linked Replay 
+Cases
+(Correction + Preservation)
+Execute The 
+Replay Gate
+Local Decision?
+Parent Procedure?
+Delegated Objective?
+Boundary Closed?
+Observation/State/Decisi
+ons/Completion
+Invokes The 
+Corresponding Type-
+specific Generator
+Gating
+Store Active
+TAR
+Staged
+TAR
+Inconsistent Evidence
+Specification
+->  what condition calls for 
+intervention.
+-> what behavior must change.
+-> what execution contract that 
+change requires.
+Rule
+Skill
+Subagent
+Execute The 
+Contract Gate
+Replay 
+Gate
+Figure 1: AutoRefine contrasts failed against successful trajectories to derive a type-neutral intervention specification, selects
+the first closed Rule, Skill, or Subagent in a runtime-relative ownership order, and admits the candidate only after contract and
+evidence-linked replay validation.
+observation fields;Spairs state variables with required life-
+times;Qcontainsdependentdecisions;andE c,E paresetsof
+correction and preservation record–span identifiers support-
+ing these fields. The specification is type-neutral: it states
+obligations without assigning their owner.
+For artifact typez∈ Z={Rule,Skill,Sub}, a gener-
+ated contractC z declares the observations, state, decisions,
+andcompletionsemanticsownedbythatruntimeobject.We
+write
+Close(I, Cz) =c O ∧c S ∧c Q ∧c γ,(2)
+where eachcis true only when the corresponding require-
+ment in Eq. (1) is both implemented by a declared contract
+field and grounded in a cited evidence span. A missing field
+or citation produces an insufficiency witness rather than a
+positive closure decision.
+AutoRefine maintains atyped artifact repositorywhose
+types are defined by runtime ownership rather than length
+or file format. ARuleowns one local decision by mapping
+an observable condition to a guard or prescription. ASkill
+ownsaprocedure:itorganizesdependentdecisionswhilere-
+maininginsidetheparentagent’scontextandcontrolloop.A
+Subagentownsadelegatedobjective:itisinvokedthrougha
+declaredinputinterface,executesaself-containedreasoning
+or tool-use loop with isolated working state, and terminates
+through a structured success or failure return. Artifact type
+is therefore an executable contract over state ownership, in-
+vocation, and standalone validation, not a label attached to
+generated text.
+Figure 1 shows the resulting three-stage pipeline, which
+operates on batches of completed trajectories and not on the
+retrievalpathofanindividualtesttask.Atdeployment,Rules
+are injected into the parent context, while Skills and Sub-
+agents are installed as directory-scoped modules under the
+host runtime’s native conventions; discovery and invocation
+routing are infrastructure rather than research contributions.
+Evidence-Grounded Intervention Specifications
+Single failures are poor compilation targets: their symptoms
+may be incidental, and a patch that explains one episode
+maydamagebehaviorthatalreadyworks.AutoRefineusesa
+trajectory batch as its evidence unit. For each failed record,
+an analyzer identifies the evaluator-visible failure, the ear-
+liest decision span that plausibly caused it, and the behav-
+ioral change required to avoid it. Records are grouped only
+when the same correction applies to their causal spans un-
+derthesameobservableconditions.Successfulrecordsfrom
+
+===== PAGE 4 =====
+
+the same regime are retained as contrastive evidence that
+constrains the intervention with neighboring behavior to be
+preserved (Fu et al. 2024; Zhao et al. 2024).
+Each supported cluster instantiates Eq. (1).Activation
+identifies the trigger and required observations;behavioral
+scopecontains the corrective objective and dependent deci-
+sions; and theexecution obligationidentifies persistent state
+and observable completion. Every field retains links to its
+supporting trajectory spans and to the associated correction
+and preservation tasks. These links exclude unsupported de-
+tails and later instantiate replay cases. A cluster is deferred
+whenthetracesdonotsupportoneconsistenttrigger,correc-
+tion, or completion condition. No artifact type is chosen at
+thisstage,whichpreventsageneratorfromproducingarole-
+shaped prompt first and retroactively naming it a Subagent.
+Thesupplementarymaterialgivestheanalyzerpromptstruc-
+ture, grouping criterion, and the division between language-
+model judgments and deterministic checks.
+Runtime-Relative First-Closure Compilation
+The selector is a heuristiccompile-and-checkprocedure
+ratherthanalearnedclassifieroranunconstrainedrequestfor
+a type label. For the evaluated runtime, it defines the search
+orderRule◁ ρ Skill◁ ρ Sub: local decision, parent-executed
+procedure,thendelegatedobjective.Foreachschema,atype-
+specificgeneratorfillsitscontractslotsusingonlyevidence-
+linked fields, after which Eq. (2) tests observation, state,
+decision, and completion closure. Selection is
+z∗ = min
+◁ρ
+{z: Close(I, C z) = 1},(3)
+with deferral when the set is empty. A failed obligation be-
+comes aninsufficiency witnesscarried into the next attempt.
+Equation(3)givesaconditional,auditablenotionofmini-
+mality:z ∗ isthefirstclosedmemberofthedeclaredruntime
+order for the extractedI. It does not claim that the schemas
+arenestedineveryruntimeorthattheanalyzerrecoveredev-
+erylatentrequirement.Becauseconstructionprecedescheck-
+ing,theselectorcannotjustifyaSubagentbyemittingatype
+label; it must produce the interface, state ownership, and
+termination semantics that make delegation executable.
+Closure is a selection heuristic, not a verification oracle.
+Thegeneratorproposescontractslotsandper-obligationcita-
+tions,butthebranchdecisionismechanical:aschemacloses
+only when every obligation resolves to a declared slot and
+to a citation that a deterministic controller matches against
+theinputspans,soabaretypeassertioncannotpass.Closure
+also never licenses a repository write on its own, and an ar-
+tifact that certifies an unsuitable boundary must still survive
+execution-based contract tests and evaluator-scored replay.
+Boundaryattempts.Thecompilerfirstattemptsatrigger–
+guard–responsecontract,whichclosesonlywhenthetrigger
+and guard are evaluable from parent-visible evidence, the
+response is localized to one control point, and its effect can
+be checked without retaining private intermediate state. It
+next attempts an ordered procedure, which closes when the
+parentalreadyownstherequiredtaskstate,caninterleavethe
+procedure with ongoing work, and remains responsible for
+deciding when the enclosing task is complete.
+A Subagent is attempted only when the evidence defines
+a closed intermediate objective, sufficient declared inputs,
+andanobservablereturncondition,whileexecutionrequires
+private state or a self-contained loop that should not be in-
+terleaved with the parent. Its contract declares invocation
+conditions, input and output schemas, isolated state and
+workspace, scoped tools, success and failure termination,
+and a structured return. Prompt length, a specialist persona,
+or placement in a separate system message satisfies none of
+theseconditions;evidenceofindependentexecutionwithout
+a closed interface leads to deferral.
+Worked Subagent: Lodging Package Planner
+Evidence and invocation.Repeated failures commit after a
+partialcandidatescan,soonceaccommodationcandidatesexist
+theparentdelegatesthequeryconstraints,assignedstays,party
+size, budget, and grounded candidate records.
+Owned execution and return.In an isolated workspace, the
+artifact keeps a private candidate ledger, checks each listing
+against city, capacity, local nights, room type, house rules, and
+cost,andcomparesallsurvivingpackages.Itreturnsaselected
+package with its cost arithmetic or grounded exhaustion with
+exact blockers; a partial scan cannot terminate successfully.
+TheRuleattemptfailsbecauseonelocalguardcannotown
+exhaustive package comparison. The Skill attempt leaves a
+state-lifetime and completion witness open: the ledger must
+stay isolated across a search that terminates only after full
+coverage.Abudgetpass/failcheckhasnoindependentcom-
+parison state and closes as a Rule even when implemented
+through a separate prompt.
+After selection, the generator completes the chosen
+schema while preserving field-level links to supporting tra-
+jectories, and a traceability check rejects any required field
+thatlacksevidenceordependsonundeclaredparentstate.Se-
+lecting a different type therefore changes the executable unit
+and its validation surface, not a repository label; the sup-
+plementary material lists the required fields and complete
+examples for each schema.
+Validation-Gated Repository Updates
+Compilation writes a candidate to staging rather than to the
+active repository. Evidence links induce two compact replay
+setsdrawnonlyfromthelearningpartition:acorrectionsetof
+source failures and development cases with the same trigger
+and failure mechanism, and apreservation setof contrastive
+successes and negative-boundary cases in which the trigger
+is observable but correct behavior should not change. Final
+evaluation cases never enter either set, so validation stays
+local to the claimed intervention.
+Admission has two gates. Thecontract gatetests whether
+thegeneratedobjectimplementsitsselectedboundary:Rules
+are checked on positive and negative triggers; Skills are ex-
+ecuted from their declared applicability condition to check
+thatthedeclaredinputssufficeandthattheprocedurereaches
+anobservableresultintheparentcontext;andSubagentsare
+invoked in a fresh context using only declared inputs, with
+checksonI/Oconformance,isolationfromundeclaredparent
+state,andexplicitsuccessandfailuretermination.Malformed
+artifacts are rejected before end-task evaluation.
+
+===== PAGE 5 =====
+
+Thereplay gatecompares the active repositoryRand
+staged repositoryR′ on identical cases under the same eval-
+uator and execution budget. LetyR(x)∈[0,1]denote the
+evaluator outcome supplied by the configured replay proto-
+colforcasex(binaryforasingleexecution,ortheprotocol’s
+aggregate when repeated outcomes are available). With cor-
+rectionandpreservationsetsCandP,respectively,admission
+requires
+X
+x∈C
+[yR′(x)−y R(x)]>0∧y R′(x)≥y R(x)∀x∈ P.
+(4)
+A tie on correction cases or any observed preservation re-
+gressionrejectsthecandidateandleavestheactiverepository
+unchanged, so conflicting evidence resolves conservatively.
+The guarantee is deliberately case-bounded: it licenses the
+candidate on replayed evidence, not globally overD.
+An admitted artifact retains the replay cases induced by
+its source evidence. A revision is staged as a new version,
+tested on the predecessor’s cases together with the evidence
+motivating the change, and activated only after both gates
+pass, which keeps regression scope explicit without full-
+repositoryreplay.Pruning,similaritymerging,retrieval,and
+global scheduling lie outside this mechanism.
+Experiments
+Experimental Setup
+Evaluationdesign.RQ1measuresend-to-endqualityand
+online interaction cost, RQ2 isolates boundary availability,
+compilation, and gated admission, RQ3 asks whether suc-
+cessive repository writes accumulate capability, and RQ4
+evaluates cross-domain reuse.
+Benchmarks.RQ1–RQ3 use five task benchmarks: em-
+bodied execution (ALFWorld (Shridhar et al. 2020)), sci-
+entific procedures (ScienceWorld (Wang et al. 2022)),
+constraint-heavy planning (TravelPlanner (Xie et al. 2024)),
+executableskills(SkillCraft (Chenetal.2026)),andspread-
+sheet manipulation (SpreadsheetBench (Ma et al. 2024)).
+They span local constraints, multi-step procedures, tool-
+mediated state changes, and decomposable objectives. RQ4
+additionally uses the SkillFlow transfer suite (Zhang et al.
+2026e), whose five domains and topology-preserving task
+rewrites let us separate procedural reuse from lexical over-
+lap.
+Baselines.Baselines cover reasoning and reflection (Yao
+et al. 2023; Shinn et al. 2023), feedback-driven replan-
+ning (Sun et al. 2023), trajectory learning (Zhao et al. 2024;
+Chen et al. 2024; Fu et al. 2024), structured multi-agent
+execution (Choi et al. 2025), and recent skill/subagent sys-
+tems (Yang et al. 2026; Zhang et al. 2026d). Within each
+benchmark, all methods share the GPT-5.6-terra backbone,
+evaluation split, evaluator, and execution budget, while re-
+taining their method-specific prompts, memory, and artifact
+mechanisms.
+Reportingconvention.Ourprimarymetricistasksuccess
+under the benchmark evaluator. Table 1 also reports mean
+assistant-messageturnspercase,countingtop-levelassistant
+responses and excluding tool results, offline construction,
+and AutoRefine’s nested Subagent responses, which are au-
+dited separately. All entries are single-run point estimates
+under the fixed protocol. Ablations report percentage-point
+differencesfromFullAutoRefine,andcomponent-levelattri-
+bution comes from the controlled RQ2 interventions rather
+than from cross-method margins.
+Protocol controls.Learning and evaluation data are dis-
+joint, and repositories are frozen throughout held-out eval-
+uation. The RQ1–RQ2 TravelPlanner studies use the same
+180evaluationqueries(60perdifficulty)andan80-iteration
+cap; artifact-availability conditions mask types from one 9-
+Rule/3-Skill/3-Subagentrepository,whilecompilerablations
+rebuild from the same learning evidence. Controlled condi-
+tionsarecomparedaspairedcase-leveloutcomeswithexact
+McNemar tests on discordant pairs. The supplementary ma-
+terial adds Wilson intervals, per-benchmark splits, leakage
+controls, and the paired SpreadsheetBench setup.
+RQ1: End-to-End Performance Across Domains
+RQ1 asks whether the complete system improves held-out
+execution and whether the measured pattern is confined to a
+single benchmark. Table 1 reports success together with the
+online interaction cost under the unified evaluation harness.
+Results.AutoRefine records the highest success on ALF-
+World (134/134), ScienceWorld (116/144), TravelPlan-
+ner (80.56%, 145/180), and SpreadsheetBench (73.57%,
+206/280), and ties the SkillCraft ceiling at 36/36. Against
+the strongest-success baseline it also uses fewer top-level
+turns on ALFWorld, ScienceWorld, and SpreadsheetBench,
+and 0.3 turns more on the saturated SkillCraft. TravelPlan-
+ner is the only setting where the 30.6-point gain comes with
+more turns (20.7 vs. 15.4).
+Analysis.Themargintrackstheroomabenchmarkleaves.
+ALFWorld and SkillCraft sit within a few points of their
+ceilingsandScienceWorldseparatesthetoptwomethodsby
+0.7 points, whereas every baseline on TravelPlanner stays
+between34.4%and50.0%.ATravelPlannerquerycountsas
+solvedonlywhenoneitinerarysatisfieseverycommonsense
+requirementandhardconstraintatonce,soasingleviolation
+discardsanotherwisecompleteplan,whichprompt-levelad-
+vice rarely prevents. The per-difficulty counts in the supple-
+mentarymateriallocatethe30.6-pointgaininthatstructure:
+Skills carry the plan-construction routine in every bucket,
+while Rules become decisive only on Hard queries, where
+several constraints interact. We read this margin as evidence
+aboutunsaturatedmulti-constraintplanning,notasauniform
+expected gain, and the turn results support no comparable
+claim about cost. Of the 20.68 parent turns per case, 1.48
+invoke a Subagent, whose 8.79 internal responses the main
+tableexcludes,givinganexpandedactorcountof29.47.Dis-
+abling Subagents raises parent turns to 34.03 while success
+dropsto72.22%.Thesupplementarymaterialreportsthefull
+call, token, and wall-time audit.
+
+===== PAGE 6 =====
+
+Table 1: End-to-end results: success (%) / mean assistant-message turns per case, one decimal. Venue gives each baseline’s
+original publication; the citation carries the year. Within each column, bold marks the best success and underline the second
+best when unique; tied best entries are all bold and turns are not ranked. The text reports count-derived values at two decimals.
+Method Venue ALFWorld ScienceWorld TravelPlanner SkillCraft SpreadsheetBench
+ReAct (Yao et al. 2023) ICLR 79.9 / 14.0 71.5 / 26.2 34.4 / 26.1 83.3 / 9.8 41.1 / 6.4
+Reflexion (Shinn et al. 2023) NeurIPS 85.1 / 15.7 72.2 / 42.0 34.4 / 77.9 83.3 / 13.2 44.3 / 9.1
+ReAct+Refl. Combined 88.1 / 16.1 72.9 / 40.2 37.2 / 80.2 88.9 / 14.0 48.2 / 9.8
+ExpeL (Zhao et al. 2024) AAAI 84.3 / 16.0 74.3 / 21.5 45.0 / 18.0 86.1 / 8.7 45.0 / 6.8
+AdaPlanner (Sun et al. 2023) NeurIPS 82.1 / 14.6 77.1 / 18.8 44.4 / 14.9 86.1 / 7.9 47.5 / 6.1
+AutoManual (Chen et al. 2024) NeurIPS 96.3 / 13.5 78.5 / 19.0 50.0 / 15.4 91.7 / 7.5 51.1 / 5.9
+AutoGuide (Fu et al. 2024) NeurIPS 90.3 / 15.0 77.1 / 20.3 46.7 / 16.2 88.9 / 8.1 49.6 / 6.2
+ATLAS (Choi et al. 2025) arXiv 91.8 / 12.7 75.0 / 18.4 48.3 / 9.5 88.9 / 6.9 52.1 / 5.4
+SkillOpt (Yang et al. 2026) arXiv 97.8 / 18.6 79.9 / 17.2 47.2 / 12.4100.0/ 2.1 67.5 / 4.0
+AgentFactory (Zhang et al. 2026d) arXiv 95.5 / 14.8 76.4 / 16.0 43.3 / 6.2100.0/ 3.0 59.6 / 5.1
+AutoRefineThis work100.0/ 11.980.6/ 16.580.6/ 20.7100.0/ 2.473.6/ 3.1
+Table2:TravelPlannerablationsunderthesharedevaluation
+protocol. Avg. turns are mean top-level parent responses per
+case: measured counts for the three type-removal rows, an
+aggregate-only record for No Artifact, and ledger-derived
+means elsewhere, reported for reference only.∆Pass comes
+from case counts, except for No Artifact, whose delta is a
+difference of rates. The appendix adds per-difficulty counts
+and delegation costs.
+Group Condition Pass (%) Avg. turns∆Pass
+ReferenceFull AutoRefine 80.5620.68 –
+Artifact
+availability
+w/o Rule 79.44 30.71 -1.11
+w/o Skill 60.56 10.78 -20.00
+w/o Subagent 72.22 34.03 -8.33
+No Artifact 34.44 21.07 -46.12
+Heuristic
+compilation
+Direct Type Selection 74.44 20.15 -6.11
+w/o Minimality Order 69.44 21.74 -11.11
+w/o Boundary-Closure Check 65.56 19.01 -15.00
+Validation
+w/o Contract Gate 75.00 20.42 -5.56
+w/o Replay Gate 64.44 18.30 -16.11
+w/o Preservation Cases 70.00 19.54 -10.56
+RQ2: Which Design Choices Make Typed
+Compilation Effective?
+End-to-end gains may follow from exposing the agent to
+more text rather than selecting a representation. RQ2 there-
+fore intervenes on boundary availability, compilation, and
+admission.
+Ablation protocol.All conditions in Table 2 share the
+TravelPlanner protocol.Artifact availabilitymasks types
+fromafrozenrepository;heuristiccompilationrebuildsitaf-
+ter replacing intervention-first selection, minimality, or clo-
+sure; andvalidationkeeps candidates fixed but removes a
+gate or preservation cases. The three groups therefore sepa-
+rate artifact utility from construction and admission policy.
+Paired tests cover the type-removal conditions, for which
+per-case ledgers are retained; the No-Artifact control is an
+aggregate-onlyrecord,sowereportitsratebutnopairedtest.
+Artifactcomplementarity.Removingallartifactsreduces
+success from 80.56% to 34.44%. Turns track prescribed
+checkingratherthantaskdifficulty:withnoartifactstheagent
+also skips artifact-prescribed verification, spending fewer
+turns (21.07) than Rule removal alone (30.71) while suc-
+ceeding far less often. Skills contribute 20.00 points (paired
+exact McNemarp < .001) and Subagents 8.33 (p=.040),
+the latter concentrated on Medium and Hard tasks, consis-
+tent with delegation helping longer plans. Removing Rules
+changes aggregate success by only 1.11 points (p=.875)
+but loses 6.67 points on Hard tasks, so Rules act as targeted
+guardsratherthanauniformlydominantrepresentation.The
+supplementary material reports the per-bucket counts.
+Compilation and admission.Direct type selection loses
+6.11 points, removing minimality loses 11.11, and omitting
+closureloses15.00:offeringthreeformatsisinsufficientun-
+less the selected owner closes over the required execution
+contract. Removing the contract gate, replay gate, or preser-
+vation cases costs 5.56, 16.11, and 10.56 points. The large
+replay loss shows that interface validity cannot replace be-
+havioral evidence; a locally valid candidate may still disrupt
+solved tasks.
+RQ3: Does Gated Admission Prevent Repository
+Degradation?
+Finalqualitycannotrevealwhetherintermediateupdatesac-
+cumulated capability or merely recovered after destructive
+writes. This study therefore runs on TravelPlanner, using
+its 180 annotated validation queries as one common or-
+dered learning stream for all methods; the 45 official train-
+ing queries of RQ1–RQ2 are too few to expose repeated
+writes,andthevalidationqueriescarrythesameannotations
+and structure. Checkpoints every 20 tasks are scored on a
+fixed held-out set drawn from the disjoint test split, so the
+queries that carry the learning signal are never scored and
+no repository built here enters the RQ1–RQ2 evaluations.
+We report held-out pass rate, repository size, artifact use
+rate, and ledger-derived signed degradation, where positive
+values indicate net loss within the baseline-success ledger
+and negative values net recovery rather than absence of in-
+dividual regressions. AgentFactory tests horizontal prolifer-
+ation, SkillOpt vertical overwrite of one Skill, and AutoRe-
+fine heterogeneous coexistence with evidence-linked replay.
+Theretainedcheckpointrecordsareaggregateswithoutcase
+identifiers,sothisstreamdiagnosesaccumulationwithinthe
+
+===== PAGE 7 =====
+
+stream and supports no paired test.
+0 60 120 180
+(a) Pass (solid/left) and Degradation (dashed/right)
+0%
+20%
+40%
+60%
+80%
+100%Final Pass Rate
+AgentFactory
+SkillOpt
+AutoRefine
+Final Pass
+Degradation
+0 60 120 180
+(b) Size (solid/left) and Use (dashed/right)
+0
+5
+10
+15Artifacts Size
+AgentFactory
+SkillOpt
+AutoRefine
+Artifact count
+Use rate
+0%
+20%
+40%
+60%
+80%
+Degradation Rate
+0%
+20%
+40%
+60%
+80%
+100%
+Artifact Use Rate
+Figure2:RepositorydynamicsonthecommonTravelPlanner
+learning stream. (a) Final held-out pass rate (solid, left axis)
+and ledger-reported signed degradation (dashed, right axis),
+where negative AutoRefine values denote net recovery. (b)
+Repositorysize(solid,leftaxis)andartifactuserate(dashed,
+right axis).
+Longitudinal results.Figure 2 traces the three regimes.
+From the common 34.44% start, AgentFactory falls to 17%
+afteritsfirstthreeartifactsandendsat14%withfifteenstored
+artifacts,whilesigneddegradationrisesto55.0%;itsartifacts
+areinvokedin79–93%ofevaluationsthroughout,sohighuse
+measures exposure and not utility. SkillOpt reaches 77%,
+but its final rewrite of the single maintained Skill reduces
+performanceto69%assigneddegradationreturnsto19.0%.
+AutoRefine reaches 65% after 20 learning tasks and 89–
+91% from 60 onward, with 12 to 16 artifacts and 93.2–
+97.2% use, and its net signed degradation stays non-positive
+(0 to−7.1%). Growth alone does not explain the difference:
+AgentFactory and AutoRefine end with comparable artifact
+counts but diverge in whether the writes survive as held-out
+capability.
+Admissionqualityandcost.OnSpreadsheetBench,gated
+updates reach 73.57% against 67.50% for the SkillOpt con-
+trol under a shared candidate stream and split (paired exact
+McNemarp=.027), while offline consumption rises from
+3.34M to 9.43M tokens. The margin compares accumula-
+tion regimes; Table 2 isolates the gates. Validation therefore
+shiftscomputationtorepositoryconstruction;weclaimmore
+reliable accumulation, not universally cheaper learning. The
+supplementary material gives the cost breakdown.
+RQ4: Do Artifacts Generalize Across Domains?
+Frozen source repositories are evaluated on SkillFlow’s
+Domain-Agnostic Execution Flow without target-side up-
+dates,acrossFinance&Economics(FE),Operations&Sup-
+ply Chain (OS), Healthcare & Life Sciences (HLS), Gover-
+nance & Strategy (GS), and Data & Document Intelligence
+(DDI), yielding a5×5matched- and cross-domain matrix.
+Transfer results.All 25 source–target pairs in Table 3
+improve, by 1.4–16.0 points (8.43 on average). Matched-
+domaingainsaverage14.20pointsagainst6.99offdiagonal,
+andthematchedrepositoryisthestrongestsourceforfourof
+the five targets. The exception is DDI, where HLS transfers
+slightlybetter(10.1against9.7),sodomain-specificevidence
+helps on average without dominating every target, while the
+uniformly positive off-diagonal gains indicate that workflow
+Table3:SkillFlowtransfer:absolutetargetgains(percentage
+points) from each frozen source repository over the target-
+only baselines in the last row. Bold entries are matched-
+domain transfer.
+Source\Target FE OS HLS GS DDI
+FE15.88.1 9.7 5.4 7.6
+OS 6.313.96.8 3.1 8.2
+HLS 7.9 1.415.67.8 10.1
+GS 4.5 2.7 11.216.08.4
+DDI 8.6 7.5 8.3 6.29.7
+Target-only baseline 52.4 72.6 72.3 80.4 78.4
+structureitselftransfers.Per-targetandper-sourcemeansap-
+pear in the supplementary material.
+Error Analysis
+Results expose two error modes with different remedies. A
+boundaryerrorassignsaninterventiontoanownerthatcan-
+not observe, retain, control, or complete it; the lodging ex-
+ample is the canonical case, where a parent-executed pro-
+cedure loses the isolated ledger that its completion test re-
+quires. First-closure compilation targets this mode, which
+is why closure is the costliest compilation intervention. An
+evidence-scope erroractivates a structurally valid artifact
+outsidethecasesthatlicensedit,andthereplayablation,the
+unchecked degradation in RQ3, and the off-diagonal trans-
+fergapeachexposeit.Preservation-awarereplayboundsthis
+modeatadmission,butonlyovercaseslinkedtotheartifact’s
+own evidence.
+Conclusion
+This work reframes trajectory learning as the construction
+of typed, testable agent capabilities: AutoRefine derives an
+evidence-linked intervention specification from contrastive
+trajectories, compiles it into the first closed Rule, Skill, or
+Subagent under a runtime-relative ownership order, and ad-
+mits it through contract and replay gates. Artifact type fixes
+what an intervention observes, what it owns, and how it can
+be tested.
+Across five benchmarks, typed repositories improve or
+match end-task performance, with the largest gain where lo-
+calconstraints,reusableprocedures,andboundeddelegation
+coexist. Neither content nor validation alone suffices: re-
+moving boundary closure or replay causes the largest losses
+amongthepoliciesweablate.Longitudinalcheckpointssep-
+arate repository activity from improvement, and transfer is
+positive on all 25 pairs while favoring matched-domain evi-
+dence.
+Thesefindingssuggestastricterstandardforself-evolving
+agents: trajectory evidence motivates a candidate capability,
+an execution contract states what it owns, and behavioral
+validation decides whether it may be activated. Three limits
+remain: closure is only as complete as the extracted specifi-
+cation, replay licenses an artifact on its linked cases rather
+than the task distribution, and both gates judge one artifact
+at a time, so artifact interactions need joint replay.
+
+===== PAGE 8 =====
+
+References
+Banerjee, D.; Xu, C.; Ie, E.; Zhang, M.; Peng, D.; Lin, C.-C.;
+and Singh, G. 2026. SEVerA: Verified Synthesis of Self-Evolving
+Agents.arXiv preprint arXiv:2603.25111.
+Chen, M.; Li, Y.; Yang, Y.; Yu, S.; Lin, B.; and He, X. 2024.
+Automanual: Constructing instruction manuals by llm agents via
+interactiveenvironmentallearning.AdvancesinNeuralInformation
+Processing Systems, 37: 589–631.
+Chen, S.; Gai, J.; Zhou, R.; Zhang, J.; Zhu, T.; Li, J.; Wang, K.;
+Wang, Z.; Chen, Z.; Kaleb, K.; Miao, N.; Gao, S.; Lu, C.; Li, M.;
+He, J.; and Teh, Y. W. 2026. SkillCraft: Can LLM Agents Learn to
+Use Tools Skillfully?arXiv preprint arXiv:2603.00718.
+Choi, J.; Yoon, J.; Chen, J.; Jha, S.; and Pfister, T. 2025. AT-
+LAS:Constraints-AwareMulti-AgentCollaborationforReal-World
+Travel Planning.arXiv preprint arXiv:2509.25586.
+Fu,Y.;Kim,D.-K.;Kim,J.;Sohn,S.;Logeswaran,L.;Bae,K.;and
+Lee, H. 2024. Autoguide: Automated generation and selection of
+context-awareguidelinesforlargelanguagemodelagents.Advances
+in Neural Information Processing Systems, 37: 119919–119948.
+Lin, H.; Li, P.; Song, J.; Jiang, F.; and Zhang, T. 2026a. MUSE-
+Autoskill: Self-Evolving Agents via Skill Creation, Memory, Man-
+agement, and Evaluation.arXiv preprint arXiv:2605.27366.
+Lin,J.;Liu,S.;Pan,C.;Lin,L.;Dou,S.;Xi,Z.;Huang,X.;Yan,H.;
+Han,Z.;Gui,T.;andJiang,Y.-G.2026b.AgenticHarnessEngineer-
+ing: Observability-Driven Automatic Evolution of Coding-Agent
+Harnesses.arXiv preprint arXiv:2604.25850.
+Liu, Z.; Shi, Z.; Sang, Y.; He, B.; Lin, M.; Wei, T.; Wang, D.;
+Dumoulin, B.; Jin, W.; and Lu, H. 2026. Adaptive Auto-Harness:
+Sustained Self-Improvement for Agentic System Deployment on
+Open-Ended Task Streams.arXiv preprint arXiv:2606.01770.
+Ma, Z.; Zhang, B.; Zhang, J.; Yu, J.; Zhang, X.; Zhang, X.; Luo,
+S.;Wang,X.;andTang,J.2024. SpreadsheetBench:TowardsChal-
+lenging Real World Spreadsheet Manipulation. InAdvances in
+Neural Information Processing Systems.
+Sarukkai, V.; Xie, Z.; and Fatahalian, K. 2025. Self-generated
+in-context examples improve llm agents for sequential decision-
+making tasks.arXiv preprint arXiv:2505.00234.
+Shinn, N.; Cassano, F.; Gopinath, A.; Narasimhan, K.; and Yao,
+S. 2023. Reflexion: Language agents with verbal reinforcement
+learning.Advances in Neural Information Processing Systems, 36:
+8634–8652.
+Shridhar, M.; Yuan, X.; Côté, M.-A.; Bisk, Y.; Trischler, A.; and
+Hausknecht,M.2020. Alfworld:Aligningtextandembodiedenvi-
+ronmentsforinteractivelearning.arXivpreprintarXiv:2010.03768.
+Sun, H.; Zhuang, Y.; Kong, L.; Dai, B.; and Zhang, C. 2023. Ada-
+planner: Adaptive planning from feedback with language models.
+Advances in neural information processing systems, 36: 58202–
+58245.
+Wang, C.; Yu, Z.; Xie, X.; Yao, W.; Fang, R.; Qiao, S.; Cao, K.;
+Zheng, G.; Qi, X.; Zhang, P.; and Deng, S. 2026. SkillX: Auto-
+matically Constructing Skill Knowledge Bases for Agents.arXiv
+preprint arXiv:2604.04804.
+Wang, G.; Xie, Y.; Jiang, Y.; Mandlekar, A.; Xiao, C.; Zhu, Y.;
+Fan, L.; and Anandkumar, A. 2024. Voyager: An Open-Ended
+Embodied Agent with Large Language Models.Transactions on
+Machine Learning Research.
+Wang, R.; Jansen, P.; Côté, M.-A.; and Ammanabrolu, P. 2022.
+ScienceWorld: Is your Agent Smarter than a 5th Grader? InPro-
+ceedings of the 2022 Conference on Empirical Methods in Natural
+Language Processing, 11279–11298.
+Wang,Z.Z.;Mao,J.;Fried,D.;andNeubig,G.2025. AgentWork-
+flow Memory. InProceedings of the 42nd International Confer-
+enceonMachineLearning,volume267ofProceedingsofMachine
+Learning Research, 63897–63911.
+Wu, R.; Wang, X.; Mei, J.; Cai, P.; Fu, D.; Yang, C.; Wen, L.;
+Yang, X.; Shen, Y.; Wang, Y.; and Shi, B. 2026. EvolveR: Self-
+Evolving LLM Agents through an Experience-Driven Lifecycle.
+InProceedings of the 43rd International Conference on Machine
+Learning.
+Xie,J.;Zhang,K.;Chen,J.;Zhu,T.;Lou,R.;Tian,Y.;Xiao,Y.;and
+Su, Y. 2024. TravelPlanner: a benchmark for real-world planning
+with language agents. InProceedings of the 41st International
+Conference on Machine Learning, 54590–54613.
+Yang, Y.; Gong, Z.; Huang, W.; Yang, Q.; Zhou, Z.; Huang, Z.;
+Li, Y.; Gao, X.; Dai, Q.; Liu, B.; et al. 2026. SkillOpt: Ex-
+ecutive Strategy for Self-Evolving Agent Skills.arXiv preprint
+arXiv:2605.23904.
+Yao, S.; Zhao, J.; Yu, D.; Du, N.; Shafran, I.; Narasimhan, K. R.;
+and Cao, Y. 2023. React: Synergizing reasoning and acting in lan-
+guagemodels. InTheeleventhinternationalconferenceonlearning
+representations.
+Zhang, H.; Fan, S.; Zou, H. P.; Chen, Y.; Wang, Z.; Zhou, J.;
+Li, C.; Huang, W.-C.; Yao, Y.; Zheng, K.; Liu, X.; Li, X.; and
+Yu, P. S. 2026a. CoEvoSkills: Self-Evolving Agent Skills via Co-
+Evolutionary Verification.arXiv preprint arXiv:2604.01687.
+Zhang, H.; Zhang, S.; Li, K.; Zhang, C.; Chen, Y.; Zhang, Y.;
+Bai, L.; and Hu, S. 2026b. Self-Harness: Harnesses That Improve
+Themselves.arXiv preprint arXiv:2606.09498.
+Zhang, Q.; Hu, C.; Upasani, S.; Ma, B.; Hong, F.; Kamanuru, V.;
+Rainton,J.;Wu,C.;Ji,M.;Li,H.;Thakker,U.;Zou,J.;andOluko-
+tun,K.2026c. AgenticContextEngineering:EvolvingContextsfor
+Self-Improving Language Models. InInternational Conference on
+Learning Representations.
+Zhang, Z.; Lu, S.; Qian, H.; He, D.; and Liu, Z. 2026d. AgentFac-
+tory: A Self-Evolving Framework Through Executable Subagent
+Accumulation and Reuse.arXiv preprint arXiv:2603.18000.
+Zhang,Z.;Shi,K.;Huang,S.;Nie,A.;Zeng,Y.;Zhao,Y.;Fang,Z.;
+Su, Q.; Qiu, H.; Yang, W.; et al. 2026e. SkillFlow: Benchmarking
+Lifelong Skill Discovery and Evolution for Autonomous Agents.
+arXiv preprint arXiv:2604.17308.
+Zhao, A.; Huang, D.; Xu, Q.; Lin, M.; Liu, Y.-J.; and Huang, G.
+2024.Expel:Llmagentsareexperientiallearners.InProceedingsof
+the AAAI Conference on Artificial Intelligence, volume 38, 19632–
+19642.
+
+===== PAGE 9 =====
+
+Extended Methodological Details
+This appendix provides the operational details needed to interpret and reproduce AutoRefine. We first distinguish typed artifact
+compilationfromfixed-representationexperiencelearning,thenspecifythecontractsusedbythecompilerandvalidationgates.
+We next report the frozen evaluation protocols and supporting analyses, and conclude with limitations and broader impacts.
+Relation to Prior Experience-Learning Systems
+AutoRefine differs from prior work in the decision madebeforean external capability is written. Experience-memory methods
+typically choose an insight, guideline, or manual as the storage unit (Zhao et al. 2024; Fu et al. 2024; Chen et al. 2024); skill
+optimizers improve a single procedural representation (Yang et al. 2026; Wang et al. 2026; Lin et al. 2026a); and AgentFactory
+preserves solutions as executable Subagents (Zhang et al. 2026d). Auto-harness systems expose a wider set of editable files and
+validate the resulting harness (Zhang et al. 2026b; Lin et al. 2026b). These systems provide important extraction, optimization,
+and validation mechanisms, but the representation is either fixed in advance or selected as an unconstrained harness-edit target.
+AutoRefine instead constructs an artifact-type-neutral intervention and asks which execution boundary is sufficient to own it.
+Table 4 contrasts the construction targets and validation obligations.
+Table 4: Positioning by construction target and validation obligation. “Fixed” means that the reusable unit is selected before the
+evidence for an individual intervention is analyzed.
+Approach family Primary reusable unit Representation decision Validation surface
+Experience memory (Zhao
+et al. 2024; Fu et al. 2024;
+Chen et al. 2024)
+Insight, guideline, or
+manual
+Fixed textual form Method-specific task feedback
+Skill optimization (Yang
+et al. 2026; Wang et al.
+2026; Lin et al. 2026a)
+Skill or skill package Fixed procedural form Skill execution and held-out utility
+Executable
+Subagents (Zhang et al.
+2026d)
+Isolated program or
+Subagent
+Fixed delegated form Subagent execution, often on the
+inducing task
+Auto-harness
+editing (Zhang et al. 2026b;
+Lin et al. 2026b)
+Heterogeneous harness files Edit target proposed within
+the harness
+Whole-harness prediction or regression
+tests
+AutoRefineRule, Skill, or bounded
+Subagent
+First closed boundary in a
+runtime-relative ownership
+order
+Type contract plus correction and
+preservation replay
+This distinction is deliberately narrower than a claim that prior systems lack validation. AutoRefine’s contribution is the
+coupling between representation and validation: selecting a type determines which observations and state the artifact owns,
+which decisions it may make, how it terminates, and which standalone tests are meaningful. Repository search, directory
+discovery, and invocation routing do not determine this boundary and are outside the studied mechanism.
+Formal Objects and Runtime-Relative Boundary Order
+LetHbe the space of observable execution histories,Gthe space of corrective objectives, andO,V,L, andQthe universes of
+observation fields, state variables, lifetimes, and decisions. An intervention specification is the typed object
+I= (α, β,O,S,Q, γ,E c,E p),(5)
+whereα, γ:H → {0,1}are activation and completion predicates,β∈Gis the corrective objective,O ⊆Olists required
+observations,S ⊆V×Lpairs state variables with required lifetimes,Q ⊆Qlists dependent decisions, andE c,E p are sets
+of record–span identifiers linking these fields to correction and preservation evidence. The compiler may instantiate an artifact
+only from fields supported by these links.
+For schemaz∈ Z={Rule,Skill,Sub}, contractC z declares its observable inputs, owned state, controlled decisions,
+completion test, and schema-specific interface. Closure is the conjunction
+Close(I, Cz) =c O ∧c S ∧c Q ∧c γ,(6)
+where an obligation is true only when the contract implements it and every required field resolves to cited evidence. This
+definition separates two failure modes: a missing runtime capability produces an ownership witness, whereas a missing or
+invalid citation produces an evidence witness.
+The evaluated runtime imposes the search orderRule◁ρ Skill◁ ρ Sub, ranking a local parent decision, a parent-executed
+procedure, and a delegated objective by additional ownership. The selected type is
+z∗ = min
+◁ρ
+{z: Close(I, C z) = 1};(7)
+
+===== PAGE 10 =====
+
+if the set is empty, the intervention is deferred. First closure is thus minimal only relative to the extractedIand the declared
+runtime order. The three schemas are not asserted to form a universal expressivity lattice: a runtime that cannot pass required
+observations, preserve parent interleaving, or enforce Subagent isolation may make schemas incomparable, in which case its
+order and closure checks must be adapted.
+Typed Contracts and Boundary Closure
+Table5expandsthethreeschemasusedbythecompiler.Theschemasarenotalternativeserializationformats.Eachintroducesa
+differentownerandconsequentlyadifferentfailuresurface.ARulecannothidestateormakeasequenceofdependentchoices;
+a Skill may coordinate such choices but remains inside the parent’s context and control loop; a Subagent receives a closed
+objective through a declared invocation boundary and returns after running an isolated loop.
+Table 5: Required fields and standalone checks for the three artifact contracts.
+Type Runtime ownership Required contract fields Contract-gate checks
+Rule One parent-visible decision Trigger, guard or prescription, response,
+local check
+Positive and negative triggers; response
+is locally decidable; no hidden state
+Skill Parent-executed procedure Applicability, inputs, ordered steps, expected
+result, recovery
+Declaredinputssuffice;stepsexecutein
+the parent context; result is observable
+Subagent Delegated intermediate
+objective
+Invocation, I/O schemas, private state,
+scoped tools, success and failure
+termination, structured return
+Fresh-context invocation; state
+isolation; I/O conformance; explicit
+termination; no undeclared parent
+dependency
+Foreveryattemptedschema,boundaryclosureevaluatesthefourobligationsinEq.(6).Observationclosureaskswhetherthe
+proposedownercanobserveeveryrequiredinput.Stateclosureaskswhetheritcanretaineachvariableforthelifetimeimpliedby
+theintervention.Decisionclosureaskswhetheralldependentdecisionsfallwithinitscontrol.Completionclosureaskswhether
+it can determine and report when the intervention is complete. A failed obligation is recorded as an insufficiency witness rather
+than collapsed into a scalar score. The next schema in◁ρ must close that witness in addition to the remaining obligations. The
+first closed construction is therefore minimal in the precise sense of Eq. (7), not necessarily the shortest generated text or the
+least expressive object in another runtime.
+Evidence-to-Boundary Example
+The lodging example in the main paper illustrates how the selector reasons about ownership. Several TravelPlanner failures
+committedtoalodgingpackageafterinspectingonlypartofthereturnedcandidateset.Thecorrespondingsuccessesretaineda
+candidate-levelledger,checkedeachlistingagainsttheassignedcity,partycapacity,localstaylength,roomtype,explicithouse
+rules, and total cost, and terminated only after every candidate had been accounted for.
+Theartifact-type-neutralinterventionspecificationrecords:(i)activationaftergroundedaccommodationcandidatesexistand
+beforeapackageiscommitted;(ii)thecorrectiveobjectiveofexhaustivecompliant-packagecomparison;and(iii)aledgerwhose
+lifetime extends from the first candidate check to a selected package or grounded exhaustion. The Rule attempt fails decision
+and state closure because a local guard such as “check all candidates” neither owns the ledger nor performs the comparison.
+The Skill attempt can describe the checks, but leaves their private intermediate state and independent completion inside the
+parent loop. The Subagent attempt closes both witnesses by receiving a complete candidate set, owning a private ledger, and
+returning only after full coverage. This conclusion follows from the required execution boundary, not from the length or tone of
+the generated instruction.
+Illustrative Artifact Contracts
+The following examples show the runtime fields produced after type selection. They are presented to clarify the contract, not as
+additional performance claims.
+Rule: stop after confirmed delivery.
+Activation:the current observation identifies the required object, required state, and target receptacle.Guard:the observation explicitly
+confirmsthatthestate-modifiedobjectisinorontherequestedreceptacle.Response:terminatetheepisodewithoutfurthermanipulation.
+Local check:fire on confirmed placement; do not fire when the object, state, or receptacle differs. No private state or delegated objective
+is introduced.
+Skill: heat then place an object.
+
+===== PAGE 11 =====
+
+Applicabilityandinputs:anembodiedtasknamesanobject,therequiredheatedstate,andadestination;theparentexposesnavigationand
+manipulationactions.Procedure:searchreceptaclessystematically,acquirethegroundedobject,navigatetoacompatibleappliance,heat
+andverifyit,deliverittotherequestedreceptacle,andconfirmplacement.Recovery:afteraninvalidaction,refreshthelocalobservation
+and resume from the last verified stage rather than restarting blindly.Expected result:the parent observes successful placement and
+remains responsible for task termination. The procedure spans dependent choices, but neither isolates state nor owns an independent
+objective.
+Subagent: exhaustive lodging package planner.The contract below is based on a validated TravelPlanner artifact and
+includes every field that separates delegation from prompt augmentation.
+Exhaustive Lodging Package Planner
+Invocation boundary.Invoke after accommodation candidates have been grounded for one or more assigned overnight stays and before
+the parent commits to a lodging package. Skip invocation when no overnight stay is required or the exact package has already been
+validated.
+Input schema.
+•complete query constraints, dates, party size, and total budget;
+•assigned city stays and the consecutive nights in each city;
+•complete grounded accommodation records, including listing identity, structured city, room type, nightly price, explicit house rules,
+local minimum nights, and maximum occupancy;
+•relevant parent evidence records, but no unlisted parent reasoning state.
+Ownedstateandexecution.TheSubagentcreatesaprivatecandidateledger.Foreachlisting,itrecordsevidence,computestherequired
+number of units as⌈party size/maximum occupancy⌉, checks the assigned local stay rather than the full trip against minimum nights,
+appliesonlyexplicitmatchinghouse-ruleprohibitions,andcomputesthepackagecost.Itmustcompareeverysurvivingpackageandmay
+not terminate after finding the first valid option. Candidate-level calculations remain isolated until the final return.
+Scopedevidenceandtools.TheSubagentmayreadonlythesuppliedaccommodationrecordsandqueryfields,andmaywritecandidate-
+levelcheckstoitslocalledger.Itcannotinventlistings,inferacityfromalistingnamewhenastructuredcityfieldexists,oruseundeclared
+parent memory.
+Success termination.Every candidate is classified, at least one complete package satisfies the declared constraints, and the lowest-cost
+compliant package is selected. The return includes the selected listing or listings, unit and night arithmetic, total cost, budget impact, and
+the rejected alternatives with exact reasons.
+Failure termination.If no package satisfies all constraints, the Subagent returnsexhaustedrather than a fabricated selection. The
+return includes full candidate coverage, exact blockers, the least-conflicting grounded alternative when one exists, budget impact, and
+unresolved items. Missing required input producesblockedwith the missing fields.
+Structured return schema.
+status: success | exhausted | blocked
+selected_package: [listing_id, city, units, nights, total_cost] | null
+candidate_audit: [{listing_id, checks, arithmetic, decision}]
+budget_impact: {package_cost, remaining_budget}
+blockers: [grounded constraint violations]
+unresolved_items: [missing or ambiguous evidence]
+Standalone validation.Invoke the artifact in a fresh context using only the declared inputs; verify that every candidate appears exactly
+once in the audit, recompute capacity and cost arithmetic, deny access to undeclared parent state, and test both a feasible package and
+grounded exhaustion. A partial scan cannot returnsuccess.
+A budget threshold check or output-format check does not satisfy this contract. Even if implemented through a separate
+system message, it observes a fixed input, returns a local pass/fail decision, and owns neither a private comparison state nor
+an independently terminating objective. AutoRefine therefore compiles such a check as a Rule. This nearby counterexample
+prevents implementation details such as prompt placement from defining the artifact type.
+Validation-Gated Admission and Revision
+Compilation never writes directly to the active repository. Each candidate first enters staging with links to its inducing failure
+spans,contrastivesuccessfulspans,andthetasksthatinstantiateitsclaimedactivationboundary.Theselinksinduceacorrection
+set and a preservation set. Correction cases exercise the failure mechanism the artifact claims to repair; preservation cases
+contain neighboring successes and negative-boundary cases in which the artifact must not change already-correct behavior.
+Thecontract gateevaluatesthe structuralobligationsin Table5.The replaygatethen runstheactive repositoryRand staged
+repositoryR ′ on identical cases under the same execution budget and evaluator. LetyR(x)∈[0,1]be the evaluator outcome
+returned by the configured replay protocol and letd(x) =yR′(x)−y R(x). The admission decision is
+Admit(R′,R) = Contract(C z)∧
+X
+x∈C
+d(x)>0∧
+^
+x∈P
+[d(x)≥0].(8)
+
+===== PAGE 12 =====
+
+HereCandPare the correction and preservation sets. For a single executionyis binary; if a configured protocol supplies an
+aggregate over repeated outcomes, the same rule operates on that aggregate. The decision rule therefore does not require an
+assumed repeat count. A correction tie, a malformed contract, or any observed preservation regression rejects the candidate;
+preservationtakesprecedencewhenthetwoobjectivesconflict.Theguaranteeisintentionallyevidence-bounded:passingreplay
+licenses the candidate on the associated cases, not on every task in the domain.
+Revisions follow the same path. A proposed revision is tested on the predecessor’s associated cases together with the new
+evidence that motivated the change,and only the staged version becomes active after both gatespass. This mechanism provides
+artifact-local regression obligations without metadata-based pruning, similarity merging, or a global task–artifact graph. Those
+repository-engineering policies are not required by the method evaluated in this paper. Algorithm 1 states the full compilation
+and admission procedure.
+Algorithm 1: Evidence-linked typed compilation and admission
+Require:trajectory batchB, active repositoryR, runtime order◁ρ
+Ensure:updated repositoryR
+1:Q←AnalyzeAndNormalize(B)
+2:G ←CompatibleClusters(Q)
+3:forclusterG∈ Gdo
+4:I ←BuildSpecification(G)
+5:a←∅
+6:forzinRule◁ ρ Skill◁ ρ Subdo
+7:(a, C z, w)←GenerateAndCheck(I, z)
+8:ifClose(I, C z)then
+9:break
+10:end if
+11:end for
+12:ifa̸=∅andAdmit(R ⊕a,R)then
+13:R ← R ⊕a
+14:end if
+15:end for
+16:returnR
+Experimental Protocols and Additional Analyses
+Benchmarks and Data Separation
+All held-out evaluations use frozen repositories: evaluation trajectories never produce, revise, or admit artifacts. Table 6
+summarizes the data partitions and the controls most relevant to leakage and comparability.
+Table6:Benchmark-specificprotocols.Adashindicatesthatthereleasedbenchmarkusestaskfamiliesorvariationsratherthan
+a single shared item count.
+Benchmark Learn / dev Held-out evaluation Separation control Execution budget and
+evaluator
+ALFWorld (Shridhar
+et al. 2020)
+39 / – episodes 134
+valid_unseen
+Novalid_unseenwrite;
+repository frozen before
+evaluation
+50 environment steps;
+benchmark success signal
+ScienceWorld (Wang
+et al. 2022)
+Official train
+variations
+144 held-out test
+variations
+Selected Boil and Thermometer
+families; no evaluation-time
+writes
+50 actions; environment
+goal completion
+TravelPlanner (Xie
+et al. 2024)
+RQ1–RQ2: 45
+official training
+queries. RQ3: the
+180 annotated
+validation queries
+RQ1–RQ2: 180
+validation queries.
+RQ3: held-out cases
+from the disjoint test
+split
+Fixed 60 Easy / 60 Medium / 60
+Hard cases for all controlled
+conditions; RQ3 repositories are
+never reused in RQ1–RQ2
+80 iterations; official
+offline commonsense and
+hard-constraint checks
+SkillCraft 11 / 4 families 6 families (36
+instances)
+Split by base task family, not
+templated instance
+Executed-output verifier;
+repository frozen
+SpreadsheetBench 80 / 40 cases 280 cases Disjoint item IDs, workbook
+paths, and workbook pairs
+Three agent turns; verified
+target-cell and sheet
+checks
+ALFWorld and ScienceWorld.ALFWorld evaluates six household task families involving object search, state modification,
+and placement. The repository-learning sample contains 39 training episodes, of which 37 succeed; evaluation covers all 134
+
+===== PAGE 13 =====
+
+valid_unseentasks. ScienceWorld evaluates procedural scientific reasoning in the Boil and Thermometer families, which
+require instrument search, state tracking, and observation-dependent action sequences. We keep the benchmark’s own variation
+split, so learning uses training variations and evaluation covers the 144 held-out test variations of the two families (9 forboil
+and135foruse-thermometer).Forbothenvironments,successisdeterminedbythesimulatorratherthanalanguage-model
+judge.
+TravelPlanner.TravelPlanner requires a grounded multi-day itinerary satisfying transportation, accommodation, din-
+ing, attraction, budget, and local constraints. The RQ2 artifact-availability study freezes one repository con-
+taining 9 Rules, 3 Skills, and 3 Subagents; compiler ablations instead rebuild from the same learning ev-
+idence under the stated policy change. All RQ1–RQ2 variants use the same 180 evaluation queries, Sin-
+gleAgent runner, GPT-5.6-terra backbone, 80-iteration cap, and offline official evaluator. Planner delivery valida-
+tion is disabled, and evaluator feedback is never returned to the executing agent. The dataset and full-repository
+SHA-256 values are4b36f2f0301e3e6bd6aea2dc7d919b9f434f59d05618256a7fba5955c76dffc1and
+159424f3286c77ff945d7248e00408be59ac2db61653e55a35df5e1d683d4145, respectively.
+The longitudinal study (RQ3) uses a different partition of the same benchmark, because 45 training queries cannot support
+a 180-task write stream. Its ordered learning stream is the 180 annotated validation queries, which carry the same reference
+annotations and query structure as the official training split, and its checkpoints are scored on held-out cases from the disjoint
+test split. The two partitions are therefore never mixed within one experiment: repositories built from the RQ3 stream are used
+only for RQ3 checkpoints, and the RQ1–RQ2 repositories, built from the 45 training queries, are the only ones evaluated on
+the180validationqueries.Theretainedlongitudinalrecordsarecheckpointaggregateswithoutcaseidentifiers,sotheysupport
+within-stream comparison of the three regimes rather than paired tests or interval estimates.
+The evaluation split is balanced by difficulty, but individual hard-constraint types overlap within a query. Table 7 reports the
+resulting distribution.
+Table 7: TravelPlanner controlled-evaluation composition (180 queries). Difficulty is defined by the number of explicit hard
+constraints.
+Difficulty Count Ratio Constraint type Count Ratio
+Easy (0 constraints) 60 33.33% House rule 77 42.78%
+Medium (1 constraint) 60 33.33% Room type 64 35.56%
+Hard (3 constraints) 60 33.33% Transportation 51 28.33%
+Cuisine 48 26.67%
+SpreadsheetBenchandSkillCraft.Weusea400-caseverifiedsubsetderivedfromthepublicSpreadsheetBenchrelease(Ma
+et al. 2024), partitioned into 80/40/280 train/development/test cases with disjoint item and workbook identities. The held-out
+set contains 193 cell-level and 87 sheet-level cases. Success requires the executed workbook to match the verified target rather
+thanmerelyproducingplausiblecode.Thepairedadmissionstudyholdsthemodel,split,optimizer,candidatestream,seed,and
+workerconfigurationfixed.ForSkillCraft(Chenetal.2026),weregroupthepublictasksbybasefamilyanduse11/4/6disjoint
+train/development/test families (66/24/36 instances), preventing near-duplicate templates from crossing splits.
+Implementation and Reporting Details
+All experiments use GPT-5.6-terra. The same configured backbone is used across methods and for target execution, trajectory
+analysis,andtype-specificgeneration,withafixeddecodingconfigurationwithineachcondition.Rulesareinjectedintotheparent
+context; Skills and Subagents are installed as directory-scoped modules using the host runtime’s native convention. Subagents
+execute with their declared inputs and isolated working state. Artifact loading follows these existing runtime conventions;
+retrieval algorithms, directory scanning, and call routing are not experimental variables.
+Reported success rates are consistent with integer case counts on the held-out sizes stated above: 134 for ALFWorld, 144
+forScienceWorld,180forTravelPlanner,36forSkillCraft,and280forSpreadsheetBench.SkillCraftthereforeresolvessuccess
+only in steps of 2.78 points, which is why several baselines share a value in its row.
+Task success is the primary metric. The main turn statistic counts top-level parent-agent responses and excludes tool-return
+messages, nested Subagent responses, and offline artifact construction or validation. TheOnline Compute Accountingsection
+below reports nested responses and expanded actor counts separately. Percentage-point deltas are always absolute. When two
+conditions provide case-level binary outcomes on the same examples, we use a two-sided exact McNemar test over discordant
+pairs.
+Thecausalcontrolsdifferbyresearchquestion.RQ2type-removalconditionsmaskonetypefromthesamefrozenrepository;
+compiler ablations rebuild from the same evidence while changing only the selection policy; and validation ablations hold
+candidate generation fixed while changing admission. RQ3 gives every method the same ordered learning stream and evaluates
+every 20 tasks on a fixed held-out set. RQ4 freezes each source repository and prohibits target-side updates.
+
+===== PAGE 14 =====
+
+Compiler Instantiation and Prompt Structure
+The analyzer and the three type-specific generators are structured-output LLM modules rather than trained classifiers. The
+analyzer prompt contains (i) completed trajectories with stable record and span identifiers, tool observations, and terminal
+evaluator feedback; (ii) successful trajectories from the same regime as preservation evidence; (iii) instructions to separate
+observed facts from proposed corrections; and (iv) a schema for activation, behavioral scope, persistent state, dependent
+decisions, and completion. Every generated field must cite one or more input span identifiers. Unparseable output, a missing
+required field, or an invalid citation defers the record rather than triggering a best-effort repair.
+Groupingiscriterion-basedratherthanembeddingclusteringork-means.Forrecordr i,theanalyzeremitsanevidence-linked
+descriptorq i = (αi, βi,S i,Q i, γi). Define pairwise compatibility by
+g(i, j) =1[α i ≈A αj]1[β i ≈B βj]1[S i ▷ ◁S Sj]1[(Q i, γi)▷ ◁C (Qj, γj)].(9)
+The structured analyzer judges whether activation and corrective objective have the same observable meaning (≈A,≈ B) and
+whetherstate,decisions,andcompletionarenon-conflicting(▷ ◁ S, ▷ ◁C),citingthespansthatjustifyeachjudgment.Aproposed
+cluster is accepted only when every pair satisfiesg(i, j) = 1and every citation resolves. These are operational compatibility
+predicates,notassumedtransitiveequivalencerelations.Asuccessfulrecordwiththesameactivationbutincompatibleprescribed
+behavior blocks the merge and becomes a negative-boundary case. The deterministic controller checks pairwise membership,
+citation validity, required fields, and explicit conflicts; it does not invent a missing trigger or resolve a semantic disagreement.
+ForthefrozenRQ1/RQ2repositories,thecompilationpoolisthecompletelearningpartitioninTable6.Thelongitudinalstudy
+exposes successive 20-task learning blocks at the reported checkpoints. Held-out evaluation records never enter either pool.
+For each attemptedschema, the generator returns both anartifact candidate and a four-field closurereport. Each observation,
+state, decision, and completion field contains a Boolean status, cited evidence, and either the owning contract slot or an
+insufficiency witness. The semantic proposal is LLM-generated, but the branch decision is mechanical: a schema closes only
+if all four statuses are true, all required contract slots are present, and every citation resolves to input evidence. Otherwise
+the controller carries the explicit witness to the next wider schema. The contract gate subsequently combines deterministic
+schema and reference checks with representation-specific execution tests; the replay gate uses the task evaluator on correction
+andpreservationcasesratherthananLLMpreferencejudgment.Language-modelgenerationsuppliesthesemanticcandidates,
+while repository writes stay under explicit, inspectable conditions.
+Statistical Interpretation
+Comparisonsinthispaperarepairedatthecaselevel.Eachcontrolledconditionisexecutedonceunderthesharedfixedprotocol,
+and every reported difference is measured on the same cases with the same evaluator and execution budget, so the evidence
+rests on per-case outcomes rather than on run-level averages. Exact McNemar tests over discordant pairs quantify controlled
+differences,andWilsonintervalsquantifyfinitecase-setuncertainty:TravelPlanner’s145successesamong180casescorrespond
+to a 95% interval of [74.16, 85.67]. Because repeated-run variance is not estimated, we restrict conclusions to effects that are
+large relative to this uncertainty, and we report the 1.11-point Rule delta as statistically indistinguishable (p=.875) rather than
+as a positive result.
+Online Compute Accounting
+The TravelPlanner archive contains per-case parent messages, Subagent execution records, LLM-call ledgers, token usage, and
+task duration. We defineTparent as successful top-level responses (the statistic used in the main-paper results table),Ninvoke
+as parent responses that callask_subagent, andTsub as successful Subagent-internal responses. The expanded actor count
+isT parent +T sub; it retains the main table’s exclusion of model-backed Planner/parser tool stages, whose calls are included
+separately in the all-stage accounting below. Table 8 reports the resulting per-case means.
+Table 8: TravelPlanner delegation accounting from 180 case-level traces. Except for Pass, entries are means per case. “Actor
+total” isTparent +T sub.
+Condition Pass Parent Invoke Sub. resp. Actor total
+Full AutoRefine 80.56% 20.68 1.48 8.79 29.47
+w/o Subagent 72.22% 34.03 0.00 0.00 34.03
+The raw Full counts are 3,722 parent responses, 266 invocations, and 1,583 successful internal responses. Calls occur in
+179/180 cases: one case makes no call, 92 make one, and 87 make two. All 266 runs complete and return a summary, with a
+mean internal depth of 5.95 responses per invocation. The call ledger additionally records 53 failed Subagent attempts that are
+retried;asfailuresdonotyieldanassistantresponse,theyareexcludedfromT sub butincludedinAPI-attemptandlatencytotals.
+AcrossallLLMstages,Fullmakes5,765attemptsandreceives5,607successfulresponses(32.03and31.15percase),versus
+6,562and6,351(36.46and35.28)withoutSubagents.Fullconsumes58.27Mtokens(323.72Kpercase),ofwhichtheSubagent
+stage accounts for 17.81M (98.94K per case); the removal consumes 61.34M (340.78K per case). Delegation reduces parent
+
+===== PAGE 15 =====
+
+responses by 13.35, expanded actor responses by 4.56, and tokens by 5.00% in this controlled run. It nevertheless raises mean
+task wall time from 98.36s to 126.08s (28.18%), exposing a latency cost that turn counts alone conceal.
+These quantities separate two comparisons that should not be conflated. Relative to AutoManual’s 15.4 in the main-paper
+results table, AutoRefine’s 20.68 is already a parent-only count: 1.48 of those parent turns directly invoke a Subagent, while
+the 8.79 internal responses are additional. Relative to the controlled w/o-Subagent condition, delegation improves pass rate and
+reducesbothparentandexpandedactorcounts,buttakeslongerinwall-clocktime.Wethereforereportturnsjointlywithtokens
+and latency.
+TravelPlanner Difficulty Breakdown
+Table9givestheexactcountsunderlyingtheartifact-availabilityrowsofthemainpaper’sablationtable.Skillshavethebroadest
+effectacrossalldifficultylevels.SubagentscontributeprimarilyonMediumandHardtasks,wheretheplanexposeslonger-lived
+comparison state and independently completable objectives. Rules have a targeted effect on Hard tasks, consistent with local
+guards becoming decisive only when several explicit constraints interact.
+Table 9: Pass rate by TravelPlanner difficulty (60 cases per bucket). Deltas are relative to Full within each bucket.
+Easy Medium Hard Overall
+Condition Pass∆Pass∆Pass∆Pass
+Full AutoRefine 50/60–47/60–48/60–80.56%
+w/o Rule 50/60 0.00 49/60 +3.33 44/60 -6.67 79.44%
+w/o Skill 39/60 -18.33 36/60 -18.33 34/60 -23.33 60.56%
+w/o Subagent 48/60 -3.33 41/60 -10.00 41/60 -11.67 72.22%
+Paired against Full, removing Skills yields 46 Full-only versus 10 ablation-only successes (p= 1.25×10−6); removing
+Subagents yields 31 versus 16 (p=.040); and removing Rules yields 21 versus 19 (p=.875). The aggregate Rule delta is
+therefore not statistically distinguishable in this run, whereas the Skill and Subagent effects are supported by paired outcomes.
+Exact Repository-Evolution Checkpoints
+Table 10 reports the values plotted in the main paper’s repository-dynamics figure, and Figure 3 enlarges the size and use-rate
+panel of that figure. “Signed degradation” is a net statistic over the baseline-success ledger: positive values denote net loss
+and negative values denote net recovery. It does not imply that no individual case regressed. Artifact use is the fraction of
+stored artifacts invoked over the held-out evaluation. High use alone is not evidence of benefit, as shown by AgentFactory’s
+simultaneous 86% use and 55.0% degradation at the final checkpoint.
+Table 10: Repository evolution on the common ordered TravelPlanner learning stream. Pass is held-out pass rate (%), Degr.
+signeddegradation(%),andUsethefractionofstoredartifactsinvoked(%).SkillOptmaintainsonerewrittenSkillthroughout,
+so its size is 1 and its use rate 100% at every checkpoint. R/S/A gives AutoRefine’s Rule/Skill/Subagent counts. The zero-task
+row is the shared artifact-free reference of 62/180 cases, so it is reported at count precision.
+AgentFactory SkillOpt AutoRefine
+Learned tasks Pass Size Degr. Use Pass Degr. Pass R/S/A Degr. Use
+0 34.44 0 0.0 – 34.44 0.0 34.44 0/0/0 0.0 –
+20 17.0 3 37.1 93.0 58.0 21.4 65.0 3/2/0 0.0 93.5
+40 14.0 5 40.7 82.0 63.0 16.7 78.0 4/3/2 -3.5 98.0
+60 20.0 5 23.6 84.0 64.0 17.5 90.0 6/4/2 -5.9 97.2
+80 17.0 7 30.0 87.0 71.0 13.5 91.0 6/4/3 -7.1 95.1
+100 23.0 7 30.0 93.0 72.0 10.3 90.0 8/4/3 -5.9 93.5
+120 18.0 8 37.1 87.0 75.0 13.5 91.0 8/5/3 -3.5 95.9
+140 23.0 10 30.0 88.0 73.0 15.1 91.0 8/5/3 -3.5 95.5
+160 23.0 13 44.3 79.0 77.0 17.5 91.0 8/4/3 -3.5 93.2
+180 14.0 15 55.0 86.0 69.0 19.0 89.0 8/4/3 -4.7 96.4
+
+===== PAGE 16 =====
+
+0 20 60 100 140 180
+Learning tasks processed
+0.0
+2.5
+5.0
+7.5
+10.0
+12.5
+15.0Stored artifacts
+AgentFactory
+SkillOpt
+AutoRefine
+Artifact count (left)
+Use rate (right)
+0%
+20%
+40%
+60%
+80%
+100%
+Artifact use rate
+Figure 3: Repository size (solid, left axis) and artifact use rate (dashed, right axis) over the same learning stream. AgentFactory
+keeps a high use rate while its held-out pass rate falls, so invocation frequency is not evidence of utility.
+AutoRefine reaches 90% after 60 learning tasks and then remains between 89% and 91%. Its repository grows only when
+candidates pass admission and can shrink when a validated revision supersedes an older artifact; artifact count is therefore not
+the optimization target. In contrast, AgentFactory accumulates 15 artifacts while returning to 14% success, and SkillOpt’s final
+overwrite reduces success from 77% to 69%. These trajectories explain why the final checkpoint alone is insufficient to assess
+reliable accumulation.
+Admission Quality and Offline Cost
+The SpreadsheetBench comparison isolates the cost of validation-gated heterogeneous updates against the SkillOpt control
+underasharedmodel,split,candidatestream,andseed.AutoRefineimproves35casesthatthecontrolmisses,whilethecontrol
+improves 18 cases that AutoRefine misses, giving exact McNemarp=.027. AutoRefine’s 73.57% success has a Wilson 95%
+interval of [68.11, 78.39]. Table 11 reports admission quality together with offline construction cost.
+Table11:SpreadsheetBenchadmissionqualityandofflineconstructioncoston280held-outcases.Tokensandwalltimeinclude
+optimization and validation, not only final execution.
+Method Overall Cell-level Sheet-level Offline tokens Wall time
+SkillOpt control 67.50% 62.69%78.16% 3.34M 1.35 h
+AutoRefine gate 73.57% 72.02%77.01% 9.43M 4.12 h
+Difference / ratio +6.07 pp +9.33 pp -1.15 pp 2.82×3.05×
+The gain is concentrated in cell-level manipulation; on sheet-level cases, AutoRefine solves one fewer item than the control
+(67/87 versus 68/87, a−1.15-point difference). The gate therefore improves overall admission quality in this setting but is not
+an efficiency result: it spends substantially more offline computation to test candidate contracts and replay obligations.
+SkillFlow Cross-Domain Transfer
+SkillFlow (Zhang et al. 2026e) contains 166 executable tasks organized into 20 workflow families and five domains: Finance &
+Economics(FE),Operations&SupplyChain(OS),Healthcare&LifeSciences(HLS),Governance&Strategy(GS),andData&
+DocumentIntelligence(DDI).Domain-AgnosticExecutionFlowpreservesworkflowtopologywhilereplacingdomain-specific
+entities. Artifacts are learned only from source families, the repository is frozen, and target evaluation performs no writes.
+
+===== PAGE 17 =====
+
+FE OS HLS GS DDI
+FE
+OS
+HLS
+GS
+DDI
+Source repository
+68.2(+15.8) 80.7(+8.1) 82.0(+9.7) 85.8(+5.4) 86.0(+7.6)
+58.7(+6.3) 86.5(+13.9) 79.1(+6.8) 83.5(+3.1) 86.6(+8.2)
+60.3(+7.9) 74.0(+1.4) 87.9(+15.6) 88.2(+7.8) 88.5(+10.1)
+56.9(+4.5) 75.3(+2.7) 83.5(+11.2) 96.4(+16.0) 86.8(+8.4)
+61.0(+8.6) 80.1(+7.5) 80.6(+8.3) 86.6(+6.2) 88.1(+9.7)
+0
+4
+8
+12
+16
+Target success change (pp)
+Figure4:SkillFlowtransfermatrix.Cellsshowtargetpassrateandthechangefromthetarget-onlybaselineinpercentagepoints;
+final rates are baseline plus gain.
+The per-cell gains are reported in the main paper; Figure 4 adds the resulting absolute pass rates, which are always the
+target-only baseline plus the gain. Two properties of the matrix are worth separating. First, the off-diagonal gains are uniformly
+positive, which is what supports transfer of workflow structure rather than of domain vocabulary. Second, the matched-domain
+repository is the strongest source in four of the five columns, the exception being DDI, where the HLS repository transfers 10.1
+points against the matched 9.7. Domain-specific evidence therefore carries an average advantage, not a per-column guarantee,
+and the mean matched-versus-cross gap (14.20 against 6.99 points) is the size of that average advantage. Averaged over source
+repositories, HLS and DDI are the most receptive targets (10.32 and 8.80 points) and OS the least (6.72); averaged over targets,
+FE is the strongest source (9.32), followed by HLS and GS (8.56 each). Per-cell denominators and independent repeats are
+not available in the retained records, so the matrix supports the direction and rough magnitude of transfer rather than per-cell
+significance.
+ALFWorld Heat-Then-Place Case Study
+Heat-then-place tasks require the agent to find an object, acquire it, apply the required state change, deliver it to the requested
+receptacle, and stop after confirmed placement. The frozen repository represents the multi-stage search–acquire–heat–deliver
+routine as a Skill and the final stopping condition as a Rule. It does not introduce a Subagent because the parent already owns
+the environment state and task completion.
+Acrossthe23valid_unseenheat-then-placetasks,thefrozenRule-and-Skillrepositoryreducesmeanenvironmentsteps
+from 18.91 to 11.48, a 39.3% reduction. The example demonstrates the minimal-boundary principle in execution: a reusable
+multi-stepprocedure andalocaltermination guardsuffice,so adelegatedcontrolloop wouldaddownership withoutclosingan
+additional evidence-supported requirement.
+
+===== PAGE 18 =====
+
+Limitations and Broader Impacts
+Limitations
+Heuristic boundary selection.The compiler is not trained against human type annotations, and the experiments evalu-
+ate downstream utility rather than classification accuracy. Closure is therefore a heuristic selection rule whose structural
+preconditions, contract slots and resolvable citations, are enforced mechanically, while the underlying semantic judgment is
+language-model proposed. An analyzer can still omit a required observation, state variable, dependent decision, or completion
+condition, and such an omission may cause a narrower artifact to appear closed. Because closure by itself never authorizes a
+write,theconsequenceofawrongboundaryisboundedbythecontractandreplaygates,whosedecisionscomefromexecution
+and the task evaluator; these gates cannot, however, prove that the intervention specification itself is complete.
+Evidence-bounded validation.The replay gate establishes improvement and preservation only on cases linked to the can-
+didate’s evidence. It is not a global non-regression guarantee over the task distribution. Distribution shift, interactions among
+independently admitted artifacts, or an unobserved negative-boundary case can still produce interference. Revisions replay
+predecessor-associated cases, but the current method does not solve optimal global regression scheduling.
+Runtime dependence.The Rule–Skill–Subagent distinction assumes a runtime that can inject local guards, install parent-
+executed modules, and invoke isolated workers with explicit I/O. Other runtimes may expose different state or tool boundaries.
+The operational definition transfers, but a contract may require adaptation before its isolation and termination semantics are
+equivalent.
+Statistical scope and benchmark saturation.TheStatistical Interpretationsection states the statistical scope: paired case-
+leveltestsandWilsonintervalsoverafixedprotocol,withoutanestimateofrepeated-runvariance.ALFWorldisnearlysaturated
+and SkillCraft reaches a 100% ceiling, limiting discrimination among strong methods; TravelPlanner and SpreadsheetBench
+provide the clearest separation in the present evaluation.
+Delegation-costattribution.TheTravelPlannerledgerspermitactor-leveldecomposition,andtheOnlineComputeAccounting
+sectionreportsparentresponses,invocations,internalresponses,tokens,andwalltime.Thissupportsadirectsame-infrastructure
+comparison with the w/o-Subagent condition. As nested delegation introduces additional internal work, turn counts should be
+interpreted jointly with tokens and wall time.
+Constructioncost.Validationshiftscomputationfromrepeatedonlinerecoverytoofflinerepositoryconstruction.OnSpread-
+sheetBench, AutoRefine uses 2.82×the optimizer tokens and 3.05×the wall time of the SkillOpt control. This cost may be
+justified when artifacts are reused frequently, but the present experiments do not identify a universal break-even point.
+Broader Impacts
+Typed contracts and evidence-linked replay can make learned agent capabilities more inspectable: each artifact declares what it
+owns,whenitruns,andwhichcaseslicenseditsadmission.Thiscanreducerepeatedtrial-and-errorandsupporttargetedaudits.
+However,avalidatedartifactcanalsopropagateamistakenorharmfulstrategyatscale,especiallywhenitsactivationboundary
+extends beyond the replay evidence. High-impact deployment therefore requires access control, immutable provenance logs,
+repository scoping, and human review in addition to the gates studied here.
+Source trajectories may contain personal, proprietary, or security-sensitive information. Systems that construct persistent
+artifactsshouldminimizeandredacttrajectoriesbeforeextraction,restrictartifactvisibilitytotheintendeddomain,andenforce
+retention and deletion policies. Validation checks behavioral utility; it does not by itself prevent privacy leakage, malicious
+capability accumulation, or misuse in domains such as fraud, spam, or social engineering.

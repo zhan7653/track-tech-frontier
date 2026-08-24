@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T16:39:39Z",
+  "from": "2026-05-27",
+  "github_date_field": "pushed",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 192,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "agent handoff memory",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T16:39:35Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "agent handoff memory pushed:2026-05-27..2026-08-24"
+      },
+      "provider": "github-search",
+      "query": "agent handoff memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-01\\pilot\\raw\\G04\\github-search-001-25ad687fdb1b6c23652d5818bb855c6d7afc5d806c0a6e46610421e712f54237.raw",
+      "reported_total": 192,
+      "response_sha256": "25ad687fdb1b6c23652d5818bb855c6d7afc5d806c0a6e46610421e712f54237",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=agent+handoff+memory+pushed%3A2026-05-27..2026-08-24&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T16:39:39Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "agent handoff memory pushed:2026-05-27..2026-08-24"
+      },
+      "provider": "github-search",
+      "query": "agent handoff memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-01\\pilot\\raw\\G04\\github-search-002-3187dbce628aaa849971f9c5bcfb2519b9d75cf3dc1b80706a37fab5d414006e.raw",
+      "reported_total": 192,
+      "response_sha256": "3187dbce628aaa849971f9c5bcfb2519b9d75cf3dc1b80706a37fab5d414006e",
+      "result_count": 92,
+      "url": "https://api.github.com/search/repositories?q=agent+handoff+memory+pushed%3A2026-05-27..2026-08-24&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T16:39:35Z",
+  "to": "2026-08-24"
+}

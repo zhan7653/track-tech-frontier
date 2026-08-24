@@ -1,0 +1,155 @@
+{
+  "finished_at": "2026-08-23T18:32:05Z",
+  "from": "2026-05-27",
+  "limitations": "Point-in-time stars are retained only as a snapshot. No growth or acceleration is inferred.",
+  "measurement_status": "complete",
+  "observation_count": 1,
+  "provider": "github-observe",
+  "record_type": "github-repository-observation-run",
+  "repo_observed": "openai/openai-agents-python",
+  "repo_requested": "openai/openai-agents-python",
+  "requests": [
+    {
+      "kind": "repository",
+      "observed_at": "2026-08-23T18:31:54Z",
+      "params": {},
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\openai--openai-agents-python\\github-observe-001-ef51b94f2f4d1a72a8decebe8b56f244e6c6415249446ade7ce1559adf223549.raw",
+      "response_sha256": "ef51b94f2f4d1a72a8decebe8b56f244e6c6415249446ade7ce1559adf223549",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:31:54Z",
+      "url": "https://api.github.com/repos/openai/openai-agents-python"
+    },
+    {
+      "kind": "latest-release",
+      "observed_at": "2026-08-23T18:31:55Z",
+      "params": {
+        "page": 1,
+        "per_page": 1
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\openai--openai-agents-python\\github-observe-002-c331691f12c7b8ff320b7fe996f13a4e3aa683ce4d6501b343c041b7807bdc45.raw",
+      "response_sha256": "c331691f12c7b8ff320b7fe996f13a4e3aa683ce4d6501b343c041b7807bdc45",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:31:55Z",
+      "url": "https://api.github.com/repos/openai/openai-agents-python/releases?per_page=1&page=1"
+    },
+    {
+      "kind": "default-branch-commit",
+      "observed_at": "2026-08-23T18:31:56Z",
+      "params": {},
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\openai--openai-agents-python\\github-observe-003-86597ba43f9a7502b30ec3f689c68912eafb701adab72bc2566171abef9c250f.raw",
+      "response_sha256": "86597ba43f9a7502b30ec3f689c68912eafb701adab72bc2566171abef9c250f",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:31:56Z",
+      "url": "https://api.github.com/repos/openai/openai-agents-python/commits/main"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:31:57Z",
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\openai--openai-agents-python\\github-observe-004-9cf3e8f95026625368b17ee9c1a9d00cdf6f73e681bfc085a3386bb9b1c18ea9.raw",
+      "response_sha256": "9cf3e8f95026625368b17ee9c1a9d00cdf6f73e681bfc085a3386bb9b1c18ea9",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:31:57Z",
+      "url": "https://api.github.com/repos/openai/openai-agents-python/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=1"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:31:59Z",
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\openai--openai-agents-python\\github-observe-005-064c13cacae36773741c6ae8d010d91b162da7f85b7ddc42ebff5e19800716b1.raw",
+      "response_sha256": "064c13cacae36773741c6ae8d010d91b162da7f85b7ddc42ebff5e19800716b1",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:31:59Z",
+      "url": "https://api.github.com/repos/openai/openai-agents-python/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=2"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:32:00Z",
+      "params": {
+        "page": 3,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\openai--openai-agents-python\\github-observe-006-ad7b92ce23755835ce1d290a1d018163925ad4fcc824af037e626fad86669f82.raw",
+      "response_sha256": "ad7b92ce23755835ce1d290a1d018163925ad4fcc824af037e626fad86669f82",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:32:00Z",
+      "url": "https://api.github.com/repos/openai/openai-agents-python/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=3"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:32:02Z",
+      "params": {
+        "page": 4,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\openai--openai-agents-python\\github-observe-007-600887319f6f6c63657c6dbe491670cd48bcb81f0acf2073c15f6021b7a44463.raw",
+      "response_sha256": "600887319f6f6c63657c6dbe491670cd48bcb81f0acf2073c15f6021b7a44463",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:32:02Z",
+      "url": "https://api.github.com/repos/openai/openai-agents-python/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=4"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:32:04Z",
+      "params": {
+        "page": 5,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\openai--openai-agents-python\\github-observe-008-3800c63bd931d21a757c6815f66ad97509534fe2514cdf9d33387d10c147991c.raw",
+      "response_sha256": "3800c63bd931d21a757c6815f66ad97509534fe2514cdf9d33387d10c147991c",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:32:04Z",
+      "url": "https://api.github.com/repos/openai/openai-agents-python/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=5"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:32:05Z",
+      "params": {
+        "page": 6,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\openai--openai-agents-python\\github-observe-009-595c495fa8049c42494e21545aeaa11b8aa71910e6a7df706cedbcba511f0684.raw",
+      "response_sha256": "595c495fa8049c42494e21545aeaa11b8aa71910e6a7df706cedbcba511f0684",
+      "result_count": 85,
+      "retrieved_at": "2026-08-23T18:32:05Z",
+      "url": "https://api.github.com/repos/openai/openai-agents-python/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=6"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T18:31:54Z",
+  "to": "2026-08-24",
+  "window_id": "W_ROLLING_90D"
+}

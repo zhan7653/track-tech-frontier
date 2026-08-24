@@ -1,0 +1,23 @@
+{
+  "generated_at": "2026-08-23T17:12:41.7026698Z",
+  "discovered_entities": 4285,
+  "breadth_candidates": 1878,
+  "papers": 668,
+  "repositories": 1210,
+  "score_bands": {
+    "score_35_plus": 2,
+    "score_25_to_34": 15,
+    "score_18_to_24": 163,
+    "score_10_to_17": 1698
+  },
+  "proposed_cluster_counts": {
+    "SM-C01": 431,
+    "SM-C02": 422,
+    "SM-C03": 450,
+    "SM-C04": 150,
+    "SM-C05": 298,
+    "SM-C06": 168,
+    "SM-C07": 557
+  },
+  "note": "Heuristic breadth triage only. Scores and proposed clusters require manual inspection and are not relevance, quality, maturity, adoption, or final mapping judgments."
+}

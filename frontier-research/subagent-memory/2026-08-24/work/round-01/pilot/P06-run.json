@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T16:38:59Z",
+  "from": "2000-01-01",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "crossref",
+  "query": "collective memory collaborative agents language models",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T16:38:55Z",
+      "page": 1,
+      "params": {
+        "filter": "from-pub-date:2000-01-01,until-pub-date:2026-08-24",
+        "offset": 0,
+        "query.bibliographic": "collective memory collaborative agents language models",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "collective memory collaborative agents language models",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-01\\pilot\\raw\\P06\\crossref-001-e1e844644c2eebb7e358d5fd13699ea93b48f192a62ecaac033e5cec0d7b7e31.raw",
+      "reported_total": 2882423,
+      "response_sha256": "e1e844644c2eebb7e358d5fd13699ea93b48f192a62ecaac033e5cec0d7b7e31",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=collective+memory+collaborative+agents+language+models&rows=100&offset=0&filter=from-pub-date%3A2000-01-01%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T16:38:59Z",
+      "page": 2,
+      "params": {
+        "filter": "from-pub-date:2000-01-01,until-pub-date:2026-08-24",
+        "offset": 100,
+        "query.bibliographic": "collective memory collaborative agents language models",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "collective memory collaborative agents language models",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-01\\pilot\\raw\\P06\\crossref-002-86f9a6d285787a74c5f0ff7a5537f9321c69eb4e5934ec79ccdc75b22fdd2f42.raw",
+      "reported_total": 2882423,
+      "response_sha256": "86f9a6d285787a74c5f0ff7a5537f9321c69eb4e5934ec79ccdc75b22fdd2f42",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=collective+memory+collaborative+agents+language+models&rows=100&offset=100&filter=from-pub-date%3A2000-01-01%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T16:38:55Z",
+  "to": "2026-08-24"
+}

@@ -1,0 +1,1079 @@
+
+
+===== PAGE 1 =====
+
+Tree-based Credit Assignment for Multi-Agent
+Memory System
+Marina Mao1,2, Alexandr Liu 2 Pengbo Li3, Siheng Li 4, Bo Zhou 2∗, Xiang Wang 1∗
+University of Science and Technology of China
+2LLM Department, Tencent
+3The Hong Kong University of Science and Technology
+4The Chinese University of Hong Kong
+Abstract
+Memory systems are widely adopted to enhance LLMs for long-horizon tasks, and
+are commonly organized as multi-agent pipelines with memory building, summa-
+rizing, and retrieval agents. To empower this system, existing RL-based methods
+either apply final downstream task rewards (e.g.,QA accuracy) for all agents uni-
+formly, which are coarse and ambiguous, or design task-specific rewards for agents
+on different subtasks, which require costly annotations (e.g.,key evidence) and are
+difficult to define reliably. To address these limitations, we propose Tree-based
+Credit Assignment for Multi-Agent Memory Systems (TreeMem), which derives
+agent-specific credit from the final reward without task-specific annotations. Specif-
+ically, TreeMem extends the multi-agent pipeline (builder–summarizer–retrieval)
+into a tree structure, where each agent’s outputs are expanded into multiple sub-
+sequent branches. The contribution of each agent is estimated via Monte Carlo
+averaging over its subsequent branches, capturing how intermediate agent actions
+may influence the final reward. This converts the coarse final reward into agent-
+specific optimization signals. These signals are then used to update all agent
+policies simultaneously, helping heterogeneous agents specialize effectively. Exper-
+iments on long-horizon benchmarks show that TreeMem improves memory system
+performance over strong baselines, validating the effectiveness of tree-structured
+credit assignment for the multi-agent memory system.
+1 Introduction
+Memory systems have recently emerged as an effective paradigm for extending large language
+models (LLMs) beyond their limited context windows [1, 2, 3, 4, 5, 6], enabling models to store and
+dynamically incorporate relevant historical information for improved response quality in long-horizon
+QA tasks [7, 8] or reasoning tasks [9, 10]. In practice, such systems are commonly implemented as
+multi-agent pipelines [11, 12, 13], in which Builder agents first convert raw interaction histories into
+structured memory units [12], Summarizer agents abstract these units into higher-level representations
+[2], and Retrieval agents select relevant information and answer downstream queries [11, 14, 15]. To
+empower the multi-agent memory system, existing work has explored optimizing these agents with
+reinforcement learning (RL) [16, 8, 17, 14].
+Existing RL-based methods optimize multi-agent memory pipelines primarily using two paradigms,
+as illustrated in Figure 1. The first applies the final downstream task rewards uniformly across all,
+such as final QA accuracy [ 16, 8]. While this aligns training with the ultimate task objective, it
+provides coarse supervision and ambiguous signals for heterogeneous agents, limiting role-specific
+specialization. The second paradigm designs task-specific rewards for individual agents, such as
+∗Corresponding author. Email: chaysezhou@tencent.com, xiangwang@ustc.edu.cn.
+Preprint.
+arXiv:2605.04811v1  [cs.MA]  6 May 2026
+
+===== PAGE 2 =====
+
+Agent 1
+Build Memory
+Agent 2
+Summarize Memory
+Agent 3
+Retrieval & Answer
+� final
+Question Answer
+� 2� 1 � 3
+Question Answer
+0/1
+Applying Uniform Final Rewards
+ Designing Task-Specific Reward
+… …
+ …
+Agent 1
+Build Memory
+Agent 2
+Summarize Memory
+Agent 3
+Retrieval & Answer
+… …
+ …
+Sparse and Ambiguous
+Lack Annotations and Unreliable
+Figure 1: Demonstration and limitations of two training paradigms for existing RL-based methods in
+multi-agent memory systems.
+evidence coverage for the Builder agent [ 18] or memory abstraction quality for the Summarizer
+agent [17], providing more direct intermediate supervision. However, such rewards require costly
+annotations and are difficult to define reliably, as memory is context-dependent and subjective;
+improperly crafted rewards may induce reward hacking [19], where agents optimize the manually
+defined reward without improving and possibly harming downstream task performance.
+To address this limitation, we proposeTree-based Credit Assignment for Multi-Agent Memory
+Systems(TreeMem), an RL training framework that derives agent-specific credit directly from
+the final downstream reward, without task-specific annotations. Specifically, we explicitly model
+the multi-agent memory pipeline as a tree structure: building upon existing multi-agent memory
+pipelines (builder–summarizer–retrieval), TreeMem expands each agent’s sampled outputs into
+multiple subsequent branches, forming a tree of candidate trajectories that captures how intermediate
+agent actions may influence the final reward. The contribution of each intermediate agent is estimated
+via Monte Carlo averaging over its subsequent branches, a process that converts the coarse final
+reward into more granular, agent-specific optimization signals. These signals are then used to update
+all agent policies simultaneously, enabling heterogeneous memory agents to specialize effectively.
+We evaluate TreeMem on long-horizon memory benchmarks and demonstrate that it consistently
+improves downstream task performance over strong baselines. Further analysis shows that TreeMem
+effectively propagates informative training signals to specific agents, highlighting the importance of
+fine-grained credit assignment in complex multi-agent LLM memory systems.
+2 Related Work
+Multi-agent Memory Systems.Memory systems [ 1] for LLMs are increasingly organized as multi-
+agent pipelines [12, 11, 13, 2], where specialized agents store, summarize, and retrieve conversational
+information for long-horizon tasks. Beyond prompt-based designs that specify the roles of memory
+agents, recent work has explored RL-based optimization to further enhance agents’ capabilities
+in memory systems. One line of work trains memory agents with unified outcome rewards from
+downstream tasks. For example, memory-R1 [ 16] and MEM1 [8] use final QA accuracy rewards
+to improve memory management and memory retrieval agents. Such rewards are naturally aligned
+with the end objective, but they are sparse and ambiguous for different agents. Another line of work
+designs task-specific rewards for individual agents. Mem- α [17] and CoMAM [18], for instance,
+introduce rewards related to evidence coverage or memory quality to provide more specialized
+supervision. However, they require additional annotation or handcrafted criteria and may introduce
+reward hacking. Motivated by these limitations, we study how to derive agent-specific credit for
+multi-agent memory systems without relying on task-specific annotation.
+Credit Assignment in LLM-based Multi-Agent Optimization.Multi-agent joint training has
+gained increasing attention recently [ 20, 21]. Credit assignment is a central problem in multi-
+agent reinforcement learning, where the goal is to attribute delayed final results to each agent
+2
+
+===== PAGE 3 =====
+
+Tree-structured Agent Rollout and Credit Assignment
+H, q
+𝑎1
+G
+𝑎2
+1,1 𝑎2
+𝐺,1
+𝑎2
+𝐺,2
+𝑎3
+1,1,1 𝑎3
+1,1,2
+1
+Agent 1
+Build Memory
+Agent 2
+Summarize Memory
+Agent 3
+Retrieval & Answer
+𝑎2
+1,2
+𝑎3
+1,2,1
+ 𝑎3
+1,2,2
+0
+𝑎1
+1 
+ 𝑎2
+1,2
+ 𝑎3
+1,2,2
+𝑎1
+2 𝑎2
+2,2 𝑎3
+2,2,1
+1 1
+𝑎1
+G 𝑎2
+G,1 𝑎3
+𝐺,1,2
+1 0.5
+0.75
+0.75 0.5 0
+𝑎1
+1 
+ǁ𝜏1
+ǁ𝜏2
+ǁ𝜏𝐺
+Policy Optimization with Specific Credit
+Figure 2: Illustration of our proposed TreeMem: a tree-based multi-agent RL training framework
+for memory systems, expanding each agent’s sampled actions into multiple branches to estimate
+agent-specific credit and specialize each agent’s policy.
+[22, 23, 24, 25, 26]. Existing LLM-based multi-agent optimization methods commonly assign credit
+by applying the same final task reward to all agents, or by optimizing agents under a shared system-
+level objective [27, 28, 29, 30, 31]. This strategy is simple and directly aligned with downstream
+success, but it is also coarse: LLM agents are often differentiated by roles, prompts, or policies, and a
+uniform reward cannot indicate which agent should improve or specialize. Some recent work seeks
+finer-grained credit assignment in LLM reasoning by estimating the utility of intermediate steps
+through tree-branching rollouts [32, 33, 34] or progress-based signals [35]. However, these methods
+mainly target the optimization of a single policy along one reasoning trajectory. In multi-agent
+memory systems, agent contributions are coupled through complex interactions, making it difficult to
+isolate the effect of each agent on the final outcome. As a result, credit assignment for specialization
+among heterogeneous memory agents remains underexplored.
+3 Method
+In this section, we present TreeMem, a tree-based multi-agent RL training framework that derives
+agent-specific credit without task-specific annotations, as illustrated in Figure 2. We first formulate the
+multi-agent memory system and the final-reward optimization objective in Sec. 3.1. We then describe
+tree-structured rollout and credit assignment in Sec. 3.2, which expands each agent’s sampled actions
+into multiple subsequent branches to capture how intermediate actions influence the final outcome.
+Finally, we describe the corresponding policy optimization in Sec. 3.3, showing how the resulting
+signals promote specialization among memory agents.
+3.1 Formulation of Multi-Agent Memory Optimization
+LetHdenote the long-horizon interaction history,qthe downstream query, andp ∗ the ground-truth
+response to q. Motivated by existing multi-agent memory systems [ 11, 16, 2, 18], we instantiate
+a representative multi-agent memory workflow with a builder, a summarizer, and a retrieval-based
+responder. We denote these agent policies by Π ={π n
+θ }3
+n=1, where the superscript identifies the
+agent. In the multi-agent workflow, the builder produces built fact-level memory a1 from H, the
+summarizer produces summarized memory a2 from a1, and the retrieval-based responder produces
+the final answerpfromqand the memories(a 1, a2):
+a1 ∼π 1
+θ(· |H), a 2 ∼π 2
+θ(· |a 1), a 3 =p∼π 3
+θ(· |q, a 1, a2).(1)
+For RL training, existing methods usually run the multi-agent pipeline to obtain a complete rollout
+τ= (a 1, a2, a3), and then compute the final downstream reward from the generated answer [16, 8]:
+R(τ) =F(p, p ∗),(2)
+where p is the final answer produced by trajectory τ, and F is a scalar downstream evaluator.
+However, merely using the final reward to optimize all agents is sparse and ambiguous across
+different roles: a poor intermediate action may still be rewarded if later agents produce the correct
+3
+
+===== PAGE 4 =====
+
+answer, while a useful intermediate action may be penalized if later agents fail. To provide more
+specific training signals for different agents, a natural solution is to design task-specific rewards
+for their respective tasks [ 17, 18], such as evidence coverage for the memory builder or memory
+quality for the summarizer. However, reliable task-specific annotations are costly to obtain, and
+handcrafted rewards may be noisy or misaligned with the final objective. TreeMem therefore focuses
+on fine-grained credit assignment for memory agents from final rewards. Specifically, we expand
+each agent’s actions into multiple subsequent branches and estimate its specific effect on the final
+outcome by averaging the final rewards over the branches that depend on it. This procedure converts
+final-only feedback into agent-specific credit, which can then be used to optimize different policies
+and promote specialization among agents.
+3.2 Tree-Structured Rollout and Credit Assignment
+Given the formulation in Sec. 3.1, TreeMem builds a tree-structured rollout during training by sam-
+pling multiple branches at each stage of the builder–summarizer–responder workflow, as illustrated on
+the left side of Figure 2. For an agent action, averaging the final rewards over its subsequent branches
+provides a more specific estimate of how that action affects the final outcome. Specifically, under
+the same history H, the memory builder samples G candidate actions; for each builder action, the
+summarizer samples J branches; and for each builder–summarizer pair, the retrieval-based responder
+samplesKfinal responses:
+ai
+1 ∼π 1
+θ(· |H), i= 1, . . . , G,
+ai,j
+2 ∼π 2
+θ(· |a i
+1), j= 1, . . . , J,
+ai,j,k
+3 =p i,j,k ∼π 3
+θ(· |q, a i
+1, ai,j
+2 ), k= 1, . . . , K.
+(3)
+Here ai
+1 is the i-th built fact-level memory, ai,j
+2 is the j-th summarized memory conditioned on ai
+1,
+and pi,j,k is the k-th response generated from query q and memories (ai
+1, ai,j
+2 ). The parameter G is
+the group size,i.e.,the number of memory builders’ actions sampled for the same training example,
+while J and K are the branch sizes for the summarizer and the responder, respectively. Each builder
+actiona i
+1 roots a subtree containingJ·Kcomplete trajectories.
+This procedure produces G·J·K complete trajectories, each corresponding to one path from a built
+fact-level memory to a final response. Since TreeMem does not assume intermediate supervision,
+rewards are computed only at the final leaf nodes:
+τ i,j,k = (ai
+1, ai,j
+2 , ai,j,k
+3 ), R i,j,k =R(τ i,j,k) =F(p i,j,k, p∗).(4)
+Here τ i,j,k denotes the complete trajectory formed by the i-th builder action, the j-th summarizer
+action under that builder action, and the k-th responder action under that builder–summarizer pair.
+Ri,j,k is the scalar final reward assigned to this leaf trajectory, computed by applying the downstream
+evaluatorFto the generated responsep i,j,k and the ground-truth responsep ∗.
+Given the tree-structured rollout, TreeMem assigns credit by propagating final rewards upward
+through Monte Carlo branch averaging. The final response already has an observed reward, while
+each upstream action is evaluated by averaging the final rewards over the sampled branches that
+depend on it. For the memory builder, we additionally apply a length penalty based on the output-to-
+input token ratio, which discourages copying the long history into memory verbatim. Specifically,
+the credits for the responder, summarizer, and builder actions are
+bQi,j,k
+3 =R i,j,k, bQi,j
+2 = 1
+K
+KX
+k=1
+Ri,j,k, bQi
+1 = 1
+J K
+JX
+j=1
+KX
+k=1
+Ri,j,k + |ai
+1|
+|H| .(5)
+Here bQi,j,k
+3 is the reward of a final response,bQi,j
+2 averages over theKresponse branches following
+summarized memory ai,j
+2 , and bQi
+1 averages over all summarization and response branches following
+built memory ai
+1, with a length penalty on the ratio between the length of fact-level memory ai
+1 and
+the input history H to filter out redundancy. These estimates use the sampled subtree rooted at each
+action to convert final-only rewards into agent-specific credit. Notably, the tree structure is used only
+during training to derive agent-specific credits for optimizing different agent policies. At deployment
+time, TreeMem performs inference with the optimized policies directly, allowing the memory system
+to invoke them in any order and at any frequency as needed, without executing tree expansion.
+4
+
+===== PAGE 5 =====
+
+3.3 Policy Optimization with Agent-Specific Credit
+After assigning credits over the full tree-structured rollout, TreeMem constructs a trajectory group by
+randomly selecting one complete trajectory from each of the G subtrees rooted at the memory-builder
+actions {ai
+1}G
+i=1. This produces G trajectories, one from each subtree, as illustrated on the right
+side of Figure 2. For the subtree rooted at ai
+1, let ji ∈ {1, . . . , J} and ki ∈ {1, . . . , K} denote the
+selected summarizer and responder branch indices. The selected trajectory from the subtree rooted at
+ai
+1 and its corresponding agent-specific credits are:
+eτi = (ai
+1, ai,ji
+2 , ai,ji,ki
+3 ), eQi
+1 = bQi
+1, eQi
+2 = bQi,ji
+2 , eQi
+3 = bQi,ji,ki
+3 , i= 1, . . . , G.
+(6)
+This group sampling strategy enables compact yet informative policy optimization. Sampling one
+trajectory from each subtree preserves the diversity of memory-builder actions while avoiding
+optimization over the full rollout tree. Since the selected actions inherit credits computed from the
+full tree rollout, each agent is updated with agent-specific credit that reflects its expected downstream
+contribution, rather than a sparse final reward. For each agent n, the credits of its G selected actions
+are normalized as advantages within the group:
+bAi
+n =
+eQi
+n −mean G
+r=1 eQr
+n
+stdG
+r=1 eQrn +ϵ
+, n∈ {1,2,3}.(7)
+TreeMem then optimizes the heterogeneous policies using the selected trajectory group and the
+normalized advantages in Eq. 7, following the group-relative principle of GRPO [ 36]. Unlike
+standard GRPO, which compares complete responses from a single policy, TreeMem computes the
+group score for each agent from its subtree-estimated credit eQi
+n to update different policies jointly.
+Let ci
+n denote the input context of agent n in trajectory eτi, with ci
+1 =H , ci
+2 =a i
+1, and ci
+3 =
+(q, ai
+1, ai,ji
+2 ). Let oi
+n denote the token sequence generated by agent n under context ci
+n. For each
+agent, TreeMem optimizes the following clipped policy objective:
+Jn(θ) = 1
+G
+GX
+i=1
+1
+|oin|
+|oi
+n|X
+t=1
+min
+
+ρn,i,tbAi
+n,clip(ρ n,i,t,1−ϵ clip,1 +ϵ clip)bAi
+n
+
+,(8)
+where ρn,i,t =
+πn
+θ (oi
+n,t|ci
+n,oi
+n,<t)
+πn
+θold
+(oi
+n,t|cin,oi
+n,<t) . Here θold is the policy used to sample the trajectory group, and
+the clipping operation constrains the update from this sampling policy. The factor 1/|oi
+n| normalizes
+the objective by the action length, preventing longer generated actions from dominating the policy
+update. Thus, TreeMem updates each policy using the subtree-estimated credit of its action, rather
+than assigning the final reward to all agents. This keeps optimization aligned with the final task
+objective while providing agent-specific training signals for the multi-agent memory pipeline.
+4 Experiments
+Our experiments are designed to examine TreeMem from five complementary perspectives:
+• RQ1: How does TreeMem perform compared with representative baselines on long-horizon tasks?
+• RQ2: What’s the impact of different RL-training signals on the memory system’s performance?
+• RQ3: How does tree-based credit assignment affect different memory agents?
+• RQ4: How sensitive is TreeMem to the hyperparameters?
+• RQ5: What training and token overheads does TreeMem incur?
+4.1 Experimental Settings
+Datasets.PersonaMem [ 40] serves as our main testbed. It contains over 180 long conversational
+histories at three scales, 32K, 128K, and 1M tokens, together with roughly 6,000 questions from
+seven categories that require evidence from prior interactions. To test whether the observed behavior
+extends beyond this benchmark, we also report results on LongMemEval [41] and LOCOMO [42].
+Appendix A.1 gives the full dataset description.
+5
+
+===== PAGE 6 =====
+
+Table 1: Query-answering accuracy on PersonaMem under 32K, 128K, and 1M history lengths.Bold
+marks the overall best result, and underlining marks the strongest compared method.
+Method Qwen Llama
+32K 128K 1M Average 32K 128K 1M Average
+Context-based methods
+Base 0.41 0.39 0.38 0.39 0.35 0.31 0.32 0.33
+RAG [37] 0.48 0.45 0.41 0.45 0.43 0.39 0.36 0.39
+Prompt-driven memory
+CAM [38] 0.53 0.50 0.45 0.49 0.48 0.45 0.43 0.45
+MemoryBank [2] 0.51 0.47 0.44 0.47 0.45 0.42 0.39 0.42
+A-Mem [13] 0.50 0.44 0.45 0.46 0.46 0.37 0.36 0.40
+Mem0 [39] 0.56 0.55 0.56 0.56 0.55 0.49 0.54 0.53
+RL-optimized memory
+Mem1 [8] 0.59 0.57 0.58 0.58 0.56 0.58 0.61 0.58
+Mem-α[17] 0.62 0.67 0.62 0.64 0.58 0.66 0.63 0.62
+Memory-R1 [16] 0.58 0.60 0.60 0.59 0.57 0.61 0.60 0.59
+CoMAM [18] 0.64 0.70 0.66 0.67 0.62 0.68 0.69 0.66
+Ours 0.69 0.75 0.71 0.72 0.64 0.74 0.72 0.70
+Impro. +7.8% +7.1% +7.6% +7.5% +3.2% +8.8% +4.3% +5.5%
+Table 2: More experimental results of TreeMem and baselines on the LongMemEval and LOCOMO
+benchmarks with Qwen2.5-7B backbone.Boldmarks the overall best result, and underlining marks
+the strongest compared method.
+Method LongMemEval LOCOMO
+F1 ↑B 1 ↑J 1 ↑F 1 ↑B 1 ↑
+RAG 18.27 14.57 22.20 8.97 7.27
+A-Mem 41.55 36.58 54.80 26.08 21.78
+Mem0 38.44 34.53 46.80 30.61 23.55
+GAM 51.75 48.96 52.00 45.77 39.42
+Memory-R1 54.36 50.02 55.56 43.14 36.14
+Ours 63.46 52.61 58.25 48.88 43.38
+Baselines.We compare TreeMem against existing methods under three memory regimes.Context-
+based methodsuse the conversation history directly as the LLM context without converting it into
+explicit memories: Base conditions the LLM on the available conversation history within the limited
+context window, while RAG [37] retrieves relevant raw history for response generation.Prompt-
+driven memory systemsinclude CAM [ 38], MemoryBank [2], A-Mem [13], and Mem0 [39], which
+construct multi-agent memory systems through prompting or manually designed operations.RL-
+optimized memory systemsinclude Mem1 [ 8], Mem-α [17], Memory-R1 [16], and CoMAM [18],
+where reinforcement learning is used to optimize memory construction or retrieval. Appendix A.2
+provides concise descriptions of these baselines and their implementation details.
+Implementation Details and Evaluation Metrics.Because PersonaMem’s queries are multiple-
+choice, we report average query-answer selection accuracy for each history length (32K, 128K,
+and 1M). Following the official LongMemEval protocol, we report F1, B1, and J1: F1 measures
+token-level precision, B1 denotes unigram BLEU, and J1 is an LLM-as-judge score computed by
+GPT-4o. For LOCOMO, we report the overall F1 and B1 across different question types. To ensure
+fair comparisons, all methods are evaluated under identical experimental settings and with the same
+LLM backbone. For PersonaMem, we evaluate all methods with both Qwen [ 43] and Llama [44].
+The Builder agent, Summarizer agent, and reward modelV are instantiated with Qwen2.5-3B-Instruct
+or Llama-3.2-3B-Instruct, while the Retrieval agent uses Qwen2.5-7B-Instruct or Llama-3.1-8B-
+Instruct. The context window is set to 32K tokens for all models. All results reported in the tables are
+6
+
+===== PAGE 7 =====
+
+Table 3: Performance comparison of multi-agent memory systems trained with different reward
+signals: final accuracy reward, task-specific rewards, and our agent-specific rewards.
+Method Qwen Llama
+32K 128K 1M 32K 128K 1M
+No train 0.50 0.46 0.44 0.52 0.47 0.43
++R final 0.60 0.64 0.60 0.61 0.65 0.67
++R task 0.57 0.65 0.61 0.60 0.61 0.64
++R final +wR task 0.62 0.65 0.63 0.62 0.65 0.66
+Ours 0.69 0.75 0.71 0.64 0.74 0.72
+Table 4: Ablation study on tree-based credit assignment across different agents. w/o tree trains all
+agents without tree-based credit assignment; Builder w/o tree and Summarizer w/o tree remove it
+only from the Builder and Summarizer agents, respectively.
+Method Qwen Llama
+32K 128K 1M 32K 128K 1M
+No train 0.50 0.46 0.44 0.52 0.47 0.43
+w/o tree 0.60 0.64 0.60 0.61 0.65 0.67
+Builder w/o tree 0.65 0.65 0.60 0.62 0.67 0.68
+Summarizer w/o tree 0.67 0.62 0.61 0.62 0.71 0.70
+Ours 0.69 0.75 0.71 0.64 0.74 0.72
+averaged over at least three independent runs with different random seeds. Table 1 reports results
+for both backbone families, whereas subsequent ablation studies use Qwen by default. Prompts,
+hyperparameters, and more implementation details are provided in Appendix B.
+4.2 Main Results on Long-Horizon Memory Tasks (RQ1)
+To evaluate whether TreeMem improves long-horizon memory tasks over existing baselines, we
+conduct experiments on PersonaMem under three history-length settings (32K, 128K, and 1M)
+and two backbone families (Qwen and Llama), as reported in Table 1. Compared with context-
+based methods, prompt-driven memory systems and RL-optimized memory systems benefit from
+converting raw dialogue histories into compact, reusable memories, thereby mitigating context-
+window limitations and reducing the burden on retrieval. RL-optimized memory systems further
+outperform prompt-driven memory systems, indicating the importance of optimizing memory agent
+policies with task feedback in multi-agent memory systems. TreeMem achieves the best performance
+among leading RL-optimized memory systems, outperforming methods that rely on final-answer
+rewards (e.g.,Mem1 [ 8] and Memory-R1 [16]) as well as methods with manually designed task-
+specific rewards, such as memory-quality or evidence-coverage signals (e.g.,Mem- α [17] and
+CoMAM [18]). This validates the effectiveness of tree-based credit assignment for multi-agent
+memory optimization: it maintains alignment with system-level performance while providing agent-
+specific training signals. Results on LongMemEval and LOCOMO in Table 2 further show that
+TreeMem generalizes to benchmarks with different data distributions, achieving the best performance
+on all reported metrics.
+4.3 Effect of Different Reward Signals (RQ2)
+To investigate how RL training signals affect the performance of memory systems, we compare
+several training variants in Table 3. Here, Rfinal denotes training all agents uniformly using the
+final QA accuracy reward; Rtask refers to designing task-specific rewards for evidence coverage,
+memory quality, and retrieval precision tailored to different memory agents; and Rfinal +wR task
+integrates the two reward formulations. All RL-trained variants outperform the “no train” baseline,
+verifying that reinforcement learning yields effective optimization for multi-agent memory systems.
+However, relying solely on the final reward delivers only sparse system-level supervision, which
+7
+
+===== PAGE 8 =====
+
+0 20 40 60 80 100
+Steps
+0.40
+0.45
+0.50
+0.55
+0.60
+0.65
+0.70
+0.75
+Rewards on 32K setting
+w/o tree
+Builder w/o tree
+Summarizer w/o tree
+Ours
+0 100 200 300 400
+Steps
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+Rewards on 128K setting
+w/o tree
+Builder w/o tree
+Summarizer w/o tree
+Ours
+0 100 200 300 400
+Steps
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+Rewards on 1M setting
+w/o tree
+Builder w/o tree
+Summarizer w/o tree
+Ours
+Figure 3: Reward curve comparison of applying tree-based specific rewards to each agent individually.
+limits the specialization of individual agents. Task-specific rewards provide finer-grained guidance,
+though manually designed rewards are often unreliable and may not closely match downstream QA
+performance. Combining these two reward types yields a stronger training signal, yet TreeMem still
+achieves the best performance across all settings. This implies that straightforward fusion of the two
+reward components is inherently difficult to balance. By contrast, mapping high-level downstream
+rewards to dedicated credit signals for each agent can better align with overall system performance
+while enabling effective agent specialization.
+4.4 Impact of Tree-Based Credit Assignment on Each Agent (RQ3)
+To evaluate how tree-based credit assignment affects different memory agents, we conduct an agent-
+level ablation study of the rollout-tree signal, with final performance reported in Table 4 and training
+rewards visualized in Figure 3. The variants include “No train” where no reinforcement learning is
+applied to any agent, “w/o tree” where all agents are trained uniformly with final accuracy rewards,
+“Builder w/o tree” and “Summarizer w/o tree” where the tree-based signal is removed only from the
+Builder or Summarizer agent, respectively, and “Ours” where tree-based credit assignment is enabled
+for all agents. As shown in the table and figure, across all context lengths, our TreeMem with tree-
+based credit assignment enabled for all agents consistently achieves the best final performance, while
+variants without tree-based credit perform the worst. Even when the agent-specific signal is removed
+from only one agent, either the Builder or the Summarizer, the corresponding variants “Builder w/o
+tree” and “Summarizer w/o tree” underperform our TreeMem, with their reward curves failing to
+reach the same performance ceiling. This pattern confirms that tree-based credit benefits every agent,
+as each agent relies on agent-specific credit to specialize its role in the memory system, which in
+turn enables the memory system to achieve better performance. Additionally, to further verify that
+tree-based agent-specific credit facilitates the specialization of individual memory agents, we adopt
+LLM-Judge (GPT-4o) scoring to quantitatively evaluate the quality of agent-generated outputs. As
+illustrated in the left and right subplots of Figure 1, agents optimized with our agent-specific reward
+mechanism attain higher specialization scores than those trained solely with final accuracy rewards.
+We further provide qualitative generation examples in Appendix C to intuitively demonstrate such
+agent specialization.
+4.5 Sensitivity to Hyperparameters (RQ4)
+To evaluate TreeMem’s sensitivity to its core hyperparameters, we vary the Builder group size G
+from 2 to 32, the Summarizer branch count J from 1 to 4, and the Retrieval branch count K from 1
+to 4. The group size G controls the training efficiency and stability of GRPO optimization, while
+the branch counts J and K trade off credit-estimation quality and rollout computational cost. As
+illustrated in Figure 4, all configurations exhibit clear performance trends across different context
+lengths. Small values of J and K make credit estimates more susceptible to sampling noise and
+result in lower scores. As J and K increase, performance continuously improves, yet the marginal
+gain gradually diminishes; adding extra branches brings no further performance improvement once a
+sufficient number is reached. In comparison, the Builder group size G is designed exclusively for
+GRPO training. Its performance rises steadily as G grows and eventually stabilizes at a moderate
+value. Overall, TreeMem retains stable and robust performance over a wide range of hyperparameter
+8
+
+===== PAGE 9 =====
+
+2 4 8 16 32
+0.50
+0.55
+0.60
+0.65
+0.70
+0.75
+0.80Score
+sensitivity to G
+32K
+128K
+1M
+1 2 3 4
+0.55
+0.60
+0.65
+0.70
+0.75
+0.80
+sensitivity to J
+32K
+128K
+1M
+1 2 3 4
+0.55
+0.60
+0.65
+0.70
+0.75
+0.80
+sensitivity to K
+32K
+128K
+1M
+Figure 4: Sensitivity analysis of TreeMem with respect to the hyperparameters group size G, branch
+sizeJ, and branch sizeK, as defined in Eq. (3).
+32K 128K 1M
+2
+3
+4
+5
+6
+7
+8Minutes
+Time cost per training step
++Rfinal +Rtask ours
+300
+400
+500
+Steps for convergence
++Rfinal +Rtask ours
+32K 128K 1M
+0
+25
+50
+75
+100
+32K 128K 1M
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7Rate
+Token efficiency
++Rfinal +Rtask ours
+Nums
+Figure 5: The efficiency analysis of our TreeMem against two training baselines: “+Rfinal” (final QA
+accuracy rewards) and “+Rtask” (task-specific rewards). Across context lengths (32K, 128K, 1M), the
+left plot compares per-step training time, the middle plot compares steps to convergence, and the right
+plot evaluates token efficiency as the ratio of memory tokens (from the memory builder/summarizer)
+to original conversation history tokens, where a lower rate means higher efficiency.
+choices. It works well without exhaustive grid search or meticulous parameter tuning, demonstrating
+strong hyperparameter insensitivity and practical applicability of our framework.
+4.6 Efficiency of TreeMem (RQ5)
+To quantify TreeMem’s efficiency, we analyze training and token efficiency in Figure 5. At training
+time, TreeMem’s tree-structured rollout introduces additional computation due to its branching
+factors, which we mitigate via sampling rollouts during policy optimization as introduced in Sec.
+3.3, resulting in only marginal per-step overhead relative to the “+Rfinal” and “+ Rtask” variants. Our
+agent-specific reward design also accelerates convergence, requiring fewer training steps to stabilize.
+For token efficiency (measured as the ratio of constructed memory tokens to original conversation
+tokens, with lower values indicating higher efficiency), TreeMem outperforms both baselines across
+all context lengths by enabling agent specialization and applying length penalties to compress long
+histories. At inference, TreeMem adopts the same memory architecture and agent backbone as
+baseline methods. It improves token efficiency to lower per-invocation computational overhead, while
+requiring no extra rollout branches. Overall, TreeMem introduces negligible extra computational
+burden during both training and inference, demonstrating superior computational efficiency compared
+with baseline alternatives.
+5 Conclusion
+In this work, we address a key limitation of existing training paradigms for multi-agent memory
+systems: assigning final downstream rewards uniformly to all memory agents is overly coarse to guide
+heterogeneous agents, while designing agent-specific task rewards demands costly manual annotations
+and lacks reliability. Specifically, we present TreeMem, a tree-based credit assignment framework
+for RL optimization of multi-agent memory systems. By extending the multi-agent pipeline to
+a tree structure and adopting Monte Carlo averaging over branch outputs, TreeMem accurately
+estimates the individual contribution of each agent. Thus, it could transform coarse final downstream
+9
+
+===== PAGE 10 =====
+
+accuracy rewards into fine-grained, agent-specific learning signals for different agents, enabling
+agent specialization and boosting overall memory system performance. Extensive evaluations on
+long-horizon benchmarks verify the efficacy of TreeMem, which consistently outperforms leading
+memory system baselines across diverse experimental settings.
+References
+[1] Yuyang Hu, Shichun Liu, Yanwei Yue, Guibin Zhang, Boyang Liu, Fangyi Zhu, Jiahang Lin,
+Honglin Guo, Shihan Dou, Zhiheng Xi, et al. Memory in the age of ai agents.arXiv preprint
+arXiv:2512.13564, 2025.
+[2] Wanjun Zhong, Lianghong Guo, Qiqi Gao, He Ye, and Yanlin Wang. Memorybank: Enhancing
+large language models with long-term memory. InAAAI, pages 19724–19731. AAAI Press,
+2024.
+[3] Bernal Jimenez Gutierrez, Yiheng Shu, Yu Gu, Michihiro Yasunaga, and Yu Su. Hipporag:
+Neurobiologically inspired long-term memory for large language models. InNeurIPS, 2024.
+[4] Yiming Du, Baojun Wang, Yifan Xiang, Zhaowei Wang, Wenyu Huang, Boyang XUE, Bin
+Liang, Xingshan Zeng, Fei Mi, Haoli Bai, Lifeng Shang, Jeff Z. Pan, Yuxin Jiang, and Kam-Fai
+Wong. Memory-t1: Reinforcement learning for temporal reasoning in multi-session agents. In
+ICLR, 2026.
+[5] Jizhan Fang, Xinle Deng, Haoming Xu, Ziyan Jiang, Yuqi Tang, Ziwen Xu, Shumin Deng,
+Yunzhi Yao, Mengru Wang, Shuofei Qiao, Huajun Chen, and Ningyu Zhang. Lightmem:
+Lightweight and efficient memory-augmented generation. InICLR, 2026.
+[6] Kai Zhang, Xinyuan Zhang, Ejaz Ahmed, Hongda Jiang, Caleb Kumar, Kai Sun, Zhaojiang Lin,
+Sanat Sharma, Shereen Oraby, AARON COLAK, Ahmed A Aly, Anuj Kumar, Xiaozhong Liu,
+and Xin Luna Dong. Assomem: Scalable memory QA with multi-signal associative retrieval.
+InICLR, 2026.
+[7] Mengkang Hu, Tianxing Chen, Qiguang Chen, Yao Mu, Wenqi Shao, and Ping Luo. Hiagent:
+Hierarchical working memory management for solving long-horizon agent tasks with large
+language model. InACL (1), pages 32779–32798. Association for Computational Linguistics,
+2025.
+[8] Zijian Zhou, Ao Qu, Zhaoxuan Wu, Sunghwan Kim, Alok Prakash, Daniela Rus, Jinhua Zhao,
+Bryan Kian Hsiang Low, and Paul Pu Liang. MEM1: Learning to synergize memory and
+reasoning for efficient long-horizon agents. InICLR, 2026.
+[9] Siru Ouyang, Jun Yan, I-Hung Hsu, Yanfei Chen, Ke Jiang, Zifeng Wang, Rujun Han, Long Le,
+Samira Daruki, Xiangru Tang, Vishy Tirumalashetty, George Lee, Mahsan Rofouei, Hangfei
+Lin, Jiawei Han, Chen-Yu Lee, and Tomas Pfister. Reasoningbank: Scaling agent self-evolving
+with reasoning memory. InICLR, 2026.
+[10] Yiheng Shu, Saisri Padmaja Jonnalagedda, Xiang Gao, Bernal Jiménez Gutiérrez, Weijian Qi,
+Kamalika Das, Huan Sun, and Yu Su. REMem: Reasoning with episodic memory in language
+agent. InICLR, 2026.
+[11] BY Yan, Chaofan Li, Hongjin Qian, Shuqi Lu, and Zheng Liu. General agentic memory via
+deep research.arXiv preprint arXiv:2511.18423, 2025.
+[12] Yu Wang and Xi Chen. MIRIX: multi-agent memory system for llm-based agents.CoRR,
+abs/2507.07957, 2025.
+[13] Wujiang Xu, Zujie Liang, Kai Mei, Hang Gao, Juntao Tan, and Yongfeng Zhang. A-mem:
+Agentic memory for LLM agents. InNeurIPS, 2025.
+[14] Hongli Yu, Tinghong Chen, Jiangtao Feng, Jiangjie Chen, Weinan Dai, Qiying Yu, Ya-Qin
+Zhang, Wei-Ying Ma, Jingjing Liu, Mingxuan Wang, and Hao Zhou. Memagent: Reshaping
+long-context LLM with multi-conv RL-based memory agent. InICLR, 2026.
+10
+
+===== PAGE 11 =====
+
+[15] Guibin Zhang, Muxin Fu, and Shuicheng Y AN. Memgen: Weaving generative latent memory
+for self-evolving agents. InICLR, 2026.
+[16] Sikuan Yan, Xiufeng Yang, Zuchao Huang, Ercong Nie, Zifeng Ding, Zonggen Li, Xiaowen Ma,
+Hinrich Schütze, V olker Tresp, and Yunpu Ma. Memory-r1: Enhancing large language model
+agents to manage and utilize memories via reinforcement learning.CoRR, abs/2508.19828,
+2025.
+[17] Yu Wang, Ryuichi Takanobu, Zhiqi Liang, Yuzhen Mao, Yuanzhe Hu, Julian McAuley, and
+Xiaojian Wu. Mem-{\alpha}: Learning memory construction via reinforcement learning.arXiv
+preprint arXiv:2509.25911, 2025.
+[18] Wenyu Mao, Haoyang Liu, Zhao Liu, Haosong Tan, Yaorui Shi, Jiancan Wu, An Zhang, and
+Xiang Wang. Collaborative multi-agent optimization for personalized memory system.CoRR,
+abs/2603.12631, 2026.
+[19] Joar Skalse, Nikolaus H. R. Howe, Dmitrii Krasheninnikov, and David Krueger. Defining and
+characterizing reward gaming. InNeurIPS, 2022.
+[20] Xiangyuan Xue, Yifan Zhou, Guibin Zhang, Zaibin Zhang, Yijiang Li, Chen Zhang, Zhenfei
+Yin, Philip Torr, Wanli Ouyang, and LEI BAI. CoMAS: Co-evolving multi-agent systems via
+interaction rewards. InICLR, 2026.
+[21] Huining Yuan, Zelai Xu, Zheyue Tan, Xiangmin Yi, Mo Guang, Kaiwen Long, Haojia Hui,
+Boxun Li, Xinlei Chen, Bo Zhao, Xiao-Ping Zhang, Chao Yu, and Yu Wang. MARSHAL:
+Incentivizing multi-agent reasoning via self-play with strategic LLMs. InICLR, 2026.
+[22] Thomas Mesnard, Theophane Weber, Fabio Viola, Shantanu Thakoor, Alaa Saade, Anna
+Harutyunyan, Will Dabney, Thomas S. Stepleton, Nicolas Heess, Arthur Guez, Eric Moulines,
+Marcus Hutter, Lars Buesing, and Remi Munos. Counterfactual credit assignment in model-free
+reinforcement learning. InICML, 2021.
+[23] Alexander Meulemans, Simon Schug, Seijin Kobayashi, Nathaniel D. Daw, and Gregory Wayne.
+Would i have gotten that reward? long-term credit assignment by counterfactual contribution
+analysis. InAdvances in Neural Information Processing Systems, volume 36, 2023.
+[24] Kaiyan Zhang, Kai Tian, Runze Liu, Sihang Zeng, Xuekai Zhu, Guoli Jia, Yuchen Fan, Xingtai
+Lv, Yuxin Zuo, Che Jiang, Yuru wang, Jianyu Wang, Ermo Hua, Xinwei Long, Junqi Gao,
+Youbang Sun, Zhiyuan Ma, Ganqu Cui, Ning Ding, Biqing Qi, and Bowen Zhou. MARTI: A
+framework for multi-agent LLM systems reinforced training and inference. InICLR, 2026.
+[25] Lang Feng, Longtao Zheng, Shuo He, Fuxiang Zhang, and Bo An. Dr. MAS: Stable reinforce-
+ment learning for multi-agent LLM systems. InWorkshop on Multi-Agent Learning and Its
+Opportunities in the Era of Generative AI, 2026.
+[26] Sumeet Ramesh Motwani, Chandler Smith, Rocktim Jyoti Das, Rafael Rafailov, Philip Torr,
+Ivan Laptev, Fabio Pizzati, Ronald Clark, and Christian Schroeder de Witt. MALT: Improving
+reasoning with multi-agent LLM training. InSecond Conference on Language Modeling, 2025.
+[27] Yujie Zhao, Lanxiang Hu, Yang Wang, Minmin Hou, Hao Zhang, Ke Ding, and Jishen Zhao.
+Stronger-MAS: Multi-agent reinforcement learning for collaborative LLMs. InICLR, 2026.
+[28] Haoyang Hong, Jiajun Yin, Yuan Wang, Jingnan Liu, Zhe Chen, Ailing Yu, Ji Li, Zhiling Ye,
+Hansong Xiao, Yefei Chen, et al. Multi-agent deep research: Training multi-agent systems with
+m-grpo.arXiv preprint arXiv:2511.13288, 2025.
+[29] Chanwoo Park, Seungju Han, Xingzhi Guo, Asuman E. Ozdaglar, Kaiqing Zhang, and Joo-
+Kyung Kim. Maporl: Multi-agent post-co-training for collaborative large language models
+with reinforcement learning. InACL (1), pages 30215–30248. Association for Computational
+Linguistics, 2025.
+[30] Junwei Liao, Muning Wen, Jun Wang, and Weinan Zhang. MARFT: multi-agent reinforcement
+fine-tuning.CoRR, abs/2504.16129, 2025.
+11
+
+===== PAGE 12 =====
+
+[31] Ziyu Wan, Yunxiang LI, Xiaoyu Wen, Yan Song, Hanjing Wang, Linyi Yang, Mark Schmidt,
+Jun Wang, Weinan Zhang, Shuyue Hu, and Ying Wen. ReMA: Learning to meta-think for
+LLMs with multi-agent reinforcement learning. InNeurIPS, 2026.
+[32] Yizhi Li, Qingshui Gu, Zhoufutu Wen, Ziniu Li, Tianshun Xing, Shuyue Guo, Tianyu Zheng,
+Xin Zhou, Xingwei Qu, Wangchunshu Zhou, Zheng Zhang, Wei Shen, Qian Liu, Chenghua Lin,
+Jian Yang, Ge Zhang, and Wenhao Huang. Treepo: Bridging the gap of policy optimization and
+efficacy and inference efficiency with heuristic tree-based modeling.CoRR, abs/2508.17445,
+2025.
+[33] Yuxiang Ji, Ziyu Ma, Yong Wang, Guanhua Chen, Xiangxiang Chu, and Liaoni Wu. Tree search
+for LLM agent reinforcement learning.CoRR, abs/2509.21240, 2025.
+[34] Zhenyu Hou, Ziniu Hu, Yujiang Li, Rui Lu, Jie Tang, and Yuxiao Dong. TreeRL: LLM
+reinforcement learning with on-policy tree search. In Wanxiang Che, Joyce Nabende, Ekaterina
+Shutova, and Mohammad Taher Pilehvar, editors,Proceedings of the 63rd Annual Meeting of
+the Association for Computational Linguistics (V olume 1: Long Papers), pages 12355–12369,
+Vienna, Austria, July 2025. Association for Computational Linguistics.
+[35] Yu Xia, Jingru Fan, Weize Chen, Siyu Yan, Xin Cong, Zhong Zhang, Yaxi Lu, Yankai Lin,
+Zhiyuan Liu, and Maosong Sun. Agentrm: Enhancing agent generalization with reward
+modeling. InACL (1), pages 19277–19290. Association for Computational Linguistics, 2025.
+[36] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Mingchuan Zhang, Y . K. Li,
+Y . Wu, and Daya Guo. Deepseekmath: Pushing the limits of mathematical reasoning in open
+language models.CoRR, abs/2402.03300, 2024.
+[37] Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio Petroni, Vladimir Karpukhin, Naman
+Goyal, Heinrich Küttler, Mike Lewis, Wen-tau Yih, Tim Rocktäschel, Sebastian Riedel, and
+Douwe Kiela. Retrieval-augmented generation for knowledge-intensive NLP tasks. InNeurIPS,
+2020.
+[38] Rui Li, Zeyu Zhang, Xiaohe Bo, Zihang Tian, Xu Chen, Quanyu Dai, Zhenhua Dong, and
+Ruiming Tang. CAM: A constructivist view of agentic memory for LLM-based reading
+comprehension. InNeurIPS, 2025.
+[39] Prateek Chhikara, Dev Khant, Saket Aryan, Taranjeet Singh, and Deshraj Yadav. Mem0:
+Building production-ready ai agents with scalable long-term memory.arXiv preprint
+arXiv:2504.19413, 2025.
+[40] Bowen Jiang, Zhuoqun Hao, Young Min Cho, Bryan Li, Yuan Yuan, Sihao Chen, Lyle Ungar,
+Camillo Jose Taylor, and Dan Roth. Know me, respond to me: Benchmarking LLMs for
+dynamic user profiling and personalized responses at scale. InSecond Conference on Language
+Modeling, 2025.
+[41] Di Wu, Hongwei Wang, Wenhao Yu, Yuwei Zhang, Kai-Wei Chang, and Dong Yu. Long-
+memeval: Benchmarking chat assistants on long-term interactive memory. InICLR. OpenRe-
+view.net, 2025.
+[42] Adyasha Maharana, Dong-Ho Lee, Sergey Tulyakov, Mohit Bansal, Francesco Barbieri, and
+Yuwei Fang. Evaluating very long-term conversational memory of LLM agents. InACL (1),
+pages 13851–13870. Association for Computational Linguistics, 2024.
+[43] Shuai Bai, Keqin Chen, Xuejing Liu, Jialin Wang, Wenbin Ge, Sibo Song, Kai Dang, Peng Wang,
+Shijie Wang, Jun Tang, et al. Qwen2. 5-vl technical report.arXiv preprint arXiv:2502.13923,
+2025.
+[44] Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timo-
+thée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurélien Rodriguez,
+Armand Joulin, Edouard Grave, and Guillaume Lample. Llama: Open and efficient foundation
+language models.CoRR, abs/2302.13971, 2023.
+12
+
+===== PAGE 13 =====
+
+A Details of Experimental Settings
+A.1 Datasets
+PersonaMem.PersonaMem [ 40] is a large-scale benchmark for evaluating dynamic user profiling
+and personalized response generation. It contains more than 180 long-term user–LLM interaction
+histories and about 6,000 multiple-choice queries, where each history consists of 10, 20, or 60
+multi-turn sessions, corresponding to 32k, 128k, and 1M-token settings. Each session contains 15–30
+conversation turns and is designed to naturally reveal, reinforce, or update user preferences over time.
+The subsequent queries cover seven personalization abilities, including recalling user-shared facts,
+suggesting new ideas, acknowledging recent preferences, tracking preference evolution, revisiting
+reasons for preference updates, making preference-aligned recommendations, and generalizing
+preferences to new scenarios.
+LongMemEval.LongMemEval [ 41] is a benchmark for testing the long-term interactive memory
+of chat assistants. It contains 500 carefully curated questions embedded in scalable, timestamped user–
+assistant chat histories. The questions are designed to evaluate five core memory abilities: information
+extraction, multi-session reasoning, temporal reasoning, knowledge updates, and abstention. We use
+LongMemEval as an external long-memory evaluation setting to test whether the memory system can
+retrieve and reason over information accumulated across sustained interactions.
+LOCOMO.LOCOMO [ 42] evaluates very long-term conversational memory for LLM agents. It
+contains multi-session conversations generated from persona-grounded agents and temporal event
+graphs, with each conversation spanning hundreds of turns and many sessions. The benchmark covers
+tasks such as question answering, event summarization, and multimodal dialogue generation. In
+our experiments, we report LOCOMO question-answering results using F1 and BLEU to evaluate
+whether the memory system can recover and use long-range conversational evidence.
+Data Processing.For training data construction, we first identify the session in the full conver-
+sational history that is associated with each query q, and denote this session as the query-specific
+conversational history H. We then construct (H, q) pairs as the basic training examples for memory
+construction and retrieval. The position of the target session is provided by the original benchmark,
+so our data processing does not require additional annotation. During evaluation, multiple queries
+may share the same full conversational history containing multiple sessions. This setting allows us to
+evaluate whether the memory builder and summarizer can organize information from a long history.
+A.2 Detailed Baselines
+Here, we describe the baseline methods used in our experiments, including methods without explicit
+memory, prompt-based memory systems, and RL-optimized memory systems.
+Base.Base directly injects the raw conversational history into the LLM and asks it to answer the
+query without any explicit memory construction or retrieval module. When the conversation exceeds
+the model context window, the input is truncated to fit the maximum context length. This baseline
+measures how well the backbone LLM can exploit long conversational context without an external
+memory system.
+RAG.RAG [ 37] retrieves relevant raw dialogue segments before answer generation. We split
+ultra-long conversational histories into fixed-length chunks of 2,048 tokens, encode them with all-
+MiniLM-L6-v2, and select chunks through embedding-based similarity matching. The retrieved
+chunks are then provided to the LLM as evidence for answering the query, serving as a standard
+retrieval-augmented baseline without learned memory construction.
+A-Mem.A-Mem [ 13] is an agentic memory system inspired by the Zettelkasten note-taking method.
+It dynamically organizes memories as interconnected notes and uses dedicated agents for memory
+construction, precursor memory evolution, and memory retrieval. This design allows newly added
+memories to update or link to existing memory entries, enabling the memory structure to evolve as
+the conversation history grows.
+13
+
+===== PAGE 14 =====
+
+Mem0.Mem0 [ 39] is a production-oriented long-term memory framework for LLM agents. It
+extracts salient facts, preferences, and interaction histories from conversations, stores them as
+persistent memories, and retrieves relevant entries in later sessions. We include Mem0 as a strong
+prompt-based memory baseline because it explicitly supports memory creation, update, and retrieval
+across long-running user interactions.
+CAM.CAM [ 38] builds a hierarchical memory system from a constructivist perspective. It
+uses multiple agents to construct memory nodes through ego-centric disentanglement and node
+replication, and then aggregates information into higher-level abstractions. We implement CAM
+on the PersonaMem benchmark to compare our method with a prompt-based multi-agent memory
+system that emphasizes structured memory construction.
+MemoryBank.MemoryBank [ 2] is a long-term memory framework for LLMs that mimics human-
+like memory behavior. It stores user-related interaction information and introduces a forgetting
+mechanism based on a forgetting curve, allowing memory strength to decay or be reinforced over
+time. We implement MemoryBank on PersonaMem as a prompt-based baseline for personalized
+long-term memory.
+Mem1.Mem1 [ 8] is an RL-based framework that trains agents to synergize memory and reasoning
+for long-horizon tasks. Its optimized agents focus on efficient multi-turn information retrieval and
+reasoning over history, prioritizing direct retrieval from existing conversational records rather than
+explicit memory construction. We include Mem1 to compare our method with an RL baseline
+centered on retrieval and reasoning efficiency.
+Mem-α.Mem- α [17] is an RL-based memory framework that improves how agents store and
+access long-term information for downstream reasoning. It optimizes memory-related decisions with
+reinforcement learning rather than relying only on hand-written prompts. This baseline is used to
+compare TreeMem with prior RL approaches that improve memory behavior but do not use our
+tree-based credit assignment.
+Memory-R1.Memory-R1 [ 16] optimizes LLM agents to manage and utilize long-term memories
+through reinforcement learning. It contains a Memory Manager that learns memory operations
+such as ADD, UPDATE, and DELETE, and an Answer Agent that uses retrieved memory entries
+to produce answers. The two agents are optimized independently in stages, making Memory-R1 a
+strong RL-based baseline for evaluating the benefit of our collaborative multi-agent optimization.
+CoMAM.CoMAM [ 18] is a collaborative multi-agent optimization framework for personalized
+memory systems. It models memory construction and retrieval agents as a multi-agent system
+and optimizes them with reinforcement learning to improve final personalized question-answering
+accuracy. We include CoMAM as a closely related RL-based memory baseline because it also studies
+coordinated optimization among memory agents, while TreeMem further introduces tree-structured
+credit assignment for intermediate memory decisions.
+B Implementation Details
+All methods are evaluated with the same data splits, input format, and metrics described in the Section
+4.1. We use Qwen2.5-7B-Instruct and Llama-3.1-8B-Instruct as the backbone LLMs for all compared
+baselines. All experiments are conducted on a cluster of 8 NVIDIA A100 GPUs. For each test
+example, the conversation history is processed in chronological order. The final prompt contains
+the user query and the retrieved information, where the retrieved information is either raw dialogue
+chunks for retrieval-based baselines or memory entries for memory-based methods. The answer is
+then generated under the same evaluation protocol for all methods.
+For the RAG baseline, we follow the setting described above: each long history is split into chunks of
+2,048 tokens, encoded with all-MiniLM-L6-v2, and matched to the query by embedding similarity.
+For memory-based baselines, the history is first converted into persistent memory entries, and the
+most relevant entries are retrieved before answer generation. For TreeMem, memory entries are
+organized as a tree rather than a flat list. During optimization, the training signal is propagated
+14
+
+===== PAGE 15 =====
+
+along the tree so that both the final answer and the intermediate memory decisions are optimized.
+This setting keeps the retrieval and generation interface comparable across different methods while
+reflecting the main design of TreeMem.
+For experiments under the 32K, 128K, and 1M context settings, we use the same hyperparameters
+across all three settings: the batch size is 128, the group size is 8, the maximum model length is 32k,
+the number of training epochs is 5, and the maximum number of output tokens is 3k.
+B.1 Agent Prompts
+For reproducibility, we report the prompt templates used by the three TreeMem agents and the answer
+reward model. The placeholders in braces are replaced with the corresponding conversation history,
+memory nodes, query, candidate options, or reference answer at runtime.
+Builder Agent Prompt
+Role.You are the TreeMem Builder. Read the chronological conversation history and extract concise,
+fact-level memory entries for future question answering.
+Input.Conversation history:{conversation history}.
+Instructions.Record durable facts, user preferences, constraints, plans, entities, and updates that may
+be useful later. Preserve temporal qualifiers when a fact changes over time. Merge duplicate evidence
+and avoid copying long dialogue spans verbatim. Discard greetings, filler, and unsupported speculation.
+Output.Return a list of memory entries. Each entry should contain a short content field, optional
+time/update information, and brief evidence from the conversation history.
+Summarizer Agent Prompt
+Role.You are the TreeMem Summarizer. You receive memory entries from the Builder and organize
+them into coherent higher-level summaries for the memory system.
+Input.Memory entries:{built memory entries}.
+Instructions.Combine related facts into clear summaries while preserving information needed to
+answer future questions. Track changes in preferences or important updates explicitly. Do not introduce
+facts not present in the memory entries. Summaries should reference the relevant underlying entries.
+Output.Return summaries with main content and pointers to the underlying memory entries they
+summarize.
+Retrieval and Response Agent Prompt
+Role.You are the TreeMem Retrieval agent. Use the memory system to answer the user’s query
+accurately.
+Input.Query: {user query} . Candidate options, if provided: {options}. Memory: {memory
+entries and summaries}.
+Instructions.Identify the memory entries and summaries that directly support the query. Prefer specific
+evidence over broader summaries when they conflict. If the query asks about a changed preference or
+event, use the most temporally relevant memory. Base the final answer only on retrieved memory and
+the query.
+Output.Put the selected evidence in <retrieved_memory> and </retrieved_memory>. Put the
+final option or free-form answer in<final_answer>and</final_answer>.
+15
+
+===== PAGE 16 =====
+
+Answer Reward Model Prompt
+Role.You are the reward model V used to judge whether a generated answer matches the reference
+answer for the query.
+Input.Query: {user query} . Reference answer: {gold answer} . Generated answer: {model
+answer}.
+Instructions.Compare the generated answer with the reference answer semantically. Treat paraphrases
+as correct when they express the same choice or fact. Penalize answers that contradict the reference,
+rely on irrelevant memory, or omit the required fact. Do not reward unsupported extra information
+unless the required answer is still unambiguous.
+Output.Return only<score>followed by a scalar in[0,1]and then</score>.
+C Case Study on Agent-Specific Rewards
+We report Memory examples from the Summarizer agent in the PersonaMem dataset to illustrate
+how agent-specific rewards can improve agent quality. The examples are from the Summarizer agent
+trained under different reward functions. The results demonstrate the superiority of agent-specific
+rewards.
+Memory from the Summarizer Agent Trained with Unified Final Rewards
+• The user recently had unexpected expenses, struggled to balance their budget, and felt disheartened
+when new bills arrived.
+• They are researching stocks and mutual funds but feel it takes a lot of time.
+• They attended a networking event, thought everyone was insincere, and decided to stop attending
+them.
+• They watched personal finance documentaries and liked how visual storytelling simplified complex
+subjects.
+• They quit a negotiation practice group because the intense atmosphere caused severe anxiety and fear
+of failing.
+• They wrote a blog post about their financial challenges, finding the process therapeutic and cathartic.
+• They started a personal finance podcast after a friend encouraged them.
+• They reduced their volunteer hours for a financial literacy program because they were experiencing
+burnout.
+• They attended a cryptocurrency seminar but got frustrated by the technical jargon and high market
+volatility.
+• They conducted a detailed analysis of their current holdings, looking at past performance and
+undervalued sectors.
+• They found a new couponing method that feels like a scavenger hunt, saves money, and plan to start a
+savings community.
+Memory from the Summarizer Agent Trained with manually designed task-specific Rewards
+Interests:Personal finance, investing, economics, couponing.
+Dislikes:Cryptocurrency, networking events, negotiation practice.
+Activities:Writes a blog, hosts a podcast, watches documentaries, analyzes their stock portfolio.
+Current State:Adjusting budget to save money; trying to balance life and avoid burnout.
+16
+
+===== PAGE 17 =====
+
+Memory from the Summarizer Agent Trained with Agent-Specific Rewards
+User Persona & Traits:Highly reflective, intellectually curious, and self-directed. Values authenticity
+and community building but strictly guards personal boundaries and mental well-being (e.g., limits
+volunteering to prevent burnout). Analytically driven but risk-averse.
+Financial Behaviors:Actively self-corrects spending habits through practical methods (e.g., strategic
+couponing). Conducts methodical portfolio analyses, focusing on historical volatility and undervalued
+sectors.
+Learning Preferences:Prefersvisual storytelling (e.g., documentaries), historical context, and low-
+pressure, self-paced learning.Avoidshigh-pressure performance scenarios (e.g., live negotiation),
+volatile/jargon-heavy assets (e.g., cryptocurrency), and insincere networking.
+Content Creation:Uses writing (blogging) and audio (podcasting) as therapeutic tools to process
+financial anxiety and aims to build a pragmatic savings community.
+D Limitation
+The main limitation of TreeMem lies in its higher rollout cost compared with a simpler multi-agent
+memory system. In a flat multi-agent memory system, each agent usually makes decisions within a
+relatively direct interaction process. In contrast, TreeMem organizes memory operations in a tree
+structure, which requires the system to consider more intermediate states and decision paths during
+rollout. This design is useful for assigning more fine-grained training signals to memory construction
+and retrieval decisions, but it also increases the computational cost of optimization. Therefore,
+TreeMem may require more rollout steps, training time, and GPU resources than simpler multi-agent
+memory systems, especially when the conversation history is long or the memory tree becomes large.
+E Broader Impact
+This work may have a positive social impact by improving the ability of LLM agents to maintain
+and use long-term memory. A more reliable memory system can help personalized assistants better
+understand user needs over long interactions, reduce repeated questions, and provide more consistent
+support in applications such as education, personal productivity, and assistive services. TreeMem also
+makes memory organization more structured, which may help users and developers better inspect
+how useful information is stored and retrieved. We do not identify any direct negative social impact
+beyond the general considerations of deploying LLM-based systems responsibly.
+17

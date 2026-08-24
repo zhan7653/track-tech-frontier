@@ -1,0 +1,1291 @@
+
+
+===== PAGE 1 =====
+
+Joint Optimization of Multi-agent Memory System
+Wenyu Mao∗1, Haoyang Liu 1 Haosong Tan1, Yaorui Shi1, Jiancan Wu 1,2, An Zhang 1, Xiang Wang †1
+1 University of Science and Technology of China
+2Institute of Dataspace, Hefei Comprehensive National Science Center
+Abstract
+Memory systems are critical for LLMs, mitigating context window limitations and
+supporting long-horizon user–LLM interactions. Such systems typically comprise
+multiple agents responsible for memory construction and retrieval. Existing ap-
+proaches often optimize each agent independently under a shared global objective
+(e.g.,downstream QA accuracy), treating other agents as a static environment.
+However, this design has two key limitations: (1) independent optimization ignores
+inter-agent dependencies and lacks agents’ co-adaptation, and (2) relying solely
+on sparse global rewards provides limited guidance for optimizing specialized
+agents and causes ambiguous credit assignment. These may ultimately limit agents’
+effective collaboration in the memory system. To address these limitations, we
+proposeCoMAM, a joint optimization framework that promotes collaboration
+among agents via end-to-end reinforcement learning and an adaptive credit assign-
+ment mechanism. Specifically, we model the multi-agent pipeline as a Markov
+decision process (MDP) to expose inter-agent dependencies during end-to-end
+training. Agents are then jointly optimized using a combination of their local task
+reward and an adaptively weighted global reward, enabling agents to co-adapt
+while receiving targeted feedback for their respective roles. Experiments show
+that CoMAM consistently outperforms leading memory systems, validating the
+effectiveness of the joint optimization framework.
+1 Introduction
+Memory systems [6, 42, 10] have emerged as a pivotal component for large language models (LLMs),
+enabling them to preserve long-horizon conversational history beyond the context window and
+selectively incorporate it for generation. Such systems are typically implemented as multi-agent
+pipelines, whereconstruction agentssummarize and store user history into multi-granular memories
+(e.g.,long/short or coarse/fine) [15, 29, 30], andretrieval agentsselect and integrate relevant memories
+for downstream queries via RAG [14] or search-based reasoning [39, 13]. These agents are often
+instantiated with heterogeneous configurations to handle tasks of varying complexity, enabling
+flexible modular design and specialization. To enhance the performance of memory systems, existing
+approaches [38, 44, 37, 30] often optimize each agent independently via reinforcement learning under
+a shared global objective (e.g.,, QA accuracy on downstream tasks). They typically update one agent
+at a time, treating the others as fixed components of the environment.
+However, such independent optimization has two limitations and may lead to sub-optimal division
+of labor and collaboration [1, 33]. First,ignorance of dependency among agents: each agent is
+optimized while treating others as a static environment, preventing the adaptation to other agents’
+evolving policies. Second,ambiguous credit assignment: the shared global objective provides insuf-
+ficient signal to attribute performance improvements to individual agents, which may hinder effective
+specialization. As illustrated in Figure 1, although agents can be well trained independently (rewards
+∗This work was completed during the internship at ByteDance Seed. Email: wenyumao2@gmail.com
+†Corresponding author. Email: xiangwang@ustc.edu.cn.
+Preprint.
+arXiv:2603.12631v2  [cs.MA]  27 Apr 2026
+
+===== PAGE 2 =====
+
+ 
+ 
+Construction 
+agent
+Retrieval
+agent
+History Answer
+Adaptive Credit Assignment
+Existing Method: Optimizing Agents Independently
+Ours: Optimizing Agents Jointly 
+Shared Global Reward
+Construction 
+agent
+Retrieval
+agent
+History Answer
+Figure 1: (Left) Training curves of coarse/fine memory construction and retrieval agents, which
+are optimized independently. (Middle) Global system performance under independent and joint
+optimization across different context lengths. (Right) Conceptual comparison between existing
+methods that optimize agents independently with shared global rewards and our joint optimization
+with adaptive credit assignment.
+converged in the left figure), combining them directly leads to inferior system performance compared
+to joint optimization across different context lengths (lower QA accuracy in the middle figure). This
+gap highlights that independent optimization with the same global system objective is insufficient to
+achieve optimal system performance, motivating us to jointly optimize these heterogeneous agents in
+the memory system to facilitate collaboration.
+To address these limitations, we proposeCoMAM, a joint optimization framework that promotes
+collaboration among agents via end-to-end reinforcement learning, together with an adaptive credit
+assignment mechanism. As illustrated in the right panel of Figure 1, our approach differs from
+independent optimization by enabling simultaneous updates of heterogeneous agents with adaptively
+assigned rewards. Specifically, to formulate a standard memory system for coarse/fine memory
+construction and memory retrieval, we design an extraction agent to construct fine-grained memories
+(e.g.,key events and facts), a profile agent to summarize coarse-grained memories (e.g.,users’ stable
+preferences), and a retrieval agent to retrieve memories and answer queries. To model the inter-agent
+dependencies for co-adaption, we frame the heterogeneous multi-agent pipeline as a sequential
+Markov decision process (MDP), enabling agents to coordinate through their intermediate outputs.
+To alleviate ambiguous credit assignment during joint optimization, CoMAM assigns each agent
+a combination of its local task reward and an adaptively weighted global reward, providing more
+targeted feedback for different roles, driving collaboration for the global objective while maintaining
+task specialization. Extensive experiments on long-horizon conversational tasks show CoMAM
+outperforms leading memory baselines, validating the efficacy of our joint optimization framework
+and adaptive credit assignment for multi-agent memory systems.
+2 Related work
+Memory Systems for LLMs.To extend LLMs beyond their context window, recent work introduces
+memory systems to handle long-horizon user–LLM interactions [10, 15, 6, 38]. These systems are
+typically implemented as multi-agent pipelines [37, 15, 42, 38], where heterogeneous agents perform
+memory construction and retrieval, respectively. For example, MIRIX [29] employs a meta agent
+with multiple specialized agents for memory management. Mem−α [30] and Mem1 [44] use RL to
+optimize memory construction and retrieval agents, respectively. Memory-R1 [38] introduces two
+RL-trained agents for memory management and answer generation, which are optimized separately
+under a shared downstream objective.
+Optimization of Multi-agent Systems.Multi-agent systems (MAS) [ 26, 5, 33] leverage multiple
+specialized agents with heterogeneous configurations to tackle complex tasks beyond the capacity of
+a single agent. Existing approaches typically optimize agents independently, either through prompt
+engineering [23, 34] or task-specific fine-tuning [25, 38]. Such independent optimization treats other
+agents as part of the environment and does not explicitly account for their inner dependence during
+training. Consequently, recent research has shifted to RL-based joint training for end-to-end system
+optimization, such as MAPoRL [22] and MARFT [17].
+Credit Assignment.Credit assignment [ 43, 3, 28] concerns properly attributing a team’s global
+outcome to the specific agents in Multi-Agent Reinforcement Learning. This is challenging due to the
+2
+
+===== PAGE 3 =====
+
+interdependence among agents and environmental noise, which obscures each agent’s contribution. A
+common strategy is to distribute global rewards uniformly across agents [40, 9]. While simple, this
+leads to significant credit assignment ambiguity: agents cannot distinguish their specific contributions
+[8, 16], resulting in high variance in policy updates and unstable convergence.
+3 Preliminary
+3.1 Task Formulation for Multi-agent Memory System
+We define the long-horizon user-LLM conversational history asH={h 1, . . . , hN }, which consists
+of N-turn interactions that exceed the LLM’s context window. The Memory System transforms the
+history H into multi-granular memories M that can be retrieved to answer users’ subsequent queries
+q, realized by heterogeneous agents on construction and retrieval tasks [10]:
+• Memory Construction:The agents [ 15] under policies {πconsg
+θ }, distill the raw conversational
+historyHat different granularitiesg, finally constructing a multi-granular memory setM:
+Mg =π consg
+θ (H),M={M g}.(1)
+• Memory Retrieval:Given a subsequent query q of downstream task, retrieval agents [44] under
+policies {πret
+θ } identify the K most relevant memories from M. Then, the agent with policy πLLM
+θ
+generates a responsepfor the queryqusing the retrievedKmemories. Formally:
+{mk}K
+k=1 =π ret
+θ (q,M, K), p=π LLM
+θ
+ 
+q,{m k}K
+k=1
+
+.(2)
+For efficiency,πret
+θ and πLLM
+θ can be unified into a single policy that performs both memory retrieval
+and response generation for queryq.
+The goal of the memory system is to optimize downstream task performance. Given a dataset D
+of input pairs (H, q) and an evaluation function F, we aim to learn an optimal policy set Π∗ that
+maximizes the expected performance:
+Π∗ = arg max
+Π
+E(H,q)∼D
+
+F
+ 
+p∗,Π(H, q)
+
+.(3)
+Here,Π ={π consg
+θ , πret
+θ }denotes the policy set, andp ∗ is the ground-truth response.
+3.2 Reinforcement Learning for LLMs
+To optimize LLMs’ policyπθ, Reinforcement Learning (RL) [20, 41] is typically used to maximize
+the expected reward while maintaining stability relative to a reference model πref. In this work, we
+primarily build upon Group Relative Policy Optimization (GRPO) [24], an efficient RL algorithm
+that eliminates the need for a separate value function (critic) through group-based relative rewards.
+Given the input x, GRPO samples a group of outputs {o1, . . . , oG} from the current policy πθ and
+optimizes the objective function:
+JGRP O (πθ) = 1
+G
+GX
+i=1
+1
+|oi|
+|oi|X
+t=1
+n
+min
+h
+ρi,t ˆAi,t,ˆρi,t ˆAi,t
+i
+−βD KL
+o
+, (4)
+where ρi,t = πθ(oi,t|x,oi,<t)
+πθold (oi,t|x,oi,<t) is the importance sampling ratio, ˆρi,t = clip (ρi,t; 1−ϵ,1 +ϵ) is the
+clipped ratio. The advantage ˆAi,t for each output oi is computed by normalizing its reward ri relative
+to the group mean and the standard deviation. Formally, we have:
+ˆAi,t = ri −mean(r)
+std(r) ,andD KL = πref (oi,t|x, oi,<t)
+πθ(oi,t|x, oi,<t) −log πref (oi,t|x, oi,<t)
+πθ(oi,t|x, oi,<t) −1.(5)
+4 Method
+In this section, a joint optimization framework that enables agents to co-adapt via end-to-end
+reinforcement learning and an adaptive credit assignment mechanism, as shown in Figure 2. We
+3
+
+===== PAGE 4 =====
+
+Retrieval
+Agent
+History 
+Extraction
+Agent
+Profile
+Agent
+�0 = ℳ�
+�0 = ℋ
+�2 = (ℰ�’ , �)
+Response � 
+Query �
+�1 = ℳ�
+Rewards
+�0
+(1)
+�0
+(2)
+…
+�0
+(�)
+MDP Trajectories
+�1
+(1)
+�1
+(2)
+…
+�1
+(�)
+�2
+(1)
+�2
+(2)
+…
+�2
+(�)
+�0
+(1)
+�0
+(2)
+…
+�0
+(�)
+�1
+(1)
+�1
+(2)
+…
+�1
+(�)
+�2
+(1)
+�2
+(2)
+…
+�2
+(�)
+�3
+(1)
+�3
+(2)
+…
+�3
+(�)
+ℛglobalℛlocal,n
+Adaptive Credit Assignment
+Multi-agent
+Memory System
+ 1
+2
+GG
+1
+2
+11 Ranking
+2
+G
+1 …
+G
+2
+1…
+Consistency score
+��
+�3
+(1)
+�3
+(2)…
+�3
+(�)
+�final,0
+(1) …
+�final,1
+(1) … �2
+�3
+�final,2
+(1) …
+{�0}
+{�1}
+{�2}
+�final,0
+(2)
+ �final,0
+(�)
+�final,1
+(2)
+ �final,1
+(�)
+�final,2
+(2)
+ �final,3
+(1)
+ℛfinalAdvantage ℛglobal
+�1
+Figure 2: The overview of our joint optimization framework for the multi-agent memory system,
+CoMAM, which promotes collaboration among agents via end-to-end reinforcement learning and an
+adaptive credit assignment mechanism.
+begin by defining the task-specific agents alongside the local and global rewards in Sec 4.1. Then,
+we frame the heterogeneous multi-agent pipeline as a Markov decision process (MDP) in Sec 4.2,
+which models the inter-agent dependencies for joint training. Finally, we present the adaptive credit
+assignment mechanism in Sec 4.3, which quantifies individual agent contributions and provides more
+targeted feedback for different agents.
+4.1 Task-Specific Agents Definition
+Building on existing multi-agent memory paradigms [10, 15], we define a standard memory system
+consisting of three specialized agents: Extraction Agent, Profile Agent, and Retrieval Agent.
+Extraction Agentextracts fine-grained memory Mf with policy πconsf
+θ from the raw conversational
+history H. Formally, we define the set of evident information relevant to query q as Eq ⊆ H. The
+agent’s objective is to maximize relevant evidence coverage with the reward function:
+rconsf =α· |Mf ∩ Eq|
+|Eq| + (1−α)· |Mf ∩ Eq|
+|Mf ∪ Eq| ,(6)
+where rconsf balances the coverage of relevant information and the filtering of irrelevant content. To
+prioritize fact coverage during the memory construction stage,αis set to0.8.
+Profile Agentabstracts coarse-grained memory Mc (e.g.,user’s preferences or behavioral patterns)
+from Mf , guided by policy πconsc
+θ . The agent aims to maximize abstraction rationality, quantified by
+the model-based reward function:
+rconsc =V(M c,H)∈[0,1],(7)
+where rconsc evaluates the quality ofMc relative to the conversation historyH according to predefined
+rubrics (e.g.,scenario, preference, and user profile). More details are presented in Appendix B.3. V
+denotes a frozen pre-trained LLM for reward generation. Finally, the comprehensive memory set is
+defined asM={M f ,M c}.
+Retrieval Agentretrieves top-k relevant memories E ′
+q ={m k}K
+k=1 from memory set M and generate
+response p for user’s subsequent queryq, guided by policy πret
+θ . To evaluate the retrieval performance,
+we define a rule-based reward function that enables precise matching between the recalled E ′
+q and
+ground-truth evidenceE q:
+rret =β· |E ′
+q ∩ Eq|
+|Eq| + (1−β)· |E ′
+q ∩ Eq|
+|E ′q ∪ Eq| ,(8)
+4
+
+===== PAGE 5 =====
+
+where rret balances the coverage and precision of retrieval. To prioritize retrieval precision while
+minimizing noise for answer generation,βis set to0.2.
+To evaluate the memory system’s global performance, we define the rule-based reward for πret
+θ to
+evaluate its answering accuracy for query q. Formally, let p∗ denote the ground-truth response for the
+queryq, we have:
+rans =I(p ∗ =p)(9)
+where I denotes the indicator function that measures alignment between the generated response p and
+ground-truth answerp ∗, yielding1ifp ∗ =pand0otherwise.
+Notably, the number and tasks of these agents can be further expanded to meet diverse application
+requirements in a multi-agent memory system.
+4.2 Inter-agent Dependency Modeling
+In a typical memory system, construction agents first convert conversational histories into structured
+memories, which are then consumed by retrieval agents to answer queries. This naturally forms a
+sequential pipeline for heterogeneous agents to coordinate through their intermediate outputs [31].
+To capture such inter-agent dependencies during co-adaptation, we model the pipeline as a sequential
+Markov decision process (MDP), enabling joint optimization across heterogeneous agents. This
+formulation serves as atraining-time abstraction: it does not assume synchronous deployment,
+but provides a structured way to expose how upstream decisions influence downstream behavior.
+Formally, the MDP is defined as (S,A, T, R) , where each step corresponds to a heterogeneous agent
+executing its policy {πn
+θ }2
+n=0 (extraction, profile, retrieval). Given an input(H, q), the system evolves
+as a trajectoryτ= (s 0, a0, s1, a1, s2, a2):
+•S : The state represents intermediate outputs of each agent in the MDP, with s0 =H , s1 =M f ,
+s2 = (M, q), ands 3 = (E ′
+q, p).
+•A : Each action an corresponds to the execution of agent πn
+θ , including fine-grained memory
+extraction, coarse-grained abstraction, and retrieval with response generation.
+•T : The transition function sn+1 =T(s n, an) propagates intermediate outputs, where each agent’s
+output becomes part of the next agent’s input, explicitly exposing inter-agent dependencies.
+•R : Each step is associated with a local task reward rn, together with a shared global reward r3
+reflecting downstream performance.
+Within this formulation, CoMAM embeds inter-agent dependencies into state transitions along the
+optimization trajectory. The multi-agent memory system operates sequentially to generate local and
+global rewards, enabling end-to-end RL for heterogeneous policies’ co-adaptation.
+4.3 Adaptive Credit Assignment Mechanism
+While modeling inter-agent dependencies during joint training enables co-adaptation, relying solely
+on a shared global reward provides limited and ambiguous guidance for optimizing specialized
+agents [9, 40]. In particular, when agents cannot distinguish their individual impact on the overall
+outcome, they receive indistinguishable learning signals, which prevent the development of effective
+role-specific policies and consequently hinder agents’ collaboration in the memory system. To
+address this limitation, we introduce an adaptive credit assignment mechanism that distributes the
+global reward among agents in proportion to their estimated contribution, providing more informative
+training signals for each specialized agent.
+Formally, for each input (H, q), we sample a group of MDP trajectories {τi}G
+i=1, and collect lo-
+cal rewards for each agent n, Rlocal,n ={r (i)
+n }G
+i=1, along with the corresponding global rewards,
+Rglobal ={r (i)
+3 }G
+i=1, where n∈ {0,1,2} . To estimate each agent’s contribution to the global system,
+we measure the alignment between its local and global rewards using a ranking-based consistency
+metric, instantiated as Normalized Discounted Cumulative Gain (NDCG) [11]:
+vn =NDCG(σ(R local,n), σ(Rglobal)),(10)
+where σ(·) denotes the ranking operator. Intuitively, this metric captures whether trajectories with
+higher global rewards are also associated with higher local rewards for a given agent. Agents whose
+5
+
+===== PAGE 6 =====
+
+Table 1: Query-Answering Accuracy on the PersonaMem Benchmark across 32K, 128K, and 1M
+context lengths.Boldindicates the best performance, and underlining denotes the second best.
+Method Qwen Llama
+32K 128K 1M 32K 128K 32M
+No memory
+Base 0.41 0.39 0.38 0.35 0.31 0.32
+RAG [14] 0.48 0.45 0.41 0.43 0.39 0.36
+Prompt-based memory
+CAM [15] 0.53 0.50 0.45 0.48 0.45 0.43
+MemoryBank [42] 0.51 0.47 0.44 0.45 0.42 0.39
+A-Mem [35] 0.50 0.44 0.45 0.46 0.37 0.36
+RL-based memory
+Mem1 [44] 0.59 0.57 0.58 0.56 0.58 0.61
+Memory-R1 [38] 0.58 0.60 0.60 0.57 0.61 0.60
+Ours 0.64 0.70 0.66 0.62 0.68 0.69
+Impro +8.5% +16.7% +10% +8.8% +11.5% +13.1%
+local reward rankings are more consistent with global outcome rankings receive higher credit, as their
+behaviors are more aligned with improving overall performance. Moreover, compared to value-based
+metrics, ranking-based measures are more robust under sparse and noisy rewards, as they rely on
+relative ordering rather than absolute magnitudes [7]. The resulting scores are normalized to obtain
+adaptive weights wn withP
+n wn = 1: wn = exp(vn)P
+n′ exp(vn′). Each agent’s final optimization signal
+combines its local reward with its adaptively weighted share of the global reward:
+r(i)
+final,n =r (i)
+n +w n ·r (i)
+3 .(11)
+We then optimize each agent simultaneously using the GRPO algorithm (as introduced in Sec. 3.2)
+on these integrated rewards: JGRPO (πn
+θ ) = 1
+G
+PG
+i=1 min
+h
+ρ(i)
+n A(i)
+n ,clip(ρ (i)
+n ,1±ϵ)A (i)
+n
+i
+, where
+ρ(i)
+n is the importance sampling ratio and A(i)
+n the normalized advantage computed from r(i)
+final,n. By
+leveraging both local task-specific rewards and adaptively weighted global rewards, this mechanism
+fosters collaboration while preserving agent specialization.
+5 Experiments
+In this section, we conduct extensive experiments to validate the effectiveness of our proposed
+CoMAM by addressing the following questions:
+• RQ1: How does CoMAM perform against leading memory systems?
+• RQ2: What is the contribution of each agent within the memory system?
+• RQ3: What is the impact of inter-agent dependency modeling for joint optimization?
+• RQ4: What is the contribution of adaptive credit assignment for the specialization agents?
+• RQ5: What is the computational cost of the CoMAM?
+5.1 Experimental Settings
+Table 2: Results on LongMemEval using
+Qwen2.5-7B.
+MethodF 1 ↑B 1 ↑J 1 ↑
+RAG 18.27 14.57 22.20
+SeCom 19.03 16.57 10.00
+A-Mem 41.55 36.58 54.80
+Mem0 38.44 34.53 46.80
+GAM 51.75 48.96 52.00
+Ours 62.17 51.88 57.60
+DatasetWe conduct experiments on the PersonaMem
+[12] and LongMemEval [32] benchmarks. PersonaMem
+provides long-horizon conversational histories with vary-
+ing context lengths (i.e.,32K, 128K, and 1M tokens), each
+paired with seven downstream query types. LongMemEval
+focuses on multi-session conversational settings, requiring
+tracking information and performing temporal reasoning
+across sessions. They offer a more realistic evaluation of
+long-horizon memory construction and retrieval. Dataset
+processing details are provided in Appendix B.1.
+6
+
+===== PAGE 7 =====
+
+BaselinesWe conduct a comprehensive evaluation of
+CoMAM against multiple leading baselines, including
+methods without a memory system “No memory”, methods of building memory systems via dedicated
+prompts “Prompt-based memory”, and methods of optimizing the memory systems with RL “RL-
+based memory”. Detailed information of baselines are provided in Appendix B.
+• No memory:“Base” represents directly injecting raw conversations as LLMs’ input for query
+answering; RAG [14] answers queries by retrieving raw conversational history;
+• Prompt-based memory:A-Mem [ 35] instantiates a memory system with construction, evolution,
+and retrieval agents; CAM [15] and MemoryBank [42] build multi-level (fine-to-coarse granularity)
+memory via multi-agent dedicated prompts.
+• RL-based memory:Mem1 [ 44] uses RL to optimize agents for memory searching during reason-
+ing; Memory-R1 [38] separately optimizes memory construction and retriever agents via RL.
+Implementation Details.To evaluate CoMAM’s effectiveness and generalizability, we conduct
+experiments on PersonaMem and LongMemEval using LLM backbones from the Qwen [ 2] and
+Llama [27] families. Specifically, the extraction agent, profile agent, and reward model V are
+instantiated with Qwen2.5-3B-Instruct and Llama-3.2-3B-Instruct, while the retrieval agent leverages
+Qwen2.5-7B-Instruct and Llama-3.1-8B-Instruct, with model sizes tailored to each agent’s task
+complexity. All LLM backbones are configured with a 32K-token context window. Following
+existing work [12, 38, 44], we evaluate memory systems using query-answer accuracy. Specifically,
+we adopt multiple-choice accuracy for PersonaMem, and F1, B1, and J1 (LLM-as-a-Judge) for
+LongMemEval. Table 1 presents the main results for both Qwen and Llama; other tables show only
+Qwen for simplicity. All tabulated results are averages of at least three independent runs with distinct
+random seeds. More details are provided in the Appendix B.3.
+5.2 Overall Performance (RQ1)
+To validate CoMAM’s efficacy for the memory system, we compare its query-answer accuracy against
+leading memory system baselines on the PersonaMem benchmark across its three history length
+settings (i.e.,32K, 128K, and 1M tokens). As shown in Table 1, CoMAM delivers superior perfor-
+mance across all context length configurations (32K, 128K, and 1M) and two LLM backbone families
+(Qwen and Llama), fully confirming CoMAM’s effectiveness and generalizability in long-horizon
+conversational scenarios. Notably, RL-based memory baselines outperform prompt-based memory
+systems, validating that reinforcement learning is effective for optimizing memory system agents. For
+instance, the top prompt-based baseline CAM [15] achieves only 0.45-0.53 accuracy across contexts,
+while the RL-based Memory-R1 [38] maintains a higher accuracy range of 0.57–0.61. Moreover,
+CoMAM outperforms the state-of-the-art baseline Memory-R1, which employs independent agent
+optimization. This highlights the critical importance of joint optimization for multi-agent memory
+systems to achieve collaboration. Figure 6 in Appendix C.2 details Qwen-based results for the seven
+question types of PersonaMem. We further evaluate CoMAM on the LongMemEval benchmark. As
+shown in Table 2, our method achieves the best performance across all metrics, consistently outper-
+forming strong baselines such as GAM [37], further demonstrating its effectiveness in long-context
+memory retrieval and reasoning scenarios.
+5.3 Ablation for Agents (RQ2)
+To verify the necessity and contribution of the three core agents (Extraction Agent, Profile Agent, and
+Retrieval Agent), we designed targeted ablation experiments, with results presented in Table 3. First,
+the “Base” baseline (without memory agents) achieves the lowest performance across all context
+lengths, confirming the significance of memory systems for long-horizon conversations. Second,
+removing any agent can lead to significant performance degradation, whether the Extraction Agent
+(“w/o Ex”) that builds factual fine-grained memories, the Profile Agent (“w/o Pr”) that captures core
+user preferences, or the Retrieval Agent (“w/o Re”) that searches for memories to answer queries.
+These results demonstrate that all three agents play complementary and unique roles in supporting
+the memory system. Furthermore, the “w/o train” variants (full agent architecture with one agent left
+untrained) provide additional validation: untraining any single agent results in 2–8% performance
+drops compared to CoMAM, highlighting that optimizing these agents is critical to building an
+effective memory system. We further analyze the sensitivity of the reward coefficients α and β in
+7
+
+===== PAGE 8 =====
+
+Table 3: Ablation study for the contribution of
+different agents to the memory system.
+Method Accuracy (%)
+32K 128K 1M
+Base 0.23 0.26 0.37
+w/o Ex 0.52 0.52 0.51
+w/o Pr 0.57 0.52 0.57
+w/o Re 0.54 0.51 0.51
+no train 0.50 0.46 0.44
+w/o train Ex 0.57 0.61 0.54
+w/o train Pr 0.57 0.61 0.64
+w/o train Re 0.62 0.66 0.59
+Ours 0.64 0.70 0.66
+Table 4: Ablation study of joint optimization
+for heterogeneous agents.
+Method Accuracy (%)
+32K 128K 1M
+Single policy
+no train 0.51 0.48 0.45
++ independent RL 0.57 0.56 0.54
++ end-to-end RL 0.60 0.59 0.59
+Heterogeneous policy
+no train 0.50 0.46 0.44
++ independent RL 0.57 0.61 0.59
++ end-to-end RL (ours) 0.64 0.70 0.66
+0.2 0.5 0.8
+0.4
+0.5
+0.6
+0.7
+0.8Score
+Sensitivity to 
+32K 128K 1M
+0.2 0.5 0.8
+0.4
+0.5
+0.6
+0.7
+0.8Score
+Sensitivity to 
+32K 128K 1M
+Figure 3: Sensitivity of CoMAM to the hyperparametersαandβas introduced in Sec. 4.1.
+Figure 3, showing that the chosen settings (α= 0.8 , β= 0.2 ) enable the extraction agent to better
+preserve key information and the retrieval agent to effectively filter noise.
+5.4 Ablation for Dependency Modeling (RQ3)
+To model inter-agent dependencies for joint optimization, we formulate the heterogeneous multi-
+agent pipeline as a sequential MDP, which enables end-to-end RL. To validate its efficacy, we
+design “single policy” (all agents share one policy across tasks [39, 4]) and “heterogeneous policy”
+(each agent has a dedicated policy per task) variants, with two training strategies: “independent
+RL” (fine-tunes one agent’s policy at a time, others fixed without updates) and “end-to-end RL”
+(simultaneously updates policies via MDP trajectory for joint optimization). As shown in Table
+4, “single policy” variants consistently underperform “heterogeneous policy” variants, confirming
+that a shared policy undermines agent specialization by integrating diverse task-specific objectives.
+Furthermore, “+end-to-end RL” outperforms “independent RL” across both policy paradigms. This
+suggests that sequential MDP modeling during end-to-end RL training acts as a structured abstraction
+to capture how upstream decisions influence downstream behavior, thereby enabling more effective
+co-adaptation among agents.
+5.5 Ablation for Adaptive Credit Assignment (RQ4)
+To address RQ4, we evaluate different credit assignment strategies to assess the effectiveness of
+CoMAM’s adaptive mechanism. As shown in Table 5, optimizing agents using only local rewards
+(“end-to-end RL w/ L”) or only global rewards (“end-to-end RL w/ G”) improves over the “no train”
+and “independent RL” variants, but underperforms approaches that combine both signals (“end-to-end
+RL w/ LG” and “Ours”). This suggests that integrating local and global rewards is essential for
+balancing agent specialization and collaboration. Notably, “Ours”, with adaptive credit assignment,
+consistently outperforms “end-to-end RL w/ LG”, which uses uniform global rewards, highlighting
+the advantage of assigning credit based on agents’ contributions. As further shown in Figure 4,
+adaptive weights wn outperform fixed weighting schemes. Moreover, adaptive credit assignment
+improves task-specific performance: our method consistently achieves higher local task performance
+across all agents compared to both “w/ LG” and “w/ L”, indicating stronger role-specific capability.
+Additional experimental results and analyses of the reward curves are provided in Appendix C.1.
+8
+
+===== PAGE 9 =====
+
+0.0 0.2 0.4 0.6 0.8 1.0
+weight
+0.55
+0.60
+0.65
+Fix weight
+Adaptive weight
+w/o assignment
+Sensitivity to Assignment
+Extraction Profile Retrieval
+Agents
+0.4
+0.5
+0.6
+0.7
+0.8Score
+Local Task Performance
+w/ L w/ LG Ours
+Figure 4: The left demonstrates CoMAM’s sensitivity to the credit assignment weight, and the right
+shows the credit assignment’s impact on each local agent’s performance on the 32K setting.
+Table 5: Ablation study for different credit as-
+signment strategies.
+Method Accuracy (%)
+32K 128K 1M
+no train 0.50 0.46 0.44
++ independent RL 0.57 0.61 0.59
+end-to-end RL w/ L 0.57 0.65 0.61
+end-to-end RL w/ G 0.60 0.64 0.60
+end-to-end RL w/ LG 0.62 0.65 0.63
+Ours 0.64 0.70 0.66
+Table 6: Convergence step comparison of the joint
+and independent optimization.
+Method Extract Profie Retrieval Total
+32K
+Independent 48 57 65 160
+Joint 58 32 68 68
+128K
+Independent 210 280 300 790
+Joint 300 350 320 350
+1M
+Independent 285 180 150 415
+Joint 210 300 310 310
+5.6 Efficiency (RQ5)
+We further evaluate the training efficiency of CoMAM by comparing the convergence steps of
+joint optimization and independent optimization across 32K, 128K, and 1M context length settings,
+with results presented in Table 6. The total convergence steps serve as the core metric to reflect
+training efficiency, where fewer steps indicate higher efficiency in reaching stable performance.
+Specifically, independent optimization trains each agent separately, with total steps being the sum
+of individual convergence steps for the Extraction, Profile, and Retrieval Agents. In contrast, joint
+optimization trains all agents in parallel, with total steps determined by the slowest-converging agent,
+resulting in fewer total steps. While individual agents under joint training may take more steps
+for convergence (e.g.,58 vs. 48 steps for the Extraction Agent at the 32K setting), joint training
+shortens the total training duration. Importantly, per-step cost is similar in both settings, since frozen
+agents in independent optimization still participate in the forward pass to complete the pipeline and
+compute rewards. Thus, the efficiency gain mainly comes from reducing redundant forward passes,
+as agents update simultaneously in joint optimization. Moreover, inference latency is decoupled from
+the training paradigm: agents optimized by joint or independent optimization achieve comparable
+inference efficiency at deployment. Yet joint optimization delivers superior global performance via
+inter-agent collaboration and adaptive credit assignment, highlighting the distinct advantage of joint
+multi-agent optimization for memory systems.
+6 Conclusion
+In this work, we study the limitations of independently optimizing agents in multi-agent memory
+systems, highlighting the lack of co-adaptation and the ambiguity of credit assignment under a shared
+global objective. To address these challenges, we propose CoMAM, a joint optimization framework
+that enables agents’ co-adaptation via end-to-end reinforcement learning, together with an adaptive
+credit assignment mechanism for more informative training signals. By modeling the inter-agent
+dependencies as an MDP and integrating local and global rewards adaptively, CoMAM facilitates
+collaboration across agents. Experimental results demonstrate consistent improvements over strong
+9
+
+===== PAGE 10 =====
+
+baselines, validating the effectiveness of joint optimization with adaptive credit assignment for
+multi-agent memory systems. The limitation is discussed in Appendix E.
+10
+
+===== PAGE 11 =====
+
+References
+[1] Aditya Akella. On the fundamental limitations of decentralized learnable reward shaping in
+cooperative multi-agent reinforcement learning.CoRR, abs/2511.00034, 2025.
+[2] Jinze Bai, Shuai Bai, Yunfei Chu, Zeyu Cui, Kai Dang, Xiaodong Deng, Yang Fan, Wenbin
+Ge, Yu Han, Fei Huang, Binyuan Hui, Luo Ji, Mei Li, Junyang Lin, Runji Lin, Dayiheng Liu,
+Gao Liu, Chengqiang Lu, Keming Lu, Jianxin Ma, Rui Men, Xingzhang Ren, Xuancheng Ren,
+Chuanqi Tan, Sinan Tan, Jianhong Tu, Peng Wang, Shijie Wang, Wei Wang, Shengguang Wu,
+Benfeng Xu, Jin Xu, An Yang, Hao Yang, Jian Yang, Shusheng Yang, Yang Yao, Bowen Yu,
+Hongyi Yuan, Zheng Yuan, Jianwei Zhang, Xingxuan Zhang, Yichang Zhang, Zhenru Zhang,
+Chang Zhou, Jingren Zhou, Xiaohuan Zhou, and Tianhang Zhu. Qwen technical report.CoRR,
+abs/2309.16609, 2023.
+[3] Xiaohe Bo, Zeyu Zhang, Quanyu Dai, Xueyang Feng, Lei Wang, Rui Li, Xu Chen, and Ji-Rong
+Wen. Reflective multi-agent collaboration based on large language models. InNeurIPS, 2024.
+[4] Xiaohe Bo, Zeyu Zhang, Quanyu Dai, Xueyang Feng, Lei Wang, Rui Li, Xu Chen, and Ji-Rong
+Wen. Reflective multi-agent collaboration based on large language models. InNeurIPS, 2024.
+[5] Zixiang Chen, Yihe Deng, Huizhuo Yuan, Kaixuan Ji, and Quanquan Gu. Self-play fine-tuning
+converts weak language models to strong language models. InICML. OpenReview.net, 2024.
+[6] Prateek Chhikara, Dev Khant, Saket Aryan, Taranjeet Singh, and Deshraj Yadav. Mem0:
+Building production-ready AI agents with scalable long-term memory.CoRR, abs/2504.19413,
+2025.
+[7] Paul F. Christiano, Jan Leike, Tom B. Brown, Miljan Martic, Shane Legg, and Dario Amodei.
+Deep reinforcement learning from human preferences. InNIPS, pages 4299–4307, 2017.
+[8] Jakob N. Foerster, Gregory Farquhar, Triantafyllos Afouras, Nantas Nardelli, and Shimon
+Whiteson. Counterfactual multi-agent policy gradients. InAAAI, pages 2974–2982. AAAI
+Press, 2018.
+[9] Haoyang Hong, Jiajun Yin, Yuan Wang, Jingnan Liu, Zhe Chen, Ailing Yu, Ji Li, Zhiling Ye,
+Hansong Xiao, Yefei Chen, et al. Multi-agent deep research: Training multi-agent systems with
+m-grpo.arXiv preprint arXiv:2511.13288, 2025.
+[10] Yuyang Hu, Shichun Liu, Yanwei Yue, Guibin Zhang, Boyang Liu, Fangyi Zhu, Jiahang Lin,
+Honglin Guo, Shihan Dou, Zhiheng Xi, et al. Memory in the age of ai agents.arXiv preprint
+arXiv:2512.13564, 2025.
+[11] Kalervo Järvelin and Jaana Kekäläinen. Cumulated gain-based evaluation of IR techniques.
+ACM Trans. Inf. Syst., 20(4):422–446, 2002.
+[12] Bowen Jiang, Zhuoqun Hao, Young Min Cho, Bryan Li, Yuan Yuan, Sihao Chen, Lyle Ungar,
+Camillo Jose Taylor, and Dan Roth. Know me, respond to me: Benchmarking LLMs for
+dynamic user profiling and personalized responses at scale. InSecond Conference on Language
+Modeling, 2025.
+[13] Bowen Jin, Hansi Zeng, Zhenrui Yue, Jinsung Yoon, Sercan O Arik, Dong Wang, Hamed
+Zamani, and Jiawei Han. Search-r1: Training LLMs to reason and leverage search engines with
+reinforcement learning. InSecond Conference on Language Modeling, 2025.
+[14] Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio Petroni, Vladimir Karpukhin, Naman
+Goyal, Heinrich Küttler, Mike Lewis, Wen-tau Yih, Tim Rocktäschel, Sebastian Riedel, and
+Douwe Kiela. Retrieval-augmented generation for knowledge-intensive NLP tasks. InNeurIPS,
+2020.
+[15] Rui Li, Zeyu Zhang, Xiaohe Bo, Zihang Tian, Xu Chen, Quanyu Dai, Zhenhua Dong, and
+Ruiming Tang. CAM: A constructivist view of agentic memory for LLM-based reading
+comprehension. InThe Thirty-ninth Annual Conference on Neural Information Processing
+Systems, 2025.
+11
+
+===== PAGE 12 =====
+
+[16] Yongheng Liang, Hejun Wu, Haitao Wang, and Hao Cai. Asynchronous credit assignment for
+multi-agent reinforcement learning. InIJCAI, pages 170–178. ijcai.org, 2025.
+[17] Junwei Liao, Muning Wen, Jun Wang, and Weinan Zhang. MARFT: multi-agent reinforcement
+fine-tuning.CoRR, abs/2504.16129, 2025.
+[18] Hao Ma, Tianyi Hu, Zhiqiang Pu, Boyin Liu, Xiaolin Ai, Yanyan Liang, and Min Chen.
+Coevolving with the other you: Fine-tuning LLM with sequential cooperative multi-agent
+reinforcement learning. InNeurIPS, 2024.
+[19] Adyasha Maharana, Dong-Ho Lee, Sergey Tulyakov, Mohit Bansal, Francesco Barbieri, and
+Yuwei Fang. Evaluating very long-term conversational memory of LLM agents. InACL (1),
+pages 13851–13870. Association for Computational Linguistics, 2024.
+[20] Long Ouyang, Jeffrey Wu, Xu Jiang, Diogo Almeida, Carroll L. Wainwright, Pamela Mishkin,
+Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, John Schulman, Jacob Hilton,
+Fraser Kelton, Luke Miller, Maddie Simens, Amanda Askell, Peter Welinder, Paul F. Christiano,
+Jan Leike, and Ryan Lowe. Training language models to follow instructions with human
+feedback. InNeurIPS, 2022.
+[21] Zhuoshi Pan, Qianhui Wu, Huiqiang Jiang, Xufang Luo, Hao Cheng, Dongsheng Li, Yuqing
+Yang, Chin-Yew Lin, H. Vicky Zhao, Lili Qiu, and Jianfeng Gao. Secom: On memory
+construction and retrieval for personalized conversational agents. InICLR. OpenReview.net,
+2025.
+[22] Chanwoo Park, Seungju Han, Xingzhi Guo, Asuman E. Ozdaglar, Kaiqing Zhang, and Joo-
+Kyung Kim. Maporl: Multi-agent post-co-training for collaborative large language models
+with reinforcement learning. InACL (1), pages 30215–30248. Association for Computational
+Linguistics, 2025.
+[23] Shishir G. Patil, Tianjun Zhang, Xin Wang, and Joseph E. Gonzalez. Gorilla: Large language
+model connected with massive apis. InNeurIPS, 2024.
+[24] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Mingchuan Zhang, Y . K. Li,
+Y . Wu, and Daya Guo. Deepseekmath: Pushing the limits of mathematical reasoning in open
+language models.CoRR, abs/2402.03300, 2024.
+[25] Vighnesh Subramaniam, Yilun Du, Joshua B. Tenenbaum, Antonio Torralba, Shuang Li, and
+Igor Mordatch. Multiagent finetuning: Self improvement with diverse reasoning chains. In
+ICLR. OpenReview.net, 2025.
+[26] Chuanneng Sun, Songjun Huang, and Dario Pompili. Llm-based multi-agent reinforcement
+learning: Current and future directions.CoRR, abs/2405.11106, 2024.
+[27] Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timo-
+thée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurélien Rodriguez,
+Armand Joulin, Edouard Grave, and Guillaume Lample. Llama: Open and efficient foundation
+language models.CoRR, abs/2302.13971, 2023.
+[28] Wei-Cheng Tseng, Tsun-Hsuan Johnson Wang, Yen-Chen Lin, and Phillip Isola. Offline
+multi-agent reinforcement learning with knowledge distillation. InNeurIPS, 2022.
+[29] Yu Wang and Xi Chen. MIRIX: multi-agent memory system for llm-based agents.CoRR,
+abs/2507.07957, 2025.
+[30] Yu Wang, Ryuichi Takanobu, Zhiqi Liang, Yuzhen Mao, Yuanzhe Hu, Julian McAuley, and
+Xiaojian Wu. Mem-{\alpha}: Learning memory construction via reinforcement learning.arXiv
+preprint arXiv:2509.25911, 2025.
+[31] Muning Wen, Jakub Grudzien Kuba, Runji Lin, Weinan Zhang, Ying Wen, Jun Wang, and
+Yaodong Yang. Multi-agent reinforcement learning is a sequence modeling problem. InNeurIPS,
+2022.
+12
+
+===== PAGE 13 =====
+
+[32] Di Wu, Hongwei Wang, Wenhao Yu, Yuwei Zhang, Kai-Wei Chang, and Dong Yu. Long-
+memeval: Benchmarking chat assistants on long-term interactive memory. InICLR. OpenRe-
+view.net, 2025.
+[33] Shirley Wu, Parth Sarthi, Shiyu Zhao, Aaron Lee, Herumb Shandilya, Adrian Mladenic Gro-
+belnik, Nurendra Choudhary, Edward W. Huang, Karthik Subbian, Linjun Zhang, Diyi Yang,
+James Zou, and Jure Leskovec. Optimas: Optimizing compound AI systems with globally
+aligned local rewards. InThe F ourteenth International Conference on Learning Representations,
+2026.
+[34] Shirley Wu, Shiyu Zhao, Qian Huang, Kexin Huang, Michihiro Yasunaga, Kaidi Cao, Vassilis N.
+Ioannidis, Karthik Subbian, Jure Leskovec, and James Y . Zou. Avatar: Optimizing LLM agents
+for tool usage via contrastive reasoning. InNeurIPS, 2024.
+[35] Wujiang Xu, Zujie Liang, Kai Mei, Hang Gao, Juntao Tan, and Yongfeng Zhang. A-mem:
+Agentic memory for LLM agents. InThe Thirty-ninth Annual Conference on Neural Information
+Processing Systems, 2025.
+[36] Xiangyuan Xue, Yifan Zhou, Guibin Zhang, Zaibin Zhang, Yijiang Li, Chen Zhang, Zhenfei
+Yin, Philip Torr, Wanli Ouyang, and Lei Bai. CoMAS: Co-evolving multi-agent systems via
+interaction rewards. InThe F ourteenth International Conference on Learning Representations,
+2026.
+[37] BY Yan, Chaofan Li, Hongjin Qian, Shuqi Lu, and Zheng Liu. General agentic memory via
+deep research.arXiv preprint arXiv:2511.18423, 2025.
+[38] Sikuan Yan, Xiufeng Yang, Zuchao Huang, Ercong Nie, Zifeng Ding, Zonggen Li, Xiaowen Ma,
+Hinrich Schütze, V olker Tresp, and Yunpu Ma. Memory-r1: Enhancing large language model
+agents to manage and utilize memories via reinforcement learning.CoRR, abs/2508.19828,
+2025.
+[39] Hongli Yu, Tinghong Chen, Jiangtao Feng, Jiangjie Chen, Weinan Dai, Qiying Yu, Ya-Qin
+Zhang, Wei-Ying Ma, Jingjing Liu, Mingxuan Wang, and Hao Zhou. Memagent: Reshaping
+long-context LLM with multi-conv RL-based memory agent. InThe F ourteenth International
+Conference on Learning Representations, 2026.
+[40] Yujie Zhao, Lanxiang Hu, Yang Wang, Minmin Hou, Hao Zhang, Ke Ding, and Jishen Zhao.
+STRONGER TOGETHER: ON-POLICY REINFORCEMENT LEARNING FOR COLLAB-
+ORATIVE LLMS. InThe F ourteenth International Conference on Learning Representations,
+2026.
+[41] Rui Zheng, Shihan Dou, Songyang Gao, Yuan Hua, Wei Shen, Binghai Wang, Yan Liu, Senjie
+Jin, Qin Liu, Yuhao Zhou, Limao Xiong, Lu Chen, Zhiheng Xi, Nuo Xu, Wenbin Lai, Minghao
+Zhu, Cheng Chang, Zhangyue Yin, Rongxiang Weng, Wensen Cheng, Haoran Huang, Tianxiang
+Sun, Hang Yan, Tao Gui, Qi Zhang, Xipeng Qiu, and Xuanjing Huang. Secrets of RLHF in
+large language models part I: PPO.CoRR, abs/2307.04964, 2023.
+[42] Wanjun Zhong, Lianghong Guo, Qiqi Gao, He Ye, and Yanlin Wang. Memorybank: Enhancing
+large language models with long-term memory. InAAAI, pages 19724–19731. AAAI Press,
+2024.
+[43] Meng Zhou, Ziyu Liu, Pengwei Sui, Yixuan Li, and Yuk Ying Chung. Learning implicit credit
+assignment for cooperative multi-agent reinforcement learning. InNeurIPS, 2020.
+[44] Zijian Zhou, Ao Qu, Zhaoxuan Wu, Sunghwan Kim, Alok Prakash, Daniela Rus, Jinhua Zhao,
+Bryan Kian Hsiang Low, and Paul Pu Liang. MEM1: Learning to synergize memory and
+reasoning for efficient long-horizon agents. InThe F ourteenth International Conference on
+Learning Representations, 2026.
+13
+
+===== PAGE 14 =====
+
+A Algorithm
+Here we present the algorithm of CoMAM’s training process in Algorithm 1.
+Algorithm 1Collaborative Reinforcement Learning Framework for Multi-Agent Memory Systems
+(CoMAM)
+Input:H,q,E q,p ∗,{π consf
+θ , πconsc
+θ , πret
+θ },α= 0.8,β= 0.2,G,ϵ
+Output:Optimized{π consf
+θ , πconsc
+θ , πret
+θ }, responsep
+1:fori= 1toGdo
+2:M f ←π consf
+θ (H)▷Extract fine-grained memory
+3:r consf ←α· |Mf ∩Eq|
+|Eq| + (1−α)· |Mf ∩Eq|
+|Mf ∪Eq|
+4:M c ←π consc
+θ (Mf)▷Abstract coarse-grained memory
+5:r consc ← V(M c,H)
+6:M ← {M f ,M c}
+7:(E ′
+q, p)←π ret
+θ (M, q)▷Retrieve and generate response
+8:r ret ←β·
+|E ′
+q∩Eq|
+|Eq| + (1−β)·
+|E ′
+q∩Eq|
+|E ′q∪Eq|
+9:r ans ←I(p ∗ =p)▷Global reward (Downstream task accuracy)
+10:end for
+11:Collect local rewardr (i)
+n for agentn, add toR local,n
+12:Collect global rewardr (i)
+ans, add toR global
+13:v n ←NDCG(σ(R local,n), σ(Rglobal))▷Consistency score
+14:w n ← exp(vn)P
+n′ exp(vn′) ▷Adaptive credit weights
+15:r (i)
+final,n ←r (i)
+ans +w n ·r (i)
+n ▷Final reward for agentn
+16:forn= 0to2do
+17:fori= 1toGdo
+18:A (i)
+n ←Normalize(r (i)
+final,n)▷Compute advantage
+19:ρ (i)
+n ← πn
+θ (a(i)
+n |s(i)
+n )
+πn
+θold
+(a(i)
+n |s(i)
+n ) ▷Importance sampling ratio
+20:end for
+21:π n
+θ ←Update(π n
+θ ,J GRPO(πn
+θ ))▷Optimize agent policy
+22:end for
+B Details of Experimental Settings
+B.1 Dataset
+In the PersonaMem benchmark, each interaction history consists of 10, 20, or 60 multi-turn sessions
+(corresponding to 32k, 128k, or 1M tokens) to form varying context lengths. Each session contains
+15–30 conversation turns, designed to naturally reveal or update user preferences. In addition, each
+history is paired with a suite of subsequent queries across seven types, enabling comprehensive
+evaluation of the memory system. The question types include: (1) Recall user-shared facts, (2)
+Suggest new ideas, (3) Acknowledge latest user preferences, (4) Track full preference evolution, (5)
+Revisit reasons for preference updates, (6) Provide preference-aligned recommendations, and (7)
+Generalize to new scenarios. Compared to existing benchmarks [19, 32], PersonaMem’s strengths
+in long context history and different query type enable rigorous assessment of memory systems in
+conversational scenarios. For PersonaMem’s three context length settings (32k, 128k, and 1M tokens),
+we partition their training and validation sets based on these queries. The statistical breakdown of
+training and validation queries is summarized in Table 7.
+In the LongMemEval benchmark [32], each sample consists of a scalable multi-session user–assistant
+interaction history, where information is gradually revealed and may be revised across ses-
+sions. The benchmark contains 500 manually created questions and defines two standard settings:
+LongMemEval-S with about 115K tokens per sample, and LongMemEval-M with 500 sessions
+and roughly 1.5M tokens. Its evaluation targets five core memory abilities—information extraction,
+14
+
+===== PAGE 15 =====
+
+multi-session reasoning, temporal reasoning, knowledge updates, and abstention—and the released
+question categories include single-session-user, single-session-preference, single-session-assistant,
+multi-session, temporal-reasoning, and knowledge-update. Compared with benchmarks that mainly
+test long-context recall, LongMemEval more explicitly evaluates cross-session reasoning and dynamic
+user-state tracking in realistic assistant settings.
+To process the training set, we first identify the specific session within the full conversational history
+that contains explicit evidence relevant to each query q, and we define this session as the query’s
+targeted conversational history H. We then construct (H, q) data pairs required for generating
+individual MDP trajectories as the core training data. The position of each target session within the
+complete interaction history is specified in the original benchmark. Ground-truth evidenceEq for each
+query q is extracted using the Seed-1.6 model and validated through human evaluation. We emphasize
+that Eq is only used for computing training rewards and is not available during inference, ensuring no
+information leakage. While obtaining Eq involves additional annotation effort, this cost is incurred
+only during training and does not affect inference-time efficiency, making it a practical and acceptable
+design choice. For evaluation, multiple distinct queries may share the same full conversational history
+that includes multiple sessions. This design enables further evaluation in complex inference scenarios
+where memory construction agents operate on a full conversational history with multiple sessions,
+while retrieval agents are activated for subsequent queries at varying frequencies.
+B.2 Detailed Baselines
+Here, we detailed our baseline methods, including methods without memory, prompt-based memory
+systems, and RL-optimized memory systems.
+Methods without memory:
+• Base denotes the direct injection of raw conversational data as input to large language models
+(LLMs) for query answering tasks. Specifically, when the length of the input conversation exceeds
+the context window constraint, the input is truncated at the context window limit.
+• RAG [14] answers queries by retrieving raw conversational history via embedding-based similarity
+matching. The embedding model employed is all-MiniLM-L6-v2, and ultra-long input contexts are
+uniformly partitioned into fixed-length segments, each consisting of 2,048 tokens.
+Prompt-based memory systems
+• A-Mem [ 35] instantiates a memory system through multiple agents with dedicated prompts,
+including the memory retrieval construction, precursor memory evolution, and retrieval agents;
+• CAM [15] builds a hierarchical memory system via multiple agents, where dedicated agents
+undertake node construction (via ego-centric disentanglement and node replication) and information
+aggregation (for hierarchical abstraction). We implement it on the PersonaMem benchmark.
+• MemoryBank [42] construct a human-like memory for LLMs that uses a forgetting curve to
+remember and forget information over time. Similarly, we implement it on the PersonaMem
+benchmark.
+• SeCom [21] designs a modular memory system for long-horizon conversational agents, where
+dedicated components handle memory construction and retrieval using prompt-based multi-agent.
+• Mem0 [6] instantiates a multi-agent memory system that maintains fine-grained and coarse-grained
+user memories, performing extraction and retrieval with specialized prompts.
+RL-based memory:
+• GAM [37] introduces an agentic memory system with a memorizer for key information and a
+researcher for retrieval and integration at runtime, trained with reinforcement learning.
+• Mem1 [44] proposes a reinforcement learning (RL) framework that empowers agents to conduct
+efficient multi-turn information retrieval and reasoning for query answering. The optimized agents
+prioritize direct memory retrieval from history, rather than memory construction.
+• Memory-R1 [38] constructs a Memory Manager that learns optimal memory operations (ADD,
+UPDATE, DELETE) and an Answer Agent tasked with distilling relevant information from retrieved
+entries. Uniquely, the system is optimized via independent reinforcement learning (RL) in two
+stages: the Memory Manager is optimized first, followed by the Answer Agent.
+15
+
+===== PAGE 16 =====
+
+Table 7: The statistics of queries after the train-validation split across different dataset settings.
+Dataset 32K 128K 1M
+#Train 313 1,744 1,830
+#Validate 100 200 200
+#question types 7 7 7
+Table 8: Hyperparameters of CoMAM on PersonaMem benchmark across different context lengths.
+Dataset 32K 128K 1M
+batch_size 128 128 128
+group_size 8 8 8
+max_model_length 32k 32k 32k
+epochs 5 5 5
+max_output_tokens 3k 3k 3k
+B.3 More Implementation Details
+For a fair comparison, all the baselines are implemented with the same LLM backbones as our
+CoMAM, including Qwen2.5-7B-Instruct and Llama-3.1-8B-Instruct. All experiments are conducted
+on a cluster of 8 NVIDIA A100 GPUs. For the implementation of variant “+independent RL”, each
+agent is trained by fusing its task-specific rewards and global accuracy rewards, with the remaining
+agents frozen. For the “single policy” variant, we adopt a shared policy to serve as the policy for all
+three agents during training and inference. The prompts for specializing different agents and rubrics
+for evaluating the profile agent are presented below. The temperature of LLMs is set to 1 for training
+and0.8for evaluation. The detailed hyperparameter settings for CoMAM are presented in Table 8.
+Fine-grained memory construction – Extraction Agent
+You are the Memory Extractor. Your task is to analyze the upcoming Conversation History.
+Retain important conversations as much as possible in order to answer future questions about
+the conversation history, removing only the redundant text of each sentence.
+The conversation history is provided below:
+Conversation History:
+Historical Conversations
+Output *only* the retained conversations from the conversation history you process.
+Coarse-grained memory construction – Profile Agent
+You are the Profile Abstractor. You will receive fine-grained memory information from the
+Memory Extractor. Your task is to analyze the memory you receive and abstract it into
+higher-level knowledge for the user profile (such as scenarios, user behavior patterns, and
+preferences). Fine-grained Memory:
+Fine-grained Memory
+Output only the abstracted user profile from the memory you receive.
+16
+
+===== PAGE 17 =====
+
+Memory retrieval and query answer – Retrieval Agent
+You are the Retrieval agent. You have received fine-grained memory from the Memory
+Extractor and coarse-grained memory from the Profile Abstractor.
+Your task is to retrieve relevant memory to answer the following question accurately.
+Multi-grained Memory:
+Fine-grained Memory from the Memory Extractor
+Coarse-grained memory from the Profile Abstractor
+Question:
+User’s Subsequent Query
+Options:
+The Four Options
+Please output the retrieved relevant information in <information> </information> and choose
+the most appropriate option (a), (b), (c), or (d) in <final_answer></final_answer>.
+Rubrics for Profile Agent Reward Evaluation
+You are an evaluation expert. Your task is to assess whether the providedCoarse-grained
+memoryaccurately captures the key information from the givenConversation History.
+Conversation History:
+User--LLM conversational history
+Coarse-grained memory:
+Output generated by the Profile Agent
+Evaluation Criteria:
+1. Are the scenarios sufficiently rich and comprehensive?
+2. Is the analysis of user preferences sufficiently in-depth?
+3. Is the user persona sufficiently detailed and representative?
+Output Format:
+Please output a single scalar score within <score></score> as a float between 0.0 and 1.0,
+without any additional text.
+• 1.0: The synthesized insight perfectly captures the scenario, user preferences, and
+persona.
+•0.0: The synthesized insight fails to capture the relevant information.
+17
+
+===== PAGE 18 =====
+
+0 200 400
+Steps
+0.2
+0.4
+0.6
+0.8Mean Value
+Local Reward (Extract)
+w/ L
+w/ G
+ours
+0 200 400
+Steps
+0.0
+0.2
+0.4
+0.6
+Local Reward (Profile)
+w/ L
+w/ G
+ours
+0 200 400
+Steps
+0.2
+0.4
+0.6
+0.8
+Local Reward (Retrieval)
+w/ L
+w/ G
+ours
+0 200 400
+Steps
+0.2
+0.4
+0.6
+0.8
+Global Reward
+w/ L
+w/ G
+ours
+Figure 5: The curves for local task-specific rewardr n and global accuracy rewardr 3.
+C More Detailed Experimental Results
+C.1 The Impact of Joint Optimization on Local Task Specialization
+Joint optimization with adaptive credit assignment not only enhances global system performance but
+also promotes the specialization of each agent’s local tasks. As illustrated in Figure 5, we compare
+the local task reward curves of agents under three training strategies: optimizing with only local
+rewards (“w/ L”), optimizing with only global rewards (“w/ G”), and our joint optimization with
+adaptive credit assignment (“Ours”). Key observations are as follows:
+• Superior local reward convergence: For all three agents (Extraction, Profile, Retrieval), the local
+task rewards of “Ours” consistently outperform “w/ L” and “w/ G” in the stable phase. This
+indicates that adaptive credit assignment will not compromise local task capabilities; instead, it
+strengthens them by aligning local improvement with global goals.
+• Global performance enhancement: The global reward curve of “Ours” converges to 0.70, signifi-
+cantly higher than “w/ L’ (0.65) and “w/ G” (0.64), proving that joint optimization realizes global
+performance enhancement by fostering inter-agent collaboration.
+Adaptive credit assignment mechanism quantifies the correlation between each agent’s local per-
+formance and the global outcome, ensuring that agents receive rewards not only for completing
+local tasks well but also for contributing to the global goal. This guides agents to optimize their
+local strategies in a way that benefits the entire system, thus achieving both local specialization and
+inter-agent collaboration for the global memory system.
+C.2 Detailed Performance Across Question Types
+Figure 6 details Qwen-based results for the seven question types, and we observe that CoMAM
+performs well in both detailed factual recall (e.g.,Type 1) and abstract preference-based question
+types (e.g.,Type 6), providing additional validation of its efficacy.
+18
+
+===== PAGE 19 =====
+
+1
+2
+3
+4
+5
+6
+7 Query Type
+0.420 0.530 0.450 0.550 0.571
+0.170 0.270 0.320 0.350 0.571
+0.490 0.550 0.560 0.690 0.714
+0.640 0.689 0.777 0.667 0.778
+0.480 0.550 0.620 0.700 0.857
+0.308 0.538 0.538 0.590 0.615
+0.480 0.590 0.360 0.590 0.625
+32K
+1
+2
+3
+4
+5
+6
+7 Query Type
+0.340 0.460 0.600 0.790 0.667
+0.290 0.250 0.360 0.330 0.438
+0.380 0.460 0.430 0.740 0.746
+0.640 0.540 0.550 0.450 0.546
+0.430 0.420 0.690 0.850 1.000
+0.470 0.520 0.510 0.740 0.875
+0.430 0.310 0.380 0.310 0.438
+128K
+Base RAG CAM
+Memory-R1
+Ours
+1
+2
+3
+4
+5
+6
+7 Query Type
+0.550 0.540 0.660 0.790 0.800
+0.286 0.268 0.357 0.589 0.595
+0.271 0.500 0.550 0.640 0.660
+0.580 0.651 0.482 0.483 0.662
+0.650 0.600 0.730 0.600 0.870
+0.630 0.690 0.740 0.690 0.750
+0.345 0.241 0.446 0.379 0.450
+1M
+Figure 6: Detailed performance of different methods across seven question types on the PersonaMem
+benchmark across three history length settings (i.e.,32K, 128K, and 1M). The number of question
+types is consistent with those listed in Section 5.1
+19
+
+===== PAGE 20 =====
+
+D Discussion
+D.1 Difference with existing memory framework
+Existing memory systems and our CoMAM differ fundamentally in optimization paradigm and
+reward design:
+•Optimization Paradigm:Independent Optimization vs. Joint Optimization
+Existing frameworks primarily adopt independent optimization. For example, MIRIX [29] designs
+a meta-agent and six specialized agents for memory management, optimizing each via tailored
+prompts; Memagent [39] focuses on a single retrieval agent, training it with query-answer accuracy
+as the reward; Memory-R1 [ 38] splits the system into a Memory Manager and Answer Agent,
+training them in separate stages—first optimizing the Manager with the Agent frozen, then freezing
+the Manager to optimize the Agent. This approach ignores inter-agent independencies and lacks co-
+adaptation: memory construction is not adjusted based on together with retrieval behavior, and the
+agent can only adapt to a fixed Manager’s output, leading to insufficient inter-agent collaboration.
+CoMAM proposes end-to-end joint optimization via modeling inter-agent dependencies in the
+MDP trajectory, where each agent’s output directly serves as the next agent’s input. All three agents
+are updated simultaneously during training, with inter-agent dependencies embedded into state
+transitions, ensuring they evolve collaboratively toward the global goal of the memory system.
+•Reward Design:Single Global Reward vs. Adaptive Credit Assignment
+Existing frameworks that optimize memory agents with RL primarily rely solely on final query-
+answer accuracy as the reward for all agents. For example, Mem-α and Mem1 [44] use this single
+reward to train construction and retrieval agents, respectively. Memory-R1 [38], and GAM [37] also
+adopt this design, using only answer accuracy to optimize their agents separately. This ambiguous
+credit assignment prevents agents from distinguishing their individual contributions, leading to
+unstable convergence.
+CoMAM introduces adaptive integration of local and global rewards. We design task-specific local
+rewards (e.g.,Extraction Agent’s information coverage, Profile Agent’s abstraction rationality,
+Retrieval Agent’s retrieval precision) and combine them with the global reward (answer accuracy).
+Using NDCG to quantify the ranking consistency between each agent’s local rewards and the global
+reward, we dynamically allocate global credit based on this consistency. This ensures agents are
+rewarded both for excelling at their local tasks and contributing to global performance, avoiding
+ambiguous optimization.
+D.2 Difference with existing multi-agent system RL
+• Heterogeneous Policy vs. Homogeneous Policy: Some multi-agent reinforcement learning
+(RL) methods adopt a shared policy across all agents. For instance, CORY [ 18] proposes an
+RL framework featuring “Pioneer” and “Observer” agents thatshare a single policy model.
+These agents co-evolve through multi-agent collaboration and periodic role-swapping. In contrast,
+considering the heterogeneity of agents in a memory system, CoMAM employs heterogeneous
+policies tailored to distinct agents.
+• Workflow: Sequential vs. Concurrent: Existing multi-agent system (MAS) methods often adopt
+a debate-style pipeline for reasoning tasks, such as math tasks. For instance, MAPoRL [22] models
+agent interactions as concurrent debate, where multiple agents generate responses in parallel,
+focusing on persuasive collaboration for general reasoning. In contrast, CoMAM explicitly models
+inter-agent dependencies as a sequential Markov Decision Process (MDP), providing a structured
+way to expose how upstream decisions influence downstream behavior. This ensures that memory
+construction quality dynamically adapts to retrieval requirements and vice versa.
+• Collaboration Paradigm: Joint Optimization vs. Independent Alignment: Existing methods,
+such as Optimas [33], foster collaboration by aligning local rewards with global objectives via
+heuristic reward shaping for compound AI systems. However, it optimizes individual agents
+separately, leveraging locally-global aligned rewards rather than through end-to-end joint training.
+In contrast, CoMAM adopts a joint optimization paradigm that updates all agents simultaneously.
+• Credit Assignment: Adaptive Assignment vs. Equal Allocation: Most existing systems use static
+credit assignment mechanisms without quantifying agents’ varying contributions: AT-GRPO [40]
+distributes rewards equally across agents using fixed weights, ignoring task differences; CoMAS
+20
+
+===== PAGE 21 =====
+
+[36] adopts a zero-sum adversarial reward scheme that pits agents against each other, which is
+misaligned with the cooperative nature of memory systems; In contrast, CoMAM assigns agent-
+specific credit based on a ranking-based proxy that measures the alignment between each agent’s
+local task rewards and the global system reward. This formulation captures whether trajectories
+with higher global performance are consistently associated with higher local rewards for a given
+agent. Agents with stronger alignment receive higher credit, as their behaviors are more predictive
+of overall system improvement. This provides more informative training signals for specialized
+agents.
+E Limitation
+While CoMAM demonstrates the effectiveness of joint optimization with adaptive credit assignment
+for multi-agent memory systems, several limitations remain.
+1. Simplified Agent Design.We adopt a compact set of agents (Extraction, Profile, and Retrieval)
+to focus on core collaborative behaviors. More advanced functionalities, such as memory editing,
+consistency maintenance, and redundancy removal, are not explicitly modeled and remain for future
+exploration.
+2. Limited Cross-Agent Credit Modeling.CoMAM estimates agent-specific credit by modeling
+the ranking consistency between each agent’s local rewards and the global system reward. However,
+relationships among agents’ local rewards are not explicitly considered in the credit estimation.
+Incorporating such cross-agent relationships may provide more informative credit signals and further
+improve coordination.
+F Broader Impact
+CoMAM aims to improve the effectiveness of multi-agent memory systems for long-horizon conver-
+sational tasks by introducing a joint optimization framework with end-to-end reinforcement learning
+and adaptive credit assignment. This may benefit applications such as personalized assistants and
+long-context reasoning systems. However, it does not inherently address potential privacy risks
+associated with sensitive user information.
+21

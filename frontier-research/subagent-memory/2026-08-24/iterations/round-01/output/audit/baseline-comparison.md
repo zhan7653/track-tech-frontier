@@ -1,0 +1,25 @@
+# 相对 Agent Memory v10 的基准比较
+
+**基准：** `examples/agent-memory-v10` at `714fd00953cffe185b661143f4a9cfd70a7a1ceb`  
+**当前：** Round 01 Pilot，未达最终基准
+
+## 基准能力画像
+
+Agent Memory v10 的主要输入继承自 v09 bundle：7,634 条 discovery occurrence、4,407 个 entity、292 条查询、21 个 cluster、73 个 deep paper card、86 个 repository card、16 个 engineering profile、385 个 source、464 个 claim、773 个 evidence join 和 45 个 manifested deliverable。其读者层提供独立总览、架构图、六个机制分支及深挖包、四个场景、四个横切报告、趋势、GitHub 雷达和项目报告。
+
+这些数字不是新研究的机械配额。真正基准是：主报告能建立地图；重要分支能解释内部机制；GitHub 报告能跟随固定版本组件和数据流；近期变化被放回机制；关键结论可追溯。
+
+## Round 01 对比
+
+| 维度 | Round 01 状态 | 相对基准 |
+|---|---|---|
+| 独立领域地图 | 已形成两个边界、七个新分支 | 方向成立，仍需广度稳定性 |
+| 输入广度 | 1,644 次发现、1,569 个 entity、四类自动/人工路线 | 低于基准，且 Semantic Scholar 受限 |
+| 新鲜度 | 显式 12 个月与 90 天查询已运行 | 初步覆盖，尚未分支级核验 |
+| 分支深度 | 每分支有问题、方案族和研究议程 | 明显低于基准深挖包 |
+| GitHub 工程分析 | 有候选雷达，无正式 fixed-version profile | 未达基准 |
+| Benchmark/安全/反证 | 已进入横切地图 | 未完成协议与独立证据对齐 |
+| 可读性 | 总览和架构可独立阅读 | 初版可用，仍需独立读者回归 |
+| 可追溯性 | 查询、raw snapshot、entity 和初始映射已保存 | deep claim/evidence 尚未建立 |
+
+Round 01 不宣称达到基准。下一轮优先补广度、新近仓库、Benchmark、产品/runtime 和负面证据；后续再进入分支深潜与源码工程分析。

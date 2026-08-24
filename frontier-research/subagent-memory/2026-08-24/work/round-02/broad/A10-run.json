@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:06:50Z",
+  "from": "2023-01-01",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 36,
+  "pages": 2,
+  "provider": "arxiv",
+  "query": "(\"agent fleet\" OR \"agent population\" OR \"organizational memory\") AND (memory OR knowledge OR experience)",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:06:48Z",
+      "page": 1,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:((\"agent fleet\" OR \"agent population\" OR \"organizational memory\") AND (memory OR knowledge OR experience)) AND submittedDate:[202301010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 0
+      },
+      "provider": "arxiv",
+      "query": "(\"agent fleet\" OR \"agent population\" OR \"organizational memory\") AND (memory OR knowledge OR experience)",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\A10\\arxiv-001-89cfe22515ae8612acb511caddc603fc8ff76a3ece8b79d85641ef949e83adb2.raw",
+      "reported_total": 36,
+      "response_sha256": "89cfe22515ae8612acb511caddc603fc8ff76a3ece8b79d85641ef949e83adb2",
+      "result_count": 36,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%28%22agent+fleet%22+OR+%22agent+population%22+OR+%22organizational+memory%22%29+AND+%28memory+OR+knowledge+OR+experience%29%29+AND+submittedDate%3A%5B202301010000+TO+202608242359%5D&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:06:50Z",
+      "page": 2,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:((\"agent fleet\" OR \"agent population\" OR \"organizational memory\") AND (memory OR knowledge OR experience)) AND submittedDate:[202301010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 100
+      },
+      "provider": "arxiv",
+      "query": "(\"agent fleet\" OR \"agent population\" OR \"organizational memory\") AND (memory OR knowledge OR experience)",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\A10\\arxiv-002-352e9d749e43ce5ec85f1e07c6010fa592658f05959330ae39e9f30d612a4d8c.raw",
+      "reported_total": 36,
+      "response_sha256": "352e9d749e43ce5ec85f1e07c6010fa592658f05959330ae39e9f30d612a4d8c",
+      "result_count": 0,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%28%22agent+fleet%22+OR+%22agent+population%22+OR+%22organizational+memory%22%29+AND+%28memory+OR+knowledge+OR+experience%29%29+AND+submittedDate%3A%5B202301010000+TO+202608242359%5D&start=100&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:06:48Z",
+  "to": "2026-08-24"
+}

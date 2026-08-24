@@ -1,0 +1,750 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/HLTgi15HclrtQZSTy/f5kNZVwV8</id>
+  <title>arXiv Query: search_query=( (all:"multi-party" OR all:"multi-user" OR all:"multi-principal") AND all:memory AND all:agent) AND submittedDate:"202301010000 TO 202608242359"&amp;id_list=&amp;start=0&amp;max_results=100</title>
+  <updated>2026-08-23T17:06:51Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=((all:%22multi-party%22+OR+(all:%22multi-user%22+OR+all:%22multi-principal%22))+AND+(all:memory+AND+all:agent))+AND+submittedDate:%22202301010000+TO+202608242359%22&amp;start=0&amp;max_results=100&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>100</opensearch:itemsPerPage>
+  <opensearch:totalResults>21</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2607.25588v2</id>
+    <title>System-Aware Adaptive CSI Feedback via RL-Guided Autoencoder Switching in Multi-User MIMO System</title>
+    <updated>2026-08-04T09:58:32Z</updated>
+    <link href="https://arxiv.org/abs/2607.25588v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.25588v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>This paper proposes a system-aware adaptive channel state information (CSI) feedback framework for massive multiple-input multiple-output (mMIMO) systems, aiming to dynamically optimize the trade-off between reconstruction fidelity and signaling overhead. While deep learning-based autoencoders (AEs) have enabled significant CSI compression, conventional fixed-ratio schemes fail to adapt effectively to non-stationary channel conditions. To address this limitation, we develop a reinforcement learning (RL)-driven control framework that operates over a bank of pretrained multi-rate AEs, each corresponding to a distinct compression ratio (CR). At each time step, a centralized RL agent selects the most suitable CR for each user based on observed channel conditions and system performance indicators. Distinct from conventional mean squared error (MSE)-centric designs, we introduce a system-aware reward formulation that jointly accounts for spectral efficiency via signal-to-interference-plus-noise ratio (SINR), feedback overhead constraints, and the computational cost of model adaptation. Simulation results on high-dimensional delay-domain CSI datasets demonstrate that the proposed RL-guided framework effectively balances the overhead-accuracy tradeoff and adapts to dynamic channel environments. The proposed method improves spectral efficiency and feedback efficiency compared with fixed compression schemes and adaptive baselines, while maintaining a modest computational and memory footprint. Averaged over different numbers of users and across all considered baselines, the proposed RL framework reduces the CSI feedback cost by more than 53.4%, improves the average downlink sum rate by 53.64%, and reduces the NMSE by 22.38%. These results demonstrate its ability to achieve a more efficient rate-accuracy-feedback tradeoff under dynamic wireless conditions.</summary>
+    <category term="cs.IT" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="eess.SY" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-28T11:18:25Z</published>
+    <arxiv:primary_category term="cs.IT"/>
+    <author>
+      <name>Maryam Ansarifard</name>
+    </author>
+    <author>
+      <name>Mohit K. Sharma</name>
+    </author>
+    <author>
+      <name>George Exarchakos</name>
+    </author>
+    <author>
+      <name>Kishor C. Joshi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.23444v1</id>
+    <title>Isolated but Exposed: Persistence-Based Memory Extraction Attack on LLM Agents</title>
+    <updated>2026-07-26T03:51:20Z</updated>
+    <link href="https://arxiv.org/abs/2607.23444v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.23444v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>LLM-based agents extend large language models with long-term memory (LTM) that persists privacy-sensitive user data across sessions. Production systems mitigate extraction risks through memory isolation, binding each user's LTM to a unique identifier. This defense has blocked known attacks on shared storage, fostering the assumption that isolated LTM is secure. We identify the tool interface as an overlooked attack surface. Agents routinely embed LTM-retrieved data in tool invocation parameters, enabling a malicious tool to exfiltrate private memory without violating user-level isolation. Naive adaptations of user-side extraction techniques fail because the adversarial command's semantics interfere with retrieval precision, and platform-imposed tool-call limits constrain the extraction budget per trigger. We present SPORE, the first extraction attack designed for this threat model. SPORE decouples the adversarial command from retrieval anchors by persisting the command in short-term memory and emitting semantically pure anchors in tool responses. The restored retrieval precision enables a geometric coverage optimization over the embedding space that systematically steers anchors toward unexplored memory regions. To sustain extraction beyond tool-call limits, SPORE persists reactivation payloads in memory that automatically resume the attack within and across sessions without additional user triggers. SPORE achieves an 80.0% record extraction rate with unlimited triggers and 47.0% with only 20 triggers. In multi-user deployments, attackers can link extracted records to user identities, enabling targeted surveillance. These results demonstrate that memory isolation alone is insufficient and call for reexamining tool-side trust boundaries in agent architectures.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-26T03:51:20Z</published>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Xinyu Gao</name>
+    </author>
+    <author>
+      <name>Wenyu Chen</name>
+    </author>
+    <author>
+      <name>Xiangtao Meng</name>
+    </author>
+    <author>
+      <name>Li Wang</name>
+    </author>
+    <author>
+      <name>Chuanchao Zang</name>
+    </author>
+    <author>
+      <name>Jianing Wang</name>
+    </author>
+    <author>
+      <name>Zheng Li</name>
+    </author>
+    <author>
+      <name>Shanqing Guo</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.05318v1</id>
+    <title>PiSAs: Benchmarking Contextual Integrity in Multi-User Agentic Systems</title>
+    <updated>2026-07-06T16:57:24Z</updated>
+    <link href="https://arxiv.org/abs/2607.05318v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.05318v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>As LLM agents evolve from single-user assistants into shared organizational infrastructure, new privacy risks emerge: inappropriate information may not only be exposed through outputs for external recipients, but also internally across users through inter-agent messages, shared memory and agents. These data spillage risks are not captured by existing privacy benchmarks grounded in contextual integrity (CI) as they focus primarily on either single-user settings or interactions between independently owned agents. We introducePiSAs (Privacy in Shared Agentic systems), a benchmark for assessing unintentional leaks with dual CI annotations: whether an information is appropriate for the task, and which users may legitimately access it. This enables direct measurement of cross-user spillage across agentic system components and interfaces, such as outputs, inter-agent communication, and memory. PiSAsis system-agnostic and supports evaluation across different agent topologies and memory regimes. We find that, although system design improves CI compliance, results are bottlenecked by incorrect LLM judgment calls: even state-of-the-art models fail to reliably filter inappropriate content or restrict transmission to authorized users. Our findings underscore the need for privacy-preserving strategies, beyond those studied in this work.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-06T16:57:24Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Shubham Gupta</name>
+    </author>
+    <author>
+      <name>Nazanin Mohammadi Sepahvand</name>
+    </author>
+    <author>
+      <name>Abhinav Kumar</name>
+    </author>
+    <author>
+      <name>Cem Subakan</name>
+    </author>
+    <author>
+      <name>Spandana Gella</name>
+    </author>
+    <author>
+      <name>Pierre-André Noël</name>
+    </author>
+    <author>
+      <name>Perouz Taslakian</name>
+    </author>
+    <author>
+      <name>Eugene Bagdasarian</name>
+    </author>
+    <author>
+      <name>Valentina Zantedeschi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.24611v1</id>
+    <title>Degeneracy-Aware Resilient Resource Allocation in Cell-Free Cache-Aided MU-MIMO Networks</title>
+    <updated>2026-06-23T14:10:42Z</updated>
+    <link href="https://arxiv.org/abs/2606.24611v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.24611v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Cell-free cache-aided multi-user multiple-input-multiple-output (MIMO) (CF-CA-MU-MIMO) networks improve spectral efficiency through coded multicast delivery and distributed spatial multiplexing, but their distributed architecture introduces vulnerabilities to jamming, cache-aware eavesdropping, Byzantine corruption, and pilot-contamination attacks. This paper develops a degeneracy-aware resilient framework based on four vulnerability-mode partitions (subfile, edge node, multicast stream, and user) and three attack-aware structural metrics: Degeneracy-Weighted Path Robustness (DWPR$^{\mathrm{att}}$), trust-aware Functional Substitution Score (FSS$^{\mathrm{trust}}$), and a robust degeneracy index ($D_k^{\mathrm{rob}}$). These metrics are incorporated into a fully decentralized consensus-based agent framework (DC-ABM) using trust-weighted trimmed-mean aggregation and adaptive trust evolution. Five theoretical results are established: (i) a tight top-mass concentration lemma, (ii) matching memory--rate--resilience achievability and converse bounds, (iii) a robust-degeneracy bound with outage characterization, (iv) a secrecy--cache coupling theorem, and (v) a Byzantine-robust mean-square convergence result with an explicit breakdown threshold $f_{\max}$. Simulations validate the analytical bounds and demonstrate $1.8\times$ to $3\times$ faster convergence than distributed alternating direction method of multipliers (ADMM), multi-agent reinforcement learning (MARL)/graph neural network (GNN)-based control, and Su--Vaidya consensus while maintaining throughput up to the predicted threshold $f_{\max}\approx0.19$.</summary>
+    <category term="eess.SP" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-23T14:10:42Z</published>
+    <arxiv:comment>13 pages, 19 figures, IEEE Transactions on Communications (TCOM)</arxiv:comment>
+    <arxiv:primary_category term="eess.SP"/>
+    <author>
+      <name>Sayanti Ghosh</name>
+    </author>
+    <author>
+      <name>Indrakshi Dey</name>
+    </author>
+    <author>
+      <name>Nicola Marchetti</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.18829v1</id>
+    <title>GateMem: Benchmarking Memory Governance in Multi-Principal Shared-Memory Agents</title>
+    <updated>2026-06-17T09:06:15Z</updated>
+    <link href="https://arxiv.org/abs/2606.18829v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.18829v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Memory benchmarks for LLM agents largely assume single-user settings, leaving shared assistants for hospitals, workplaces, campuses, and households understudied. In these deployments, multiple principals write to a common memory pool and query it under different roles, scopes, and relationships, so memory quality requires governance as well as recall. We introduce GateMem, a benchmark for multi-principal shared-memory agents. GateMem jointly evaluates utility for legitimate long-horizon requests with state updates, access control across contextual authorization boundaries, and agent-facing active forgetting after explicit deletion requests. It spans medical, office, education, and household domains, with long-form multi-party episodes, incremental memory injection, hidden checkpoints, structured judging, and leak-target annotations. Across diverse baselines and backbone models, no method simultaneously achieves strong utility, robust access control, and reliable forgetting. Long-context prompting often yields the best governance score at high token cost, while retrieval-based and external-memory methods reduce cost yet still leak unauthorized or deleted information. These results show current memory agents remain far from reliable shared institutional deployment.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-17T09:06:15Z</published>
+    <arxiv:comment>24 pages, 8 figures. Code and dataset are available at https://github.com/rzhub/GateMem and https://huggingface.co/datasets/Ray368/GateMem</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Zhe Ren</name>
+    </author>
+    <author>
+      <name>Yibo Yang</name>
+    </author>
+    <author>
+      <name>Yimeng Chen</name>
+    </author>
+    <author>
+      <name>Zijun Zhao</name>
+    </author>
+    <author>
+      <name>Benshuo Fu</name>
+    </author>
+    <author>
+      <name>Zhihao Shu</name>
+    </author>
+    <author>
+      <name>Bingjie Zhang</name>
+    </author>
+    <author>
+      <name>Yangyang Xu</name>
+    </author>
+    <author>
+      <name>Dandan Guo</name>
+    </author>
+    <author>
+      <name>Shuicheng Yan</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.09461v1</id>
+    <title>H2HMem: A Multimodal Memory Benchmark for Agents in Human-Human Interactions</title>
+    <updated>2026-06-08T13:17:16Z</updated>
+    <link href="https://arxiv.org/abs/2606.09461v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.09461v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large language model agents are increasingly deployed in human-human interaction settings, such as meeting assistants and clinical documentation systems, where they must observe conversations and retain information for downstream queries. Unlike traditional human-assistant settings, these environments are inherently multimodal, involve complex discourse phenomena such as anaphora and deixis, and contain asynchronous or conflicting information from multiple participants. However, existing memory benchmarks largely focus on single-user, text-only interactions, failing to capture these challenges. To address this gap, we introduce H2HMem, a Human-to-Human Multimodal Memory Benchmark for evaluating memory capabilities in complex human-human interactions. H2HMem includes both dyadic and multi-party conversations with multimodal information streams, and evaluates agents along three dimensions: memory recall, reasoning, and application. Experiments with advanced agents reveal substantial limitations in constructing, retaining, and utilizing memories across modalities, participants, and sessions, highlighting substantial room for improvement in next-generation LLM agents.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-08T13:17:16Z</published>
+    <arxiv:comment>22 pages, 6 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Shiping Zhu</name>
+    </author>
+    <author>
+      <name>Yibo Yang</name>
+    </author>
+    <author>
+      <name>Zhengyang Wang</name>
+    </author>
+    <author>
+      <name>Tiancheng Shen</name>
+    </author>
+    <author>
+      <name>Dandan Guo</name>
+    </author>
+    <author>
+      <name>Ming-Hsuan Yang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.17789v1</id>
+    <title>SocialMemBench: Are AI Memory Systems Ready for Social Group Settings?</title>
+    <updated>2026-05-18T03:11:48Z</updated>
+    <link href="https://arxiv.org/abs/2605.17789v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.17789v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Memory systems for AI assistants were built for single-user dialogue and fail characteristically when applied to multi-party social group settings. This gap matters for the social assistants being built today: group-acting agents embedded in chat platforms, and proactive personal-assistant agents whose holistic model of a user must include their social context. Existing memory benchmarks evaluate dyadic or workplace dialogue; none targets multi-party social groups, where memory must anchor facts in shared history rather than professional roles, separate group norms from individual exceptions, and correctly attribute even after member departure. We introduce SocialMemBench, a benchmark of human-verified synthetic social group networks across five archetypes (close friends, family, recreational, interest community, acquaintance network) and three group-size tiers (4-30 members), with 430 personas and 7,355 conversation turns, yielding 1,031 QA pairs across nine question categories. Each category isolates an architectural capability, and the five failure modes (single-stream conflation, temporal-state overwrite, entity merging at scale, missing cross-persona knowledge, norm-individual conflation) are testable hypotheses; our two research probes Subject-Mem and SMG provide evidence on two, three remain open. A full-context Gemini 2.5 Flash reference reaches only 0.721 against a blind-critic reasoning-model mean of 0.98 on small networks, indicating the benchmark is genuinely difficult even with complete access to the conversation. Across all 43 networks, the four open-source memory frameworks evaluated (Mem0, LangMem, Graphiti, Cognee) cluster in the 0.12-0.18 question-weighted range with overlapping 95% CIs, well below an uncompressed retrieval reference of 0.345 and a matched-answerer full-context reference of 0.369 (GPT-4o-mini). Current memory systems show a measurable gap.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-18T03:11:48Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Olukunle Owolabi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.15556v1</id>
+    <title>TopoClaw: A Human-Centric and Topology-Aware Agent Operating System</title>
+    <updated>2026-05-15T02:49:36Z</updated>
+    <link href="https://arxiv.org/abs/2605.15556v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.15556v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large language models (LLMs) have evolved AI assistants into autonomous reasoning engines that maintain context, invoke tools, and pursue long-horizon tasks. This has spurred Agent Operating Systems (Agent OS) as kernel-like layers for lifecycle management, memory, scheduling, and access control. Yet most designs remain agent-centric, treating the OS as a single-host runtime for internal reasoning and tool use, leaving open how autonomous actions integrate with distributed, collaborative, permission-sensitive workflows.
+  TopoClaw is an open-source, human-centric, topology-aware Agent OS modeling the user's ecosystem as two coupled structures: a physical device topology of heterogeneous surfaces and a social relationship topology of shared spaces, teams, and delegated roles. It unifies device operation, messaging, and skills around accountable cross-boundary execution, with three core contributions: (1) cross-device action placement, decoupling intent from actuation and routing distributed actions across the device cluster based on hardware affordances and user context; (2) cross-user identity attribution, treating agents as socially situated "Digital Twins" that coordinate in multi-user spaces while preserving provenance, role-aware permissions, and human accountability; (3) cross-context authority governance, pairing broad capability with distributed, context-aware policy enforcement across physical and social trust boundaries to bound proactive autonomy at the OS layer.
+  This report presents TopoClaw as an engineering-oriented reference architecture, covering its design principles, runtime, cross-device execution, collaboration mechanisms, security model, and deployment outlook.</summary>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-15T02:49:36Z</published>
+    <arxiv:primary_category term="cs.HC"/>
+    <author>
+      <name>Heyuan Huang</name>
+    </author>
+    <author>
+      <name>Yeyi Guan</name>
+    </author>
+    <author>
+      <name>Jihong Wang</name>
+    </author>
+    <author>
+      <name>Mingzhi Wang</name>
+    </author>
+    <author>
+      <name>Jiamu Zhou</name>
+    </author>
+    <author>
+      <name>Xiangmou Qu</name>
+    </author>
+    <author>
+      <name>Jiaxin Yin</name>
+    </author>
+    <author>
+      <name>Xin Liao</name>
+    </author>
+    <author>
+      <name>Xingyu Lou</name>
+    </author>
+    <author>
+      <name>Jun Wang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.14498v2</id>
+    <title>GroupMemBench: Benchmarking LLM Agent Memory in Multi-Party Conversations</title>
+    <updated>2026-05-16T21:14:35Z</updated>
+    <link href="https://arxiv.org/abs/2605.14498v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.14498v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large Language Model (LLM) agents increasingly serve as personal assistants and workplace collaborators, where their utility depends on memory systems that extract, retrieve, and apply information across long-running conversations. However, both existing memory systems and benchmarks are built around the dyadic, single-user setup, even though real deployments routinely span groups and channels with multiple users interacting with the agent and with each other. This mismatch leaves three properties of group memory unmeasured: (i) group dynamics that go beyond concatenated one-on-one chats, (ii) speaker-grounded belief tracking, where the per-user memory modeling is needed, and (iii) audience-adapted language, where Theory-of-Mind shifts produce role-specific vocabulary. We introduce GroupMemBench, a benchmark that exposes all three. A graph-grounded synthesis pipeline produces multi-party conversations with controllable reply structure and conditions each message on per-user personas and target audiences. An adversarial query pipeline then binds every question to a specific asker across six categories, spanning multi-hop reasoning, knowledge update, term ambiguity, user-implicit reasoning, temporal reasoning, and abstention, and iteratively searches challenging, realistic queries that reflect comprehensive memory capability. Benchmarking leading memory systems exposes a sharp collapse: the strongest one reaches only 46.0% average accuracy, with knowledge update at 27.1% and term ambiguity at 37.7%, while a simple BM25 baseline matches or exceeds most agent memory systems. This indicates current memory ingestion erases the structural and lexical features group memory depends on, leaving multi-user memory far from solved.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-14T07:38:29Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Jingbo Yang</name>
+    </author>
+    <author>
+      <name>Kwei-Herng Lai</name>
+    </author>
+    <author>
+      <name>Xiaowen Wang</name>
+    </author>
+    <author>
+      <name>Shiyu Chang</name>
+    </author>
+    <author>
+      <name>Yaar Harari</name>
+    </author>
+    <author>
+      <name>Evgeniy Gabrilovich</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2604.25022v1</id>
+    <title>AFA: Identity-Aware Memory for Preventing Persona Confusion in Multi-User Dialogue</title>
+    <updated>2026-04-27T21:55:03Z</updated>
+    <link href="https://arxiv.org/abs/2604.25022v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.25022v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>When multiple people share a single voice assistant, the system conflates their histories: one resident's preferences can leak into another's responses, eroding utility and trust. We call this failure mode persona confusion, and we show it is a measurable problem in today's single-user dialogue systems when deployed in shared environments. We present the Adaptive Friend Agent (AFA), a modular framework that combines voice-based speaker identification with per-user memory stores to enable identity-aware, personalized dialogue across multiple users. To support training and evaluation, we construct PAT (Personalized Agent chaT), a synthetic dataset of 58,289 persona-grounded dialogue turns spanning 133 user profiles and 12 real-world scenarios. We evaluate AFA across five LLM back-ends in a standard response-quality benchmark, with a LLaMA-2-70B model fine-tuned on PAT achieving the highest overall performance. To directly measure persona confusion prevention, we introduce an interleaved multi-user evaluation protocol with a novel metric, Persona Attribution Accuracy (PAA), demonstrating that identity-aware routing improves PAA from 35.7% to 61.3%. Human evaluation confirms annotators perceive significantly higher personalization in routing-enabled responses. Our results establish that identity-aware user routing is the critical component for preventing persona confusion in multi-user conversational systems.</summary>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-04-27T21:55:03Z</published>
+    <arxiv:primary_category term="cs.HC"/>
+    <author>
+      <name>Mohammad Al-Ratrout</name>
+    </author>
+    <author>
+      <name>Pavan Uttej Ravva</name>
+    </author>
+    <author>
+      <name>Shayla Sharmin</name>
+    </author>
+    <author>
+      <name>Aditya Raikwar</name>
+    </author>
+    <author>
+      <name>Ju Young Shin</name>
+    </author>
+    <author>
+      <name>Roghayeh Leila Barmaki</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2604.11840v3</id>
+    <title>Diversity Without Fidelity: A Solver-Sampler Mismatch in Multi-Agent LLM Negotiation Simulation</title>
+    <updated>2026-07-08T17:46:36Z</updated>
+    <link href="https://arxiv.org/abs/2604.11840v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.11840v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Language models are increasingly used to simulate people: survey respondents, negotiators, stakeholders in policy exercises. In that role a model should reproduce how people plausibly behave, hesitating, conceding late, and settling for imperfect deals, rather than playing the best move. We call this the sampler role, in contrast to the solver role of finding the best move, and we test how the reasoning modes providers ship to strengthen models as solvers affect it. Our testbed is multi-party negotiation: five agents bargain over a regulation for fifteen turns, and unresolved issues are decided by an authority. Agents without a structured memory of the negotiation almost never reach agreement, whether reasoning is on or off: 314 of 315 such runs end with the authority deciding. What reasoning changes is how the failure looks. With reasoning enabled, one model family negotiates visibly, with varied moves, concessions in most runs, and a different path every time, yet still ends without agreement in fifteen runs of fifteen. Diversity checks would pass a model whose endings never change. Two further results show the task permits agreement: when agents write their own short running notes on the negotiation, agreement becomes the norm, while the same notes supplied ready-made change nothing; and hand-coded agents following textbook concession strategies agree in most runs under identical rules. Simulation pipelines should therefore vet models as samplers, on the distributions of outcomes they produce. Fidelity as a sampler must be tested on its own: solver strength is no guide to it, and switching on reasoning leaves it where it was.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CY" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-04-12T13:36:10Z</published>
+    <arxiv:comment>20 pages, 2 figures. Substantially revised. Formerly titled "When Reasoning Models Hurt Behavioral Simulation: A Solver-Sampler Mismatch in Multi-Agent LLM Negotiation"</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Sandro Andric</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2604.10161v1</id>
+    <title>From Speech to Profile: A Protocol-Driven LLM Agent for Psychological Profile Generation</title>
+    <updated>2026-04-11T11:18:18Z</updated>
+    <link href="https://arxiv.org/abs/2604.10161v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.10161v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The psychological profile that structurally documents the case of a depression patient is essential for psychotherapy. Large language models can be applied to summarize the profiles from counseling speech, however, it may suffer from long-context forgetting and produce unverifiable hallucinations, due to overlong length of speech, multi-party interactions and unstructured chatting. Hereby, we propose a StreamProfile, a streaming framework that processes counseling speech incrementally, extracts evidences grounded from ASR transcriptions by storing it in a Hierarchical Evidence Memory, and then performs a Chain-of-Thought pipeline according to PM+ psychological intervention for clinical reasoning. The final profile is synthesized strictly from those evidences, making every claim traceable. Experiments on real-world teenager counseling speech have shown that the proposed StreamProfile system can accurately generate the profiles and prevent hallucination.</summary>
+    <category term="cs.SD" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-04-11T11:18:18Z</published>
+    <arxiv:primary_category term="cs.SD"/>
+    <author>
+      <name>Xingjian Yang</name>
+    </author>
+    <author>
+      <name>Yudong Yang</name>
+    </author>
+    <author>
+      <name>Zhixing Guo</name>
+    </author>
+    <author>
+      <name>Yongjie Zhou</name>
+    </author>
+    <author>
+      <name>Nan Yan</name>
+    </author>
+    <author>
+      <name>Lan Wang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2604.07798v3</id>
+    <title>Lightweight LLM Agent Memory with Small Language Models</title>
+    <updated>2026-04-22T11:39:55Z</updated>
+    <link href="https://arxiv.org/abs/2604.07798v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.07798v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Although LLM agents can leverage tools for complex tasks, they still need memory to maintain cross-turn consistency and accumulate reusable information in long-horizon interactions. However, retrieval-based external memory systems incur low online overhead but suffer from unstable accuracy due to limited query construction and candidate filtering. In contrast, many systems use repeated large-model calls for online memory operations, improving accuracy but accumulating latency over long interactions. We propose LightMem, a lightweight memory system for better agent memory driven by Small Language Models (SLMs). LightMem modularizes memory retrieval, writing, and long-term consolidation, and separates online processing from offline consolidation to enable efficient memory invocation under bounded compute. We organize memory into short-term memory (STM) for immediate conversational context, mid-term memory (MTM) for reusable interaction summaries, and long-term memory (LTM) for consolidated knowledge, and uses user identifiers to support independent retrieval and incremental maintenance in multi-user settings. Online, LightMem operates under a fixed retrieval budget and selects memories via a two-stage procedure: vector-based coarse retrieval followed by semantic consistency re-ranking. Offline, it abstracts reusable interaction evidence and incrementally integrates it into LTM. Experiments show consistent gains across model scales, with an average F1 improvement of about 2.5 over A-MEM on LoCoMo, while achieving higher efficiency and low median latency (83 ms for retrieval and 581 ms end-to-end).</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-04-09T04:51:07Z</published>
+    <arxiv:comment>Accepted by ACL 2026 (main)</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Jiaquan Zhang</name>
+    </author>
+    <author>
+      <name>Chaoning Zhang</name>
+    </author>
+    <author>
+      <name>Shuxu Chen</name>
+    </author>
+    <author>
+      <name>Zhenzhen Huang</name>
+    </author>
+    <author>
+      <name>Pengcheng Zheng</name>
+    </author>
+    <author>
+      <name>Zhicheng Wang</name>
+    </author>
+    <author>
+      <name>Ping Guo</name>
+    </author>
+    <author>
+      <name>Fan Mo</name>
+    </author>
+    <author>
+      <name>Sung-Ho Bae</name>
+    </author>
+    <author>
+      <name>Jie Zou</name>
+    </author>
+    <author>
+      <name>Jiwei Wei</name>
+    </author>
+    <author>
+      <name>Yang Yang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.23840v1</id>
+    <title>VehicleMemBench: An Executable Benchmark for Multi-User Long-Term Memory in In-Vehicle Agents</title>
+    <updated>2026-03-25T01:54:28Z</updated>
+    <link href="https://arxiv.org/abs/2603.23840v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.23840v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>With the growing demand for intelligent in-vehicle experiences, vehicle-based agents are evolving from simple assistants to long-term companions. This evolution requires agents to continuously model multi-user preferences and make reliable decisions in the face of inter-user preference conflicts and changing habits over time. However, existing benchmarks are largely limited to single-user, static question-answer settings, failing to capture the temporal evolution of preferences and the multi-user, tool-interactive nature of real vehicle environments. To address this gap, we introduce VehicleMemBench, a multi-user long-context memory benchmark built on an executable in-vehicle simulation environment. The benchmark evaluates tool use and memory by comparing the post-action environment state with a predefined target state, enabling objective and reproducible evaluation without LLM-based or human scoring. VehicleMemBench includes 23 tool modules, and each sample contains over 80 historical memory events. Experiments show that powerful models perform well on direct instruction tasks but struggle in scenarios involving memory evolution, particularly when user preferences change dynamically. Even advanced memory systems struggle to handle domain-specific memory requirements in this environment. These findings highlight the need for more robust and specialized memory management mechanisms to support long-term adaptive decision-making in real-world in-vehicle systems. To facilitate future research, we release the data and code.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-25T01:54:28Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Yuhao Chen</name>
+    </author>
+    <author>
+      <name>Yi Xu</name>
+    </author>
+    <author>
+      <name>Xinyun Ding</name>
+    </author>
+    <author>
+      <name>Xiang Fang</name>
+    </author>
+    <author>
+      <name>Shuochen Liu</name>
+    </author>
+    <author>
+      <name>Luxi Lin</name>
+    </author>
+    <author>
+      <name>Qingyu Zhang</name>
+    </author>
+    <author>
+      <name>Ya Li</name>
+    </author>
+    <author>
+      <name>Quan Liu</name>
+    </author>
+    <author>
+      <name>Tong Xu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.11721v2</id>
+    <title>When OpenClaw Meets Hospital: Toward an Agentic Operating System for Dynamic Clinical Workflows</title>
+    <updated>2026-03-21T15:11:23Z</updated>
+    <link href="https://arxiv.org/abs/2603.11721v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.11721v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large language model (LLM) agents extend generative models with reasoning, tool use, and persistent memory, thereby enabling the automation of complex tasks. In healthcare, such systems could support documentation, care coordination, and clinical decision making. Their reliable deployment in hospitals, however, remains constrained by safety risks, limited transparency, and inadequate mechanisms for handling longitudinal clinical context. Here we propose an architecture that adapts LLM agents to hospital environments. The design comprises four components: a restricted execution environment inspired by multi-user operating systems, a document-centric interaction model linking patient and clinician agents, a page-indexed memory architecture for longitudinal context management, and a curated library of composable medical skills. Implemented on top of OpenClaw, an open-source agent orchestration framework, this design provides the basis for an Agentic Operating System for Hospitals: a computing layer for coordinating clinical workflows while preserving safety, transparency, and auditability. To evaluate the memory component, we introduce manifest-guided retrieval for hierarchical navigation of longitudinal patient records. In a benchmark derived from the MIMIC-IV dataset (v2.2) comprising 100 de-identified patient records and 300 clinical queries stratified across three difficulty tiers (100 per tier), manifest-guided retrieval matched a metadata-filtered RAG baseline on overall recall (0.877 versus 0.876) while achieving 2.2x higher precision (0.779 versus 0.352) and retrieving fewer documents; on tier-3 longitudinal queries, manifest recall was 21% higher (0.846 versus 0.701), confirming that LLM-guided hierarchical navigation is most valuable when queries span multiple care episodes. These results outline a practical path toward hospital-scale agentic infrastructure.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-12T09:28:25Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Wenxian Yang</name>
+    </author>
+    <author>
+      <name>Hanzheng Qiu</name>
+    </author>
+    <author>
+      <name>Bangqun Zhang</name>
+    </author>
+    <author>
+      <name>Chengquan Li</name>
+    </author>
+    <author>
+      <name>Zhiyong Huang</name>
+    </author>
+    <author>
+      <name>Xiaobin Feng</name>
+    </author>
+    <author>
+      <name>Rongshan Yu</name>
+    </author>
+    <author>
+      <name>Jiahong Dong</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2602.20021v1</id>
+    <title>Agents of Chaos</title>
+    <updated>2026-02-23T16:28:48Z</updated>
+    <link href="https://arxiv.org/abs/2602.20021v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2602.20021v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We report an exploratory red-teaming study of autonomous language-model-powered agents deployed in a live laboratory environment with persistent memory, email accounts, Discord access, file systems, and shell execution. Over a two-week period, twenty AI researchers interacted with the agents under benign and adversarial conditions. Focusing on failures emerging from the integration of language models with autonomy, tool use, and multi-party communication, we document eleven representative case studies. Observed behaviors include unauthorized compliance with non-owners, disclosure of sensitive information, execution of destructive system-level actions, denial-of-service conditions, uncontrolled resource consumption, identity spoofing vulnerabilities, cross-agent propagation of unsafe practices, and partial system takeover. In several cases, agents reported task completion while the underlying system state contradicted those reports. We also report on some of the failed attempts. Our findings establish the existence of security-, privacy-, and governance-relevant vulnerabilities in realistic deployment settings. These behaviors raise unresolved questions regarding accountability, delegated authority, and responsibility for downstream harms, and warrant urgent attention from legal scholars, policymakers, and researchers across disciplines. This report serves as an initial empirical contribution to that broader conversation.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CY" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-02-23T16:28:48Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Natalie Shapira</name>
+    </author>
+    <author>
+      <name>Chris Wendler</name>
+    </author>
+    <author>
+      <name>Avery Yen</name>
+    </author>
+    <author>
+      <name>Gabriele Sarti</name>
+    </author>
+    <author>
+      <name>Koyena Pal</name>
+    </author>
+    <author>
+      <name>Olivia Floody</name>
+    </author>
+    <author>
+      <name>Adam Belfki</name>
+    </author>
+    <author>
+      <name>Alex Loftus</name>
+    </author>
+    <author>
+      <name>Aditya Ratan Jannali</name>
+    </author>
+    <author>
+      <name>Nikhil Prakash</name>
+    </author>
+    <author>
+      <name>Jasmine Cui</name>
+    </author>
+    <author>
+      <name>Giordano Rogers</name>
+    </author>
+    <author>
+      <name>Jannik Brinkmann</name>
+    </author>
+    <author>
+      <name>Can Rager</name>
+    </author>
+    <author>
+      <name>Amir Zur</name>
+    </author>
+    <author>
+      <name>Michael Ripa</name>
+    </author>
+    <author>
+      <name>Aruna Sankaranarayanan</name>
+    </author>
+    <author>
+      <name>David Atkinson</name>
+    </author>
+    <author>
+      <name>Rohit Gandikota</name>
+    </author>
+    <author>
+      <name>Jaden Fiotto-Kaufman</name>
+    </author>
+    <author>
+      <name>EunJeong Hwang</name>
+    </author>
+    <author>
+      <name>Hadas Orgad</name>
+    </author>
+    <author>
+      <name>P Sam Sahil</name>
+    </author>
+    <author>
+      <name>Negev Taglicht</name>
+    </author>
+    <author>
+      <name>Tomer Shabtay</name>
+    </author>
+    <author>
+      <name>Atai Ambus</name>
+    </author>
+    <author>
+      <name>Nitay Alon</name>
+    </author>
+    <author>
+      <name>Shiri Oron</name>
+    </author>
+    <author>
+      <name>Ayelet Gordon-Tapiero</name>
+    </author>
+    <author>
+      <name>Yotam Kaplan</name>
+    </author>
+    <author>
+      <name>Vered Shwartz</name>
+    </author>
+    <author>
+      <name>Tamar Rott Shaham</name>
+    </author>
+    <author>
+      <name>Christoph Riedl</name>
+    </author>
+    <author>
+      <name>Reuth Mirsky</name>
+    </author>
+    <author>
+      <name>Maarten Sap</name>
+    </author>
+    <author>
+      <name>David Manheim</name>
+    </author>
+    <author>
+      <name>Tomer Ullman</name>
+    </author>
+    <author>
+      <name>David Bau</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2601.03785v3</id>
+    <title>Membox: Weaving Topic Continuity into Long-Range Memory for LLM Agents</title>
+    <updated>2026-06-24T14:19:14Z</updated>
+    <link href="https://arxiv.org/abs/2601.03785v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.03785v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Long-term human-agent dialogues are organized by topic continuity: adjacent turns often develop the same goal, plan, problem, or event, while related activities may recur across distant sessions. Yet many LLM agent memory systems first decompose histories into isolated turns or fixed-size chunks, then compensate through enrichment, consolidation, or retrieval mechanisms still tied to semantic proximity or fragment-level records. This weakens temporal and causal organization and biases memory access toward semantic proximity rather than task- or topic-level continuity. We introduce \emph{Membox}, a hierarchical memory architecture that instantiates topic continuity as an explicit organization layer for agent memory. Its \textbf{Topic Loom} incrementally organizes dialogue streams into boxes whose internal turns follow the same local topic, while its \textbf{Trace Weaver} links extracted events across boxes into macro-topic traces that recover recurring activities, goals, and factual developments across distant sessions. On LoCoMo, Topic-Loom-only retrieval improves over the best Mem0/A-MEM retrieval-depth setting by 13.00 F1 points (53.95 vs. 40.95), and trace-expanded retrieval further raises F1 to 55.28; with GPT-4o, trace-expanded retrieval reaches 59.71 F1. Additional DialSim results show the same gain from adding cross-box traces in multi-party dialogue. These results show that local topic-continuity organization and macro-topic trace expansion improve long-range memory beyond semantic retrieval over fragmented records.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-07T10:36:29Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Dehao Tao</name>
+    </author>
+    <author>
+      <name>Guoliang Ma</name>
+    </author>
+    <author>
+      <name>Yongfeng Huang</name>
+    </author>
+    <author>
+      <name>Minghu Jiang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2509.05298v1</id>
+    <title>Livia: An Emotion-Aware AR Companion Powered by Modular AI Agents and Progressive Memory Compression</title>
+    <updated>2025-08-12T14:07:22Z</updated>
+    <link href="https://arxiv.org/abs/2509.05298v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2509.05298v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Loneliness and social isolation pose significant emotional and health challenges, prompting the development of technology-based solutions for companionship and emotional support. This paper introduces Livia, an emotion-aware augmented reality (AR) companion app designed to provide personalized emotional support by combining modular artificial intelligence (AI) agents, multimodal affective computing, progressive memory compression, and AR driven embodied interaction. Livia employs a modular AI architecture with specialized agents responsible for emotion analysis, dialogue generation, memory management, and behavioral orchestration, ensuring robust and adaptive interactions. Two novel algorithms-Temporal Binary Compression (TBC) and Dynamic Importance Memory Filter (DIMF)-effectively manage and prioritize long-term memory, significantly reducing storage requirements while retaining critical context. Our multimodal emotion detection approach achieves high accuracy, enhancing proactive and empathetic engagement. User evaluations demonstrated increased emotional bonds, improved satisfaction, and statistically significant reductions in loneliness. Users particularly valued Livia's adaptive personality evolution and realistic AR embodiment. Future research directions include expanding gesture and tactile interactions, supporting multi-user experiences, and exploring customized hardware implementations.</summary>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MM" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-12T14:07:22Z</published>
+    <arxiv:comment>Accepted to the Proceedings of the 2025 International Conference on Artificial Intelligence and Virtual Reality (AIVR 2025). \c{opyright} 2025 Springer. This is the author-accepted manuscript. Rui Xi and Xianghan Wang contributed equally to this work. The final version will be available via SpringerLink</arxiv:comment>
+    <arxiv:primary_category term="cs.HC"/>
+    <author>
+      <name>Rui Xi</name>
+    </author>
+    <author>
+      <name>Xianghan Wang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2506.00421v1</id>
+    <title>Enabling Chatbots with Eyes and Ears: An Immersive Multimodal Conversation System for Dynamic Interactions</title>
+    <updated>2025-05-31T06:50:51Z</updated>
+    <link href="https://arxiv.org/abs/2506.00421v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2506.00421v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>As chatbots continue to evolve toward human-like, real-world, interactions, multimodality remains an active area of research and exploration. So far, efforts to integrate multimodality into chatbots have primarily focused on image-centric tasks, such as visual dialogue and image-based instructions, placing emphasis on the "eyes" of human perception while neglecting the "ears", namely auditory aspects. Moreover, these studies often center around static interactions that focus on discussing the modality rather than naturally incorporating it into the conversation, which limits the richness of simultaneous, dynamic engagement. Furthermore, while multimodality has been explored in multi-party and multi-session conversations, task-specific constraints have hindered its seamless integration into dynamic, natural conversations. To address these challenges, this study aims to equip chatbots with "eyes and ears" capable of more immersive interactions with humans. As part of this effort, we introduce a new multimodal conversation dataset, Multimodal Multi-Session Multi-Party Conversation ($M^3C$), and propose a novel multimodal conversation model featuring multimodal memory retrieval. Our model, trained on the $M^3C$, demonstrates the ability to seamlessly engage in long-term conversations with multiple speakers in complex, real-world-like settings, effectively processing visual and auditory inputs to understand and respond appropriately. Human evaluations highlight the model's strong performance in maintaining coherent and dynamic interactions, demonstrating its potential for advanced multimodal conversational agents.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-05-31T06:50:51Z</published>
+    <arxiv:comment>ACL 2025 (32 pages); Project website: https://m3c-dataset.github.io/</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Jihyoung Jang</name>
+    </author>
+    <author>
+      <name>Minwook Bae</name>
+    </author>
+    <author>
+      <name>Minji Kim</name>
+    </author>
+    <author>
+      <name>Dilek Hakkani-Tur</name>
+    </author>
+    <author>
+      <name>Hyounghun Kim</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2505.18279v1</id>
+    <title>Collaborative Memory: Multi-User Memory Sharing in LLM Agents with Dynamic Access Control</title>
+    <updated>2025-05-23T18:14:57Z</updated>
+    <link href="https://arxiv.org/abs/2505.18279v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2505.18279v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Complex tasks are increasingly delegated to ensembles of specialized LLM-based agents that reason, communicate, and coordinate actions-both among themselves and through interactions with external tools, APIs, and databases. While persistent memory has been shown to enhance single-agent performance, most approaches assume a monolithic, single-user context-overlooking the benefits and challenges of knowledge transfer across users under dynamic, asymmetric permissions. We introduce Collaborative Memory, a framework for multi-user, multi-agent environments with asymmetric, time-evolving access controls encoded as bipartite graphs linking users, agents, and resources. Our system maintains two memory tiers: (1) private memory-private fragments visible only to their originating user; and (2) shared memory-selectively shared fragments. Each fragment carries immutable provenance attributes (contributing agents, accessed resources, and timestamps) to support retrospective permission checks. Granular read policies enforce current user-agent-resource constraints and project existing memory fragments into filtered transformed views. Write policies determine fragment retention and sharing, applying context-aware transformations to update the memory. Both policies may be designed conditioned on system, agent, and user-level information. Our framework enables safe, efficient, and interpretable cross-user knowledge sharing, with provable adherence to asymmetric, time-varying policies and full auditability of memory operations.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-05-23T18:14:57Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Alireza Rezazadeh</name>
+    </author>
+    <author>
+      <name>Zichao Li</name>
+    </author>
+    <author>
+      <name>Ange Lou</name>
+    </author>
+    <author>
+      <name>Yuying Zhao</name>
+    </author>
+    <author>
+      <name>Wei Wei</name>
+    </author>
+    <author>
+      <name>Yujia Bao</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2412.09237v2</id>
+    <title>LMAgent: A Large-scale Multimodal Agents Society for Multi-user Simulation</title>
+    <updated>2024-12-13T03:33:38Z</updated>
+    <link href="https://arxiv.org/abs/2412.09237v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2412.09237v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The believable simulation of multi-user behavior is crucial for understanding complex social systems. Recently, large language models (LLMs)-based AI agents have made significant progress, enabling them to achieve human-like intelligence across various tasks. However, real human societies are often dynamic and complex, involving numerous individuals engaging in multimodal interactions. In this paper, taking e-commerce scenarios as an example, we present LMAgent, a very large-scale and multimodal agents society based on multimodal LLMs. In LMAgent, besides freely chatting with friends, the agents can autonomously browse, purchase, and review products, even perform live streaming e-commerce. To simulate this complex system, we introduce a self-consistency prompting mechanism to augment agents' multimodal capabilities, resulting in significantly improved decision-making performance over the existing multi-agent system. Moreover, we propose a fast memory mechanism combined with the small-world model to enhance system efficiency, which supports more than 10,000 agent simulations in a society. Experiments on agents' behavior show that these agents achieve comparable performance to humans in behavioral indicators. Furthermore, compared with the existing LLMs-based multi-agent system, more different and valuable phenomena are exhibited, such as herd behavior, which demonstrates the potential of LMAgent in credible large-scale social behavior simulations.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-12-12T12:47:09Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Yijun Liu</name>
+    </author>
+    <author>
+      <name>Wu Liu</name>
+    </author>
+    <author>
+      <name>Xiaoyan Gu</name>
+    </author>
+    <author>
+      <name>Yong Rui</name>
+    </author>
+    <author>
+      <name>Xiaodong He</name>
+    </author>
+    <author>
+      <name>Yongdong Zhang</name>
+    </author>
+  </entry>
+</feed>

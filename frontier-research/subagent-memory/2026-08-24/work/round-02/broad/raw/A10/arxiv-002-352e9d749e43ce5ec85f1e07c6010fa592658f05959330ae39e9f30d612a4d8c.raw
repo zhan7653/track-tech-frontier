@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/ceEgyhsscSF9UBFEcXran2aC1tM</id>
+  <title>arXiv Query: search_query=( (all:"agent fleet" OR all:"agent population" OR all:"organizational memory") AND (all:memory OR all:knowledge OR all:experience) ) AND submittedDate:"202301010000 TO 202608242359"&amp;id_list=&amp;start=100&amp;max_results=100</title>
+  <updated>2026-08-23T17:06:48Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=((all:%22agent+fleet%22+OR+(all:%22agent+population%22+OR+all:%22organizational+memory%22))+AND+(all:memory+OR+(all:knowledge+OR+all:experience)))+AND+submittedDate:%22202301010000+TO+202608242359%22&amp;start=100&amp;max_results=100&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>100</opensearch:itemsPerPage>
+  <opensearch:totalResults>36</opensearch:totalResults>
+  <opensearch:startIndex>100</opensearch:startIndex>
+</feed>

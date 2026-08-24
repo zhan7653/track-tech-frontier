@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-08-23T16:44:28.2866287Z",
+  "discovered_entities": 1569,
+  "pilot_candidates": 575,
+  "papers": 143,
+  "repositories": 432,
+  "score_bands": {
+    "score_20_plus": 1,
+    "score_12_to_19": 6,
+    "score_4_to_11": 568
+  },
+  "note": "Heuristic pilot triage only. Scores guide manual mapping and are not quality, relevance, maturity, or adoption judgments."
+}

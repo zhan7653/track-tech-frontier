@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:09:52Z",
+  "from": "2026-05-27",
+  "github_date_field": "pushed",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 107,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "agent blackboard",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:51Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "agent blackboard pushed:2026-05-27..2026-08-24"
+      },
+      "provider": "github-search",
+      "query": "agent blackboard",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G19\\github-search-001-1b3b6a823e8d3b4f5288dcbe55a6987b1178ead815d54ad24f5b68b4725b5e23.raw",
+      "reported_total": 107,
+      "response_sha256": "1b3b6a823e8d3b4f5288dcbe55a6987b1178ead815d54ad24f5b68b4725b5e23",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=agent+blackboard+pushed%3A2026-05-27..2026-08-24&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:52Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "agent blackboard pushed:2026-05-27..2026-08-24"
+      },
+      "provider": "github-search",
+      "query": "agent blackboard",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G19\\github-search-002-1673d34b5b129866534c87cc3b9f7b956e6d84bb3e6903b016a8d76990f53c10.raw",
+      "reported_total": 107,
+      "response_sha256": "1673d34b5b129866534c87cc3b9f7b956e6d84bb3e6903b016a8d76990f53c10",
+      "result_count": 7,
+      "url": "https://api.github.com/search/repositories?q=agent+blackboard+pushed%3A2026-05-27..2026-08-24&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:09:51Z",
+  "to": "2026-08-24"
+}

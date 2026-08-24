@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:08:07Z",
+  "from": null,
+  "github_date_field": "created",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "agent handoff context",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:08:02Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "agent handoff context"
+      },
+      "provider": "github-search",
+      "query": "agent handoff context",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G04\\github-search-001-9236ba9993aaed926cafac168c5feebe398635436de6d2db100e00975d405724.raw",
+      "reported_total": 369,
+      "response_sha256": "9236ba9993aaed926cafac168c5feebe398635436de6d2db100e00975d405724",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=agent+handoff+context&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:08:07Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "agent handoff context"
+      },
+      "provider": "github-search",
+      "query": "agent handoff context",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G04\\github-search-002-f562b6bbedb49ebc9fcc0c88d2a864e803102bc77ed06da104b2744c7323c018.raw",
+      "reported_total": 369,
+      "response_sha256": "f562b6bbedb49ebc9fcc0c88d2a864e803102bc77ed06da104b2744c7323c018",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=agent+handoff+context&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:08:02Z",
+  "to": null
+}

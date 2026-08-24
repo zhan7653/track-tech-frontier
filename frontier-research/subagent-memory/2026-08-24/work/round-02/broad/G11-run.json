@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:08:55Z",
+  "from": null,
+  "github_date_field": "created",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 54,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "research agent shared memory",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:08:54Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "research agent shared memory"
+      },
+      "provider": "github-search",
+      "query": "research agent shared memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G11\\github-search-001-8c0a899f0a6e0664bbb083f3dd968668fb3512159f6d7d1d8eea067acea287b5.raw",
+      "reported_total": 54,
+      "response_sha256": "8c0a899f0a6e0664bbb083f3dd968668fb3512159f6d7d1d8eea067acea287b5",
+      "result_count": 54,
+      "url": "https://api.github.com/search/repositories?q=research+agent+shared+memory&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:08:55Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "research agent shared memory"
+      },
+      "provider": "github-search",
+      "query": "research agent shared memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G11\\github-search-002-94cfbb13a8d5ba7acced8243f4fcdb5f95400d6777da36b41f4ce7d9d4103a7e.raw",
+      "reported_total": 54,
+      "response_sha256": "94cfbb13a8d5ba7acced8243f4fcdb5f95400d6777da36b41f4ce7d9d4103a7e",
+      "result_count": 0,
+      "url": "https://api.github.com/search/repositories?q=research+agent+shared+memory&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:08:54Z",
+  "to": null
+}

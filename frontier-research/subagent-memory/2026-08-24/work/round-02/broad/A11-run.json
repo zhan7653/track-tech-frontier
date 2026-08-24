@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:06:54Z",
+  "from": "2023-01-01",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 21,
+  "pages": 2,
+  "provider": "arxiv",
+  "query": "(\"multi-party\" OR \"multi-user\" OR \"multi-principal\") AND memory AND agent",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:06:52Z",
+      "page": 1,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:((\"multi-party\" OR \"multi-user\" OR \"multi-principal\") AND memory AND agent) AND submittedDate:[202301010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 0
+      },
+      "provider": "arxiv",
+      "query": "(\"multi-party\" OR \"multi-user\" OR \"multi-principal\") AND memory AND agent",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\A11\\arxiv-001-aedbdf6b820f99707173f9d82d59713d6092b1b2ced229c58d4c0a904e6a2bb1.raw",
+      "reported_total": 21,
+      "response_sha256": "aedbdf6b820f99707173f9d82d59713d6092b1b2ced229c58d4c0a904e6a2bb1",
+      "result_count": 21,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%28%22multi-party%22+OR+%22multi-user%22+OR+%22multi-principal%22%29+AND+memory+AND+agent%29+AND+submittedDate%3A%5B202301010000+TO+202608242359%5D&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:06:54Z",
+      "page": 2,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:((\"multi-party\" OR \"multi-user\" OR \"multi-principal\") AND memory AND agent) AND submittedDate:[202301010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 100
+      },
+      "provider": "arxiv",
+      "query": "(\"multi-party\" OR \"multi-user\" OR \"multi-principal\") AND memory AND agent",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\A11\\arxiv-002-d18e9fb6c887e696008ac587a0f0f70ae7ebf9a40379182e4ba1a2d031e15f94.raw",
+      "reported_total": 21,
+      "response_sha256": "d18e9fb6c887e696008ac587a0f0f70ae7ebf9a40379182e4ba1a2d031e15f94",
+      "result_count": 0,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%28%22multi-party%22+OR+%22multi-user%22+OR+%22multi-principal%22%29+AND+memory+AND+agent%29+AND+submittedDate%3A%5B202301010000+TO+202608242359%5D&start=100&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:06:52Z",
+  "to": "2026-08-24"
+}

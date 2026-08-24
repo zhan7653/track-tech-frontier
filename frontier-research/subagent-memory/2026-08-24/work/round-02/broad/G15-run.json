@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:09:22Z",
+  "from": "2025-08-25",
+  "github_date_field": "created",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "multi-agent memory",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:18Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "multi-agent memory created:2025-08-25..2026-08-24"
+      },
+      "provider": "github-search",
+      "query": "multi-agent memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G15\\github-search-001-4a498f46f05443f2b4aec9363c9b6c3109238879c919f5b142905b23c804ec8e.raw",
+      "reported_total": 4286,
+      "response_sha256": "4a498f46f05443f2b4aec9363c9b6c3109238879c919f5b142905b23c804ec8e",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=multi-agent+memory+created%3A2025-08-25..2026-08-24&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:22Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "multi-agent memory created:2025-08-25..2026-08-24"
+      },
+      "provider": "github-search",
+      "query": "multi-agent memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G15\\github-search-002-30f9b3722905ee0a5ac5a2a1ca0fd687ee553667e0a81d2d20a36e941ff91743.raw",
+      "reported_total": 4286,
+      "response_sha256": "30f9b3722905ee0a5ac5a2a1ca0fd687ee553667e0a81d2d20a36e941ff91743",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=multi-agent+memory+created%3A2025-08-25..2026-08-24&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:09:18Z",
+  "to": "2026-08-24"
+}

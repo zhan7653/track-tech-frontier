@@ -1,0 +1,70 @@
+{
+  "finished_at": "2026-08-23T18:34:17Z",
+  "from": "2026-05-27",
+  "limitations": "Point-in-time stars are retained only as a snapshot. No growth or acceleration is inferred.",
+  "measurement_status": "complete",
+  "observation_count": 1,
+  "provider": "github-observe",
+  "record_type": "github-repository-observation-run",
+  "repo_observed": "kimdanny/matm",
+  "repo_requested": "kimdanny/matm",
+  "requests": [
+    {
+      "kind": "repository",
+      "observed_at": "2026-08-23T18:34:13Z",
+      "params": {},
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\kimdanny--matm\\github-observe-001-0834edd4f0ee0cf282b71b8f7e5c96468b0fff554f6533fb9cd0d03ef3912d32.raw",
+      "response_sha256": "0834edd4f0ee0cf282b71b8f7e5c96468b0fff554f6533fb9cd0d03ef3912d32",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:34:13Z",
+      "url": "https://api.github.com/repos/kimdanny/matm"
+    },
+    {
+      "kind": "latest-release",
+      "observed_at": "2026-08-23T18:34:14Z",
+      "params": {
+        "page": 1,
+        "per_page": 1
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\kimdanny--matm\\github-observe-002-4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.raw",
+      "response_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "result_count": 0,
+      "retrieved_at": "2026-08-23T18:34:14Z",
+      "url": "https://api.github.com/repos/kimdanny/matm/releases?per_page=1&page=1"
+    },
+    {
+      "kind": "default-branch-commit",
+      "observed_at": "2026-08-23T18:34:16Z",
+      "params": {},
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\kimdanny--matm\\github-observe-003-5a3794e46d27943c1bfa1093c54952e7779e9b555444afab7fa00841c6db7e9c.raw",
+      "response_sha256": "5a3794e46d27943c1bfa1093c54952e7779e9b555444afab7fa00841c6db7e9c",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:34:16Z",
+      "url": "https://api.github.com/repos/kimdanny/matm/commits/main"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:34:17Z",
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\kimdanny--matm\\github-observe-004-0680117d47ff98e8b348547a50abc756706f0d5421173793d0edea625ffdbbd0.raw",
+      "response_sha256": "0680117d47ff98e8b348547a50abc756706f0d5421173793d0edea625ffdbbd0",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:34:17Z",
+      "url": "https://api.github.com/repos/kimdanny/matm/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=1"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T18:34:13Z",
+  "to": "2026-08-24",
+  "window_id": "W_ROLLING_90D"
+}

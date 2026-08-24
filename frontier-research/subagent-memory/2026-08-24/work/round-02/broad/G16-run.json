@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:09:30Z",
+  "from": "2025-08-25",
+  "github_date_field": "created",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "subagent memory",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:26Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "subagent memory created:2025-08-25..2026-08-24"
+      },
+      "provider": "github-search",
+      "query": "subagent memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G16\\github-search-001-bef6ca74b0d38a6d731a86b88b3103629db8aac7be13a41f35125944d7d61f03.raw",
+      "reported_total": 250,
+      "response_sha256": "bef6ca74b0d38a6d731a86b88b3103629db8aac7be13a41f35125944d7d61f03",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=subagent+memory+created%3A2025-08-25..2026-08-24&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:30Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "subagent memory created:2025-08-25..2026-08-24"
+      },
+      "provider": "github-search",
+      "query": "subagent memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G16\\github-search-002-151fa868a1f3dd90bdee3035e7898a30f62bbf2c30acb4bb4e5046491e39fb90.raw",
+      "reported_total": 250,
+      "response_sha256": "151fa868a1f3dd90bdee3035e7898a30f62bbf2c30acb4bb4e5046491e39fb90",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=subagent+memory+created%3A2025-08-25..2026-08-24&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:09:26Z",
+  "to": "2026-08-24"
+}

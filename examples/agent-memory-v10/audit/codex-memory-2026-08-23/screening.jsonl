@@ -1,0 +1,3 @@
+{"screening_id":"SC-CODEX-001","discovery_id":"D-CODEX-001","decision":"deep-verify","reason":"Canonical current implementation directly exposes the requested Memory architecture.","checked_at":"2026-08-23T14:56:00Z"}
+{"screening_id":"SC-CODEX-002","discovery_id":"D-CODEX-002","decision":"deep-verify","reason":"Official product behavior is required to interpret source-code feature and scope boundaries.","checked_at":"2026-08-23T15:15:40Z"}
+{"screening_id":"SC-CODEX-003","discovery_id":"D-CODEX-003","decision":"deep-verify","reason":"Independent original study directly evaluates persistent Memory prompt injection in Codex.","checked_at":"2026-08-23T15:16:30Z"}

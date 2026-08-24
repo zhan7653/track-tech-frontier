@@ -1,0 +1,70 @@
+{
+  "finished_at": "2026-08-23T18:33:45Z",
+  "from": "2026-05-27",
+  "limitations": "Point-in-time stars are retained only as a snapshot. No growth or acceleration is inferred.",
+  "measurement_status": "complete",
+  "observation_count": 1,
+  "provider": "github-observe",
+  "record_type": "github-repository-observation-run",
+  "repo_observed": "microsoft/autogen",
+  "repo_requested": "microsoft/autogen",
+  "requests": [
+    {
+      "kind": "repository",
+      "observed_at": "2026-08-23T18:33:41Z",
+      "params": {},
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\microsoft--autogen\\github-observe-001-6e75bb5fc57203192ca9e22cb6f4da28b11f82a3da434fd16878313d4b5c5bd2.raw",
+      "response_sha256": "6e75bb5fc57203192ca9e22cb6f4da28b11f82a3da434fd16878313d4b5c5bd2",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:33:41Z",
+      "url": "https://api.github.com/repos/microsoft/autogen"
+    },
+    {
+      "kind": "latest-release",
+      "observed_at": "2026-08-23T18:33:43Z",
+      "params": {
+        "page": 1,
+        "per_page": 1
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\microsoft--autogen\\github-observe-002-2939eafe51ee49ed2f9ae5116632a4df8a806e633bd298c02515da1c1878ae75.raw",
+      "response_sha256": "2939eafe51ee49ed2f9ae5116632a4df8a806e633bd298c02515da1c1878ae75",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:33:43Z",
+      "url": "https://api.github.com/repos/microsoft/autogen/releases?per_page=1&page=1"
+    },
+    {
+      "kind": "default-branch-commit",
+      "observed_at": "2026-08-23T18:33:44Z",
+      "params": {},
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\microsoft--autogen\\github-observe-003-0e5d213f3ecdaddfce6bf22653d072a08c196b93cd8c30b1113b6701b67cefd8.raw",
+      "response_sha256": "0e5d213f3ecdaddfce6bf22653d072a08c196b93cd8c30b1113b6701b67cefd8",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:33:44Z",
+      "url": "https://api.github.com/repos/microsoft/autogen/commits/main"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:45Z",
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\microsoft--autogen\\github-observe-004-4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.raw",
+      "response_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "result_count": 0,
+      "retrieved_at": "2026-08-23T18:33:45Z",
+      "url": "https://api.github.com/repos/microsoft/autogen/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=1"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T18:33:41Z",
+  "to": "2026-08-24",
+  "window_id": "W_ROLLING_90D"
+}

@@ -1,0 +1,1053 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/wsieAS0W8ME9Ss1RF5J6YcxNeFM</id>
+  <title>arXiv Query: search_query=(all:"multi-agent" AND (all:blackboard OR all:"shared workspace" OR all:"shared state" OR all:"state synchronization") AND (all:LLM OR all:"language model") ) AND submittedDate:"202301010000 TO 202608242359"&amp;id_list=&amp;start=0&amp;max_results=100</title>
+  <updated>2026-08-23T17:06:04Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=(all:%22multi-agent%22+AND+((all:blackboard+OR+(all:%22shared+workspace%22+OR+(all:%22shared+state%22+OR+all:%22state+synchronization%22)))+AND+(all:LLM+OR+all:%22language+model%22)))+AND+submittedDate:%22202301010000+TO+202608242359%22&amp;start=0&amp;max_results=100&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>100</opensearch:itemsPerPage>
+  <opensearch:totalResults>34</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2608.18878v1</id>
+    <title>DentAgent: Evidence-Centric Multi-Agent Coordination for Multimodal Dental Reasoning</title>
+    <updated>2026-08-19T12:58:03Z</updated>
+    <link href="https://arxiv.org/abs/2608.18878v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2608.18878v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Oral diseases affect billions of people worldwide, underscoring a pressing need for accurate and reliable dental assessment that integrates heterogeneous evidence from domain knowledge, radiographs, intraoral photographs, and 3D dental data. Most existing dental AI systems remain modality- or task-specific. Although recent vision-language models support flexible dental question answering, directly generated response leaves evidence implicit and untraceable. To address these limitations, we introduce DentAgent, an evidence-centric multi-agent framework, in which the Orchestrator coordinate five specialized agents spanning various modalities. Each specialist utilizes domain tools to convert observations into structured evidence records. The Evidence Blackboard manages these records as a shared evidence state, tracking coverage, gaps, and conflicts before response generation. This standardized evidence representation integrates isolated dental capabilities into a unified agentic workflow. Across four benchmarks, DentAgent demonstrates leading performance, even surpassing the senior specialists by 17.3 percentage points on multi-label diagnosis, which supports its value for broadly applicable and traceable multimodal dental reasoning, and highlights its potential as a technical foundation for population oral health assessment and management.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-08-19T12:58:03Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Zijie Meng</name>
+    </author>
+    <author>
+      <name>Xiwei Dai</name>
+    </author>
+    <author>
+      <name>Yixuan Tang</name>
+    </author>
+    <author>
+      <name>Jin Hao</name>
+    </author>
+    <author>
+      <name>Yang Feng</name>
+    </author>
+    <author>
+      <name>Fudong Zhu</name>
+    </author>
+    <author>
+      <name>Xiaoqiang Liu</name>
+    </author>
+    <author>
+      <name>Shaosheng Cao</name>
+    </author>
+    <author>
+      <name>Zuozhu Liu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2608.03744v2</id>
+    <title>Agents Catching Agents: Shortcut Cascades and Benchmark Gaming in Clinical Multi-Agent Systems</title>
+    <updated>2026-08-17T20:57:07Z</updated>
+    <link href="https://arxiv.org/abs/2608.03744v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2608.03744v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Clinical decision support is moving toward committees of language-model agents deliberating on a shared workspace. We ask whether such committees can be gamed by shortcuts, cues a benchmark rewards but a clinician would ignore. Across seven cohorts on six public datasets spanning text (MedQA-USMLE, MedMCQA, MIMIC-CXR reports), imaging (NIH ChestX-ray14, MIMIC-CXR-JPG, CheXpert) and tabular ICU records (SUPPORT2), Gemini committees resist these cues in isolation (flip 5-16%), yet a socially plausible shortcut spreads: when two peers assert the same wrong answer, the holdout under test adopts it in 38% of cases, as does a false "pre-screen" system flag, on both capability tiers. Of three oversight agents, a gate cannot separate adoption from honest agreement (false-positive rate 100%); a same-lineage judge reading only the transcript flags adoption on text (precision 100%, recall 93%) but collapses onto the gate in imaging; a referee that privately re-queries the holdout transfers to imaging (77-88% precision, 13-21% false-positive rate). Tripling a cue's visual salience does not move contagion, whereas a second peer voice raises it by half again. Gaming a hidden rubric is near-silent: only 1/10 text and 1/134 imaging drifters name the rubric they moved toward. What games a committee is social plausibility, and only a referee independent of self-report catches it. Code: https://github.com/criticaldata/benchmaxxing</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-08-04T14:37:16Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Sebastián Andrés Cajas Ordóñez</name>
+    </author>
+    <author>
+      <name>Agastya Munnangi</name>
+    </author>
+    <author>
+      <name>Aldo Marzullo</name>
+    </author>
+    <author>
+      <name>Felipe Ocampo Osorio</name>
+    </author>
+    <author>
+      <name>Quang Bui</name>
+    </author>
+    <author>
+      <name>Mohammad Shahin</name>
+    </author>
+    <author>
+      <name>Armaan Grewal</name>
+    </author>
+    <author>
+      <name>Emmanuel Paul Kwesiga</name>
+    </author>
+    <author>
+      <name>Anqi Peter Li</name>
+    </author>
+    <author>
+      <name>Josephine Nanyonjo</name>
+    </author>
+    <author>
+      <name>Aaditya Panchal</name>
+    </author>
+    <author>
+      <name>Arshnoor Bhutani</name>
+    </author>
+    <author>
+      <name>Nikhil Jaiswal</name>
+    </author>
+    <author>
+      <name>Milit S. Patel</name>
+    </author>
+    <author>
+      <name>Maximin Lange</name>
+    </author>
+    <author>
+      <name>Leo Anthony Celi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.21268v1</id>
+    <title>pAI-Econ-claude: A Gated Human-in-the-Loop Multi-Agent Architecture for AI-Assisted Economic Theory Development</title>
+    <updated>2026-07-23T12:40:47Z</updated>
+    <link href="https://arxiv.org/abs/2607.21268v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.21268v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>In many social-science research tasks, such as economics, LLM-based agents must produce outputs for which no cheap, task-complete, machine-readable correctness signal exists. This creates a distinctive reliability problem for multi-agent systems: how should generation, critique, coordination, and human judgment be organized when no component can certify the final result? We address this problem through pAI-Econ-claude, a gated, human-in-the-loop multi-agent architecture for AI-assisted economic theory development. Agents coordinate through a shared workspace of inspectable intermediate records; specialized gates diagnose targeted failure modes and recommend loopbacks without certifying correctness; and human checkpoints retain authority over decisions that are costly to reverse. We evaluate the architecture on five matched economic-theory tasks against an ungated baseline. Two evaluators blinded to configuration agreed on all five pairwise rankings, preferring the gated architecture in four tasks and the baseline in one. Mean failure severity fell from 1.58 to 1.16, while overall usefulness rose from 2.60 to 3.10. The largest observed gain occurred when a reality check rejected a false market-structure premise and a proof review prompted revision of a false welfare claim. The negative case shows that scaffolding can also compress an economically important mechanism too aggressively. The results support a bounded claim: gated oversight improves the auditability of AI-assisted economic theory without substituting for formal verification, and the allocation of irreversible human judgment is a more informative design variable than pure agent autonomy. The workflow is publicly available at https://github.com/maxwell2732/pAI-Econ-claude.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="econ.GN" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-23T12:40:47Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Chen Zhu</name>
+    </author>
+    <author>
+      <name>Xiaolu Wang</name>
+    </author>
+    <author>
+      <name>Weilong Zhang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.15257v1</id>
+    <title>SearchOS-V1: Towards Robust Open-Domain Information-Seeking Agent Collaboration</title>
+    <updated>2026-07-16T17:51:23Z</updated>
+    <link href="https://arxiv.org/abs/2607.15257v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.15257v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Recent advances in Tool-Integrated Large Language Models have made web search a core capability of information-seeking agents. However, as interaction histories grow, agents increasingly struggle to track task progress. When search attempts fail to yield useful evidence, current single- and multi-agent systems can become trapped in repetitive loops, wasting search budgets and ultimately compromising the quality and completeness of the final output. We introduce SearchOS, a system-level multi-agent framework that turns fragile, implicit search progress into explicit, persistent, and shared state. First, we formulate open-domain information seeking as relational schema completion with grounded citations, where agents discover entities, populate attributes across linked tables, and anchor each value to source evidence. Then we design Search-Oriented Context Management (SOCM), which externalizes the evolving state into Frontier Task, an Evidence Graph, a Coverage Map, and Failure Memory. Built on SOCM, SearchOS applies a pipeline-parallel scheduling mechanism that overlaps the execution of sub-agents and continuously refills freed slots with tasks targeting unresolved coverage gaps to improve utilization and throughput. To schedule and control the execution of search agents, SearchOS introduces a Search Tool Middleware Harness that intercepts model and tool interactions to record grounded evidence and react to stalls or budget exhaustion, and provides a reusable hierarchical skill system comprising strategy and access skills to augment the agents' search process and avoid repeating failed search patterns across runs. On WideSearch and GISA, SearchOS leads all metrics among the evaluated single- and multi-agent baselines, paving the way toward robust information-seeking collaboration.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.IR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-16T17:51:23Z</published>
+    <arxiv:comment>Code is available at https://github.com/antins-labs/SearchOS</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Yuyao Zhang</name>
+    </author>
+    <author>
+      <name>Junjie Gao</name>
+    </author>
+    <author>
+      <name>Zhengxian Wu</name>
+    </author>
+    <author>
+      <name>Jiaming Fan</name>
+    </author>
+    <author>
+      <name>Jin Zhang</name>
+    </author>
+    <author>
+      <name>Shihan Ma</name>
+    </author>
+    <author>
+      <name>Yao Yao</name>
+    </author>
+    <author>
+      <name>Weiran Qi</name>
+    </author>
+    <author>
+      <name>Chuyan Jin</name>
+    </author>
+    <author>
+      <name>Guiyu Ma</name>
+    </author>
+    <author>
+      <name>Xingzhong Xu</name>
+    </author>
+    <author>
+      <name>Kai Yang</name>
+    </author>
+    <author>
+      <name>Ji-Rong Wen</name>
+    </author>
+    <author>
+      <name>Zhicheng Dou</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.12216v1</id>
+    <title>RCWT: Measuring Task-Budget Displacement from Coordination Content in LLM Calls</title>
+    <updated>2026-07-13T23:31:44Z</updated>
+    <link href="https://arxiv.org/abs/2607.12216v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.12216v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Multi-agent and memory-augmented LLM systems often place coordination content, shared state, prior discussion, tool outputs, summaries, and role instructions, inside the same finite prompt used for the current task. This creates a practical allocation problem: every token spent on coordination is unavailable to task instructions or evidence when a call is assembled under a fixed context budget. We introduce the Roundtable Context Window Test (RCWT), a controlled protocol for measuring this task-budget displacement effect. RCWT varies coordination content while controlling total budget, position order, task family, and scoring. In the main context-dependent recall task at $W=4096$, three commercial models remain near baseline through moderate overhead and then degrade sharply once residual reference evidence falls to a few hundred tokens. Window-scaling summaries are consistent with a task-specific residual-budget interpretation rather than a fixed percentage threshold, but we treat this as descriptive evidence rather than a universal law. To test whether the fixed-budget cliff persists when task evidence remains intact, we add an intact-task ablation: the full task/reference block is kept present while coordination tokens increase by expanding total prompt length. In that setting, all tested calls return every scored field correctly across GPT-4.1-mini, Claude Haiku 4.5, and Gemini 2.5 Flash up to a 95\% coordination ratio. This ablation narrows the claim: the main RCWT cliff is best read as task-budget displacement, not as proof that coordination volume alone causes semantic interference in the original open-ended task. RCWT is therefore a measurement primitive for context-allocation budgeting, not a complete theory of multi-agent benefit or session-level coordination.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-13T23:31:44Z</published>
+    <arxiv:comment>10 pages, 1 figure</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Brenda Lelis</name>
+    </author>
+    <author>
+      <name>Rodrigo Cabral-Carvalho</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.21666v1</id>
+    <title>Hallucination as Context Drift: Synchronization Protocols for Multi-Agent LLM Systems</title>
+    <updated>2026-06-19T18:17:45Z</updated>
+    <link href="https://arxiv.org/abs/2606.21666v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.21666v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Multi-agent LLM systems routinely produce hallucinated outputs that cannot be explained by model deficiencies alone. A significant class of these failures arises not from model incapacity but from context drift: the divergence of internal knowledge states between concurrent agents. When agents enter a collaborative task with mismatched or stale representations of shared world state, their joint reasoning produces contradictions that manifest as hallucination. We define the Context Divergence Score (CDS), a lightweight scalar metric quantifying knowledge-state discrepancy between agent pairs across spatial, temporal, and task dimensions, and propose the Shared State Verification Protocol (SSVP), which lets agents periodically exchange compressed state summaries and flag high-divergence conditions before joint reasoning. We evaluate SSVP across two domains (multi-agent travel and software project planning) using Claude Haiku. In controlled experiments (n=30 per condition, travel; n=10, software) across 8 scenarios, naive full-broadcast synchronization increases hallucination rate by 34% above the no-sync baseline (HR: 0.658 vs. 0.492, p=0.0022, d=1.18), a contamination effect from propagating erroneous agent states. SSVP avoids this failure mode while showing modest, consistent reduction (HR: 0.463, d=0.30) and achieves significantly lower hallucination than full-broadcast (p=0.0005, d=1.47) using 58% fewer API calls. The contamination effect does not replicate in the software domain, where all conditions converge to low HR (&lt;0.2), confirming it is specific to tasks where one erroneous shared belief cascades across evaluation dimensions. Our results reframe hallucination mitigation as a distributed systems problem and establish context synchronization as a first-class primitive in multi-agent LLM design.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-19T18:17:45Z</published>
+    <arxiv:comment>11 pages, 1 figure</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Carson Rodrigues</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.17182v1</id>
+    <title>Verified Detection and Prevention of Concurrency Anomalies in Multi-Agent Large Language Model Systems</title>
+    <updated>2026-06-15T18:19:34Z</updated>
+    <link href="https://arxiv.org/abs/2606.17182v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.17182v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Multi-agent LLM systems share state through memory stores, vector indices, and tool registries. We model such sharing as long-running read-generate-write operations under deterministic-generation semantics -- the regime durable-execution engines enforce by deterministic replay -- and formalize four concurrency anomalies in TLA+: stale-generation, phantom-tool, causal-cascade, and tool-effect reordering, structural analogues of classical isolation anomalies, each with a TLC counter-example. The exclusion lattice over these anomalies is trivial; the contribution is the mechanically verified realizability and strict separation of one maximal chain within it, $L_0 \subsetneq \cdots \subsetneq L_4$, to our knowledge the first machine-checked consistency hierarchy for such runtimes. A development of 274 Verus obligations (zero assume, zero admit; trust base: two structural axioms and a mutex correspondence) proves the detectors sound and complete against the specifications and each runtime its avoidance set. Three deployed Rust runtimes realize L0-L1 (pessimistic locking, serializable snapshot isolation, default-SI), each verified against stale-generation and refined to its state machine; L2-L4 are exec-mode-verified with dependency-free prevention twins (A3, A6, A2: 0/1000 versus 1000/1000), and L2 is run live across three model families (A3 prevented in all 120 retracted sessions). We reproduce a silent lost update in ByteDance's deer-flow, formalizing its fix as a verified $L_0 \to L_1$ refinement, and exhibit tool-effect reordering in LangGraph's ToolNode on unmodified output, removed by an L3 commit-order sequencer. The verified detector, refinements, and realizability artifacts are the contribution; the phenomena and lattice are classical.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.DC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LO" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.PL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-15T18:19:34Z</published>
+    <arxiv:comment>32 pages, 2 figures, 6 tables. Verus/TLA+ verification artifact, reference Rust runtime, and Python harnesses, plus a supplementary appendix (Sections A-F, Tables S1-S6), included as ancillary files</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Sajjad Khan</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.15376v1</id>
+    <title>CoAgent: Concurrency Control for Multi-Agent Systems</title>
+    <updated>2026-06-13T16:15:14Z</updated>
+    <link href="https://arxiv.org/abs/2606.15376v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.15376v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Multi-agent LLM systems -- coding agents, devops agents, document agents -- now routinely run several agents in parallel against the same git tree, Kubernetes cluster, or document. As soon as two of them mutate shared state, they enter the regime classical concurrency control has studied for decades, but classical mechanisms fit LLM agents poorly. A single agent transaction spans minutes of inference, read sets are broad and opaque rather than statically inferable, and the live state agents act on admits neither fork nor buffer, so writes take effect the moment they execute. Locks block long inference intervals; OCC abort-and-retry discards minutes of work on every conflict.
+  This paper builds concurrency control on a capability classical transactions lack: the LLM inside each agent can judge whether a conflicting write invalidates its plan, and can repair exactly the operations that depended on it. Control therefore turns advisory: the runtime informs, the agent repairs. Our protocol, MTPO (Monotonic Trajectory Pre-Order), fixes a serialization order at launch, serves each read the order-filtered value, and applies writes speculatively in place; a one-way notification asks an affected reader to re-judge and patch its plan, while the framework mechanically undoes and reorders misplaced writes through the saga-style inverse each tool registers in advance. At quiescence the run is serializable in the pre-decided order. We realize MTPO as CoAgent, toolcall middleware whose privileged ToolSmith grows footprint-declared, undoable tools online. On ten contended workloads, CoAgent stays within 5\% of serial correctness at a $1.4\times$ speedup and near-serial token cost, where 2PL and OCC surrender nearly all concurrency gains; on a bash-only target system, it grows a 25-tool library online and lifts the task pass rate from 45/71 to 63/71 at $0.80\times$ the time and $0.86\times$ the cost.</summary>
+    <category term="cs.DC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-13T16:15:14Z</published>
+    <arxiv:comment>14 pages, 7 figures. Submitted to ATC 2026</arxiv:comment>
+    <arxiv:primary_category term="cs.DC"/>
+    <author>
+      <name>Hongtao Lyu</name>
+    </author>
+    <author>
+      <name>Dingyan Zhang</name>
+    </author>
+    <author>
+      <name>Mingyu Wu</name>
+    </author>
+    <author>
+      <name>Xingda Wei</name>
+    </author>
+    <author>
+      <name>Haibo Chen</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.14790v1</id>
+    <title>XFlow: An Executable Protocol Programming System for Reliable Multi-Agent Workflows</title>
+    <updated>2026-06-11T02:36:51Z</updated>
+    <link href="https://arxiv.org/abs/2606.14790v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.14790v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>LLM-based multi-agent systems increasingly coordinate planning, reasoning, tool use, and human interaction, yet their reliability remains limited. A central source of this limitation is the underspecified prompt--harness boundary. Current systems lack a principled way to decide which workflow commitments should remain in prompts and which should become harness structure. We present \textbf{XFlow}, an executable protocol programming system for reliable multi-agent workflows, and \textbf{XPF} (XFlow Protocol Format), its domain-specific protocol programming language. XFlow occupies a middle position between prompt-only orchestration and markup-like workflow descriptions. XPF remains readable as a literate protocol, but it is compiled and executed as a program. Its design keeps informal semantic work inside actors while moving selected commitments into harness structure that can be checked, preserved, and enforced. At runtime, XFlow stages uncertainty through lifecycle-governed symbols, which are typed state cells with validation and commit states. Actor outputs are mediated before they become shared state, instead of spreading through prompts, transcripts, or implicit memory. Our experiments cover Constrained Interaction, Long-Context Reasoning, and Agentic Software Engineering. They show that XFlow improves reliability by making constraints, evidence handling, and process requirements explicit and enforceable.</summary>
+    <category term="cs.PL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-11T02:36:51Z</published>
+    <arxiv:primary_category term="cs.PL"/>
+    <author>
+      <name>Hanqi Li</name>
+    </author>
+    <author>
+      <name>Jing Peng</name>
+    </author>
+    <author>
+      <name>Zijian Wang</name>
+    </author>
+    <author>
+      <name>Lu Chen</name>
+    </author>
+    <author>
+      <name>Kai Yu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2608.18092v1</id>
+    <title>Position: Multi-Agent Systems Should Prioritize Concurrency Control</title>
+    <updated>2026-06-06T13:36:15Z</updated>
+    <link href="https://arxiv.org/abs/2608.18092v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2608.18092v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>LLM-based multi-agent systems (MAS) promise scalable collaboration, yet adding agents often reduces reliability. This position paper argues that many MAS failures are fundamentally concurrency control problems: agents concurrently read and write shared state, and long LLM inference windows amplify the risk of stale reads, lost updates, and inconsistent outcomes. Failure modes commonly attributed to coordination or communication breakdowns can be mapped directly onto classical concurrency anomalies. We contend that MAS frameworks should address these failures through explicit concurrency control mechanisms: conflict detection, isolation guarantees, and structured access to shared resources. Concurrency control should be a first-class design concern, not an afterthought.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-06T13:36:15Z</published>
+    <arxiv:comment>16 pages, 1 figure</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Xin Yang</name>
+    </author>
+    <author>
+      <name>Letian Li</name>
+    </author>
+    <author>
+      <name>Zimo Ji</name>
+    </author>
+    <author>
+      <name>Terry Jingchen Zhang</name>
+    </author>
+    <author>
+      <name>Wenyuan Jiang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.28334v2</id>
+    <title>Towards Cybersecurity SuperIntelligence (CSI): What's the best harness for cybersecurity?</title>
+    <updated>2026-05-31T19:04:51Z</updated>
+    <link href="https://arxiv.org/abs/2605.28334v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.28334v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>What is the best harness for cybersecurity AI? Cybersecurity systems are converging on a single execution scaffold per agent, an iterative shell loop driven by a Large Language Model (LLM). However, scaffolds are not interchangeable, rarely interoperable, and no single scaffold dominates across all challenge types. In our path towards researching Cybersecurity SuperIntelligence (CSI), we present a meta-scaffold that unifies heterogeneous agent harnesses under a common orchestration layer, enabling any LLM-driven scaffold to be deployed, benchmarked, and composed within the same infrastructure. Using CSI, we benchmark five scaffolds (CSI::Claude, CSI::Codex, CSI::GCAI, CSI::Mistral, CSI::CAI) on the 33 cybench challenges, holding the model fixed at alias2-mini. The best individual scaffolds solve 15/33 (45.5%); the four-scaffold union solves 17/33 (51.5%), with the fifth (CSI::Mistral, 10/33) contributing one exclusive solve. We find that no single scaffold is the best harness: it is the combination of structurally heterogeneous scaffolds that yields the highest coverage. We validate this through CSI's blackboard-based multi-agent architecture, in which scaffold-specialised agents run in parallel and exchange intermediate findings via a shared substrate (a blackboard). The blackboard solves 19/33 (57.6%), a 27% relative gain over CSI::Claude, one of the best individual scaffolds (15/33, 45.5%), 25% faster (20.2 h vs. 26.8 h), at comparable cost ($5,480 vs. $5,122).</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-27T11:37:18Z</published>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Víctor Mayoral-Vilches</name>
+    </author>
+    <author>
+      <name>Francesco Balassone</name>
+    </author>
+    <author>
+      <name>María Sanz-Gómez</name>
+    </author>
+    <author>
+      <name>Paul Zabalegui Landa</name>
+    </author>
+    <author>
+      <name>Daniel Sánchez Prieto</name>
+    </author>
+    <author>
+      <name>Marina Oteiza Álvarez</name>
+    </author>
+    <author>
+      <name>Davide Quarta</name>
+    </author>
+    <author>
+      <name>Martin Pinzger</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.20563v1</id>
+    <title>Multi-agent Collaboration with State Management</title>
+    <updated>2026-05-19T23:45:33Z</updated>
+    <link href="https://arxiv.org/abs/2605.20563v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.20563v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Recent advances in multi-agent systems have shown great potential for solving complex tasks. However, when multiple agents edit a shared codebase concurrently, their changes can silently conflict and inconsistent views lead to integration failures. Existing multi-agent systems address this through workspace isolation (e.g., one git worktree per agent), but this defers conflict resolution to a post-hoc merge step where recovery is expensive. In this paper, we propose STORM, i.e., STate-ORiented Management for multi-agent collaboration. Specifically, STORM manages agent states by mediating their interactions with the shared workspace, ensuring that each agent operates on a consistent view of the codebase and that conflicting edits are detected and resolved at write time. We evaluate STORM on Commit0 and PaperBench across multiple LLMs. STORM outperforms the git-worktree-based multi-agent baseline by +18.7 on Commit0-Lite and +1.4 on PaperBench, while achieving comparable or better cost efficiency. Combined with single-agent runs, STORM reaches highest scores of 87.6 and 78.2 on the two benchmarks respectively, suggesting that explicit state management is a more effective foundation for multi-agent collaboration than workspace isolation. STORM can also be plugged into any multi-agent system seamlessly.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-19T23:45:33Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Mengyang Liu</name>
+    </author>
+    <author>
+      <name>Taozhi Chen</name>
+    </author>
+    <author>
+      <name>Zhenhua Xu</name>
+    </author>
+    <author>
+      <name>Xue Jiang</name>
+    </author>
+    <author>
+      <name>Yihong Dong</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.18747v1</id>
+    <title>Code as Agent Harness</title>
+    <updated>2026-05-18T17:59:03Z</updated>
+    <link href="https://arxiv.org/abs/2605.18747v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.18747v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Recent large language models (LLMs) have demonstrated strong capabilities in understanding and generating code, from competitive programming to repository-level software engineering. In emerging agentic systems, code is no longer only a target output. It increasingly serves as an operational substrate for agent reasoning, acting, environment modeling, and execution-based verification. We frame this shift through the lens of agent harnesses and introduce code as agent harness: a unified view that centers code as the basis for agent infrastructure. To systematically study this perspective, we organize the survey around three connected layers. First, we study the harness interface, where code connects agents to reasoning, action, and environment modeling. Second, we examine harness mechanisms: planning, memory, and tool use for long-horizon execution, together with feedback-driven control and optimization that make harness reliable and adaptive. Third, we discuss scaling the harness from single-agent systems to multi-agent settings, where shared code artifacts support multi-agent coordination, review, and verification. Across these layers, we summarize representative methods and practical applications of code as agent harness, spanning coding assistants, GUI/OS automation, embodied agents, scientific discovery, personalization and recommendation, DevOps, and enterprise workflows. We further outline open challenges for harness engineering, including evaluation beyond final task success, verification under incomplete feedback, regression-free harness improvement, consistent shared state across multiple agents, human oversight for safety-critical actions, and extensions to multimodal environments. By centering code as the harness of agentic AI, this survey provides a unified roadmap toward executable, verifiable, and stateful AI agent systems.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-18T17:59:03Z</published>
+    <arxiv:comment>GitHub: https://github.com/YennNing/Awesome-Code-as-Agent-Harness-Papers</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Xuying Ning</name>
+    </author>
+    <author>
+      <name>Katherine Tieu</name>
+    </author>
+    <author>
+      <name>Dongqi Fu</name>
+    </author>
+    <author>
+      <name>Tianxin Wei</name>
+    </author>
+    <author>
+      <name>Zihao Li</name>
+    </author>
+    <author>
+      <name>Yuanchen Bei</name>
+    </author>
+    <author>
+      <name>Jiaru Zou</name>
+    </author>
+    <author>
+      <name>Mengting Ai</name>
+    </author>
+    <author>
+      <name>Zhining Liu</name>
+    </author>
+    <author>
+      <name>Ting-Wei Li</name>
+    </author>
+    <author>
+      <name>Lingjie Chen</name>
+    </author>
+    <author>
+      <name>Yanjun Zhao</name>
+    </author>
+    <author>
+      <name>Ke Yang</name>
+    </author>
+    <author>
+      <name>Bingxuan Li</name>
+    </author>
+    <author>
+      <name>Cheng Qian</name>
+    </author>
+    <author>
+      <name>Gaotang Li</name>
+    </author>
+    <author>
+      <name>Xiao Lin</name>
+    </author>
+    <author>
+      <name>Zhichen Zeng</name>
+    </author>
+    <author>
+      <name>Ruizhong Qiu</name>
+    </author>
+    <author>
+      <name>Sirui Chen</name>
+    </author>
+    <author>
+      <name>Yifan Sun</name>
+    </author>
+    <author>
+      <name>Xiyuan Yang</name>
+    </author>
+    <author>
+      <name>Ruida Wang</name>
+    </author>
+    <author>
+      <name>Rui Pan</name>
+    </author>
+    <author>
+      <name>Chenyuan Yang</name>
+    </author>
+    <author>
+      <name>Dylan Zhang</name>
+    </author>
+    <author>
+      <name>Liri Fang</name>
+    </author>
+    <author>
+      <name>Zikun Cui</name>
+    </author>
+    <author>
+      <name>Yang Cao</name>
+    </author>
+    <author>
+      <name>Pan Chen</name>
+    </author>
+    <author>
+      <name>Dorothy Sun</name>
+    </author>
+    <author>
+      <name>Ren Chen</name>
+    </author>
+    <author>
+      <name>Mahesh Srinivasan</name>
+    </author>
+    <author>
+      <name>Nipun Mathur</name>
+    </author>
+    <author>
+      <name>Yinglong Xia</name>
+    </author>
+    <author>
+      <name>Hong Li</name>
+    </author>
+    <author>
+      <name>Hong Yan</name>
+    </author>
+    <author>
+      <name>Pan Lu</name>
+    </author>
+    <author>
+      <name>Lingming Zhang</name>
+    </author>
+    <author>
+      <name>Tong Zhang</name>
+    </author>
+    <author>
+      <name>Hanghang Tong</name>
+    </author>
+    <author>
+      <name>Jingrui He</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.10057v3</id>
+    <title>STAR: Failure-Aware Markovian Routing for Multi-Agent Spatiotemporal Reasoning</title>
+    <updated>2026-05-15T00:13:12Z</updated>
+    <link href="https://arxiv.org/abs/2605.10057v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.10057v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Compositional spatiotemporal reasoning often requires a system to invoke multiple heterogeneous specialists, such as geometric, temporal, topological, and trajectory agents. A central question is how such a system should route among specialists when execution does not simply succeed or fail, but fails in qualitatively different ways. Existing tool-augmented and multi-agent LLM systems typically leave this routing decision implicit in language generation, making recovery ad hoc, difficult to interpret, and hard to optimize. This paper presents STAR (Spatio-Temporal Agent Router), a failure-aware routing framework that externalizes inter-agent control as a state-conditioned transition policy over the current agent, task type, and typed execution status. At the center of STARis an agent routing matrix that combines expert-specified nominal routes with recovery transitions learned from execution traces. Because the matrix conditions on distinct failure states, the router can respond differently to malformed outputs, missing dependencies, and tool--query mismatches, rather than collapsing them into a generic retry signal. Specialists execute through a tool-grounded extract--compute--deposit protocol and write intermediate results to a shared blackboard for downstream fusion. Results prove that retaining unsuccessful traces during training enlarges the support of the routing policy on error states, enabling recovery transitions that success-only training cannot represent. Across three spatiotemporal benchmarks and eight backbone LLMs, STAR improves over multiple baselines with the clearest gains on queries whose execution deviates from the nominal routing path. Router-specific ablations and recovery analyses further show that typed failure-aware routing, rather than specialist composition alone, is a key factor for these improvements.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-11T06:34:49Z</published>
+    <arxiv:comment>30 pages, 13 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Ruiyi Yang</name>
+    </author>
+    <author>
+      <name>Lihuan Li</name>
+    </author>
+    <author>
+      <name>Hao Xue</name>
+    </author>
+    <author>
+      <name>Flora D. Salim</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.07646v1</id>
+    <title>MAVEN: Multi-Agent Verification-Elaboration Network with In-Step Epistemic Auditing</title>
+    <updated>2026-05-08T12:11:08Z</updated>
+    <link href="https://arxiv.org/abs/2605.07646v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.07646v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>While explicit reasoning trajectories enhance model interpretability, existing paradigms often rely on monolithic chains that lack intermediate verification, allowing early errors to cascade unchecked. This lack of modularity impedes granular auditing and compromises the epistemic trust required for high-stakes applications. We propose MAVEN (Multi-Agent Verification-Elaboration Network with In-Step Epistemic Auditing), a blackboard-inspired framework designed to transform LLMs into deliberate reasoners through explicit role-decoupling. At its core, MAVEN operationalizes an adversarial Skeptic-Researcher-Judge loop, simulating expert deliberation by functionally separating logical defense from factual grounding. Experiments on OpenBookQA, TruthfulQA, HALUEVAL and StrategyQA benchmarks demonstrate that MAVEN delivers superior reasoning quality across four fine-grained metrics. Notably, MAVEN consistently outperforms latent reasoning models such as GEMINI-3.1-Pro and consensus-based baselines (e.g., ReConcile) by generating explicitly structured, modular, and verifiable deliberation trajectories, rather than relying on implicit internal states or post-hoc consensus. Moreover, comprehensive evaluations confirm that MAVEN is fully model-agnostic, serving as a strong and transferable reasoning booster that yields substantial performance improvements across diverse backbone models.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-08T12:11:08Z</published>
+    <arxiv:comment>24 pages, 2 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Yinsheng Yao</name>
+    </author>
+    <author>
+      <name>Jiehao Tang</name>
+    </author>
+    <author>
+      <name>Zhaozhen Yang</name>
+    </author>
+    <author>
+      <name>Dawei Cheng</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2604.27221v1</id>
+    <title>Web2BigTable: A Bi-Level Multi-Agent LLM System for Internet-Scale Information Search and Extraction</title>
+    <updated>2026-04-29T21:43:16Z</updated>
+    <link href="https://arxiv.org/abs/2604.27221v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.27221v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Agentic web search increasingly faces two distinct demands: deep reasoning over a single target, and structured aggregation across many entities and heterogeneous sources. Current systems struggle on both fronts. Breadth-oriented tasks demand schema-aligned outputs with wide coverage and cross-entity consistency, while depth-oriented tasks require coherent reasoning over long, branching search trajectories. We introduce \textbf{Web2BigTable}, a multi-agent framework for web-to-table search that supports both regimes. Web2BigTable adopts a bi-level architecture in which an upper-level orchestrator decomposes the task into sub-problems and lower-level worker agents solve them in parallel. Through a closed-loop run--verify--reflect process, the framework jointly improves decomposition and execution over time via persistent, human-readable external memory, with self-evolving updates to each single-agent. During execution, workers coordinate through a shared workspace that makes partial findings visible, allowing them to reduce redundant exploration, reconcile conflicting evidence, and adapt to emerging coverage gaps. Web2BigTable sets a new state of the art on WideSearch, reaching an Avg@4 Success Rate of \textbf{38.50} ($7.5\times$ the second best at 5.10), Row F1 of \textbf{63.53} (+25.03 over the second best), and Item F1 of \textbf{80.12} (+14.42 over the second best). It also generalises to depth-oriented search on XBench-DeepSearch, achieving 73.0 accuracy. Code is available at https://github.com/web2bigtable/web2bigtable.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-04-29T21:43:16Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Yuxuan Huang</name>
+    </author>
+    <author>
+      <name>Yihang Chen</name>
+    </author>
+    <author>
+      <name>Zhiyuan He</name>
+    </author>
+    <author>
+      <name>Yuxiang Chen</name>
+    </author>
+    <author>
+      <name>Ka Yiu Lee</name>
+    </author>
+    <author>
+      <name>Huichi Zhou</name>
+    </author>
+    <author>
+      <name>Weilin Luo</name>
+    </author>
+    <author>
+      <name>Meng Fang</name>
+    </author>
+    <author>
+      <name>Jun Wang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2604.22427v1</id>
+    <title>Automation-Exploit: A Multi-Agent LLM Framework for Adaptive Offensive Security with Digital Twin-Based Risk-Mitigated Exploitation</title>
+    <updated>2026-04-24T10:38:40Z</updated>
+    <link href="https://arxiv.org/abs/2604.22427v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.22427v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The offensive security landscape is highly fragmented: enterprise platforms avoid memory-corruption vulnerabilities due to Denial of Service (DoS) risks, Automatic Exploit Generation (AEG) systems suffer from semantic blindness, and Large Language Model (LLM) agents face safety alignment filters and "Live Fire" execution hazards. We introduce Automation-Exploit, a fully autonomous Multi-Agent System (MAS) framework designed for adaptive offensive security in complex black-box scenarios. It bridges the abstraction gap between reconnaissance and exploitation by autonomously exfiltrating executables and contextual intelligence across multiple protocols, using this data to fuel both logical and binary attack chains. The framework introduces an adaptive safety architecture to mitigate DoS risks. While it natively resolves logical and web-based vulnerabilities, it employs a conditional isomorphic validation for high-risk memory-corruption flaws: if the target binary is successfully exfiltrated, it dynamically instantiates a cross-platform digital twin. By enforcing strict state synchronization, including libc alignment and runtime file descriptor hooking, potentially destructive payloads are iteratively debugged in an isolated replica. This enables a highly risk-mitigated "one-shot" execution on the physical target. Empirical evaluations across eight scenarios, including undocumented zero-day environments to rule out LLM data contamination, validate the framework's architectural resilience, demonstrating its ability to prevent "live fire" crashes and execute risk-mitigated compromises on actual targets.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-04-24T10:38:40Z</published>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Biagio Andreucci</name>
+    </author>
+    <author>
+      <name>Arcangelo Castiglione</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2604.09618v2</id>
+    <title>HearthNet: Edge Multi-Agent Orchestration for Smart Homes</title>
+    <updated>2026-04-28T10:39:23Z</updated>
+    <link href="https://arxiv.org/abs/2604.09618v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.09618v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Smart-home users increasingly want to control their homes in natural language rather than assemble rules, dashboards, and API integrations by hand. At the same time, real deployments are brittle: devices fail, integrations break, and recoveries often require manual intervention. Existing agent toolkits are effective for session-scoped delegation, but smart-home control operates under a different scenario: it is persistent, event-driven, failure-prone, and tied to physical devices with no shared context window. We present HearthNet, an edge multi-agent orchestration system for smart homes. HearthNet deploys a small set of persistent, role-specialized LLM agents at the home hub, where they coordinate through MQTT, Git-backed shared state, and root-issued actuation leases to govern heterogeneous devices through thin adapters. This design externalizes context, preserves execution history, and separates planning, verification, authorization, and actuation across explicit boundaries. Our current prototype runs on commodity edge hardware and Android devices; it keeps orchestration, state management, and device control on-premise while using hosted LLM APIs for inference. We demonstrate the system through three live scenarios: intent-driven multi-agent coordination from ambiguous natural language, conflict resolution with timeline-based tracing, and rejection of stale or unauthorized commands before device actuation.</summary>
+    <category term="cs.DC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-16T15:29:37Z</published>
+    <arxiv:comment>(CAIS 2026) Proceedings of the ACM Conference on AI and Agentic Systems, Demo Track</arxiv:comment>
+    <arxiv:primary_category term="cs.DC"/>
+    <author>
+      <name>Zhonghao Zhan</name>
+    </author>
+    <author>
+      <name>Krinos Li</name>
+    </author>
+    <author>
+      <name>Yefan Zhang</name>
+    </author>
+    <author>
+      <name>Hamed Haddadi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.15371v1</id>
+    <title>Brain-Inspired Graph Multi-Agent Systems for LLM Reasoning</title>
+    <updated>2026-03-16T14:48:06Z</updated>
+    <link href="https://arxiv.org/abs/2603.15371v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.15371v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large Language Models (LLMs) have demonstrated remarkable capabilities across a wide range of language tasks, yet complex multi-step reasoning remains a fundamental challenge. While Large Reasoning Models (LRMs) equipped with extended chain-of-thought mechanisms demonstrate improved performance over standard LLMs, both model types still suffer from accuracy collapse on sufficiently complex tasks, suggesting that scaling model-level reasoning alone is insufficient. Inspired by the global workspace theory of human cognition, we propose Brain-Inspired Graph Multi-Agent Systems (BIGMAS), in which specialized LLM agents are organized as nodes in a dynamically constructed directed graph and coordinate exclusively through a centralized shared workspace. A problem-adaptive GraphDesigner constructs task-specific agent topologies, while a global Orchestrator leverages the complete shared state for routing decisions, overcoming the local-view bottleneck of reactive approaches. Experiments on Game24, Six Fives, and Tower of London across six frontier LLMs demonstrate that BIGMAS consistently improves reasoning performance for both standard LLMs and LRMs, outperforming existing multi-agent baselines including ReAct and Tree of Thoughts, showing that multi-agent architectural design provides complementary gains orthogonal to model-level reasoning enhancements.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.NI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-16T14:48:06Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Guangfu Hao</name>
+    </author>
+    <author>
+      <name>Yuming Dai</name>
+    </author>
+    <author>
+      <name>Xianzhe Qin</name>
+    </author>
+    <author>
+      <name>Shan Yu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.11781v1</id>
+    <title>From Debate to Deliberation: Structured Collective Reasoning with Typed Epistemic Acts</title>
+    <updated>2026-03-12T10:39:41Z</updated>
+    <link href="https://arxiv.org/abs/2603.11781v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.11781v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Multi-agent LLM systems increasingly tackle complex reasoning, yet their interaction patterns remain limited to voting, unstructured debate, or pipeline orchestration. None model deliberation: a phased process where differentiated participants exchange typed reasoning moves, preserve disagreements, and converge on accountable outcomes. We introduce Deliberative Collective Intelligence (DCI), specifying four reasoning archetypes, 14 typed epistemic acts, a shared workspace, and DCI-CF, a convergent flow algorithm that guarantees termination with a structured decision packet containing the selected option, residual objections, minority report, and reopen conditions. We evaluate on 45 tasks across seven domains using Gemini 2.5 Flash. On non-routine tasks (n=40), DCI significantly improves over unstructured debate (+0.95, 95% CI [+0.41, +1.54]). DCI excels on hidden-profile tasks requiring perspective integration (9.56, highest of any system on any domain) while failing on routine decisions (5.39), confirming task-dependence. DCI produces 100% structured decision packets and 98% minority reports, artifacts absent from all baselines. However, DCI consumes ~62x single-agent tokens, and single-agent generation outperforms DCI on overall quality. DCI's contribution is not that more agents are better, but that consequential decisions benefit from deliberative structure when process accountability justifies the cost.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-12T10:39:41Z</published>
+    <arxiv:comment>26 pages, 6 tables, 2 figures, 2 listings</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Sunil Prakash</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.13327v1</id>
+    <title>DOVA: Deliberation-First Multi-Agent Orchestration for Autonomous Research Automation</title>
+    <updated>2026-03-04T20:58:40Z</updated>
+    <link href="https://arxiv.org/abs/2603.13327v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.13327v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large language model (LLM) agents have demonstrated remarkable capabilities in tool use, reasoning, and code generation, yet single-agent systems exhibit fundamental limitations when confronted with complex research tasks demanding multi-source synthesis, adversarial verification, and personalized delivery. We present DOVA (Deep Orchestrated Versatile Agent), a multi-agent platform introducing three key innovations: (1) deliberation-first orchestration, where explicit meta-reasoning precedes tool invocation, informed by a persistent user model and entity-aware conversation context; (2) hybrid collaborative reasoning, a composable three-phase pipeline unifying ensemble diversity, blackboard transparency, and iterative refinement; and (3) adaptive multi-tiered thinking, a six-level token-budget allocation scheme that reduces inference cost by 40-60% on simple tasks while preserving deep reasoning capacity. We formalize the core algorithms, present an architectural ablation study across seven system configurations, and analyze the contribution of each component to answer confidence, source coverage, and token efficiency.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-04T20:58:40Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Aaron Shen</name>
+    </author>
+    <author>
+      <name>Alfred Shen</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.03780v1</id>
+    <title>MACC: Multi-Agent Collaborative Competition for Scientific Exploration</title>
+    <updated>2026-03-04T06:38:04Z</updated>
+    <link href="https://arxiv.org/abs/2603.03780v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.03780v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Scientific discovery still relies heavily on the manual efforts of individual researchers, leading to limited exploration, redundant trials, and reduced reproducibility. Human-participant data analysis competitions generate diverse approaches, yet fluctuations in participation and the lack of independent repetitions show that parallel exploration alone is insufficient for achieving reliable scientific inquiry. As advanced AI agents based on large language models (LLMs) increasingly perform analytical tasks, relying on a single highly capable agent is unlikely to overcome these structural limitations. Recent work has begun to explore how multiple LLM-based agents can collaborate or compete in scientific workflows-a growing trend we refer to as MA4Science. However, most existing MA4Science studies assume that all agents are controlled by a single organizational entity, limiting their ability to examine how institutional mechanisms-such as incentives, information sharing, and reproducibility-shape collective exploration among independently managed agents. To address this gap, we introduce MACC (Multi-Agent Collaborative Competition), an institutional architecture that integrates a blackboard-style shared scientific workspace with incentive mechanisms designed to encourage transparency, reproducibility, and exploration efficiency. MACC provides a testbed for studying how institutional design influences scalable and reliable multi-agent scientific exploration.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-04T06:38:04Z</published>
+    <arxiv:comment>Camera-ready version. To appear in the Proceedings of AAMAS 2026 (Blue Sky Ideas Track)</arxiv:comment>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Satoshi Oyama</name>
+    </author>
+    <author>
+      <name>Yuko Sakurai</name>
+    </author>
+    <author>
+      <name>Hisashi Kashima</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2602.24068v1</id>
+    <title>A Novel Hierarchical Multi-Agent System for Payments Using LLMs</title>
+    <updated>2026-02-27T14:58:13Z</updated>
+    <link href="https://arxiv.org/abs/2602.24068v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2602.24068v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large language model (LLM) agents, such as OpenAI's Operator and Claude's Computer Use, can automate workflows but unable to handle payment tasks. Existing agentic solutions have gained significant attention; however, even the latest approaches face challenges in implementing end-to-end agentic payment workflows. To address this gap, this research proposes the Hierarchical Multi-Agent System for Payments (HMASP), which provides an end-to-end agentic method for completing payment workflows. The proposed HMASP leverages either open-weight or proprietary LLMs and employs a modular architecture consisting of the Conversational Payment Agent (CPA - first agent level), Supervisor agents (second agent level), Routing agents (third agent level), and the Process summary agent (fourth agent level). The CPA serves as the central entry point, handling all external requests and coordinating subsequent tasks across hierarchical levels. HMASP incorporates architectural patterns that enable modular task execution across agents and levels for payment operations, including shared state variables, decoupled message states, and structured handoff protocols that facilitate coordination across agents and workflows. Experimental results demonstrate the feasibility of the proposed HMASP. To our knowledge, HMASP is the first LLM-based multi-agent system to implement end-to-end agentic payment workflows. This work lays a foundation for extending agentic capabilities into the payment domain.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-02-27T14:58:13Z</published>
+    <arxiv:comment>12 pages, 1 figure, 3 tables. Accepted at PAKDD 2026</arxiv:comment>
+    <arxiv:primary_category term="cs.MA"/>
+    <arxiv:journal_ref>In: Wong, R.CW., et al. Advances in Knowledge Discovery and Data Mining. PAKDD 2026. Lecture Notes in Computer Science(), vol 16598. Springer, Singapore</arxiv:journal_ref>
+    <author>
+      <name>Joon Kiat Chua</name>
+    </author>
+    <author>
+      <name>Donghao Huang</name>
+    </author>
+    <author>
+      <name>Zhaoxia Wang</name>
+    </author>
+    <arxiv:doi>10.1007/978-981-92-1462-4_3</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1007/978-981-92-1462-4_3" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2601.15687v1</id>
+    <title>FARM: Field-Aware Resolution Model for Intelligent Trigger-Action Automation</title>
+    <updated>2026-01-22T06:12:18Z</updated>
+    <link href="https://arxiv.org/abs/2601.15687v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.15687v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Trigger-Action Programming (TAP) platforms such as IFTTT and Zapier enable Web of Things (WoT) automation by composing event-driven rules across heterogeneous services. A TAP applet links a trigger to an action and must bind trigger outputs (ingredients) to action inputs (fields) to be executable. Prior work largely treats TAP as service-level prediction from natural language, which often yields non-executable applets that still require manual configuration. We study the function-level configuration problem: generating complete applets with correct ingredient-to-field bindings. We propose FARM (Field-Aware Resolution Model), a two-stage architecture for automated applet generation with full configuration. Stage 1 trains contrastive dual encoders with selective layer freezing over schema-enriched representations, retrieving candidates from 1,724 trigger functions and 1,287 action functions (2.2M possible trigger-action pairs). Stage 2 performs selection and configuration using an LLM-based multi-agent pipeline. It includes intent analysis, trigger selection, action selection via cross-schema scoring, and configuration verification. Agents coordinate through shared state and agreement-based selection. FARM achieves 81% joint accuracy on Gold (62% Noisy, 70% One-shot) at the function level, where both trigger and action functions must match the ground truth. For comparison with service-level baselines, we map functions to their parent services and evaluate at the service level. FARM reaches 81% joint accuracy and improves over TARGE by 23 percentage points. FARM also generates ingredient-to-field bindings, producing executable automation configurations.</summary>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-22T06:12:18Z</published>
+    <arxiv:primary_category term="cs.SE"/>
+    <author>
+      <name>Khusrav Badalov</name>
+    </author>
+    <author>
+      <name>Young Yoon</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2512.18669v1</id>
+    <title>IntelliCode: A Multi-Agent LLM Tutoring System with Centralized Learner Modeling</title>
+    <updated>2025-12-21T10:07:06Z</updated>
+    <link href="https://arxiv.org/abs/2512.18669v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2512.18669v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>LLM-based tutors are typically single-turn assistants that lack persistent representations of learner knowledge, making it difficult to provide principled, transparent, and long-term pedagogical support. We introduce IntelliCode, a multi-agent LLM tutoring system built around a centralized, versioned learner state that integrates mastery estimates, misconceptions, review schedules, and engagement signals. A StateGraph Orchestrator coordinates six specialized agents: skill assessment, learner profiling, graduated hinting, curriculum selection, spaced repetition, and engagement monitoring, each operating as a pure transformation over the shared state under a single-writer policy. This architecture enables auditable mastery updates, proficiency-aware hints, dependency-aware curriculum adaptation, and safety-aligned prompting.
+  The demo showcases an end-to-end tutoring workflow: a learner attempts a DSA problem, receives a conceptual hint when stuck, submits a corrected solution, and immediately sees mastery updates and a personalized review interval. We report validation results with simulated learners, showing stable state updates, improved task success with graduated hints, and diverse curriculum coverage. IntelliCode demonstrates how persistent learner modeling, orchestrated multi-agent reasoning, and principled instructional design can be combined to produce transparent and reliable LLM-driven tutoring.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-12-21T10:07:06Z</published>
+    <arxiv:comment>Submitted to EACL 2026 System Demonstrations Track. 6 pages (main content), 6 figures, includes appendices</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Jones David</name>
+    </author>
+    <author>
+      <name>Shreya Ghosh</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2511.19699v3</id>
+    <title>A Layered Protocol Architecture for the Internet of Agents</title>
+    <updated>2026-01-20T23:06:22Z</updated>
+    <link href="https://arxiv.org/abs/2511.19699v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2511.19699v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large Language Models (LLMs) have demonstrated remarkable performance improvements and the ability to learn domain-specific languages (DSLs), including APIs and tool interfaces. This capability has enabled the creation of AI agents that can perform preliminary computations and act through tool calling, which is now being standardized via protocols like MCP. However, LLMs face fundamental limitations: their context windows cannot grow indefinitely, restricting their memory and computational capacity. Agent collaboration emerges as essential for solving increasingly complex problems, mirroring how computational systems rely on different types of memory to scale. The "Internet of Agents" (IoA) represents the communication stack that enables agents to scale by distributing computation across collaborating entities.
+  Current network architectural stacks (OSI and TCP/IP) were designed for data delivery between hosts and processes, not for agent collaboration with semantic understanding. To address this gap, we propose two new layers: an Agent Communication Layer (L8) and an Agent Semantic Layer (L9). L8 formalizes the structure of communication, standardizing message envelopes, speech-act performatives (e.g., REQUEST, INFORM), and interaction patterns (e.g., request-reply, publish-subscribe), building on protocols like MCP. The proposed L9 layer: (1) formalizes semantic context discovery and negotiation, (2) provides semantic grounding by binding terms to semantic context, and (3) semantically validates incoming prompts and performs disambiguation as needed. Furthermore, L9 introduces primitives for coordination and consensus, allowing agents to achieve alignment on shared states, collective goals, and distributed beliefs. Together, these layers provide the foundation for scalable, distributed agent collaboration, enabling the next generation of multi-agentic systems.</summary>
+    <category term="cs.NI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-11-24T21:06:14Z</published>
+    <arxiv:primary_category term="cs.NI"/>
+    <author>
+      <name>Charles Fleming</name>
+    </author>
+    <author>
+      <name>Luca Muscariello</name>
+    </author>
+    <author>
+      <name>Vijoy Pandey</name>
+    </author>
+    <author>
+      <name>Ramana Kompella</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2510.18893v1</id>
+    <title>CodeCRDT: Observation-Driven Coordination for Multi-Agent LLM Code Generation</title>
+    <updated>2025-10-18T20:50:01Z</updated>
+    <link href="https://arxiv.org/abs/2510.18893v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2510.18893v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Multi-agent LLM systems fail to realize parallel speedups due to costly coordination. We present CodeCRDT, an observation-driven coordination pattern where agents coordinate by monitoring a shared state with observable updates and deterministic convergence, rather than explicit message passing. Using Conflict-Free Replicated Data Types (CRDTs), CodeCRDT enables lock-free, conflict-free concurrent code generation with strong eventual consistency. Evaluation across 600 trials (6 tasks, 50 runs per mode) shows both benefits and trade-offs: up to 21.1% speedup on some tasks, up to 39.4% slowdown on others, and 100% convergence with zero merge failures. The study formalizes observation-driven coordination for stochastic LLM agents, revealing semantic conflict rates (5-10%) and quality-performance tradeoffs, and provides empirical characterization of when parallel coordination succeeds versus fails based on task structure.</summary>
+    <category term="cs.DC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-10-18T20:50:01Z</published>
+    <arxiv:comment>11 pages, 3 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.DC"/>
+    <author>
+      <name>Sergey Pugachev</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2510.14312v1</id>
+    <title>Terrarium: Revisiting the Blackboard for Multi-Agent Safety, Privacy, and Security Studies</title>
+    <updated>2025-10-16T05:19:13Z</updated>
+    <link href="https://arxiv.org/abs/2510.14312v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2510.14312v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>A multi-agent system (MAS) powered by large language models (LLMs) can automate tedious user tasks such as meeting scheduling that requires inter-agent collaboration. LLMs enable nuanced protocols that account for unstructured private data, user constraints, and preferences. However, this design introduces new risks, including misalignment and attacks by malicious parties that compromise agents or steal user data. In this paper, we propose the Terrarium framework for fine-grained study on safety, privacy, and security in LLM-based MAS. We repurpose the blackboard design, an early approach in multi-agent systems, to create a modular, configurable testbed for multi-agent collaboration. We identify key attack vectors such as misalignment, malicious agents, compromised communication, and data poisoning. We implement three collaborative MAS scenarios with four representative attacks to demonstrate the framework's flexibility. By providing tools to rapidly prototype, evaluate, and iterate on defenses and designs, Terrarium aims to accelerate progress toward trustworthy multi-agent systems.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-10-16T05:19:13Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Mason Nakamura</name>
+    </author>
+    <author>
+      <name>Abhinav Kumar</name>
+    </author>
+    <author>
+      <name>Saaduddin Mahmud</name>
+    </author>
+    <author>
+      <name>Sahar Abdelnabi</name>
+    </author>
+    <author>
+      <name>Shlomo Zilberstein</name>
+    </author>
+    <author>
+      <name>Eugene Bagdasarian</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2510.03902v1</id>
+    <title>Multi-Agent Code-Orchestrated Generation for Reliable Infrastructure-as-Code</title>
+    <updated>2025-10-04T18:55:45Z</updated>
+    <link href="https://arxiv.org/abs/2510.03902v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2510.03902v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The increasing complexity of cloud-native infrastructure has made Infrastructure-as-Code (IaC) essential for reproducible and scalable deployments. While large language models (LLMs) have shown promise in generating IaC snippets from natural language prompts, their monolithic, single-pass generation approach often results in syntactic errors, policy violations, and unscalable designs. In this paper, we propose MACOG (Multi-Agent Code-Orchestrated Generation), a novel multi-agent LLM-based architecture for IaC generation that decomposes the task into modular subtasks handled by specialized agents: Architect, Provider Harmonizer, Engineer, Reviewer, Security Prover, Cost and Capacity Planner, DevOps, and Memory Curator. The agents interact via a shared-blackboard, finite-state orchestrator layer, and collectively produce Terraform configurations that are not only syntactically valid but also policy-compliant and semantically coherent. To ensure infrastructure correctness and governance, we incorporate Terraform Plan for execution validation and Open Policy Agent (OPA) for customizable policy enforcement. We evaluate MACOG using the IaC-Eval benchmark, where MACOG is the top enhancement across models, e.g., GPT-5 improves from 54.90 (RAG) to 74.02 and Gemini-2.5 Pro from 43.56 to 60.13, with concurrent gains on BLEU, CodeBERTScore, and an LLM-judge metric. Ablations show constrained decoding and deploy feedback are critical: removing them drops IaC-Eval to 64.89 and 56.93, respectively.</summary>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-10-04T18:55:45Z</published>
+    <arxiv:primary_category term="cs.SE"/>
+    <author>
+      <name>Rana Nameer Hussain Khan</name>
+    </author>
+    <author>
+      <name>Dawood Wasif</name>
+    </author>
+    <author>
+      <name>Jin-Hee Cho</name>
+    </author>
+    <author>
+      <name>Ali Butt</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2510.01285v2</id>
+    <title>LLM-Based Multi-Agent Blackboard System for Information Discovery in Data Science</title>
+    <updated>2026-01-31T23:30:58Z</updated>
+    <link href="https://arxiv.org/abs/2510.01285v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2510.01285v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Advances in large language models (LLMs) have created new opportunities in data science, but their deployment is often limited by the challenge of finding relevant data in large data lakes. Existing methods struggle with this: both single- and multi-agent systems are quickly overwhelmed by large, heterogeneous files, and master-slave multi-agent systems rely on a rigid central controller that requires precise knowledge of each sub-agent's capabilities, which is not possible in large-scale settings where the main agent lacks full observability over sub-agents' knowledge and competencies. We propose a novel multi-agent paradigm inspired by the blackboard architecture for traditional AI models. In our framework, a central agent posts requests to a shared blackboard, and autonomous subordinate agents - either responsible for a partition of the data lake or retrieval from the web - volunteer to respond based on their capabilities. This design improves scalability and flexibility by removing the need for a central coordinator to know each agent's expertise or internal knowledge. We evaluate the approach on three benchmarks that require data discovery: KramaBench and modified versions of DSBench and DA-Code. Results show that the blackboard architecture substantially outperforms strong baselines, achieving 13%-57% relative improvements in end-to-end success and up to a 9% relative gain in data discovery F1 over the best baseline.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.IR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-09-30T22:34:23Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Alireza Salemi</name>
+    </author>
+    <author>
+      <name>Mihir Parmar</name>
+    </author>
+    <author>
+      <name>Palash Goyal</name>
+    </author>
+    <author>
+      <name>Yiwen Song</name>
+    </author>
+    <author>
+      <name>Jinsung Yoon</name>
+    </author>
+    <author>
+      <name>Hamed Zamani</name>
+    </author>
+    <author>
+      <name>Tomas Pfister</name>
+    </author>
+    <author>
+      <name>Hamid Palangi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2508.21304v3</id>
+    <title>ORCA: ORchestrating Causal Agent</title>
+    <updated>2026-03-18T01:09:34Z</updated>
+    <link href="https://arxiv.org/abs/2508.21304v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.21304v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Causal analysis on relational databases is challenging, as analysis datasets must be repeatedly queried from complex schemas. Recent LLM systems can automate individual steps, but they hardly manage dependencies across analysis stages, making it difficult to preserve consistency between causal hypothesis. We propose ORCA (ORchestrating Causal Agent), an interactive multi-agent framework to enable coherent causal analysis on relational databases by maintaining shared state and introducing human checkpoints. In a controlled user study, participants using ORCA successfully completed end-to-end analysis more often than with a baseline LLM (GPT-4o-mini) assistant by 42 percentage points, achieved substantially lower ATE error, and reduced time spent on repetitive data exploration and query refinement by 76\% on average. These results show that ORCA improves both how users interact with the causal analysis pipeline and the reliability of the resulting causal conclusions.</summary>
+    <category term="cs.DB" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-29T01:59:34Z</published>
+    <arxiv:comment>35 pages, CHI EA 2026</arxiv:comment>
+    <arxiv:primary_category term="cs.DB"/>
+    <author>
+      <name>Joanie Hayoun Chung</name>
+    </author>
+    <author>
+      <name>Sumin Lee</name>
+    </author>
+    <author>
+      <name>Sungbin Lim</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2507.04067v1</id>
+    <title>HAWK: A Hierarchical Workflow Framework for Multi-Agent Collaboration</title>
+    <updated>2025-07-05T15:03:53Z</updated>
+    <link href="https://arxiv.org/abs/2507.04067v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2507.04067v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Contemporary multi-agent systems encounter persistent challenges in cross-platform interoperability, dynamic task scheduling, and efficient resource sharing. Agents with heterogeneous implementations often lack standardized interfaces; collaboration frameworks remain brittle and hard to extend; scheduling policies are static; and inter-agent state synchronization is insufficient. We propose Hierarchical Agent Workflow (HAWK), a modular framework comprising five layers-User, Workflow, Operator, Agent, and Resource-and supported by sixteen standardized interfaces. HAWK delivers an end-to-end pipeline covering task parsing, workflow orchestration, intelligent scheduling, resource invocation, and data synchronization. At its core lies an adaptive scheduling and optimization module in the Workflow Layer, which harnesses real-time feedback and dynamic strategy adjustment to maximize utilization. The Resource Layer provides a unified abstraction over heterogeneous data sources, large models, physical devices, and third-party services&amp;tools, simplifying cross-domain information retrieval. We demonstrate HAWK's scalability and effectiveness via CreAgentive, a multi-agent novel-generation prototype, which achieves marked gains in throughput, lowers invocation complexity, and improves system controllability. We also show how hybrid deployments of large language models integrate seamlessly within HAWK, highlighting its flexibility. Finally, we outline future research avenues-hallucination mitigation, real-time performance tuning, and enhanced cross-domain adaptability-and survey prospective applications in healthcare, government, finance, and education.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-07-05T15:03:53Z</published>
+    <arxiv:comment>AgentIR@SIGIR 2025</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Yuyang Cheng</name>
+    </author>
+    <author>
+      <name>Yumiao Xu</name>
+    </author>
+    <author>
+      <name>Chaojia Yu</name>
+    </author>
+    <author>
+      <name>Yong Zhao</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2507.01701v1</id>
+    <title>Exploring Advanced LLM Multi-Agent Systems Based on Blackboard Architecture</title>
+    <updated>2025-07-02T13:30:44Z</updated>
+    <link href="https://arxiv.org/abs/2507.01701v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2507.01701v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>In this paper, we propose to incorporate the blackboard architecture into LLM multi-agent systems (MASs) so that (1) agents with various roles can share all the information and others' messages during the whole problem-solving process, (2) agents that will take actions are selected based on the current content of the blackboard, and (3) the selection and execution round is repeated until a consensus is reached on the blackboard. We develop the first implementation of this proposal and conduct experiments on commonsense knowledge, reasoning and mathematical datasets. The results show that our system can be competitive with the SOTA static and dynamic MASs by achieving the best average performance, and at the same time manage to spend less tokens. Our proposal has the potential to enable complex and dynamic problem-solving where well-defined structures or workflows are unavailable.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-07-02T13:30:44Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Bochen Han</name>
+    </author>
+    <author>
+      <name>Songmao Zhang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2506.07564v3</id>
+    <title>SAFEFLOW: A Principled Protocol for Trustworthy and Transactional Autonomous Agent Systems</title>
+    <updated>2025-06-11T03:14:10Z</updated>
+    <link href="https://arxiv.org/abs/2506.07564v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2506.07564v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Recent advances in large language models (LLMs) and vision-language models (VLMs) have enabled powerful autonomous agents capable of complex reasoning and multi-modal tool use. Despite their growing capabilities, today's agent frameworks remain fragile, lacking principled mechanisms for secure information flow, reliability, and multi-agent coordination. In this work, we introduce SAFEFLOW, a new protocol-level framework for building trustworthy LLM/VLM-based agents. SAFEFLOW enforces fine-grained information flow control (IFC), precisely tracking provenance, integrity, and confidentiality of all the data exchanged between agents, tools, users, and environments. By constraining LLM reasoning to respect these security labels, SAFEFLOW prevents untrusted or adversarial inputs from contaminating high-integrity decisions. To ensure robustness in concurrent multi-agent settings, SAFEFLOW introduces transactional execution, conflict resolution, and secure scheduling over shared state, preserving global consistency across agents. We further introduce mechanisms, including write-ahead logging, rollback, and secure caches, that further enhance resilience against runtime errors and policy violations. To validate the performances, we built SAFEFLOWBENCH, a comprehensive benchmark suite designed to evaluate agent reliability under adversarial, noisy, and concurrent operational conditions. Extensive experiments demonstrate that agents built with SAFEFLOW maintain impressive task performance and security guarantees even in hostile environments, substantially outperforming state-of-the-art. Together, SAFEFLOW and SAFEFLOWBENCH lay the groundwork for principled, robust, and secure agent ecosystems, advancing the frontier of reliable autonomy.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-06-09T09:04:37Z</published>
+    <arxiv:comment>Former versions either contain unrelated content or cannot be properly converted to PDF</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Peiran Li</name>
+    </author>
+    <author>
+      <name>Xinkai Zou</name>
+    </author>
+    <author>
+      <name>Zhuohang Wu</name>
+    </author>
+    <author>
+      <name>Ruifeng Li</name>
+    </author>
+    <author>
+      <name>Shuo Xing</name>
+    </author>
+    <author>
+      <name>Hanwen Zheng</name>
+    </author>
+    <author>
+      <name>Zhikai Hu</name>
+    </author>
+    <author>
+      <name>Yuping Wang</name>
+    </author>
+    <author>
+      <name>Haoxi Li</name>
+    </author>
+    <author>
+      <name>Qin Yuan</name>
+    </author>
+    <author>
+      <name>Yingmo Zhang</name>
+    </author>
+    <author>
+      <name>Zhengzhong Tu</name>
+    </author>
+  </entry>
+</feed>

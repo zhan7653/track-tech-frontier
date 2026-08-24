@@ -1,0 +1,662 @@
+{
+  "queries": [
+    {
+      "query_id": "Q022",
+      "occurrence_jsonl": "A01.jsonl",
+      "run_metadata": "A01-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Direct parent-child and spawn terminology."
+    },
+    {
+      "query_id": "Q023",
+      "occurrence_jsonl": "A02.jsonl",
+      "run_metadata": "A02-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Shared, collective, transactive and collaborative memory family recall."
+    },
+    {
+      "query_id": "Q024",
+      "occurrence_jsonl": "A03.jsonl",
+      "run_metadata": "A03-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Delegation-state and handoff mechanisms."
+    },
+    {
+      "query_id": "Q025",
+      "occurrence_jsonl": "A04.jsonl",
+      "run_metadata": "A04-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Shared coordination substrates beyond memory-service wording."
+    },
+    {
+      "query_id": "Q026",
+      "occurrence_jsonl": "A05.jsonl",
+      "run_metadata": "A05-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Population experience and skill-transfer mechanisms."
+    },
+    {
+      "query_id": "Q027",
+      "occurrence_jsonl": "A06.jsonl",
+      "run_metadata": "A06-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Consistency, commit, conflict and provenance routes."
+    },
+    {
+      "query_id": "Q028",
+      "occurrence_jsonl": "A07.jsonl",
+      "run_metadata": "A07-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper",
+        "negative"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Adversarial and governance evidence."
+    },
+    {
+      "query_id": "Q029",
+      "occurrence_jsonl": "A08.jsonl",
+      "run_metadata": "A08-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper",
+        "benchmark"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Benchmark and dataset coverage."
+    },
+    {
+      "query_id": "Q030",
+      "occurrence_jsonl": "A09.jsonl",
+      "run_metadata": "A09-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Coding and research agent scenario-specific state mechanisms."
+    },
+    {
+      "query_id": "Q031",
+      "occurrence_jsonl": "A10.jsonl",
+      "run_metadata": "A10-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Fleet and population-level memory."
+    },
+    {
+      "query_id": "Q032",
+      "occurrence_jsonl": "A11.jsonl",
+      "run_metadata": "A11-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper",
+        "benchmark"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Multi-principal permissions and group-memory evaluation."
+    },
+    {
+      "query_id": "Q033",
+      "occurrence_jsonl": "A12.jsonl",
+      "run_metadata": "A12-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Decentralized and federated topology alternatives."
+    },
+    {
+      "query_id": "Q034",
+      "occurrence_jsonl": "C01.jsonl",
+      "run_metadata": "C01-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper"
+      ],
+      "windows": [
+        "W_ROLLING_12M"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Current DOI-indexed shared-memory papers."
+    },
+    {
+      "query_id": "Q035",
+      "occurrence_jsonl": "C02.jsonl",
+      "run_metadata": "C02-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper",
+        "negative"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Permission and collaborative-memory terminology."
+    },
+    {
+      "query_id": "Q036",
+      "occurrence_jsonl": "C03.jsonl",
+      "run_metadata": "C03-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Transactive-memory roots and current agent work."
+    },
+    {
+      "query_id": "Q037",
+      "occurrence_jsonl": "C04.jsonl",
+      "run_metadata": "C04-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Blackboard and shared-state implementations in scholarly indexes."
+    },
+    {
+      "query_id": "Q038",
+      "occurrence_jsonl": "C05.jsonl",
+      "run_metadata": "C05-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Experience-transfer recall outside arXiv."
+    },
+    {
+      "query_id": "Q039",
+      "occurrence_jsonl": "C06.jsonl",
+      "run_metadata": "C06-run.json",
+      "stage": "discover",
+      "lanes": [
+        "paper",
+        "benchmark",
+        "negative"
+      ],
+      "windows": [
+        "W_ROLLING_12M"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Current benchmark and security route."
+    },
+    {
+      "query_id": "Q040",
+      "occurrence_jsonl": "G01.jsonl",
+      "run_metadata": "G01-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Broad implementation recall."
+    },
+    {
+      "query_id": "Q041",
+      "occurrence_jsonl": "G02.jsonl",
+      "run_metadata": "G02-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Cross-tool and fleet shared-memory implementations."
+    },
+    {
+      "query_id": "Q042",
+      "occurrence_jsonl": "G03.jsonl",
+      "run_metadata": "G03-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Literal subagent-memory implementations."
+    },
+    {
+      "query_id": "Q043",
+      "occurrence_jsonl": "G04.jsonl",
+      "run_metadata": "G04-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Handoff and continuity artifacts."
+    },
+    {
+      "query_id": "Q044",
+      "occurrence_jsonl": "G05.jsonl",
+      "run_metadata": "G05-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Blackboard implementations."
+    },
+    {
+      "query_id": "Q045",
+      "occurrence_jsonl": "G06.jsonl",
+      "run_metadata": "G06-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Fleet memory and governance."
+    },
+    {
+      "query_id": "Q046",
+      "occurrence_jsonl": "G07.jsonl",
+      "run_metadata": "G07-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository",
+        "negative"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Provenance-aware memory implementations."
+    },
+    {
+      "query_id": "Q047",
+      "occurrence_jsonl": "G08.jsonl",
+      "run_metadata": "G08-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Synchronization and shared-state candidates."
+    },
+    {
+      "query_id": "Q048",
+      "occurrence_jsonl": "G09.jsonl",
+      "run_metadata": "G09-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Trajectory and population-memory code."
+    },
+    {
+      "query_id": "Q049",
+      "occurrence_jsonl": "G10.jsonl",
+      "run_metadata": "G10-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Coding-agent shared project state."
+    },
+    {
+      "query_id": "Q050",
+      "occurrence_jsonl": "G11.jsonl",
+      "run_metadata": "G11-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Research-agent shared evidence and notes."
+    },
+    {
+      "query_id": "Q051",
+      "occurrence_jsonl": "G12.jsonl",
+      "run_metadata": "G12-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "MCP memory transport and cross-client stores."
+    },
+    {
+      "query_id": "Q052",
+      "occurrence_jsonl": "G13.jsonl",
+      "run_metadata": "G13-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "AutoGen-specific memory integrations."
+    },
+    {
+      "query_id": "Q053",
+      "occurrence_jsonl": "G14.jsonl",
+      "run_metadata": "G14-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_PRE_FRONTIER",
+        "W_ROLLING_12M",
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "LangGraph subgraph, store and memory integrations."
+    },
+    {
+      "query_id": "Q054",
+      "occurrence_jsonl": "G15.jsonl",
+      "run_metadata": "G15-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_ROLLING_12M"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Repositories created in the twelve-month frontier."
+    },
+    {
+      "query_id": "Q055",
+      "occurrence_jsonl": "G16.jsonl",
+      "run_metadata": "G16-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_ROLLING_12M"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Recently created literal Subagent Memory projects."
+    },
+    {
+      "query_id": "Q056",
+      "occurrence_jsonl": "G17.jsonl",
+      "run_metadata": "G17-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "New handoff-memory weak signals."
+    },
+    {
+      "query_id": "Q057",
+      "occurrence_jsonl": "G18.jsonl",
+      "run_metadata": "G18-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Recently active shared-memory candidates."
+    },
+    {
+      "query_id": "Q058",
+      "occurrence_jsonl": "G19.jsonl",
+      "run_metadata": "G19-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository"
+      ],
+      "windows": [
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Recently active blackboard implementations."
+    },
+    {
+      "query_id": "Q059",
+      "occurrence_jsonl": "G20.jsonl",
+      "run_metadata": "G20-run.json",
+      "stage": "discover",
+      "lanes": [
+        "github",
+        "repository",
+        "negative"
+      ],
+      "windows": [
+        "W_ROLLING_90D"
+      ],
+      "parents": [],
+      "gaps": [],
+      "information_gain": "Recently active provenance-aware memory candidates."
+    }
+  ]
+}

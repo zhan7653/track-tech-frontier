@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:06:58Z",
+  "from": "2023-01-01",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 3,
+  "pages": 2,
+  "provider": "arxiv",
+  "query": "(\"decentralized memory\" OR \"federated memory\") AND agent",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:06:55Z",
+      "page": 1,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:((\"decentralized memory\" OR \"federated memory\") AND agent) AND submittedDate:[202301010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 0
+      },
+      "provider": "arxiv",
+      "query": "(\"decentralized memory\" OR \"federated memory\") AND agent",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\A12\\arxiv-001-7fd908ebfca883c1d120a465745ecf9a703d1f94a334af00418ca82a12b1a82d.raw",
+      "reported_total": 3,
+      "response_sha256": "7fd908ebfca883c1d120a465745ecf9a703d1f94a334af00418ca82a12b1a82d",
+      "result_count": 3,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%28%22decentralized+memory%22+OR+%22federated+memory%22%29+AND+agent%29+AND+submittedDate%3A%5B202301010000+TO+202608242359%5D&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:06:58Z",
+      "page": 2,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:((\"decentralized memory\" OR \"federated memory\") AND agent) AND submittedDate:[202301010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 100
+      },
+      "provider": "arxiv",
+      "query": "(\"decentralized memory\" OR \"federated memory\") AND agent",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\A12\\arxiv-002-ff40967bd6dc6895ecb90b16a3f504d4485d3d0a791ff641d253a9eed5104669.raw",
+      "reported_total": 3,
+      "response_sha256": "ff40967bd6dc6895ecb90b16a3f504d4485d3d0a791ff641d253a9eed5104669",
+      "result_count": 0,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%28%22decentralized+memory%22+OR+%22federated+memory%22%29+AND+agent%29+AND+submittedDate%3A%5B202301010000+TO+202608242359%5D&start=100&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:06:55Z",
+  "to": "2026-08-24"
+}

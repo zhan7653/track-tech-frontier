@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:07:41Z",
+  "from": null,
+  "github_date_field": "created",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "multi-agent memory",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:35Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "multi-agent memory"
+      },
+      "provider": "github-search",
+      "query": "multi-agent memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G01\\github-search-001-b887b797b3df88030e51f25f41c77a41349f800a071a19830406c2b6a093bb2d.raw",
+      "reported_total": 4593,
+      "response_sha256": "b887b797b3df88030e51f25f41c77a41349f800a071a19830406c2b6a093bb2d",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=multi-agent+memory&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:41Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "multi-agent memory"
+      },
+      "provider": "github-search",
+      "query": "multi-agent memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G01\\github-search-002-7f77daf15940def59d77afa739adffb256ebf4bb14da1a537b099d42f60b6765.raw",
+      "reported_total": 4593,
+      "response_sha256": "7f77daf15940def59d77afa739adffb256ebf4bb14da1a537b099d42f60b6765",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=multi-agent+memory&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:07:35Z",
+  "to": null
+}

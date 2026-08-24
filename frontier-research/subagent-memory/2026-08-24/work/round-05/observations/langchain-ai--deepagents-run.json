@@ -1,0 +1,308 @@
+{
+  "finished_at": "2026-08-23T18:33:40Z",
+  "from": "2026-05-27",
+  "limitations": "Point-in-time stars are retained only as a snapshot. No growth or acceleration is inferred.",
+  "measurement_status": "complete",
+  "observation_count": 1,
+  "provider": "github-observe",
+  "record_type": "github-repository-observation-run",
+  "repo_observed": "langchain-ai/deepagents",
+  "repo_requested": "langchain-ai/deepagents",
+  "requests": [
+    {
+      "kind": "repository",
+      "observed_at": "2026-08-23T18:33:08Z",
+      "params": {},
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-001-2759fa187afd96bf49fe79ca9b2e511f9aca2382f24cff69fc022e077bb5cf12.raw",
+      "response_sha256": "2759fa187afd96bf49fe79ca9b2e511f9aca2382f24cff69fc022e077bb5cf12",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:33:08Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents"
+    },
+    {
+      "kind": "latest-release",
+      "observed_at": "2026-08-23T18:33:09Z",
+      "params": {
+        "page": 1,
+        "per_page": 1
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-002-69f65a302dfe3e3fb77c1e57810f4d0d9bd2ba60398908986c32540bc8916b1a.raw",
+      "response_sha256": "69f65a302dfe3e3fb77c1e57810f4d0d9bd2ba60398908986c32540bc8916b1a",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:33:09Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/releases?per_page=1&page=1"
+    },
+    {
+      "kind": "default-branch-commit",
+      "observed_at": "2026-08-23T18:33:10Z",
+      "params": {},
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-003-93ee6f394aca34196e7c9dc90d1ef9c35eb2e7bcedfe976def49ef773604702b.raw",
+      "response_sha256": "93ee6f394aca34196e7c9dc90d1ef9c35eb2e7bcedfe976def49ef773604702b",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:33:10Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits/main"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:12Z",
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-004-b4933026df79f7fd3aee84c7e3cc18fa965c32f01671a3c079bfa86186d08620.raw",
+      "response_sha256": "b4933026df79f7fd3aee84c7e3cc18fa965c32f01671a3c079bfa86186d08620",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:12Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=1"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:14Z",
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-005-c20b4d9df623c67ec46e6612652dbdc107bcb4caf6d763aaea20e6aad7d3650e.raw",
+      "response_sha256": "c20b4d9df623c67ec46e6612652dbdc107bcb4caf6d763aaea20e6aad7d3650e",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:14Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=2"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:16Z",
+      "params": {
+        "page": 3,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-006-e1c5018e3f2f0dfc68988d81ef5a1b8065f1181f6a008f33a8d868e319d2f1d9.raw",
+      "response_sha256": "e1c5018e3f2f0dfc68988d81ef5a1b8065f1181f6a008f33a8d868e319d2f1d9",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:16Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=3"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:18Z",
+      "params": {
+        "page": 4,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-007-c2fa68b3bb956d834590dc5d24591e808fd7b21d563f922048e63cc29006457b.raw",
+      "response_sha256": "c2fa68b3bb956d834590dc5d24591e808fd7b21d563f922048e63cc29006457b",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:18Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=4"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:20Z",
+      "params": {
+        "page": 5,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-008-0aaaa0a4a94a298f430d65e510615518cda451ae8953a77e4ac034e9c9280300.raw",
+      "response_sha256": "0aaaa0a4a94a298f430d65e510615518cda451ae8953a77e4ac034e9c9280300",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:20Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=5"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:22Z",
+      "params": {
+        "page": 6,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-009-0479bdafa68b80222f470eb5aae308a516148bca84db3bf885829a1fe035c3de.raw",
+      "response_sha256": "0479bdafa68b80222f470eb5aae308a516148bca84db3bf885829a1fe035c3de",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:22Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=6"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:24Z",
+      "params": {
+        "page": 7,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-010-c4a68ea077ee7f7e3624df5c76d7746d004d27b745abd529e2670a1041698a5b.raw",
+      "response_sha256": "c4a68ea077ee7f7e3624df5c76d7746d004d27b745abd529e2670a1041698a5b",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:24Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=7"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:26Z",
+      "params": {
+        "page": 8,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-011-1304ee8f7c53d4432757074e95dabf782907f4f1e318788a08785674c8af1155.raw",
+      "response_sha256": "1304ee8f7c53d4432757074e95dabf782907f4f1e318788a08785674c8af1155",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:26Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=8"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:28Z",
+      "params": {
+        "page": 9,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-012-daa56d59f5cf0ec95b9ec2a55ff9459acbcd213808f9cd41baa0ed230d9b4e4b.raw",
+      "response_sha256": "daa56d59f5cf0ec95b9ec2a55ff9459acbcd213808f9cd41baa0ed230d9b4e4b",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:28Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=9"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:30Z",
+      "params": {
+        "page": 10,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-013-d115eab5e4fbc1c306f8262abe944ce454dac676898efc9259d298ce19721eee.raw",
+      "response_sha256": "d115eab5e4fbc1c306f8262abe944ce454dac676898efc9259d298ce19721eee",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:30Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=10"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:32Z",
+      "params": {
+        "page": 11,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-014-b705a72d53ff9a8a8fd18cfe2b1fb87a268442beb583a1a85b4b4626aac22e1d.raw",
+      "response_sha256": "b705a72d53ff9a8a8fd18cfe2b1fb87a268442beb583a1a85b4b4626aac22e1d",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:32Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=11"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:34Z",
+      "params": {
+        "page": 12,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-015-039c92ad1757bcd8935280f73945cebc7895770e53029d128afb67e8c6af6d9d.raw",
+      "response_sha256": "039c92ad1757bcd8935280f73945cebc7895770e53029d128afb67e8c6af6d9d",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:34Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=12"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:36Z",
+      "params": {
+        "page": 13,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-016-64ad58f5dc87d89c7d13082f700005d51b1b89e9285ec47a04a45cac17506e19.raw",
+      "response_sha256": "64ad58f5dc87d89c7d13082f700005d51b1b89e9285ec47a04a45cac17506e19",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:36Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=13"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:38Z",
+      "params": {
+        "page": 14,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-017-c400a6eabb20f39cbcbebe2eef3299150250ae4f1f81a303a32ba587f58976a5.raw",
+      "response_sha256": "c400a6eabb20f39cbcbebe2eef3299150250ae4f1f81a303a32ba587f58976a5",
+      "result_count": 100,
+      "retrieved_at": "2026-08-23T18:33:38Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=14"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:40Z",
+      "params": {
+        "page": 15,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\langchain-ai--deepagents\\github-observe-018-74556444dbaadd02df945c88b247990f6d1620e3428320ffc10dfd067cd30dfb.raw",
+      "response_sha256": "74556444dbaadd02df945c88b247990f6d1620e3428320ffc10dfd067cd30dfb",
+      "result_count": 59,
+      "retrieved_at": "2026-08-23T18:33:40Z",
+      "url": "https://api.github.com/repos/langchain-ai/deepagents/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=15"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T18:33:08Z",
+  "to": "2026-08-24",
+  "window_id": "W_ROLLING_90D"
+}

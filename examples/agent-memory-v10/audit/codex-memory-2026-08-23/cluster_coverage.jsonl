@@ -1,0 +1,12 @@
+{"cluster_id":"CL-CODEX-MEM","lane":"github","window_id":"W_FOUNDATION","status":"covered"}
+{"cluster_id":"CL-CODEX-MEM","lane":"product","window_id":"W_FOUNDATION","status":"not-applicable"}
+{"cluster_id":"CL-CODEX-MEM","lane":"paper","window_id":"W_FOUNDATION","status":"not-applicable"}
+{"cluster_id":"CL-CODEX-MEM","lane":"negative","window_id":"W_FOUNDATION","status":"not-applicable"}
+{"cluster_id":"CL-CODEX-MEM","lane":"github","window_id":"W_RECENT_12M","status":"covered"}
+{"cluster_id":"CL-CODEX-MEM","lane":"product","window_id":"W_RECENT_12M","status":"covered"}
+{"cluster_id":"CL-CODEX-MEM","lane":"paper","window_id":"W_RECENT_12M","status":"covered"}
+{"cluster_id":"CL-CODEX-MEM","lane":"negative","window_id":"W_RECENT_12M","status":"covered"}
+{"cluster_id":"CL-CODEX-MEM","lane":"github","window_id":"W_RECENT_90D","status":"covered"}
+{"cluster_id":"CL-CODEX-MEM","lane":"product","window_id":"W_RECENT_90D","status":"covered"}
+{"cluster_id":"CL-CODEX-MEM","lane":"paper","window_id":"W_RECENT_90D","status":"covered"}
+{"cluster_id":"CL-CODEX-MEM","lane":"negative","window_id":"W_RECENT_90D","status":"covered"}

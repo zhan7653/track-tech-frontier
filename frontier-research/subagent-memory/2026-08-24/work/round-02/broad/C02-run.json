@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:07:09Z",
+  "from": "2023-01-01",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "crossref",
+  "query": "collaborative memory agents access control",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:06Z",
+      "page": 1,
+      "params": {
+        "filter": "from-pub-date:2023-01-01,until-pub-date:2026-08-24",
+        "offset": 0,
+        "query.bibliographic": "collaborative memory agents access control",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "collaborative memory agents access control",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\C02\\crossref-001-6e5d8376cc76a9c7e0d799a88935ed010d8863d4ccc1a3004c493aebd40ed8d7.raw",
+      "reported_total": 942571,
+      "response_sha256": "6e5d8376cc76a9c7e0d799a88935ed010d8863d4ccc1a3004c493aebd40ed8d7",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=collaborative+memory+agents+access+control&rows=100&offset=0&filter=from-pub-date%3A2023-01-01%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:09Z",
+      "page": 2,
+      "params": {
+        "filter": "from-pub-date:2023-01-01,until-pub-date:2026-08-24",
+        "offset": 100,
+        "query.bibliographic": "collaborative memory agents access control",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "collaborative memory agents access control",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\C02\\crossref-002-9b513e023cf15f6727217b1ea2f7b9fb8f9092cf6d7b79f80fc46f77179db4b9.raw",
+      "reported_total": 942571,
+      "response_sha256": "9b513e023cf15f6727217b1ea2f7b9fb8f9092cf6d7b79f80fc46f77179db4b9",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=collaborative+memory+agents+access+control&rows=100&offset=100&filter=from-pub-date%3A2023-01-01%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:07:06Z",
+  "to": "2026-08-24"
+}

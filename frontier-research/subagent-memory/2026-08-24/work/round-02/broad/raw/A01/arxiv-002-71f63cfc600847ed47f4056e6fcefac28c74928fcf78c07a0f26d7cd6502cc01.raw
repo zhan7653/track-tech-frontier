@@ -1,0 +1,613 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/T1AdwGZ6l2b+ovivazgCv0caQCQ</id>
+  <title>arXiv Query: search_query=( (all:subagent OR all:"sub-agent") AND (all:memory OR all:context OR all:state OR all:inheritance) ) AND submittedDate:"202301010000 TO 202608242359"&amp;id_list=&amp;start=100&amp;max_results=100</title>
+  <updated>2026-08-23T17:05:47Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=((all:subagent+OR+all:%22sub-agent%22)+AND+(all:memory+OR+(all:context+OR+(all:state+OR+all:inheritance))))+AND+submittedDate:%22202301010000+TO+202608242359%22&amp;start=100&amp;max_results=100&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>100</opensearch:itemsPerPage>
+  <opensearch:totalResults>120</opensearch:totalResults>
+  <opensearch:startIndex>100</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2508.15940v1</id>
+    <title>ASIC-Agent: An Autonomous Multi-Agent System for ASIC Design with Benchmark Evaluation</title>
+    <updated>2025-08-21T20:21:34Z</updated>
+    <link href="https://arxiv.org/abs/2508.15940v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.15940v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large Language Models (LLMs) have demonstrated remarkable capabilities in Register Transfer Level (RTL) design, enabling high-quality code generation from natural language descriptions. However, LLMs alone face significant limitations in real-world hardware design workflows, including the inability to execute code, lack of debugging capabilities, and absence of long-term memory. To address these challenges, we present ASIC-Agent, an autonomous system designed specifically for digital ASIC design tasks. ASIC-Agent enhances base LLMs with a multi-agent architecture incorporating specialized sub-agents for RTL generation, verification, OpenLane hardening, and Caravel chip integration, all operating within a comprehensive sandbox environment with access to essential hardware design tools. The system leverages a vector database containing documentation, API references, error knowledge, and curated insights from the open-source silicon community. To evaluate ASIC-Agent's performance, we introduce ASIC-Agent-Bench, the first benchmark specifically designed to assess agentic systems in hardware design tasks. We evaluate ASIC-Agent with various base LLMs, providing quantitative comparisons and qualitative insights into agent behavior across different design scenarios. Our results demonstrate that ASIC-Agent, when powered by Claude 4 Sonnet, successfully automates a broad range of ASIC design tasks spanning varying levels of complexity, showing the potential of significantly accelerating the ASIC design workflow.</summary>
+    <category term="cs.AR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.DC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-21T20:21:34Z</published>
+    <arxiv:comment>2025 IEEE International Conference on LLM-Aided Design (ICLAD)</arxiv:comment>
+    <arxiv:primary_category term="cs.AR"/>
+    <author>
+      <name>Ahmed Allam</name>
+    </author>
+    <author>
+      <name>Youssef Mansour</name>
+    </author>
+    <author>
+      <name>Mohamed Shalan</name>
+    </author>
+    <arxiv:doi>10.1109/ICLAD65226.2025.00033</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1109/ICLAD65226.2025.00033" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2508.08322v1</id>
+    <title>Context Engineering for Multi-Agent LLM Code Assistants Using Elicit, NotebookLM, ChatGPT, and Claude Code</title>
+    <updated>2025-08-09T14:45:53Z</updated>
+    <link href="https://arxiv.org/abs/2508.08322v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.08322v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large Language Models (LLMs) have shown promise in automating code generation and software engineering tasks, yet they often struggle with complex, multi-file projects due to context limitations and knowledge gaps. We propose a novel context engineering workflow that combines multiple AI components: an Intent Translator (GPT-5) for clarifying user requirements, an Elicit-powered semantic literature retrieval for injecting domain knowledge, NotebookLM-based document synthesis for contextual understanding, and a Claude Code multi-agent system for code generation and validation. Our integrated approach leverages intent clarification, retrieval-augmented generation, and specialized sub-agents orchestrated via Claude's agent framework. We demonstrate that this method significantly improves the accuracy and reliability of code assistants in real-world repositories, yielding higher single-shot success rates and better adherence to project context than baseline single-agent approaches. Qualitative results on a large Next.js codebase show the multi-agent system effectively plans, edits, and tests complex features with minimal human intervention. We compare our system with recent frameworks like CodePlan, MASAI, and HyperAgent, highlighting how targeted context injection and agent role decomposition lead to state-of-the-art performance. Finally, we discuss the implications for deploying LLM-based coding assistants in production, along with lessons learned on context management and future research directions.</summary>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-09T14:45:53Z</published>
+    <arxiv:comment>15 pages, 5 figures, research paper on multi-agent LLM systems for code generation</arxiv:comment>
+    <arxiv:primary_category term="cs.SE"/>
+    <author>
+      <name>Muhammad Haseeb</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2508.00391v1</id>
+    <title>Cued-Agent: A Collaborative Multi-Agent System for Automatic Cued Speech Recognition</title>
+    <updated>2025-08-01T07:40:39Z</updated>
+    <link href="https://arxiv.org/abs/2508.00391v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.00391v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Cued Speech (CS) is a visual communication system that combines lip-reading with hand coding to facilitate communication for individuals with hearing impairments. Automatic CS Recognition (ACSR) aims to convert CS hand gestures and lip movements into text via AI-driven methods. Traditionally, the temporal asynchrony between hand and lip movements requires the design of complex modules to facilitate effective multimodal fusion. However, constrained by limited data availability, current methods demonstrate insufficient capacity for adequately training these fusion mechanisms, resulting in suboptimal performance. Recently, multi-agent systems have shown promising capabilities in handling complex tasks with limited data availability. To this end, we propose the first collaborative multi-agent system for ACSR, named Cued-Agent. It integrates four specialized sub-agents: a Multimodal Large Language Model-based Hand Recognition agent that employs keyframe screening and CS expert prompt strategies to decode hand movements, a pretrained Transformer-based Lip Recognition agent that extracts lip features from the input video, a Hand Prompt Decoding agent that dynamically integrates hand prompts with lip features during inference in a training-free manner, and a Self-Correction Phoneme-to-Word agent that enables post-process and end-to-end conversion from phoneme sequences to natural language sentences for the first time through semantic refinement. To support this study, we expand the existing Mandarin CS dataset by collecting data from eight hearing-impaired cuers, establishing a mixed dataset of fourteen subjects. Extensive experiments demonstrate that our Cued-Agent performs superbly in both normal and hearing-impaired scenarios compared with state-of-the-art methods. The implementation is available at https://github.com/DennisHgj/Cued-Agent.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="eess.AS" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-01T07:40:39Z</published>
+    <arxiv:comment>9 pages</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Guanjie Huang</name>
+    </author>
+    <author>
+      <name>Danny H. K. Tsang</name>
+    </author>
+    <author>
+      <name>Shan Yang</name>
+    </author>
+    <author>
+      <name>Guangzhi Lei</name>
+    </author>
+    <author>
+      <name>Li Liu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2506.19846v2</id>
+    <title>HiMA-Ecom: Enabling Joint Training of Hierarchical Multi-Agent E-commerce Assistants</title>
+    <updated>2026-04-01T10:25:03Z</updated>
+    <link href="https://arxiv.org/abs/2506.19846v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2506.19846v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Hierarchical multi-agent systems based on large language models (LLMs) have become a common paradigm for building AI assistants in vertical domains such as e-commerce, where a master agent coordinates multiple specialized sub-agents. Despite their practical importance, realistic benchmarks for training and evaluating such systems remain scarce, and joint optimization across functionally distinct agents is still challenging. To address this gap, we introduce HiMA-Ecom, the first hierarchical multi-agent benchmark tailored for e-commerce scenarios. HiMA-Ecom contains 22.8K instances, including agent-specific supervised fine-tuning samples with memory and system-level input-output pairs for joint multi-agent reinforcement learning. Building upon it, a joint training method named HiMA-R1 is proposed. It presents Variance-Reduction Group Relative Policy Optimization (VR-GRPO), which employs initial trajectory-based Monte Carlo sampling to mitigate the exponential joint action space and selects informative agent groups for efficient updates based on reward variance. Furthermore, an adaptive memory evolution mechanism that repurposes GRPO rewards as cost-free supervisory signals is designed to eliminate repetitive reasoning and accelerate convergence. Experiments on HiMA-Ecom demonstrate that our method, built upon smaller 3B/7B open-source models, achieves performance comparable to that of larger LLMs, such as DeepSeek-R1, and surpasses DeepSeek-V3 by an average of 6\%.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-06-24T17:59:31Z</published>
+    <arxiv:comment>39 pages, 10 figures, under review</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Junxing Hu</name>
+    </author>
+    <author>
+      <name>Ai Han</name>
+    </author>
+    <author>
+      <name>Haolan Zhan</name>
+    </author>
+    <author>
+      <name>Pu Wei</name>
+    </author>
+    <author>
+      <name>Zhiqian Zhang</name>
+    </author>
+    <author>
+      <name>Yuhang Guo</name>
+    </author>
+    <author>
+      <name>Jiawei Lu</name>
+    </author>
+    <author>
+      <name>Zhen Chen</name>
+    </author>
+    <author>
+      <name>Haoran Li</name>
+    </author>
+    <author>
+      <name>Zicheng Zhang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2506.12508v6</id>
+    <title>AgentOrchestra: Orchestrating Multi-Agent Intelligence with the Tool-Environment-Agent(TEA) Protocol</title>
+    <updated>2026-05-28T07:38:36Z</updated>
+    <link href="https://arxiv.org/abs/2506.12508v6" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2506.12508v6" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Recent advances in LLM-based agent systems have shown promise on complex, long-horizon tasks, but existing agent protocols (e.g., A2A and MCP) do not adequately support lifecycle-aware coordination across agents, tools, and environments. To address this limitation, we introduce the \textbf{Tool-Environment-Agent} (TEA) protocol, a unified abstraction that models these components as first-class, versioned resources with explicit lifecycles. TEA supports end-to-end context and version management, improving traceability and reproducibility, while also enabling continual self-evolution of agent-associated components\footnote{Unless otherwise specified, \emph{agent-associated components} include prompts, memory/tool/agent/environment code, and agent outputs (solutions).}. Building on TEA, we present \projectname, a hierarchical multi-agent framework in which a central planner coordinates specialized sub-agents and dynamically extends capabilities during execution. Experiments on four challenging benchmarks, spanning expert-level agent tasks and scientific/mathematical reasoning, show that AgentOrchestra consistently outperforms strong baselines; in particular, it achieves 89.04\% on the GAIA Test set, placing it among the leading methods to the best of our knowledge. These results highlight the value of explicit protocol design and hierarchical orchestration for building more robust and adaptive multi-agent systems.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-06-14T13:45:37Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Wentao Zhang</name>
+    </author>
+    <author>
+      <name>Liang Zeng</name>
+    </author>
+    <author>
+      <name>Yuzhen Xiao</name>
+    </author>
+    <author>
+      <name>Yongcong Li</name>
+    </author>
+    <author>
+      <name>Ce Cui</name>
+    </author>
+    <author>
+      <name>Yilei Zhao</name>
+    </author>
+    <author>
+      <name>Rui Hu</name>
+    </author>
+    <author>
+      <name>Yang Liu</name>
+    </author>
+    <author>
+      <name>Yahui Zhou</name>
+    </author>
+    <author>
+      <name>Bo An</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2506.12003v2</id>
+    <title>Upgrade or Switch: Do We Need a Next-Gen Trusted Architecture for the Internet of AI Agents?</title>
+    <updated>2025-07-11T17:44:32Z</updated>
+    <link href="https://arxiv.org/abs/2506.12003v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2506.12003v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The emerging Internet of AI Agents challenges existing web infrastructure designed for human-scale, reactive interactions. Unlike traditional web resources, autonomous AI agents initiate actions, maintain persistent state, spawn sub-agents, and negotiate directly with peers: demanding millisecond-level discovery, instant credential revocation, and cryptographic behavioral proofs that exceed current DNS/PKI capabilities. This paper analyzes whether to upgrade existing infrastructure or implement purpose-built index architectures for autonomous agents. We identify critical failure points: DNS propagation (24-48 hours vs. required milliseconds), certificate revocation unable to scale to trillions of entities, and IPv4/IPv6 addressing inadequate for agent-scale routing. We evaluate three approaches: (1) Upgrade paths, (2) Switch options, (3) Hybrid index/registries. Drawing parallels to dialup-to-broadband transitions, we find that agent requirements constitute qualitative, and not incremental, changes. While upgrades offer compatibility and faster deployment, clean-slate solutions provide better performance but require longer for adoption. Our analysis suggests hybrid approaches will emerge, with centralized indexes for critical agents and federated meshes for specialized use cases.</summary>
+    <category term="cs.NI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-06-13T17:55:38Z</published>
+    <arxiv:primary_category term="cs.NI"/>
+    <author>
+      <name>Ramesh Raskar</name>
+    </author>
+    <author>
+      <name>Pradyumna Chari</name>
+    </author>
+    <author>
+      <name>Jared James Grogan</name>
+    </author>
+    <author>
+      <name>Mahesh Lambe</name>
+    </author>
+    <author>
+      <name>Robert Lincourt</name>
+    </author>
+    <author>
+      <name>Raghu Bala</name>
+    </author>
+    <author>
+      <name>Aditi Joshi</name>
+    </author>
+    <author>
+      <name>Abhishek Singh</name>
+    </author>
+    <author>
+      <name>Ayush Chopra</name>
+    </author>
+    <author>
+      <name>Rajesh Ranjan</name>
+    </author>
+    <author>
+      <name>Shailja Gupta</name>
+    </author>
+    <author>
+      <name>Dimitris Stripelis</name>
+    </author>
+    <author>
+      <name>Maria Gorskikh</name>
+    </author>
+    <author>
+      <name>Sichao Wang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2506.04980v1</id>
+    <title>Agentic AI for Intent-Based Industrial Automation</title>
+    <updated>2025-06-05T12:50:54Z</updated>
+    <link href="https://arxiv.org/abs/2506.04980v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2506.04980v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The recent development of Agentic AI systems, empowered by autonomous large language models (LLMs) agents with planning and tool-usage capabilities, enables new possibilities for the evolution of industrial automation and reduces the complexity introduced by Industry 4.0. This work proposes a conceptual framework that integrates Agentic AI with the intent-based paradigm, originally developed in network research, to simplify human-machine interaction (HMI) and better align automation systems with the human-centric, sustainable, and resilient principles of Industry 5.0. Based on the intent-based processing, the framework allows human operators to express high-level business or operational goals in natural language, which are decomposed into actionable components. These intents are broken into expectations, conditions, targets, context, and information that guide sub-agents equipped with specialized tools to execute domain-specific tasks. A proof of concept was implemented using the CMAPSS dataset and Google Agent Developer Kit (ADK), demonstrating the feasibility of intent decomposition, agent orchestration, and autonomous decision-making in predictive maintenance scenarios. The results confirm the potential of this approach to reduce technical barriers and enable scalable, intent-driven automation, despite data quality and explainability concerns.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="eess.SY" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-06-05T12:50:54Z</published>
+    <arxiv:comment>Preprint - Submitted to 16th IEEE/IAS International Conference on Industry Applications - INDUSCON 2025</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Marcos Lima Romero</name>
+    </author>
+    <author>
+      <name>Ricardo Suyama</name>
+    </author>
+    <arxiv:doi>10.1109/INDUSCON66435.2025.11241317</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1109/INDUSCON66435.2025.11241317" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2506.03543v2</id>
+    <title>CogniPair: From LLM Chatbots to Conscious AI Agents -- GNWT-Based Multi-Agent Digital Twins for Social Pairing -- Dating &amp; Hiring Applications</title>
+    <updated>2025-11-28T20:54:52Z</updated>
+    <link href="https://arxiv.org/abs/2506.03543v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2506.03543v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Current large language model (LLM) agents lack authentic human psychological processes necessary for genuine digital twins and social AI applications. To address this limitation, we present a computational implementation of Global Workspace Theory (GNWT) that integrates human cognitive architecture principles into LLM agents, creating specialized sub-agents for emotion, memory, social norms, planning, and goal-tracking coordinated through a global workspace mechanism. However, authentic digital twins require accurate personality initialization. We therefore develop a novel adventure-based personality test that evaluates true personality through behavioral choices within interactive scenarios, bypassing self-presentation bias found in traditional assessments. Building on these innovations, our CogniPair platform enables digital twins to engage in realistic simulated dating interactions and job interviews before real encounters, providing bidirectional cultural fit assessment for both romantic compatibility and workplace matching. Validation using 551 GNWT-Agents and Columbia University Speed Dating dataset demonstrates 72% correlation with human attraction patterns, 77.8% match prediction accuracy, and 74% agreement in human validation studies. This work advances psychological authenticity in LLM agents and establishes a foundation for intelligent dating platforms and HR technology solutions.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CY" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-06-04T03:54:30Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Wanghao Ye</name>
+    </author>
+    <author>
+      <name>Sihan Chen</name>
+    </author>
+    <author>
+      <name>Yiting Wang</name>
+    </author>
+    <author>
+      <name>Shwai He</name>
+    </author>
+    <author>
+      <name>Bowei Tian</name>
+    </author>
+    <author>
+      <name>Guoheng Sun</name>
+    </author>
+    <author>
+      <name>Ziyi Wang</name>
+    </author>
+    <author>
+      <name>Ziyao Wang</name>
+    </author>
+    <author>
+      <name>Yexiao He</name>
+    </author>
+    <author>
+      <name>Zheyu Shen</name>
+    </author>
+    <author>
+      <name>Meng Liu</name>
+    </author>
+    <author>
+      <name>Yuning Zhang</name>
+    </author>
+    <author>
+      <name>Meng Feng</name>
+    </author>
+    <author>
+      <name>Yang Wang</name>
+    </author>
+    <author>
+      <name>Siyuan Peng</name>
+    </author>
+    <author>
+      <name>Yilong Dai</name>
+    </author>
+    <author>
+      <name>Zhenle Duan</name>
+    </author>
+    <author>
+      <name>Lang Xiong</name>
+    </author>
+    <author>
+      <name>Joshua Liu</name>
+    </author>
+    <author>
+      <name>Hanzhang Qin</name>
+    </author>
+    <author>
+      <name>Ang Li</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2504.10625v2</id>
+    <title>Hessian descent for spherical spin glasses with uniform log-Sobolev disorder</title>
+    <updated>2025-05-06T15:54:58Z</updated>
+    <link href="https://arxiv.org/abs/2504.10625v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2504.10625v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The present work concerns spherical spin glass models with disorder satisfying a uniform logarithmic Sobolev inequality. We show that the Hessian descent algorithm introduced by Subag can be extended to this setting, thanks to the abundance of small eigenvalues near the edge of the Hessian spectrum. Combined with the ground state universality recently proven by Sawhney and Sellke, this implies that when the model is in the full-RSB phase, the Hessian descent algorithm can find a near-minimum with high probability.
+  Our proof consists of two main ingredients. First, we show that the empirical spectral distribution of the Hessian converges to a semicircular law via the moment method. Second, we use the logarithmic Sobolev inequality to establish concentration and obtain uniform control of the spectral edge.</summary>
+    <category term="math.PR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-04-14T18:23:25Z</published>
+    <arxiv:comment>35 pages, no figures; submitted version to journal</arxiv:comment>
+    <arxiv:primary_category term="math.PR"/>
+    <author>
+      <name>Fu-Hsuan Ho</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2503.05828v1</id>
+    <title>Market-based Architectures in RL and Beyond</title>
+    <updated>2025-03-05T19:09:29Z</updated>
+    <link href="https://arxiv.org/abs/2503.05828v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2503.05828v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Market-based agents refer to reinforcement learning agents which determine their actions based on an internal market of sub-agents. We introduce a new type of market-based algorithm where the state itself is factored into several axes called ``goods'', which allows for greater specialization and parallelism than existing market-based RL algorithms. Furthermore, we argue that market-based algorithms have the potential to address many current challenges in AI, such as search, dynamic scaling and complete feedback, and demonstrate that they may be seen to generalize neural networks; finally, we list some novel ways that market algorithms may be applied in conjunction with Large Language Models for immediate practical applicability.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="econ.TH" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-03-05T19:09:29Z</published>
+    <arxiv:comment>Accepted at AAMAS 2025</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Abhimanyu Pallavi Sudhir</name>
+    </author>
+    <author>
+      <name>Long Tran-Thanh</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2501.16254v1</id>
+    <title>Multi-Agent Geospatial Copilots for Remote Sensing Workflows</title>
+    <updated>2025-01-27T17:54:31Z</updated>
+    <link href="https://arxiv.org/abs/2501.16254v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2501.16254v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present GeoLLM-Squad, a geospatial Copilot that introduces the novel multi-agent paradigm to remote sensing (RS) workflows. Unlike existing single-agent approaches that rely on monolithic large language models (LLM), GeoLLM-Squad separates agentic orchestration from geospatial task-solving, by delegating RS tasks to specialized sub-agents. Built on the open-source AutoGen and GeoLLM-Engine frameworks, our work enables the modular integration of diverse applications, spanning urban monitoring, forestry protection, climate analysis, and agriculture studies. Our results demonstrate that while single-agent systems struggle to scale with increasing RS task complexity, GeoLLM-Squad maintains robust performance, achieving a 17% improvement in agentic correctness over state-of-the-art baselines. Our findings highlight the potential of multi-agent AI in advancing RS workflows.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-01-27T17:54:31Z</published>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Chaehong Lee</name>
+    </author>
+    <author>
+      <name>Varatheepan Paramanayakam</name>
+    </author>
+    <author>
+      <name>Andreas Karatzas</name>
+    </author>
+    <author>
+      <name>Yanan Jian</name>
+    </author>
+    <author>
+      <name>Michael Fore</name>
+    </author>
+    <author>
+      <name>Heming Liao</name>
+    </author>
+    <author>
+      <name>Fuxun Yu</name>
+    </author>
+    <author>
+      <name>Ruopu Li</name>
+    </author>
+    <author>
+      <name>Iraklis Anagnostopoulos</name>
+    </author>
+    <author>
+      <name>Dimitrios Stamoulis</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2501.08655v1</id>
+    <title>Application of Deep Reinforcement Learning to UAV Swarming for Ground Surveillance</title>
+    <updated>2025-01-15T08:46:20Z</updated>
+    <link href="https://arxiv.org/abs/2501.08655v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2501.08655v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>This paper summarizes in depth the state of the art of aerial swarms, covering both classical and new reinforcement-learning-based approaches for their management. Then, it proposes a hybrid AI system, integrating deep reinforcement learning in a multi-agent centralized swarm architecture. The proposed system is tailored to perform surveillance of a specific area, searching and tracking ground targets, for security and law enforcement applications. The swarm is governed by a central swarm controller responsible for distributing different search and tracking tasks among the cooperating UAVs. Each UAV agent is then controlled by a collection of cooperative sub-agents, whose behaviors have been trained using different deep reinforcement learning models, tailored for the different task types proposed by the swarm controller. More specifically, proximal policy optimization (PPO) algorithms were used to train the agents' behavior. In addition, several metrics to assess the performance of the swarm in this application were defined. The results obtained through simulation show that our system searches the operation area effectively, acquires the targets in a reasonable time, and is capable of tracking them continuously and consistently.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.RO" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-01-15T08:46:20Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <arxiv:journal_ref>Sensors 2023, 23(21), 8766</arxiv:journal_ref>
+    <author>
+      <name>Raúl Arranz</name>
+    </author>
+    <author>
+      <name>David Carramiñana</name>
+    </author>
+    <author>
+      <name>Gonzalo de Miguel</name>
+    </author>
+    <author>
+      <name>Juan A. Besada</name>
+    </author>
+    <author>
+      <name>Ana M. Bernardos</name>
+    </author>
+    <arxiv:doi>10.3390/s23218766</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.3390/s23218766" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2410.10415v1</id>
+    <title>Coupled autoregressive active inference agents for control of multi-joint dynamical systems</title>
+    <updated>2024-10-14T12:04:42Z</updated>
+    <link href="https://arxiv.org/abs/2410.10415v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2410.10415v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We propose an active inference agent to identify and control a mechanical system with multiple bodies connected by joints. This agent is constructed from multiple scalar autoregressive model-based agents, coupled together by virtue of sharing memories. Each subagent infers parameters through Bayesian filtering and controls by minimizing expected free energy over a finite time horizon. We demonstrate that a coupled agent of this kind is able to learn the dynamics of a double mass-spring-damper system, and drive it to a desired position through a balance of explorative and exploitative actions. It outperforms the uncoupled subagents in terms of surprise and goal alignment.</summary>
+    <category term="stat.ML" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="eess.SY" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-10-14T12:04:42Z</published>
+    <arxiv:comment>14 pages, 3 figures, accepted to the International Workshop on Active Inference 2024</arxiv:comment>
+    <arxiv:primary_category term="stat.ML"/>
+    <author>
+      <name>Tim N. Nisslbeck</name>
+    </author>
+    <author>
+      <name>Wouter M. Kouw</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2408.14484v1</id>
+    <title>Agentic Retrieval-Augmented Generation for Time Series Analysis</title>
+    <updated>2024-08-18T11:47:55Z</updated>
+    <link href="https://arxiv.org/abs/2408.14484v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2408.14484v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Time series modeling is crucial for many applications, however, it faces challenges such as complex spatio-temporal dependencies and distribution shifts in learning from historical context to predict task-specific outcomes. To address these challenges, we propose a novel approach using an agentic Retrieval-Augmented Generation (RAG) framework for time series analysis. The framework leverages a hierarchical, multi-agent architecture where the master agent orchestrates specialized sub-agents and delegates the end-user request to the relevant sub-agent. The sub-agents utilize smaller, pre-trained language models (SLMs) customized for specific time series tasks through fine-tuning using instruction tuning and direct preference optimization, and retrieve relevant prompts from a shared repository of prompt pools containing distilled knowledge about historical patterns and trends to improve predictions on new data. Our proposed modular, multi-agent RAG approach offers flexibility and achieves state-of-the-art performance across major time series tasks by tackling complex challenges more effectively than task-specific customized methods across benchmark datasets.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-08-18T11:47:55Z</published>
+    <arxiv:comment>Paper was accepted for Undergraduate Consortium at ACM KDD, 2024. Please find the link: https://kdd2024.kdd.org/undergraduate-consortium/</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Chidaksh Ravuru</name>
+    </author>
+    <author>
+      <name>Sagar Srinivas Sakhinana</name>
+    </author>
+    <author>
+      <name>Venkataramana Runkana</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2406.14537v1</id>
+    <title>MacroHFT: Memory Augmented Context-aware Reinforcement Learning On High Frequency Trading</title>
+    <updated>2024-06-20T17:48:24Z</updated>
+    <link href="https://arxiv.org/abs/2406.14537v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2406.14537v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>High-frequency trading (HFT) that executes algorithmic trading in short time scales, has recently occupied the majority of cryptocurrency market. Besides traditional quantitative trading methods, reinforcement learning (RL) has become another appealing approach for HFT due to its terrific ability of handling high-dimensional financial data and solving sophisticated sequential decision-making problems, \emph{e.g.,} hierarchical reinforcement learning (HRL) has shown its promising performance on second-level HFT by training a router to select only one sub-agent from the agent pool to execute the current transaction. However, existing RL methods for HFT still have some defects: 1) standard RL-based trading agents suffer from the overfitting issue, preventing them from making effective policy adjustments based on financial context; 2) due to the rapid changes in market conditions, investment decisions made by an individual agent are usually one-sided and highly biased, which might lead to significant loss in extreme markets. To tackle these problems, we propose a novel Memory Augmented Context-aware Reinforcement learning method On HFT, \emph{a.k.a.} MacroHFT, which consists of two training phases: 1) we first train multiple types of sub-agents with the market data decomposed according to various financial indicators, specifically market trend and volatility, where each agent owns a conditional adapter to adjust its trading policy according to market conditions; 2) then we train a hyper-agent to mix the decisions from these sub-agents and output a consistently profitable meta-policy to handle rapid market fluctuations, equipped with a memory mechanism to enhance the capability of decision-making. Extensive experiments on various cryptocurrency markets demonstrate that MacroHFT can achieve state-of-the-art performance on minute-level trading tasks.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="q-fin.TR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-06-20T17:48:24Z</published>
+    <arxiv:comment>Accepted to KDD 2024</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Chuqiao Zong</name>
+    </author>
+    <author>
+      <name>Chaojie Wang</name>
+    </author>
+    <author>
+      <name>Molei Qin</name>
+    </author>
+    <author>
+      <name>Lei Feng</name>
+    </author>
+    <author>
+      <name>Xinrun Wang</name>
+    </author>
+    <author>
+      <name>Bo An</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2406.11638v1</id>
+    <title>MASAI: Modular Architecture for Software-engineering AI Agents</title>
+    <updated>2024-06-17T15:19:51Z</updated>
+    <link href="https://arxiv.org/abs/2406.11638v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2406.11638v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>A common method to solve complex problems in software engineering, is to divide the problem into multiple sub-problems. Inspired by this, we propose a Modular Architecture for Software-engineering AI (MASAI) agents, where different LLM-powered sub-agents are instantiated with well-defined objectives and strategies tuned to achieve those objectives. Our modular architecture offers several advantages: (1) employing and tuning different problem-solving strategies across sub-agents, (2) enabling sub-agents to gather information from different sources scattered throughout a repository, and (3) avoiding unnecessarily long trajectories which inflate costs and add extraneous context. MASAI enabled us to achieve the highest performance (28.33% resolution rate) on the popular and highly challenging SWE-bench Lite dataset consisting of 300 GitHub issues from 11 Python repositories. We conduct a comprehensive evaluation of MASAI relative to other agentic methods and analyze the effects of our design decisions and their contribution to the success of MASAI.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-06-17T15:19:51Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Daman Arora</name>
+    </author>
+    <author>
+      <name>Atharv Sonwane</name>
+    </author>
+    <author>
+      <name>Nalin Wadhwa</name>
+    </author>
+    <author>
+      <name>Abhav Mehrotra</name>
+    </author>
+    <author>
+      <name>Saiteja Utpala</name>
+    </author>
+    <author>
+      <name>Ramakrishna Bairi</name>
+    </author>
+    <author>
+      <name>Aditya Kanade</name>
+    </author>
+    <author>
+      <name>Nagarajan Natarajan</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2402.10178v2</id>
+    <title>TDAG: A Multi-Agent Framework based on Dynamic Task Decomposition and Agent Generation</title>
+    <updated>2025-01-21T15:11:41Z</updated>
+    <link href="https://arxiv.org/abs/2402.10178v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2402.10178v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The emergence of Large Language Models (LLMs) like ChatGPT has inspired the development of LLM-based agents capable of addressing complex, real-world tasks. However, these agents often struggle during task execution due to methodological constraints, such as error propagation and limited adaptability. To address this issue, we propose a multi-agent framework based on dynamic Task Decomposition and Agent Generation (TDAG). This framework dynamically decomposes complex tasks into smaller subtasks and assigns each to a specifically generated subagent, thereby enhancing adaptability in diverse and unpredictable real-world tasks. Simultaneously, existing benchmarks often lack the granularity needed to evaluate incremental progress in complex, multi-step tasks. In response, we introduce ItineraryBench in the context of travel planning, featuring interconnected, progressively complex tasks with a fine-grained evaluation system. ItineraryBench is designed to assess agents' abilities in memory, planning, and tool usage across tasks of varying complexity. Our experimental results reveal that TDAG significantly outperforms established baselines, showcasing its superior adaptability and context awareness in complex task scenarios.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-02-15T18:27:37Z</published>
+    <arxiv:comment>Accepted by Neural Networks</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Yaoxiang Wang</name>
+    </author>
+    <author>
+      <name>Zhiyong Wu</name>
+    </author>
+    <author>
+      <name>Junfeng Yao</name>
+    </author>
+    <author>
+      <name>Jinsong Su</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2311.15495v3</id>
+    <title>A Constructive Proof of the Spherical Parisi Formula</title>
+    <updated>2024-05-01T21:58:10Z</updated>
+    <link href="https://arxiv.org/abs/2311.15495v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2311.15495v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The Parisi formula for the free energy is among the crown jewels in the theory of spin glasses. We present a simpler proof of the lower bound in the case of the spherical mean-field model. Our method follows the TAP approach developed recently in e.g. (Subag, 2018): we obtain an ultrametric tree of pure states, each with approximately the same free energy as the entire model, which are hierarchically arranged in accordance with the Parisi ansatz. We construct this tree ``layer by layer'' given the minimizer to Parisi's variational problem. On overlap intervals with full RSB, the tree is built by an optimization algorithm due to Subag. On overlap intervals with finite RSB, the tree is constructed by a new truncated second moment argument; a similar argument also characterizes the free energy of the resulting pure states. Notably we do not use the Aizenman--Sims--Starr scheme, and require interpolation bounds only up to the 1RSB level. Our methods also yield results for large deviations of the ground state, including the entire upper tail rate function for all 1RSB models without external field.</summary>
+    <category term="math.PR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cond-mat.dis-nn" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="math-ph" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-11-27T02:36:15Z</published>
+    <arxiv:comment>36 pages, 1 figure</arxiv:comment>
+    <arxiv:primary_category term="math.PR"/>
+    <author>
+      <name>Brice Huang</name>
+    </author>
+    <author>
+      <name>Mark Sellke</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2311.02827v1</id>
+    <title>On Subagging Boosted Probit Model Trees</title>
+    <updated>2023-11-06T02:22:16Z</updated>
+    <link href="https://arxiv.org/abs/2311.02827v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2311.02827v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>With the insight of variance-bias decomposition, we design a new hybrid bagging-boosting algorithm named SBPMT for classification problems. For the boosting part of SBPMT, we propose a new tree model called Probit Model Tree (PMT) as base classifiers in AdaBoost procedure. For the bagging part, instead of subsampling from the dataset at each step of boosting, we perform boosted PMTs on each subagged dataset and combine them into a powerful "committee", which can be viewed an incomplete U-statistic. Our theoretical analysis shows that (1) SBPMT is consistent under certain assumptions, (2) Increase the subagging times can reduce the generalization error of SBPMT to some extent and (3) Large number of ProbitBoost iterations in PMT can benefit the performance of SBPMT with fewer steps in the AdaBoost part. Those three properties are verified by a famous simulation designed by Mease and Wyner (2008). The last two points also provide a useful guidance in model tuning. A comparison of performance with other state-of-the-art classification methods illustrates that the proposed SBPMT algorithm has competitive prediction power in general and performs significantly better in some cases.</summary>
+    <category term="stat.ML" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="stat.AP" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-11-06T02:22:16Z</published>
+    <arxiv:primary_category term="stat.ML"/>
+    <author>
+      <name>Tian Qin</name>
+    </author>
+    <author>
+      <name>Wei-Min Huang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2310.18803v1</id>
+    <title>Weakly Coupled Deep Q-Networks</title>
+    <updated>2023-10-28T20:07:57Z</updated>
+    <link href="https://arxiv.org/abs/2310.18803v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2310.18803v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We propose weakly coupled deep Q-networks (WCDQN), a novel deep reinforcement learning algorithm that enhances performance in a class of structured problems called weakly coupled Markov decision processes (WCMDP). WCMDPs consist of multiple independent subproblems connected by an action space constraint, which is a structural property that frequently emerges in practice. Despite this appealing structure, WCMDPs quickly become intractable as the number of subproblems grows. WCDQN employs a single network to train multiple DQN "subagents", one for each subproblem, and then combine their solutions to establish an upper bound on the optimal action value. This guides the main DQN agent towards optimality. We show that the tabular version, weakly coupled Q-learning (WCQL), converges almost surely to the optimal action value. Numerical experiments show faster convergence compared to DQN and related techniques in settings with as many as 10 subproblems, $3^{10}$ total actions, and a continuous state space.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2023-10-28T20:07:57Z</published>
+    <arxiv:comment>To appear in proceedings of the 37th Conference on Neural Information Processing Systems (NeurIPS 2023)</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Ibrahim El Shar</name>
+    </author>
+    <author>
+      <name>Daniel R. Jiang</name>
+    </author>
+  </entry>
+</feed>

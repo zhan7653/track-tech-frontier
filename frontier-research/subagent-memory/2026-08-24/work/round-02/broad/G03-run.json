@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:07:57Z",
+  "from": null,
+  "github_date_field": "created",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "subagent memory",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:54Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "subagent memory"
+      },
+      "provider": "github-search",
+      "query": "subagent memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G03\\github-search-001-dbf17a0f66c98af5a4d43c68be0ab0ff5cacf46e72eb8a6aa31c7e77e9d627bb.raw",
+      "reported_total": 255,
+      "response_sha256": "dbf17a0f66c98af5a4d43c68be0ab0ff5cacf46e72eb8a6aa31c7e77e9d627bb",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=subagent+memory&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:57Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "subagent memory"
+      },
+      "provider": "github-search",
+      "query": "subagent memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G03\\github-search-002-b9acb4298390f72cb2ecd44232b9af646d279798e57fb9aa6599ecdffc42e829.raw",
+      "reported_total": 255,
+      "response_sha256": "b9acb4298390f72cb2ecd44232b9af646d279798e57fb9aa6599ecdffc42e829",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=subagent+memory&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:07:54Z",
+  "to": null
+}

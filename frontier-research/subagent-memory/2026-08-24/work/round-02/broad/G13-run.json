@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:09:10Z",
+  "from": null,
+  "github_date_field": "created",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 82,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "autogen memory agents",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:08Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "autogen memory agents"
+      },
+      "provider": "github-search",
+      "query": "autogen memory agents",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G13\\github-search-001-bbfbd412a53d2ae8b0c20544e6ef3f4b8bf05d8c15276a9b9da36f17e13c36b4.raw",
+      "reported_total": 82,
+      "response_sha256": "bbfbd412a53d2ae8b0c20544e6ef3f4b8bf05d8c15276a9b9da36f17e13c36b4",
+      "result_count": 82,
+      "url": "https://api.github.com/search/repositories?q=autogen+memory+agents&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:10Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "autogen memory agents"
+      },
+      "provider": "github-search",
+      "query": "autogen memory agents",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G13\\github-search-002-490625dfbdb3c34dc5904ee7537d7ab8bdf464ed55a4243db690add8806dbf61.raw",
+      "reported_total": 82,
+      "response_sha256": "490625dfbdb3c34dc5904ee7537d7ab8bdf464ed55a4243db690add8806dbf61",
+      "result_count": 0,
+      "url": "https://api.github.com/search/repositories?q=autogen+memory+agents&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:09:08Z",
+  "to": null
+}

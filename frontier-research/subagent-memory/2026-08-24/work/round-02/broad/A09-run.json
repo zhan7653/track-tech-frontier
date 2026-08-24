@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:06:45Z",
+  "from": "2023-01-01",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 58,
+  "pages": 2,
+  "provider": "arxiv",
+  "query": "(\"coding agent\" OR \"research agent\") AND (subagent OR \"multi-agent\") AND (memory OR state OR handoff OR workspace)",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:06:44Z",
+      "page": 1,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:((\"coding agent\" OR \"research agent\") AND (subagent OR \"multi-agent\") AND (memory OR state OR handoff OR workspace)) AND submittedDate:[202301010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 0
+      },
+      "provider": "arxiv",
+      "query": "(\"coding agent\" OR \"research agent\") AND (subagent OR \"multi-agent\") AND (memory OR state OR handoff OR workspace)",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\A09\\arxiv-001-4156e677eccbab475a39b01cfbc2487b0d9d4a42270e362c28bb7c1f5563654c.raw",
+      "reported_total": 58,
+      "response_sha256": "4156e677eccbab475a39b01cfbc2487b0d9d4a42270e362c28bb7c1f5563654c",
+      "result_count": 58,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%28%22coding+agent%22+OR+%22research+agent%22%29+AND+%28subagent+OR+%22multi-agent%22%29+AND+%28memory+OR+state+OR+handoff+OR+workspace%29%29+AND+submittedDate%3A%5B202301010000+TO+202608242359%5D&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:06:45Z",
+      "page": 2,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:((\"coding agent\" OR \"research agent\") AND (subagent OR \"multi-agent\") AND (memory OR state OR handoff OR workspace)) AND submittedDate:[202301010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 100
+      },
+      "provider": "arxiv",
+      "query": "(\"coding agent\" OR \"research agent\") AND (subagent OR \"multi-agent\") AND (memory OR state OR handoff OR workspace)",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\A09\\arxiv-002-4ad4342ad3ce7e44d4fc8fe6c795882e2e51d9a66971aefe7306e19747ac3ca1.raw",
+      "reported_total": 58,
+      "response_sha256": "4ad4342ad3ce7e44d4fc8fe6c795882e2e51d9a66971aefe7306e19747ac3ca1",
+      "result_count": 0,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%28%22coding+agent%22+OR+%22research+agent%22%29+AND+%28subagent+OR+%22multi-agent%22%29+AND+%28memory+OR+state+OR+handoff+OR+workspace%29%29+AND+submittedDate%3A%5B202301010000+TO+202608242359%5D&start=100&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:06:44Z",
+  "to": "2026-08-24"
+}

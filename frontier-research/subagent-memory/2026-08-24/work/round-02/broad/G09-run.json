@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:08:37Z",
+  "from": null,
+  "github_date_field": "created",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 7,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "multi-agent trajectory memory",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:08:35Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "multi-agent trajectory memory"
+      },
+      "provider": "github-search",
+      "query": "multi-agent trajectory memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G09\\github-search-001-c115a1aa4eb20d27cebc0d782be62ca8ad1885c6f5a51e061c137bc20f39edef.raw",
+      "reported_total": 7,
+      "response_sha256": "c115a1aa4eb20d27cebc0d782be62ca8ad1885c6f5a51e061c137bc20f39edef",
+      "result_count": 7,
+      "url": "https://api.github.com/search/repositories?q=multi-agent+trajectory+memory&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:08:37Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "multi-agent trajectory memory"
+      },
+      "provider": "github-search",
+      "query": "multi-agent trajectory memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G09\\github-search-002-bcf17da825ad41f4666737f4ca681fa82e8b5e7dc0f294324bf9ad8c1f27ae85.raw",
+      "reported_total": 7,
+      "response_sha256": "bcf17da825ad41f4666737f4ca681fa82e8b5e7dc0f294324bf9ad8c1f27ae85",
+      "result_count": 0,
+      "url": "https://api.github.com/search/repositories?q=multi-agent+trajectory+memory&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:08:35Z",
+  "to": null
+}

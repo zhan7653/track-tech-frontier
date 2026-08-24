@@ -1,0 +1,70 @@
+{
+  "finished_at": "2026-08-23T18:30:31Z",
+  "from": "2026-05-27",
+  "limitations": "Point-in-time stars are retained only as a snapshot. No growth or acceleration is inferred.",
+  "measurement_status": "complete",
+  "observation_count": 1,
+  "provider": "github-observe",
+  "record_type": "github-repository-observation-run",
+  "repo_observed": "MehulG/memX",
+  "repo_requested": "MehulG/memX",
+  "requests": [
+    {
+      "kind": "repository",
+      "observed_at": "2026-08-23T18:30:27Z",
+      "params": {},
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\memx\\github-observe-001-beb6a6438193e6f58094f4945bf83d7c2568efab78ddc539e728a45d3d7edafd.raw",
+      "response_sha256": "beb6a6438193e6f58094f4945bf83d7c2568efab78ddc539e728a45d3d7edafd",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:30:27Z",
+      "url": "https://api.github.com/repos/MehulG/memX"
+    },
+    {
+      "kind": "latest-release",
+      "observed_at": "2026-08-23T18:30:29Z",
+      "params": {
+        "page": 1,
+        "per_page": 1
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\memx\\github-observe-002-4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.raw",
+      "response_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "result_count": 0,
+      "retrieved_at": "2026-08-23T18:30:29Z",
+      "url": "https://api.github.com/repos/MehulG/memX/releases?per_page=1&page=1"
+    },
+    {
+      "kind": "default-branch-commit",
+      "observed_at": "2026-08-23T18:30:30Z",
+      "params": {},
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\memx\\github-observe-003-f1e60ecc2073205ea5a0e15d69f9bc32cf479fcaeea72202aef4b4a3325a157e.raw",
+      "response_sha256": "f1e60ecc2073205ea5a0e15d69f9bc32cf479fcaeea72202aef4b4a3325a157e",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:30:30Z",
+      "url": "https://api.github.com/repos/MehulG/memX/commits/main"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:30:31Z",
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\memx\\github-observe-004-4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.raw",
+      "response_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "result_count": 0,
+      "retrieved_at": "2026-08-23T18:30:31Z",
+      "url": "https://api.github.com/repos/MehulG/memX/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=1"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T18:30:27Z",
+  "to": "2026-08-24",
+  "window_id": "W_ROLLING_90D"
+}

@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:06:26Z",
+  "from": "2023-01-01",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "arxiv",
+  "query": "\"multi-agent\" AND (memory OR state) AND (conflict OR consistency OR transaction OR concurrency OR provenance) AND (LLM OR \"language model\")",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:06:22Z",
+      "page": 1,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:(\"multi-agent\" AND (memory OR state) AND (conflict OR consistency OR transaction OR concurrency OR provenance) AND (LLM OR \"language model\")) AND submittedDate:[202301010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 0
+      },
+      "provider": "arxiv",
+      "query": "\"multi-agent\" AND (memory OR state) AND (conflict OR consistency OR transaction OR concurrency OR provenance) AND (LLM OR \"language model\")",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\A06\\arxiv-001-5d3401fbd0391782c85f6a5139e63abba03736aa142a9c152354ae75f451b359.raw",
+      "reported_total": 454,
+      "response_sha256": "5d3401fbd0391782c85f6a5139e63abba03736aa142a9c152354ae75f451b359",
+      "result_count": 100,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%22multi-agent%22+AND+%28memory+OR+state%29+AND+%28conflict+OR+consistency+OR+transaction+OR+concurrency+OR+provenance%29+AND+%28LLM+OR+%22language+model%22%29%29+AND+submittedDate%3A%5B202301010000+TO+202608242359%5D&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:06:26Z",
+      "page": 2,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:(\"multi-agent\" AND (memory OR state) AND (conflict OR consistency OR transaction OR concurrency OR provenance) AND (LLM OR \"language model\")) AND submittedDate:[202301010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 100
+      },
+      "provider": "arxiv",
+      "query": "\"multi-agent\" AND (memory OR state) AND (conflict OR consistency OR transaction OR concurrency OR provenance) AND (LLM OR \"language model\")",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\A06\\arxiv-002-ef7ada84be043afc5b09abec217dafe564fcfa903294aadf5a9881881abe548b.raw",
+      "reported_total": 454,
+      "response_sha256": "ef7ada84be043afc5b09abec217dafe564fcfa903294aadf5a9881881abe548b",
+      "result_count": 100,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%22multi-agent%22+AND+%28memory+OR+state%29+AND+%28conflict+OR+consistency+OR+transaction+OR+concurrency+OR+provenance%29+AND+%28LLM+OR+%22language+model%22%29%29+AND+submittedDate%3A%5B202301010000+TO+202608242359%5D&start=100&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:06:22Z",
+  "to": "2026-08-24"
+}

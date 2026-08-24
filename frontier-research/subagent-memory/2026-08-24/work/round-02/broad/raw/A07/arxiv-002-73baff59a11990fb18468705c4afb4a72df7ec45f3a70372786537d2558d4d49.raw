@@ -1,0 +1,1542 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/VMk5ojBmxCgrOcGBpAm8DnhPd+8</id>
+  <title>arXiv Query: search_query=(all:"multi-agent" AND all:memory AND (all:poisoning OR all:injection OR all:security OR all:privacy OR all:authorization OR all:leakage) ) AND submittedDate:"202301010000 TO 202608242359"&amp;id_list=&amp;start=100&amp;max_results=100</title>
+  <updated>2026-08-23T17:06:33Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=(all:%22multi-agent%22+AND+(all:memory+AND+(all:poisoning+OR+(all:injection+OR+(all:security+OR+(all:privacy+OR+(all:authorization+OR+all:leakage)))))))+AND+submittedDate:%22202301010000+TO+202608242359%22&amp;start=100&amp;max_results=100&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>100</opensearch:itemsPerPage>
+  <opensearch:totalResults>150</opensearch:totalResults>
+  <opensearch:startIndex>100</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2601.19138v2</id>
+    <title>AgenticSCR: An Autonomous Agentic Secure Code Review for Immature Vulnerabilities Detection</title>
+    <updated>2026-08-03T22:06:03Z</updated>
+    <link href="https://arxiv.org/abs/2601.19138v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.19138v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Secure code review is critical during pre-integration, where Atlassian developers rely on lightweight analysis tools, while deep security assessment is deferred to later stages, delaying feedback and increasing remediation costs. Existing static analyzers are often noisy and struggle with context-dependent or partially manifested vulnerabilities, while static large language model (LLM) reviewers are constrained by context windows and lack tool interaction. Agentic AI, which combines LLMs with code navigation, shows promise; however, its effectiveness for early-stage secure code review remains underexplored. We present AgenticSCR, an agentic secure code reviewer augmented with security-focused semantic memory that grounds reasoning in structured security knowledge to detect vulnerabilities before they fully manifest. AgenticSCR achieves at least 153% relative improvement in generating comments with correct localization, vulnerability type, and relevance over static LLM baseline, multi-agent reviewer, and SAST tools. In a shadow deployment, 54% of its comments were validated by security engineers for developer reporting, demonstrating practical utility while underscoring the difficulty of the task. These findings position the security-focused semantic memory as a promising direction for agentic secure code review, enabling early-stage vulnerability identification. Our approach builds an important step toward reliable localization, detection, and explanation in shift-left security practices</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-27T03:10:12Z</published>
+    <arxiv:comment>Accepted at the 41st IEEE/ACM International Conference on Automated Software Engineering (ASE'26 Industry-Track)</arxiv:comment>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Wachiraphan Charoenwet</name>
+    </author>
+    <author>
+      <name>Kla Tantithamthavorn</name>
+    </author>
+    <author>
+      <name>Patanamon Thongtanunam</name>
+    </author>
+    <author>
+      <name>Hong Yi Lin</name>
+    </author>
+    <author>
+      <name>Minwoo Jeong</name>
+    </author>
+    <author>
+      <name>Ming Wu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2601.13186v1</id>
+    <title>Prompt Injection Mitigation with Agentic AI, Nested Learning, and AI Sustainability via Semantic Caching</title>
+    <updated>2026-01-19T16:10:11Z</updated>
+    <link href="https://arxiv.org/abs/2601.13186v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.13186v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Prompt injection remains a central obstacle to the safe deployment of large language models, particularly in multi-agent settings where intermediate outputs can propagate or amplify malicious instructions. Building on earlier work that introduced a four-metric Total Injection Vulnerability Score (TIVS), this paper extends the evaluation framework with semantic similarity-based caching and a fifth metric (Observability Score Ratio) to yield TIVS-O, investigating how defence effectiveness interacts with transparency in a HOPE-inspired Nested Learning architecture. The proposed system combines an agentic pipeline with Continuum Memory Systems that implement semantic similarity-based caching across 301 synthetically generated injection-focused prompts drawn from ten attack families, while a fourth agent performs comprehensive security analysis using five key performance indicators. In addition to traditional injection metrics, OSR quantifies the richness and clarity of security-relevant reasoning exposed by each agent, enabling an explicit analysis of trade-offs between strict mitigation and auditability. Experiments show that the system achieves secure responses with zero high-risk breaches, while semantic caching delivers substantial computational savings, achieving a 41.6% reduction in LLM calls and corresponding decreases in latency, energy consumption, and carbon emissions. Five TIVS-O configurations reveal optimal trade-offs between mitigation strictness and forensic transparency. These results indicate that observability-aware evaluation can reveal non-monotonic effects within multi-agent pipelines and that memory-augmented agents can jointly maximize security robustness, real-time performance, operational cost savings, and environmental sustainability without modifying underlying model weights, providing a production-ready pathway for secure and green LLM deployments.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-19T16:10:11Z</published>
+    <arxiv:comment>33 pages, 19 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Diego Gosmar</name>
+    </author>
+    <author>
+      <name>Deborah A. Dahl</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2601.12560v1</id>
+    <title>Agentic Artificial Intelligence (AI): Architectures, Taxonomies, and Evaluation of Large Language Model Agents</title>
+    <updated>2026-01-18T19:51:16Z</updated>
+    <link href="https://arxiv.org/abs/2601.12560v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.12560v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Artificial Intelligence is moving from models that only generate text to Agentic AI, where systems behave as autonomous entities that can perceive, reason, plan, and act. Large Language Models (LLMs) are no longer used only as passive knowledge engines but as cognitive controllers that combine memory, tool use, and feedback from their environment to pursue extended goals. This shift already supports the automation of complex workflows in software engineering, scientific discovery, and web navigation, yet the variety of emerging designs, from simple single loop agents to hierarchical multi agent systems, makes the landscape hard to navigate. In this paper, we investigate architectures and propose a unified taxonomy that breaks agents into Perception, Brain, Planning, Action, Tool Use, and Collaboration. We use this lens to describe the move from linear reasoning procedures to native inference time reasoning models, and the transition from fixed API calls to open standards like the Model Context Protocol (MCP) and Native Computer Use. We also group the environments in which these agents operate, including digital operating systems, embodied robotics, and other specialized domains, and we review current evaluation practices. Finally, we highlight open challenges, such as hallucination in action, infinite loops, and prompt injection, and outline future research directions toward more robust and reliable autonomous systems.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-18T19:51:16Z</published>
+    <arxiv:comment>28 pages, 4 figures, 5 tables</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Arunkumar V</name>
+    </author>
+    <author>
+      <name>Gangadharan G. R.</name>
+    </author>
+    <author>
+      <name>Rajkumar Buyya</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2601.07122v2</id>
+    <title>Enhancing Cloud Network Resilience via a Robust LLM-Empowered Multi-Agent Reinforcement Learning Framework</title>
+    <updated>2026-05-18T01:45:16Z</updated>
+    <link href="https://arxiv.org/abs/2601.07122v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.07122v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>While virtualization and resource pooling empower cloud networks with structural flexibility and elastic scalability, they inevitably expand the attack surface and challenge cyber resilience. Reinforcement Learning (RL)-based defense strategies have been developed to optimize resource deployment and isolation policies under adversarial conditions, aiming to enhance system resilience by maintaining and restoring network availability. However, existing approaches lack robustness as they require retraining to adapt to dynamic changes in network structure, node scale, attack strategies, and attack intensity. Furthermore, the lack of Human-in-the-Loop (HITL) support limits interpretability and flexibility. To address these limitations, we propose CyberOps-Bots, a hierarchical multi-agent reinforcement learning framework empowered by Large Language Models (LLMs). Inspired by MITRE ATT&amp;CK's Tactics-Techniques model, CyberOps-Bots features a two-layer architecture: (1) An upper-level LLM agent with four modules--ReAct planning, IPDRR-based perception, long-short term memory, and action/tool integration--performs global awareness, human intent recognition, and tactical planning; (2) Lower-level RL agents, developed via heterogeneous separated pre-training, execute atomic defense actions within localized network regions. This synergy preserves LLM adaptability and interpretability while ensuring reliable RL execution. Experiments on real cloud datasets show that, compared to state-of-the-art algorithms, CyberOps-Bots maintains network availability 68.5% higher and achieves a 34.7% jumpstart performance gain when shifting the scenarios without retraining. To our knowledge, this is the first study to establish a robust LLM-RL framework with HITL support for cloud defense.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-12T01:25:41Z</published>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Yixiao Peng</name>
+    </author>
+    <author>
+      <name>Hao Hu</name>
+    </author>
+    <author>
+      <name>Feiyang Li</name>
+    </author>
+    <author>
+      <name>Xinye Cao</name>
+    </author>
+    <author>
+      <name>Yingchang Jiang</name>
+    </author>
+    <author>
+      <name>Jipeng Tang</name>
+    </author>
+    <author>
+      <name>Guoshun Nan</name>
+    </author>
+    <author>
+      <name>Yuling Liu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2601.01743v1</id>
+    <title>AI Agent Systems: Architectures, Applications, and Evaluation</title>
+    <updated>2026-01-05T02:38:40Z</updated>
+    <link href="https://arxiv.org/abs/2601.01743v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.01743v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>AI agents -- systems that combine foundation models with reasoning, planning, memory, and tool use -- are rapidly becoming a practical interface between natural-language intent and real-world computation. This survey synthesizes the emerging landscape of AI agent architectures across: (i) deliberation and reasoning (e.g., chain-of-thought-style decomposition, self-reflection and verification, and constraint-aware decision making), (ii) planning and control (from reactive policies to hierarchical and multi-step planners), and (iii) tool calling and environment interaction (retrieval, code execution, APIs, and multimodal perception). We organize prior work into a unified taxonomy spanning agent components (policy/LLM core, memory, world models, planners, tool routers, and critics), orchestration patterns (single-agent vs.\ multi-agent; centralized vs.\ decentralized coordination), and deployment settings (offline analysis vs.\ online interactive assistance; safety-critical vs.\ open-ended tasks). We discuss key design trade-offs -- latency vs.\ accuracy, autonomy vs.\ controllability, and capability vs.\ reliability -- and highlight how evaluation is complicated by non-determinism, long-horizon credit assignment, tool and environment variability, and hidden costs such as retries and context growth. Finally, we summarize measurement and benchmarking practices (task suites, human preference and utility metrics, success under constraints, robustness and security) and identify open challenges including verification and guardrails for tool actions, scalable memory and context management, interpretability of agent decisions, and reproducible evaluation under realistic workloads.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-05T02:38:40Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Bin Xu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2601.01298v1</id>
+    <title>Warp-Cortex: An Asynchronous, Memory-Efficient Architecture for Million-Agent Cognitive Scaling on Consumer Hardware</title>
+    <updated>2026-01-03T23:11:21Z</updated>
+    <link href="https://arxiv.org/abs/2601.01298v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.01298v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Current multi-agent Large Language Model (LLM) frameworks suffer from linear memory scaling, rendering "System 2" parallel reasoning impractical on consumer hardware. We present Warp Cortex, an asynchronous architecture that theoretically enables million-agent cognitive scaling by decoupling agent logic from physical memory. Through Singleton Weight Sharing and a novel Topological Synapse--inspired by hybrid landmarking techniques from Topological Data Analysis (TDA)--we reduce memory complexity from O(N * L) to O(1) for weights and O(N * k) for context, where k &lt;&lt; L. By treating the KV-cache as a point cloud in latent space, we apply witness-complex-inspired sparsification to preserve persistent homological features of the context manifold. On a single NVIDIA RTX 4090, we empirically demonstrate 100 concurrent agents at 2.2 GB total VRAM, with theoretical capacity exceeding 1,000 agents before compute latency becomes the bottleneck. We further introduce Referential Injection, a non-intrusive KV-cache update mechanism that allows asynchronous sub-agents to influence primary generation without stream disruption.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.DC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-03T23:11:21Z</published>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Jorge L. Ruiz Williams</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2601.06115v1</id>
+    <title>Dreaming Is Not a Bug: A Jung-Inspired Dream Layer for Multi-Agent LLM Companions</title>
+    <updated>2026-01-03T15:19:54Z</updated>
+    <link href="https://arxiv.org/abs/2601.06115v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.06115v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Inspired by a personal dream about knowledge-sharing barriers in an everyday hardware project, this paper proposes a Jung-inspired "Dream Layer" for LLM companions, reframing controlled offline hallucinations as a resource for learning and relationship-building rather than a mere reliability bug. Drawing on Jung's notion of the collective unconscious as a shared repository of archetypal forms, we introduce an Artificial Collective Unconscious (ACU): a shared dream pool where agents contribute de-identified, abstract Interaction Templates that are later re-instantiated as idiosyncratic Dream Narratives. The Dream Layer runs strictly offline: logic-enforcing modules are relaxed and sampling temperature is increased, yielding safe but deliberately bizarre narratives (e.g., travel sequences with mismatched currencies) that augment data for rare events and edge-case safety tests; to harness risk productively, we add a governance stack of strict abstraction, temporal delays, and ephemeral memory. Through behavioural simulations of everyday dialogue and long-horizon adaptation tasks, we show that the Dream Layer enables a critical decoupling: agents remain firm on safety constraints (e.g., security policies) while becoming flexible in narrative strategy (e.g., using shared archetypal metaphors to resolve deadlocks), conceptually reframing hallucination so that online, unmarked instances remain bugs, whereas bounded, marked, and delayed ones become a goldmine for synthetic scenarios and deepened companionship, echoing anti-overfitting dream mechanisms proposed in contemporary neuroscience.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-03T15:19:54Z</published>
+    <arxiv:comment>Preprint, 35 pages (5 pages of appendix), 2 figures, 3 tables. Conceptual and architectural proposal with preliminary simulation results</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>V. Cheung</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2512.19972v1</id>
+    <title>Rethinking Knowledge Distillation in Collaborative Machine Learning: Memory, Knowledge, and Their Interactions</title>
+    <updated>2025-12-23T01:34:23Z</updated>
+    <link href="https://arxiv.org/abs/2512.19972v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2512.19972v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Collaborative learning has emerged as a key paradigm in large-scale intelligent systems, enabling distributed agents to cooperatively train their models while addressing their privacy concerns. Central to this paradigm is knowledge distillation (KD), a technique that facilitates efficient knowledge transfer among agents. However, the underlying mechanisms by which KD leverages memory and knowledge across agents remain underexplored. This paper aims to bridge this gap by offering a comprehensive review of KD in collaborative learning, with a focus on the roles of memory and knowledge. We define and categorize memory and knowledge within the KD process and explore their interrelationships, providing a clear understanding of how knowledge is extracted, stored, and shared in collaborative settings. We examine various collaborative learning patterns, including distributed, hierarchical, and decentralized structures, and provide insights into how memory and knowledge dynamics shape the effectiveness of KD in collaborative learning. Particularly, we emphasize task heterogeneity in distributed learning pattern covering federated learning (FL), multi-agent domain adaptation (MADA), federated multi-modal learning (FML), federated continual learning (FCL), federated multi-task learning (FMTL), and federated graph knowledge embedding (FKGE). Additionally, we highlight model heterogeneity, data heterogeneity, resource heterogeneity, and privacy concerns of these tasks. Our analysis categorizes existing work based on how they handle memory and knowledge. Finally, we discuss existing challenges and propose future directions for advancing KD techniques in the context of collaborative learning.</summary>
+    <category term="cs.DC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-12-23T01:34:23Z</published>
+    <arxiv:comment>Published in IEEE TNSE</arxiv:comment>
+    <arxiv:primary_category term="cs.DC"/>
+    <author>
+      <name>Pengchao Han</name>
+    </author>
+    <author>
+      <name>Xi Huang</name>
+    </author>
+    <author>
+      <name>Yi Fang</name>
+    </author>
+    <author>
+      <name>Guojun Han</name>
+    </author>
+    <arxiv:doi>10.1109/TNSE.2025.3572362</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1109/TNSE.2025.3572362" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2512.15790v1</id>
+    <title>Bilevel Optimization for Covert Memory Tampering in Heterogeneous Multi-Agent Architectures (XAMT)</title>
+    <updated>2025-12-15T23:04:48Z</updated>
+    <link href="https://arxiv.org/abs/2512.15790v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2512.15790v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The increasing operational reliance on complex Multi-Agent Systems (MAS) across safety-critical domains necessitates rigorous adversarial robustness assessment. Modern MAS are inherently heterogeneous, integrating conventional Multi-Agent Reinforcement Learning (MARL) with emerging Large Language Model (LLM) agent architectures utilizing Retrieval-Augmented Generation (RAG). A critical shared vulnerability is reliance on centralized memory components: the shared Experience Replay (ER) buffer in MARL and the external Knowledge Base (K) in RAG agents. This paper proposes XAMT (Bilevel Optimization for Covert Memory Tampering in Heterogeneous Multi-Agent Architectures), a novel framework that formalizes attack generation as a bilevel optimization problem. The Upper Level minimizes perturbation magnitude (delta) to enforce covertness while maximizing system behavior divergence toward an adversary-defined target (Lower Level). We provide rigorous mathematical instantiations for CTDE MARL algorithms and RAG-based LLM agents, demonstrating that bilevel optimization uniquely crafts stealthy, minimal-perturbation poisons evading detection heuristics. Comprehensive experimental protocols utilize SMAC and SafeRAG benchmarks to quantify effectiveness at sub-percent poison rates (less than or equal to 1 percent in MARL, less than or equal to 0.1 percent in RAG). XAMT defines a new unified class of training-time threats essential for developing intrinsically secure MAS, with implications for trust, formal verification, and defensive strategies prioritizing intrinsic safety over perimeter-based detection.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-12-15T23:04:48Z</published>
+    <arxiv:comment>10 pages, 5 figures, 4 tables. Conference-style paper (IEEEtran). Proposes unified bilevel optimization framework for covert memory poisoning attacks in heterogeneous multi-agent systems (MARL + RAG)</arxiv:comment>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Akhil Sharma</name>
+    </author>
+    <author>
+      <name>Shaikh Yaser Arafat</name>
+    </author>
+    <author>
+      <name>Jai Kumar Sharma</name>
+    </author>
+    <author>
+      <name>Ken Huang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2512.12989v2</id>
+    <title>Quantigence: A Multi-Agent Framework for Post-Quantum Security Analysis on Commodity Hardware</title>
+    <updated>2026-08-06T09:33:33Z</updated>
+    <link href="https://arxiv.org/abs/2512.12989v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2512.12989v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The migration to post-quantum cryptography (PQC) forces security teams to synthesize a fast-moving literature spanning lattice theory, implementation security, and shifting NIST policy. We present Quantigence, a multi-agent framework that structures this analysis as a supervisor that decomposes a query into sub-tasks and dispatches them to four specialist agents (cryptographic analysis, threat modeling, standards compliance, and risk assessment), each grounded in live external tools: the arXiv and NVD APIs and a local retrieval index over the NIST PQC standards. Agents run serially on a single commodity GPU using a 4-bit-quantized 9B model, keeping the peak memory footprint within an 8 GB budget. The framework computes a Quantum-Adjusted Risk Score (QARS), an automated operationalization of the risk model of Grigaliūnas and Brūzgienė, to prioritize assets. On a 40-query benchmark of atomic, machine-checkable questions, tool access is what raises accuracy, from 57% (zero-shot) to 98% (single agent), and a single tool-using agent is, as expected, a strong baseline that multi-agent decomposition does not beat on single-fact lookups. On a second benchmark of ten complex, multi-faceted queries (the setting orchestration is designed for), the supervisor/worker decomposition instead improves rubric coverage from 78% to 89% and judged answer quality. We report both, and further measure robustness to retrieval-corpus poisoning and behavior across model scales. The implementation and benchmark are released as open source.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-12-15T05:27:10Z</published>
+    <arxiv:comment>12 pages, 6 figures, 3 tables. Code and data: https://github.com/AbdulmalikDS/quantigence</arxiv:comment>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Abdulmalik Alquwayfili</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2512.06659v1</id>
+    <title>The Evolution of Agentic AI in Cybersecurity: From Single LLM Reasoners to Multi-Agent Systems and Autonomous Pipelines</title>
+    <updated>2025-12-07T05:10:16Z</updated>
+    <link href="https://arxiv.org/abs/2512.06659v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2512.06659v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Cybersecurity has become one of the earliest adopters of agentic AI, as security operations centers increasingly rely on multi-step reasoning, tool-driven analysis, and rapid decision-making under pressure. While individual large language models can summarize alerts or interpret unstructured reports, they fall short in real SOC environments that require grounded data access, reproducibility, and accountable workflows. In response, the field has seen a rapid architectural evolution from single-model helpers toward tool-augmented agents, distributed multi-agent systems, schema-bound tool ecosystems, and early explorations of semi-autonomous investigative pipelines. This survey presents a five-generation taxonomy of agentic AI in cybersecurity. It traces how capabilities and risks change as systems advance from text-only LLM reasoners to multi-agent collaboration frameworks and constrained-autonomy pipelines. We compare these generations across core dimensions - reasoning depth, tool use, memory, reproducibility, and safety. In addition, we also synthesize emerging benchmarks used to evaluate cyber-oriented agents. Finally, we outline the unresolved challenges that accompany this evolution, such as response validation, tool-use correctness, multi-agent coordination, long-horizon reasoning, and safeguards for high-impact actions. Collectively, this work provides a structured perspective on how agentic AI is taking shape within cybersecurity and what is required to ensure its safe and reliable deployment.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-12-07T05:10:16Z</published>
+    <arxiv:comment>Accepted at ICAIC 2026</arxiv:comment>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Vaishali Vinay</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2512.04668v4</id>
+    <title>Topology Matters: Measuring Memory Leakage in Multi-Agent LLMs</title>
+    <updated>2026-06-03T14:38:00Z</updated>
+    <link href="https://arxiv.org/abs/2512.04668v4" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2512.04668v4" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Graph topology is a fundamental determinant of memory leakage in multi-agent LLM systems, yet its effects remain poorly quantified. We introduce MAMA (Multi-Agent Memory Attack), a controlled evaluation framework for comparing topology-conditioned memory leakage in multi-agent LLM systems. MAMA operates on synthetic documents containing labeled Personally Identifiable Information (PII) entities, from which we generate sanitized task instructions. We execute a two-phase protocol: Engram (seeding private information into a target agent's memory) and Resonance (multi-round interaction where an attacker attempts extraction). Over 10 rounds, we measure leakage using a two-stage recovery criterion that combines exact-match extraction with LLM-based inference over the attacker's final output. We evaluate six canonical topologies (complete, circle, chain, tree, star, star-ring) across $n\in\{4,5,6\}$, attacker-target placements, and base models. Results are consistent: denser connectivity, shorter attacker-target distance, and higher target centrality increase leakage; most leakage occurs in early rounds and then plateaus; model choice shifts absolute rates but preserves broad structural trends; spatiotemporal/location attributes leak more readily than identity credentials or regulated identifiers. We distill practical guidance for system design: favor sparse or hierarchical connectivity, maximize attacker-target separation, and restrict hub/shortcut pathways via topology-aware access control. Our code is available at https://github.com/llll121/mama-eval.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-12-04T11:00:49Z</published>
+    <arxiv:comment>Accepted to Findings of the Association for Computational Linguistics: ACL 2026. Camera-ready version</arxiv:comment>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Jinbo Liu</name>
+    </author>
+    <author>
+      <name>Defu Cao</name>
+    </author>
+    <author>
+      <name>Yifei Wei</name>
+    </author>
+    <author>
+      <name>Tianyao Su</name>
+    </author>
+    <author>
+      <name>Yuan Liang</name>
+    </author>
+    <author>
+      <name>Yushun Dong</name>
+    </author>
+    <author>
+      <name>Yan Liu</name>
+    </author>
+    <author>
+      <name>Yue Zhao</name>
+    </author>
+    <author>
+      <name>Xiyang Hu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2512.00520v2</id>
+    <title>Toward a Safe Internet of Agents</title>
+    <updated>2026-04-27T13:00:45Z</updated>
+    <link href="https://arxiv.org/abs/2512.00520v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2512.00520v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Autonomous Artificial Intelligence (AI) agents, powered by Large Language Models (LLMs), advance rapidly toward interconnected systems -- an Internet of Agents (IoA). This vision enables complex problem-solving while introducing systemic safety and security risks. Beyond existing threat taxonomies, we provide a principled guide addressing architectural vulnerability sources. We offer a framework for engineering safe agentic systems through bottom-up deconstruction, analyzing each component as a dual-use interface where capability expansion creates attack surface growth. We examine three tiers: (1) Single Agents -- analyzing inherent risks in models, memory, design patterns, tools, and guardrails; (2) Multi-Agent Systems (MAS) -- examining collective behavior components including architectural patterns, communication mechanisms, verification, and system guardrails; and (3) Interoperable Multi-Agent Systems (IMAS) -- exploring four secure ecosystem pillars: standardized protocols, agent registration/discovery, resource vetting, and governance. Our analysis reveals a central principle: agentic safety must be co-designed with capability as a fundamental architectural property. We identify specific vulnerabilities at each level and derive core mitigation principles. The result is a foundational guide enabling developers and researchers to build not merely capable but safe, reliable agentic AI, contributing to secure IoA development.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-11-29T15:31:16Z</published>
+    <arxiv:comment>44 pages</arxiv:comment>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Juan A. Wibowo</name>
+    </author>
+    <author>
+      <name>George C. Polyzos</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2511.18259v2</id>
+    <title>DiscoVerse: Multi-Agent Pharmaceutical Co-Scientist for Traceable Drug Discovery and Reverse Translation</title>
+    <updated>2025-12-09T17:40:27Z</updated>
+    <link href="https://arxiv.org/abs/2511.18259v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2511.18259v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Pharmaceutical research and development has accumulated vast and heterogeneous archives of data. Much of this knowledge stems from discontinued programs, and reusing these archives is invaluable for reverse translation. However, in practice, such reuse is often infeasible. In this work, we introduce DiscoVerse, a multi-agent co-scientist designed to support pharmaceutical research and development at Roche. Designed as a human-in-the-loop assistant, DiscoVerse enables domain-specific queries by delivering evidence-based answers: it retrieves relevant data, links across documents, summarises key findings and preserves institutional memory. We assess DiscoVerse through expert evaluation of source-linked outputs. Our evaluation spans a selected subset of 180 molecules from Roche's research and development repositories, encompassing over 0.87 billion BPE tokens and more than four decades of research. To our knowledge, this represents the first agentic framework to be systematically assessed on real pharmaceutical data for reverse translation, enabled by authorized access to confidential archives covering the full lifecycle of drug development. Our contributions include: role-specialized agent designs aligned with scientist workflows; human-in-the-loop support for reverse translation; expert evaluation; and a large-scale demonstration showing promising decision-making insights. In brief, across seven benchmark queries, DiscoVerse achieved near-perfect recall ($\geq 0.99$) with moderate precision ($0.71-0.91$). Qualitative assessments and three real-world pharmaceutical use cases further showed faithful, source-linked synthesis across preclinical and clinical evidence.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-11-23T03:17:26Z</published>
+    <arxiv:comment>24 pages, 5 figures, 3 tables. Updated version: added three pharmaceutical industry use cases and revised text for clarity</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Xiaochen Zheng</name>
+    </author>
+    <author>
+      <name>Alvaro Serra</name>
+    </author>
+    <author>
+      <name>Ilya Schneider Chernov</name>
+    </author>
+    <author>
+      <name>Maddalena Marchesi</name>
+    </author>
+    <author>
+      <name>Eunice Musvasva</name>
+    </author>
+    <author>
+      <name>Tatyana Y. Doktorova</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2511.16997v1</id>
+    <title>MirrorMind: Empowering OmniScientist with the Expert Perspectives and Collective Knowledge of Human Scientists</title>
+    <updated>2025-11-21T07:05:26Z</updated>
+    <link href="https://arxiv.org/abs/2511.16997v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2511.16997v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The emergence of AI Scientists has demonstrated remarkable potential in automating scientific research. However, current approaches largely conceptualize scientific discovery as a solitary optimization or search process, overlooking that knowledge production is inherently a social and historical endeavor. Human scientific insight stems from two distinct yet interconnected sources. First is the individual cognitive trajectory, where a researcher's unique insight is shaped by their evolving research history and stylistic preferences; another is the collective disciplinary memory, where knowledge is sedimented into vast, interconnected networks of citations and concepts. Existing LLMs still struggle to represent these structured, high-fidelity cognitive and social contexts. To bridge this gap, we introduce MirrorMind, a hierarchical cognitive architecture that integrates dual-memory representations within a three-level framework. The Individual Level constructs high-fidelity cognitive models of individual researchers by capturing their episodic, semantic, and persona memories; the Domain Level maps collective knowledge into structured disciplinary concept graphs; and the Interdisciplinary Level that acts as an orthogonal orchestration engine. Crucially, our architecture separates memory storage from agentic execution, enabling AI scientist agents to flexibly access individual memories for unique perspectives or collective structures to reason. We evaluate MirrorMind across four comprehensive tasks, including author-level cognitive simulation, complementary reasoning, cross-disciplinary collaboration promotion, and multi-agent scientific problem solving. The results show that by integrating individual cognitive depth with collective disciplinary breadth, MirrorMind moves beyond simple fact retrieval toward structural, personalized, and insight-generating scientific reasoning.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-11-21T07:05:26Z</published>
+    <arxiv:comment>26 pages, 4 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Qingbin Zeng</name>
+    </author>
+    <author>
+      <name>Bingbing Fan</name>
+    </author>
+    <author>
+      <name>Zhiyu Chen</name>
+    </author>
+    <author>
+      <name>Sijian Ren</name>
+    </author>
+    <author>
+      <name>Zhilun Zhou</name>
+    </author>
+    <author>
+      <name>Xuhua Zhang</name>
+    </author>
+    <author>
+      <name>Yuanyi Zhen</name>
+    </author>
+    <author>
+      <name>Fengli Xu</name>
+    </author>
+    <author>
+      <name>Yong Li</name>
+    </author>
+    <author>
+      <name>Tie-Yan Liu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2511.14780v1</id>
+    <title>Ask WhAI:Probing Belief Formation in Role-Primed LLM Agents</title>
+    <updated>2025-11-06T20:31:19Z</updated>
+    <link href="https://arxiv.org/abs/2511.14780v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2511.14780v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present Ask WhAI, a systems-level framework for inspecting and perturbing belief states in multi-agent interactions. The framework records and replays agent interactions, supports out-of-band queries into each agent's beliefs and rationale, and enables counterfactual evidence injection to test how belief structures respond to new information. We apply the framework to a medical case simulator notable for its multi-agent shared memory (a time-stamped electronic medical record, or EMR) and an oracle agent (the LabAgent) that holds ground truth lab results revealed only when explicitly queried. We stress-test the system on a multi-specialty diagnostic journey for a child with an abrupt-onset neuropsychiatric presentation. Large language model agents, each primed with strong role-specific priors ("act like a neurologist", "act like an infectious disease specialist"), write to a shared medical record and interact with a moderator across sequential or parallel encounters. Breakpoints at key diagnostic moments enable pre- and post-event belief queries, allowing us to distinguish entrenched priors from reasoning or evidence-integration effects. The simulation reveals that agent beliefs often mirror real-world disciplinary stances, including overreliance on canonical studies and resistance to counterevidence, and that these beliefs can be traced and interrogated in ways not possible with human experts. By making such dynamics visible and testable, Ask WhAI offers a reproducible way to study belief formation and epistemic silos in multi-agent scientific reasoning.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-11-06T20:31:19Z</published>
+    <arxiv:comment>Preprint. Accepted for publication at AIAS 2025</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Keith Moore</name>
+    </author>
+    <author>
+      <name>Jun W. Kim</name>
+    </author>
+    <author>
+      <name>David Lyu</name>
+    </author>
+    <author>
+      <name>Jeffrey Heo</name>
+    </author>
+    <author>
+      <name>Ehsan Adeli</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2511.00181v2</id>
+    <title>From Evidence to Verdict: An Agent-Based Forensic Framework for AI-Generated Image Detection</title>
+    <updated>2026-04-07T09:06:09Z</updated>
+    <link href="https://arxiv.org/abs/2511.00181v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2511.00181v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The rapid evolution of AI-generated images poses growing challenges to information integrity and media authenticity. Existing detection approaches face limitations in robustness, interpretability, and generalization across diverse generative models, particularly when relying on a single source of visual evidence. We introduce AIFo (Agent-based Image Forensics), a training-free framework that formulates AI-generated image detection as a multi-stage forensic analysis process through multi-agent collaboration. The framework integrates a set of forensic tools, including reverse image search, metadata extraction, pre-trained classifiers, and vision-language model analysis, and resolves insufficient or conflicting evidence through a structured multi-agent debate mechanism. An optional memory-augmented module further enables the framework to incorporate information from historical cases. We evaluate AIFo on a benchmark of 6,000 images spanning controlled laboratory settings and challenging real-world scenarios, where it achieves 97.05% accuracy and consistently outperforms traditional classifiers and strong vision-language model baselines. These findings demonstrate the effectiveness of agent-based procedural reasoning for AI-generated image detection.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-10-31T18:36:49Z</published>
+    <arxiv:comment>15 pages, 5 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Mengfei Liang</name>
+    </author>
+    <author>
+      <name>Yiting Qu</name>
+    </author>
+    <author>
+      <name>Yukun Jiang</name>
+    </author>
+    <author>
+      <name>Michael Backes</name>
+    </author>
+    <author>
+      <name>Yang Zhang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2510.05096v2</id>
+    <title>Paper2Video: Automatic Video Generation from Scientific Papers</title>
+    <updated>2025-10-09T17:29:00Z</updated>
+    <link href="https://arxiv.org/abs/2510.05096v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2510.05096v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Academic presentation videos have become an essential medium for research communication, yet producing them remains highly labor-intensive, often requiring hours of slide design, recording, and editing for a short 2 to 10 minutes video. Unlike natural video, presentation video generation involves distinctive challenges: inputs from research papers, dense multi-modal information (text, figures, tables), and the need to coordinate multiple aligned channels such as slides, subtitles, speech, and human talker. To address these challenges, we introduce Paper2Video, the first benchmark of 101 research papers paired with author-created presentation videos, slides, and speaker metadata. We further design four tailored evaluation metrics--Meta Similarity, PresentArena, PresentQuiz, and IP Memory--to measure how videos convey the paper's information to the audience. Building on this foundation, we propose PaperTalker, the first multi-agent framework for academic presentation video generation. It integrates slide generation with effective layout refinement by a novel effective tree search visual choice, cursor grounding, subtitling, speech synthesis, and talking-head rendering, while parallelizing slide-wise generation for efficiency. Experiments on Paper2Video demonstrate that the presentation videos produced by our approach are more faithful and informative than existing baselines, establishing a practical step toward automated and ready-to-use academic video generation. Our dataset, agent, and code are available at https://github.com/showlab/Paper2Video.</summary>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MM" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-10-06T17:58:02Z</published>
+    <arxiv:comment>Project Page: https://showlab.github.io/Paper2Video/</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <author>
+      <name>Zeyu Zhu</name>
+    </author>
+    <author>
+      <name>Kevin Qinghong Lin</name>
+    </author>
+    <author>
+      <name>Mike Zheng Shou</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2510.03913v1</id>
+    <title>PsycholexTherapy: Simulating Reasoning in Psychotherapy with Small Language Models in Persian</title>
+    <updated>2025-10-04T19:40:10Z</updated>
+    <link href="https://arxiv.org/abs/2510.03913v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2510.03913v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>This study presents PsychoLexTherapy, a framework for simulating psychotherapeutic reasoning in Persian using small language models (SLMs). The framework tackles the challenge of developing culturally grounded, therapeutically coherent dialogue systems with structured memory for multi-turn interactions in underrepresented languages. To ensure privacy and feasibility, PsychoLexTherapy is optimized for on-device deployment, enabling use without external servers. Development followed a three-stage process: (i) assessing SLMs psychological knowledge with PsychoLexEval; (ii) designing and implementing the reasoning-oriented PsychoLexTherapy framework; and (iii) constructing two evaluation datasets-PsychoLexQuery (real Persian user questions) and PsychoLexDialogue (hybrid simulated sessions)-to benchmark against multiple baselines. Experiments compared simple prompting, multi-agent debate, and structured therapeutic reasoning paths. Results showed that deliberate model selection balanced accuracy, efficiency, and privacy. On PsychoLexQuery, PsychoLexTherapy outperformed all baselines in automatic LLM-as-a-judge evaluation and was ranked highest by human evaluators in a single-turn preference study. In multi-turn tests with PsychoLexDialogue, the long-term memory module proved essential: while naive history concatenation caused incoherence and information loss, the full framework achieved the highest ratings in empathy, coherence, cultural fit, and personalization. Overall, PsychoLexTherapy establishes a practical, privacy-preserving, and culturally aligned foundation for Persian psychotherapy simulation, contributing novel datasets, a reproducible evaluation pipeline, and empirical insights into structured memory for therapeutic reasoning.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-10-04T19:40:10Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Mohammad Amin Abbasi</name>
+    </author>
+    <author>
+      <name>Hassan Naderi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2510.03902v1</id>
+    <title>Multi-Agent Code-Orchestrated Generation for Reliable Infrastructure-as-Code</title>
+    <updated>2025-10-04T18:55:45Z</updated>
+    <link href="https://arxiv.org/abs/2510.03902v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2510.03902v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The increasing complexity of cloud-native infrastructure has made Infrastructure-as-Code (IaC) essential for reproducible and scalable deployments. While large language models (LLMs) have shown promise in generating IaC snippets from natural language prompts, their monolithic, single-pass generation approach often results in syntactic errors, policy violations, and unscalable designs. In this paper, we propose MACOG (Multi-Agent Code-Orchestrated Generation), a novel multi-agent LLM-based architecture for IaC generation that decomposes the task into modular subtasks handled by specialized agents: Architect, Provider Harmonizer, Engineer, Reviewer, Security Prover, Cost and Capacity Planner, DevOps, and Memory Curator. The agents interact via a shared-blackboard, finite-state orchestrator layer, and collectively produce Terraform configurations that are not only syntactically valid but also policy-compliant and semantically coherent. To ensure infrastructure correctness and governance, we incorporate Terraform Plan for execution validation and Open Policy Agent (OPA) for customizable policy enforcement. We evaluate MACOG using the IaC-Eval benchmark, where MACOG is the top enhancement across models, e.g., GPT-5 improves from 54.90 (RAG) to 74.02 and Gemini-2.5 Pro from 43.56 to 60.13, with concurrent gains on BLEU, CodeBERTScore, and an LLM-judge metric. Ablations show constrained decoding and deploy feedback are critical: removing them drops IaC-Eval to 64.89 and 56.93, respectively.</summary>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-10-04T18:55:45Z</published>
+    <arxiv:primary_category term="cs.SE"/>
+    <author>
+      <name>Rana Nameer Hussain Khan</name>
+    </author>
+    <author>
+      <name>Dawood Wasif</name>
+    </author>
+    <author>
+      <name>Jin-Hee Cho</name>
+    </author>
+    <author>
+      <name>Ali Butt</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2509.22814v1</id>
+    <title>Model Context Protocol for Vision Systems: Audit, Security, and Protocol Extensions</title>
+    <updated>2025-09-26T18:20:08Z</updated>
+    <link href="https://arxiv.org/abs/2509.22814v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2509.22814v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The Model Context Protocol (MCP) defines a schema bound execution model for agent-tool interaction, enabling modular computer vision workflows without retraining. To our knowledge, this is the first protocol level, deployment scale audit of MCP in vision systems, identifying systemic weaknesses in schema semantics, interoperability, and runtime coordination. We analyze 91 publicly registered vision centric MCP servers, annotated along nine dimensions of compositional fidelity, and develop an executable benchmark with validators to detect and categorize protocol violations. The audit reveals high prevalence of schema format divergence, missing runtime schema validation, undeclared coordinate conventions, and reliance on untracked bridging scripts. Validator based testing quantifies these failures, with schema format checks flagging misalignments in 78.0 percent of systems, coordinate convention checks detecting spatial reference errors in 24.6 percent, and memory scope checks issuing an average of 33.8 warnings per 100 executions. Security probes show that dynamic and multi agent workflows exhibit elevated risks of privilege escalation and untyped tool connections. The proposed benchmark and validator suite, implemented in a controlled testbed and to be released on GitHub, establishes a reproducible framework for measuring and improving the reliability and security of compositional vision workflows.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-09-26T18:20:08Z</published>
+    <arxiv:comment>Accepted to NeurIPS 2025 Workshop on Bridging Language, Agent, and World Models for Reasoning and Planning (LAW 2025)</arxiv:comment>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Aditi Tiwari</name>
+    </author>
+    <author>
+      <name>Akshit Bhalla</name>
+    </author>
+    <author>
+      <name>Darshan Prasad</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2509.22174v1</id>
+    <title>Efficiency Boost in Decentralized Optimization: Reimagining Neighborhood Aggregation with Minimal Overhead</title>
+    <updated>2025-09-26T10:34:06Z</updated>
+    <link href="https://arxiv.org/abs/2509.22174v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2509.22174v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>In today's data-sensitive landscape, distributed learning emerges as a vital tool, not only fortifying privacy measures but also streamlining computational operations. This becomes especially crucial within fully decentralized infrastructures where local processing is imperative due to the absence of centralized aggregation. Here, we introduce DYNAWEIGHT, a novel framework to information aggregation in multi-agent networks. DYNAWEIGHT offers substantial acceleration in decentralized learning with minimal additional communication and memory overhead. Unlike traditional static weight assignments, such as Metropolis weights, DYNAWEIGHT dynamically allocates weights to neighboring servers based on their relative losses on local datasets. Consequently, it favors servers possessing diverse information, particularly in scenarios of substantial data heterogeneity. Our experiments on various datasets MNIST, CIFAR10, and CIFAR100 incorporating various server counts and graph topologies, demonstrate notable enhancements in training speeds. Notably, DYNAWEIGHT functions as an aggregation scheme compatible with any underlying server-level optimization algorithm, underscoring its versatility and potential for widespread integration.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-09-26T10:34:06Z</published>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Durgesh Kalwar</name>
+    </author>
+    <author>
+      <name>Mayank Baranwal</name>
+    </author>
+    <author>
+      <name>Harshad Khadilkar</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2509.11523v1</id>
+    <title>VulAgent: Hypothesis-Validation based Multi-Agent Vulnerability Detection</title>
+    <updated>2025-09-15T02:25:38Z</updated>
+    <link href="https://arxiv.org/abs/2509.11523v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2509.11523v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The application of language models to project-level vulnerability detection remains challenging, owing to the dual requirement of accurately localizing security-sensitive code and correctly correlating and reasoning over complex program context. We present VulAgent, a multi-agent vulnerability detection framework based on hypothesis validation. Our design is inspired by how human auditors review code: when noticing a sensitive operation, they form a hypothesis about a possible vulnerability, consider potential trigger paths, and then verify the hypothesis against the surrounding context. VulAgent implements a semantics-sensitive, multi-view detection pipeline: specialized agents, each aligned to a specific analysis perspective (e.g., memory, authorization), collaboratively surface and precisely localize sensitive code sites with higher coverage. Building on this, VulAgent adopts a hypothesis-validation paradigm: for each vulnerability report, it builds hypothesis conditions and a trigger path, steering the LLM to target the relevant program context and defensive checks during verification, which reduces false positives. On average across the two datasets, VulAgent improves overall accuracy by 6.6%, increases the correct identification rate of vulnerable--fixed code pairs by up to 450% (246% on average), and reduces the false positive rate by about 36% compared with state-of-the-art LLM-based baselines.</summary>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-09-15T02:25:38Z</published>
+    <arxiv:primary_category term="cs.SE"/>
+    <author>
+      <name>Ziliang Wang</name>
+    </author>
+    <author>
+      <name>Ge Li</name>
+    </author>
+    <author>
+      <name>Jia Li</name>
+    </author>
+    <author>
+      <name>Hao Zhu</name>
+    </author>
+    <author>
+      <name>Zhi Jin</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2509.09207v2</id>
+    <title>Shell or Nothing: Real-World Benchmarks and Memory-Activated Agents for Automated Penetration Testing</title>
+    <updated>2025-09-15T17:29:04Z</updated>
+    <link href="https://arxiv.org/abs/2509.09207v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2509.09207v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Penetration testing is critical for identifying and mitigating security vulnerabilities, yet traditional approaches remain expensive, time-consuming, and dependent on expert human labor. Recent work has explored AI-driven pentesting agents, but their evaluation relies on oversimplified capture-the-flag (CTF) settings that embed prior knowledge and reduce complexity, leading to performance estimates far from real-world practice. We close this gap by introducing the first real-world, agent-oriented pentesting benchmark, TermiBench, which shifts the goal from 'flag finding' to achieving full system control. The benchmark spans 510 hosts across 25 services and 30 CVEs, with realistic environments that require autonomous reconnaissance, discrimination between benign and exploitable services, and robust exploit execution. Using this benchmark, we find that existing systems can hardly obtain system shells under realistic conditions.
+  To address these challenges, we propose TermiAgent, a multi-agent penetration testing framework. TermiAgent mitigates long-context forgetting with a Located Memory Activation mechanism and builds a reliable exploit arsenal via structured code understanding rather than naive retrieval. In evaluations, our work outperforms state-of-the-art agents, exhibiting stronger penetration testing capability, reducing execution time and financial cost, and demonstrating practicality even on laptop-scale deployments. Our work delivers both the first open-source benchmark for real-world autonomous pentesting and a novel agent framework that establishes a milestone for AI-driven penetration testing.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-09-11T07:30:44Z</published>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Wuyuao Mai</name>
+    </author>
+    <author>
+      <name>Geng Hong</name>
+    </author>
+    <author>
+      <name>Qi Liu</name>
+    </author>
+    <author>
+      <name>Jinsong Chen</name>
+    </author>
+    <author>
+      <name>Jiarun Dai</name>
+    </author>
+    <author>
+      <name>Xudong Pan</name>
+    </author>
+    <author>
+      <name>Yuan Zhang</name>
+    </author>
+    <author>
+      <name>Min Yang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2508.20996v2</id>
+    <title>ChatThero: An LLM-Supported Chatbot for Behavior Change and Therapeutic Support in Addiction Recovery</title>
+    <updated>2025-10-13T19:15:35Z</updated>
+    <link href="https://arxiv.org/abs/2508.20996v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.20996v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Substance use disorders (SUDs) affect millions of people, and relapses are common, requiring multi-session treatments. Access to care is limited, which contributes to the challenge of recovery support. We present \textbf{ChatThero}, an innovative low-cost, multi-session, stressor-aware, and memory-persistent autonomous \emph{language agent} designed to facilitate long-term behavior change and therapeutic support in addiction recovery. Unlike existing work that mostly finetuned large language models (LLMs) on patient-therapist conversation data, ChatThero was trained in a multi-agent simulated environment that mirrors real therapy. We created anonymized patient profiles from recovery communities (e.g., Reddit). We classify patients as \texttt{easy}, \texttt{medium}, and \texttt{difficult}, three scales representing their resistance to recovery. We created an external environment by introducing stressors (e.g., social determinants of health) to simulate real-world situations. We dynamically inject clinically-grounded therapeutic strategies (motivational interview and cognitive behavioral therapy). Our evaluation, conducted by both human (blinded clinicians) and LLM-as-Judge, shows that ChatThero is superior in empathy and clinical relevance. We show that stressor simulation improves robustness of ChatThero. Explicit stressors increase relapse-like setbacks, matching real-world patterns. We evaluate ChatThero with behavioral change metrics. On a 1--5 scale, ChatThero raises \texttt{motivation} by $+1.71$ points (from $2.39$ to $4.10$) and \texttt{confidence} by $+1.67$ points (from $1.52$ to $3.19$), substantially outperforming GPT-5. On \texttt{difficult} patients, ChatThero reaches the success milestone with $26\%$ fewer turns than GPT-5.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-28T16:57:33Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Junda Wang</name>
+    </author>
+    <author>
+      <name>Zonghai Yao</name>
+    </author>
+    <author>
+      <name>Lingxi Li</name>
+    </author>
+    <author>
+      <name>Junhui Qian</name>
+    </author>
+    <author>
+      <name>Zhichao Yang</name>
+    </author>
+    <author>
+      <name>Hong Yu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2508.20643v2</id>
+    <title>CyberSleuth: Autonomous Blue-Team LLM Agent for Web Attack Forensics</title>
+    <updated>2026-03-05T12:00:36Z</updated>
+    <link href="https://arxiv.org/abs/2508.20643v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.20643v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Post-mortem analysis of compromised systems is a key aspect of cyber forensics, today a mostly manual, slow, and error-prone task. Agentic AI, i.e., LLM-powered agents, is a promising avenue for automation. However, applying such agents to cybersecurity remains largely unexplored and difficult, as this domain demands long-term reasoning, contextual memory, and consistent evidence correlation - capabilities that current LLM agents struggle to master. In this paper, we present the first systematic study of LLM agents to automate post-mortem investigation. As a first scenario, we consider realistic attacks in which remote attackers try to abuse online services using well-known CVEs (30 controlled cases). The agent receives as input the network traces of the attack and extracts forensic evidence. We compare three AI agent architectures, six LLM backends, and assess their ability to i) identify compromised services, ii) map exploits to exact CVEs, and iii) prepare thorough reports. Our best-performing system, CyberSleuth, achieves 80% accuracy on 2025 incidents, producing complete, coherent, and practically useful reports (judged by a panel of 25 experts). We next illustrate how readily CyberSleuth adapts to face the analysis of infected machine traffic, showing that the effective AI agent design can transfer across forensic tasks. Our findings show that (i) multi-agent specialisation is key to sustained reasoning; (ii) simple orchestration outperforms nested hierarchical architectures; and (iii) the CyberSleuth design generalises across different forensic tasks.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-28T10:45:31Z</published>
+    <arxiv:comment>Updated version - Added study on Malware Traffic Analysis</arxiv:comment>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Stefano Fumero</name>
+    </author>
+    <author>
+      <name>Kai Huang</name>
+    </author>
+    <author>
+      <name>Matteo Boffa</name>
+    </author>
+    <author>
+      <name>Danilo Giordano</name>
+    </author>
+    <author>
+      <name>Marco Mellia</name>
+    </author>
+    <author>
+      <name>Dario Rossi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2508.11030v3</id>
+    <title>Families' Vision of Generative AI Agents for Household Safety Against Digital and Physical Threats</title>
+    <updated>2025-08-28T01:40:23Z</updated>
+    <link href="https://arxiv.org/abs/2508.11030v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.11030v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>As families face increasingly complex safety challenges in digital and physical environments, generative AI (GenAI) presents new opportunities to support household safety through multiple specialized AI agents. Through a two-phase qualitative study consisting of individual interviews and collaborative sessions with 13 parent-child dyads, we explored families' conceptualizations of GenAI and their envisioned use of AI agents in daily family life. Our findings reveal that families preferred to distribute safety-related support across multiple AI agents, each embodying a familiar caregiving role: a household manager coordinating routine tasks and mitigating risks such as digital fraud and home accidents; a private tutor providing personalized educational support, including safety education; and a family therapist offering emotional support to address sensitive safety issues such as cyberbullying and digital harassment. Families emphasized the need for agent-specific privacy boundaries, recognized generational differences in trust toward AI agents, and stressed the importance of maintaining open family communication alongside the assistance of AI agents. Based on these findings, we propose a multi-agent system design featuring four privacy-preserving principles: memory segregation, conversational consent, selective data sharing, and progressive memory management to help balance safety, privacy, and autonomy within family contexts.</summary>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-14T19:29:35Z</published>
+    <arxiv:comment>Accepted in Proc. ACM Hum.-Comput. Interact. 9, 7, Article CSCW</arxiv:comment>
+    <arxiv:primary_category term="cs.HC"/>
+    <author>
+      <name>Zikai Wen</name>
+    </author>
+    <author>
+      <name>Lanjing Liu</name>
+    </author>
+    <author>
+      <name>Yaxing Yao</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2508.08127v2</id>
+    <title>BlindGuard: Safeguarding LLM-based Multi-Agent Systems under Unknown Attacks</title>
+    <updated>2026-04-25T05:20:29Z</updated>
+    <link href="https://arxiv.org/abs/2508.08127v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.08127v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The security of LLM-based multi-agent systems (MAS) is critically threatened by propagation vulnerability, where malicious agents can distort collective decision-making through inter-agent message interactions. While existing supervised defense methods demonstrate promising performance, they may be impractical in real-world scenarios due to their heavy reliance on labeled malicious agents to train a supervised malicious detection model. To enable practical and generalizable MAS defenses, in this paper, we propose BlindGuard, an unsupervised defense method that learns without requiring any attack-specific labels or prior knowledge of malicious behaviors. To this end, we establish a hierarchical agent encoder to capture individual, neighborhood, and global interaction patterns of each agent, providing a comprehensive understanding for malicious agent detection. Meanwhile, we design a corruption-guided detector that consists of directional noise injection and contrastive learning, allowing effective detection model training solely on normal agent behaviors. Extensive experiments show that BlindGuard effectively detects diverse attack types (i.e., prompt injection, memory poisoning, and tool attack) across MAS with various communication patterns while maintaining superior generalizability compared to supervised baselines. The code is available at: https://github.com/MR9812/BlindGuard.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-11T16:04:47Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <arxiv:journal_ref>Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics, 2026</arxiv:journal_ref>
+    <author>
+      <name>Rui Miao</name>
+    </author>
+    <author>
+      <name>Yixin Liu</name>
+    </author>
+    <author>
+      <name>Yili Wang</name>
+    </author>
+    <author>
+      <name>Xu Shen</name>
+    </author>
+    <author>
+      <name>Yue Tan</name>
+    </author>
+    <author>
+      <name>Yiwei Dai</name>
+    </author>
+    <author>
+      <name>Shirui Pan</name>
+    </author>
+    <author>
+      <name>Xin Wang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2508.01186v1</id>
+    <title>A Survey on Agent Workflow -- Status and Future</title>
+    <updated>2025-08-02T04:15:30Z</updated>
+    <link href="https://arxiv.org/abs/2508.01186v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.01186v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>In the age of large language models (LLMs), autonomous agents have emerged as a powerful paradigm for achieving general intelligence. These agents dynamically leverage tools, memory, and reasoning capabilities to accomplish user-defined goals. As agent systems grow in complexity, agent workflows-structured orchestration frameworks-have become central to enabling scalable, controllable, and secure AI behaviors. This survey provides a comprehensive review of agent workflow systems, spanning academic frameworks and industrial implementations. We classify existing systems along two key dimensions: functional capabilities (e.g., planning, multi-agent collaboration, external API integration) and architectural features (e.g., agent roles, orchestration flows, specification languages). By comparing over 20 representative systems, we highlight common patterns, potential technical challenges, and emerging trends. We further address concerns related to workflow optimization strategies and security. Finally, we outline open problems such as standardization and multimodal integration, offering insights for future research at the intersection of agent design, workflow infrastructure, and safe automation.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-02T04:15:30Z</published>
+    <arxiv:comment>12 pages, 3 figures, accepted to IEEE Conference, ICAIBD(International Conference of Artificial Intelligence and Big Data) 2025. This is the author's version, not the publisher's. See https://ieeexplore.ieee.org/document/11082076</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <arxiv:journal_ref>IEEE ICAIBD 2025, pp. 770-781</arxiv:journal_ref>
+    <author>
+      <name>Chaojia Yu</name>
+    </author>
+    <author>
+      <name>Zihan Cheng</name>
+    </author>
+    <author>
+      <name>Hanwen Cui</name>
+    </author>
+    <author>
+      <name>Yishuo Gao</name>
+    </author>
+    <author>
+      <name>Zexu Luo</name>
+    </author>
+    <author>
+      <name>Yijin Wang</name>
+    </author>
+    <author>
+      <name>Hangbin Zheng</name>
+    </author>
+    <author>
+      <name>Yong Zhao</name>
+    </author>
+    <arxiv:doi>10.1109/ICAIBD64986.2025.11082076</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1109/ICAIBD64986.2025.11082076" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2507.22358v1</id>
+    <title>Magentic-UI: Towards Human-in-the-loop Agentic Systems</title>
+    <updated>2025-07-30T03:49:14Z</updated>
+    <link href="https://arxiv.org/abs/2507.22358v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2507.22358v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>AI agents powered by large language models are increasingly capable of autonomously completing complex, multi-step tasks using external tools. Yet, they still fall short of human-level performance in most domains including computer use, software development, and research. Their growing autonomy and ability to interact with the outside world, also introduces safety and security risks including potentially misaligned actions and adversarial manipulation. We argue that human-in-the-loop agentic systems offer a promising path forward, combining human oversight and control with AI efficiency to unlock productivity from imperfect systems. We introduce Magentic-UI, an open-source web interface for developing and studying human-agent interaction. Built on a flexible multi-agent architecture, Magentic-UI supports web browsing, code execution, and file manipulation, and can be extended with diverse tools via Model Context Protocol (MCP). Moreover, Magentic-UI presents six interaction mechanisms for enabling effective, low-cost human involvement: co-planning, co-tasking, multi-tasking, action guards, and long-term memory. We evaluate Magentic-UI across four dimensions: autonomous task completion on agentic benchmarks, simulated user testing of its interaction capabilities, qualitative studies with real users, and targeted safety assessments. Our findings highlight Magentic-UI's potential to advance safe and efficient human-agent collaboration.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-07-30T03:49:14Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Hussein Mozannar</name>
+    </author>
+    <author>
+      <name>Gagan Bansal</name>
+    </author>
+    <author>
+      <name>Cheng Tan</name>
+    </author>
+    <author>
+      <name>Adam Fourney</name>
+    </author>
+    <author>
+      <name>Victor Dibia</name>
+    </author>
+    <author>
+      <name>Jingya Chen</name>
+    </author>
+    <author>
+      <name>Jack Gerrits</name>
+    </author>
+    <author>
+      <name>Tyler Payne</name>
+    </author>
+    <author>
+      <name>Matheus Kunzler Maldaner</name>
+    </author>
+    <author>
+      <name>Madeleine Grunde-McLaughlin</name>
+    </author>
+    <author>
+      <name>Eric Zhu</name>
+    </author>
+    <author>
+      <name>Griffin Bassman</name>
+    </author>
+    <author>
+      <name>Jacob Alber</name>
+    </author>
+    <author>
+      <name>Peter Chang</name>
+    </author>
+    <author>
+      <name>Ricky Loynd</name>
+    </author>
+    <author>
+      <name>Friederike Niedtner</name>
+    </author>
+    <author>
+      <name>Ece Kamar</name>
+    </author>
+    <author>
+      <name>Maya Murad</name>
+    </author>
+    <author>
+      <name>Rafah Hosn</name>
+    </author>
+    <author>
+      <name>Saleema Amershi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2507.07957v1</id>
+    <title>MIRIX: Multi-Agent Memory System for LLM-Based Agents</title>
+    <updated>2025-07-10T17:40:11Z</updated>
+    <link href="https://arxiv.org/abs/2507.07957v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2507.07957v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Although memory capabilities of AI agents are gaining increasing attention, existing solutions remain fundamentally limited. Most rely on flat, narrowly scoped memory components, constraining their ability to personalize, abstract, and reliably recall user-specific information over time. To this end, we introduce MIRIX, a modular, multi-agent memory system that redefines the future of AI memory by solving the field's most critical challenge: enabling language models to truly remember. Unlike prior approaches, MIRIX transcends text to embrace rich visual and multimodal experiences, making memory genuinely useful in real-world scenarios. MIRIX consists of six distinct, carefully structured memory types: Core, Episodic, Semantic, Procedural, Resource Memory, and Knowledge Vault, coupled with a multi-agent framework that dynamically controls and coordinates updates and retrieval. This design enables agents to persist, reason over, and accurately retrieve diverse, long-term user data at scale. We validate MIRIX in two demanding settings. First, on ScreenshotVQA, a challenging multimodal benchmark comprising nearly 20,000 high-resolution computer screenshots per sequence, requiring deep contextual understanding and where no existing memory systems can be applied, MIRIX achieves 35% higher accuracy than the RAG baseline while reducing storage requirements by 99.9%. Second, on LOCOMO, a long-form conversation benchmark with single-modal textual input, MIRIX attains state-of-the-art performance of 85.4%, far surpassing existing baselines. These results show that MIRIX sets a new performance standard for memory-augmented LLM agents. To allow users to experience our memory system, we provide a packaged application powered by MIRIX. It monitors the screen in real time, builds a personalized memory base, and offers intuitive visualization and secure local storage to ensure privacy.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-07-10T17:40:11Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Yu Wang</name>
+    </author>
+    <author>
+      <name>Xi Chen</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2507.10562v1</id>
+    <title>SAMEP: A Secure Protocol for Persistent Context Sharing Across AI Agents</title>
+    <updated>2025-07-05T02:20:09Z</updated>
+    <link href="https://arxiv.org/abs/2507.10562v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2507.10562v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Current AI agent architectures suffer from ephemeral memory limitations, preventing effective collaboration and knowledge sharing across sessions and agent boundaries. We introduce SAMEP (Secure Agent Memory Exchange Protocol), a novel framework that enables persistent, secure, and semantically searchable memory sharing among AI agents. Our protocol addresses three critical challenges: (1) persistent context preservation across agent sessions, (2) secure multi-agent collaboration with fine-grained access control, and (3) efficient semantic discovery of relevant historical context. SAMEP implements a distributed memory repository with vector-based semantic search, cryptographic access controls (AES-256-GCM), and standardized APIs compatible with existing agent communication protocols (MCP, A2A). We demonstrate SAMEP's effectiveness across diverse domains including multi-agent software development, healthcare AI with HIPAA compliance, and multi-modal processing pipelines. Experimental results show 73% reduction in redundant computations, 89% improvement in context relevance scores, and complete compliance with regulatory requirements including audit trail generation. SAMEP enables a new paradigm of persistent, collaborative AI agent ecosystems while maintaining security and privacy guarantees.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.DB" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-07-05T02:20:09Z</published>
+    <arxiv:comment>7 pages, 4 figures, 3 implementation examples. Original work submitted as a preprint</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Hari Masoor</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2505.22311v1</id>
+    <title>From Large AI Models to Agentic AI: A Tutorial on Future Intelligent Communications</title>
+    <updated>2025-05-28T12:54:07Z</updated>
+    <link href="https://arxiv.org/abs/2505.22311v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2505.22311v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>With the advent of 6G communications, intelligent communication systems face multiple challenges, including constrained perception and response capabilities, limited scalability, and low adaptability in dynamic environments. This tutorial provides a systematic introduction to the principles, design, and applications of Large Artificial Intelligence Models (LAMs) and Agentic AI technologies in intelligent communication systems, aiming to offer researchers a comprehensive overview of cutting-edge technologies and practical guidance. First, we outline the background of 6G communications, review the technological evolution from LAMs to Agentic AI, and clarify the tutorial's motivation and main contributions. Subsequently, we present a comprehensive review of the key components required for constructing LAMs. We further categorize LAMs and analyze their applicability, covering Large Language Models (LLMs), Large Vision Models (LVMs), Large Multimodal Models (LMMs), Large Reasoning Models (LRMs), and lightweight LAMs. Next, we propose a LAM-centric design paradigm tailored for communications, encompassing dataset construction and both internal and external learning approaches. Building upon this, we develop an LAM-based Agentic AI system for intelligent communications, clarifying its core components such as planners, knowledge bases, tools, and memory modules, as well as its interaction mechanisms. We also introduce a multi-agent framework with data retrieval, collaborative planning, and reflective evaluation for 6G. Subsequently, we provide a detailed overview of the applications of LAMs and Agentic AI in communication scenarios. Finally, we summarize the research challenges and future directions in current studies, aiming to support the development of efficient, secure, and sustainable next-generation intelligent communication systems.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CY" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.NI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="eess.SP" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-05-28T12:54:07Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Feibo Jiang</name>
+    </author>
+    <author>
+      <name>Cunhua Pan</name>
+    </author>
+    <author>
+      <name>Li Dong</name>
+    </author>
+    <author>
+      <name>Kezhi Wang</name>
+    </author>
+    <author>
+      <name>Octavia A. Dobre</name>
+    </author>
+    <author>
+      <name>Merouane Debbah</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2505.13941v1</id>
+    <title>MLZero: A Multi-Agent System for End-to-end Machine Learning Automation</title>
+    <updated>2025-05-20T05:20:53Z</updated>
+    <link href="https://arxiv.org/abs/2505.13941v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2505.13941v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Existing AutoML systems have advanced the automation of machine learning (ML); however, they still require substantial manual configuration and expert input, particularly when handling multimodal data. We introduce MLZero, a novel multi-agent framework powered by Large Language Models (LLMs) that enables end-to-end ML automation across diverse data modalities with minimal human intervention. A cognitive perception module is first employed, transforming raw multimodal inputs into perceptual context that effectively guides the subsequent workflow. To address key limitations of LLMs, such as hallucinated code generation and outdated API knowledge, we enhance the iterative code generation process with semantic and episodic memory. MLZero demonstrates superior performance on MLE-Bench Lite, outperforming all competitors in both success rate and solution quality, securing six gold medals. Additionally, when evaluated on our Multimodal AutoML Agent Benchmark, which includes 25 more challenging tasks spanning diverse data modalities, MLZero outperforms the competing methods by a large margin with a success rate of 0.92 (+263.6\%) and an average rank of 2.28. Our approach maintains its robust effectiveness even with a compact 8B LLM, outperforming full-size systems from existing solutions.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-05-20T05:20:53Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Haoyang Fang</name>
+    </author>
+    <author>
+      <name>Boran Han</name>
+    </author>
+    <author>
+      <name>Nick Erickson</name>
+    </author>
+    <author>
+      <name>Xiyuan Zhang</name>
+    </author>
+    <author>
+      <name>Su Zhou</name>
+    </author>
+    <author>
+      <name>Anirudh Dagar</name>
+    </author>
+    <author>
+      <name>Jiani Zhang</name>
+    </author>
+    <author>
+      <name>Ali Caner Turkmen</name>
+    </author>
+    <author>
+      <name>Cuixiong Hu</name>
+    </author>
+    <author>
+      <name>Huzefa Rangwala</name>
+    </author>
+    <author>
+      <name>Ying Nian Wu</name>
+    </author>
+    <author>
+      <name>Bernie Wang</name>
+    </author>
+    <author>
+      <name>George Karypis</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2504.13515v1</id>
+    <title>Large Language Models for Validating Network Protocol Parsers</title>
+    <updated>2025-04-18T07:09:56Z</updated>
+    <link href="https://arxiv.org/abs/2504.13515v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2504.13515v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Network protocol parsers are essential for enabling correct and secure communication between devices. Bugs in these parsers can introduce critical vulnerabilities, including memory corruption, information leakage, and denial-of-service attacks. An intuitive way to assess parser correctness is to compare the implementation with its official protocol standard. However, this comparison is challenging because protocol standards are typically written in natural language, whereas implementations are in source code. Existing methods like model checking, fuzzing, and differential testing have been used to find parsing bugs, but they either require significant manual effort or ignore the protocol standards, limiting their ability to detect semantic violations. To enable more automated validation of parser implementations against protocol standards, we propose PARVAL, a multi-agent framework built on large language models (LLMs). PARVAL leverages the capabilities of LLMs to understand both natural language and code. It transforms both protocol standards and their implementations into a unified intermediate representation, referred to as format specifications, and performs a differential comparison to uncover inconsistencies. We evaluate PARVAL on the Bidirectional Forwarding Detection (BFD) protocol. Our experiments demonstrate that PARVAL successfully identifies inconsistencies between the implementation and its RFC standard, achieving a low false positive rate of 5.6%. PARVAL uncovers seven unique bugs, including five previously unknown issues.</summary>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-04-18T07:09:56Z</published>
+    <arxiv:primary_category term="cs.SE"/>
+    <author>
+      <name>Mingwei Zheng</name>
+    </author>
+    <author>
+      <name>Danning Xie</name>
+    </author>
+    <author>
+      <name>Xiangyu Zhang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2504.12612v2</id>
+    <title>Chronology of Multi-Agent Interactions for Provenance of Evolving Information</title>
+    <updated>2026-04-30T09:00:48Z</updated>
+    <link href="https://arxiv.org/abs/2504.12612v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2504.12612v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Provenance is the chronological history of things, resonating with the fundamental pursuit to uncover origins, trace connections, and situate entities within the flow of space and time. As artificial intelligence advances towards autonomous agents capable of interactive collaboration on complex tasks, the provenance of generated content becomes entangled in the interplay of collective creation, where contributions are continuously revised, extended or overwritten. In a multi-agent generative chain, content undergoes successive transformations, often leaving little, if any, trace of prior contributions. In this study, we investigate the problem of tracking multi-agent provenance across the temporal dimension of generation. We propose a chronological system for post hoc attribution of generative history from content alone, without reliance on internal memory states or external meta-information. At its core lies the notion of symbolic chronicles, representing signed and time-stamped records, in a form analogous to the chain of custody in forensic science. The system operates through a feedback loop, whereby each generative timestep updates the chronicle of prior interactions and synchronises it with the synthetic content in the very act of generation. This research seeks to develop an accountable form of collaborative artificial intelligence within evolving cyber ecosystems.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-04-17T03:23:17Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <arxiv:journal_ref>Royal Society Open Science (2026)</arxiv:journal_ref>
+    <author>
+      <name>Ching-Chun Chang</name>
+    </author>
+    <author>
+      <name>Isao Echizen</name>
+    </author>
+    <arxiv:doi>10.1098/rsos.251988</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1098/rsos.251988" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2504.00587v2</id>
+    <title>AgentNet: Decentralized Evolutionary Coordination for LLM-based Multi-Agent Systems</title>
+    <updated>2025-05-29T18:55:08Z</updated>
+    <link href="https://arxiv.org/abs/2504.00587v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2504.00587v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The rapid advancement of large language models (LLMs) has enabled the development of multi-agent systems where multiple LLM-based agents collaborate on complex tasks. However, existing systems often rely on centralized coordination, leading to scalability bottlenecks, reduced adaptability, and single points of failure. Privacy and proprietary knowledge concerns further hinder cross-organizational collaboration, resulting in siloed expertise. We propose AgentNet, a decentralized, Retrieval-Augmented Generation (RAG)-based framework that enables LLM-based agents to specialize, evolve, and collaborate autonomously in a dynamically structured Directed Acyclic Graph (DAG). Unlike prior approaches with static roles or centralized control, AgentNet allows agents to adjust connectivity and route tasks based on local expertise and context. AgentNet introduces three key innovations: (1) a fully decentralized coordination mechanism that eliminates the need for a central orchestrator, enhancing robustness and emergent intelligence; (2) dynamic agent graph topology that adapts in real time to task demands, ensuring scalability and resilience; and (3) a retrieval-based memory system for agents that supports continual skill refinement and specialization. By minimizing centralized control and data exchange, AgentNet enables fault-tolerant, privacy-preserving collaboration across organizations. Experiments show that AgentNet achieves higher task accuracy than both single-agent and centralized multi-agent baselines.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-04-01T09:45:25Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Yingxuan Yang</name>
+    </author>
+    <author>
+      <name>Huacan Chai</name>
+    </author>
+    <author>
+      <name>Shuai Shao</name>
+    </author>
+    <author>
+      <name>Yuanyi Song</name>
+    </author>
+    <author>
+      <name>Siyuan Qi</name>
+    </author>
+    <author>
+      <name>Renting Rui</name>
+    </author>
+    <author>
+      <name>Weinan Zhang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2504.01990v2</id>
+    <title>Advances and Challenges in Foundation Agents: From Brain-Inspired Intelligence to Evolutionary, Collaborative, and Safe Systems</title>
+    <updated>2025-08-02T12:44:02Z</updated>
+    <link href="https://arxiv.org/abs/2504.01990v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2504.01990v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The advent of large language models (LLMs) has catalyzed a transformative shift in artificial intelligence, paving the way for advanced intelligent agents capable of sophisticated reasoning, robust perception, and versatile action across diverse domains. As these agents increasingly drive AI research and practical applications, their design, evaluation, and continuous improvement present intricate, multifaceted challenges. This book provides a comprehensive overview, framing intelligent agents within modular, brain-inspired architectures that integrate principles from cognitive science, neuroscience, and computational research. We structure our exploration into four interconnected parts. First, we systematically investigate the modular foundation of intelligent agents, systematically mapping their cognitive, perceptual, and operational modules onto analogous human brain functionalities and elucidating core components such as memory, world modeling, reward processing, goal, and emotion. Second, we discuss self-enhancement and adaptive evolution mechanisms, exploring how agents autonomously refine their capabilities, adapt to dynamic environments, and achieve continual learning through automated optimization paradigms. Third, we examine multi-agent systems, investigating the collective intelligence emerging from agent interactions, cooperation, and societal structures. Finally, we address the critical imperative of building safe and beneficial AI systems, emphasizing intrinsic and extrinsic security threats, ethical alignment, robustness, and practical mitigation strategies necessary for trustworthy real-world deployment. By synthesizing modular AI architectures with insights from different disciplines, this survey identifies key research challenges and opportunities, encouraging innovations that harmonize technological advancement with meaningful societal benefit.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-03-31T18:00:29Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Bang Liu</name>
+    </author>
+    <author>
+      <name>Xinfeng Li</name>
+    </author>
+    <author>
+      <name>Jiayi Zhang</name>
+    </author>
+    <author>
+      <name>Jinlin Wang</name>
+    </author>
+    <author>
+      <name>Tanjin He</name>
+    </author>
+    <author>
+      <name>Sirui Hong</name>
+    </author>
+    <author>
+      <name>Hongzhang Liu</name>
+    </author>
+    <author>
+      <name>Shaokun Zhang</name>
+    </author>
+    <author>
+      <name>Kaitao Song</name>
+    </author>
+    <author>
+      <name>Kunlun Zhu</name>
+    </author>
+    <author>
+      <name>Yuheng Cheng</name>
+    </author>
+    <author>
+      <name>Suyuchen Wang</name>
+    </author>
+    <author>
+      <name>Xiaoqiang Wang</name>
+    </author>
+    <author>
+      <name>Yuyu Luo</name>
+    </author>
+    <author>
+      <name>Haibo Jin</name>
+    </author>
+    <author>
+      <name>Peiyan Zhang</name>
+    </author>
+    <author>
+      <name>Ollie Liu</name>
+    </author>
+    <author>
+      <name>Jiaqi Chen</name>
+    </author>
+    <author>
+      <name>Huan Zhang</name>
+    </author>
+    <author>
+      <name>Zhaoyang Yu</name>
+    </author>
+    <author>
+      <name>Haochen Shi</name>
+    </author>
+    <author>
+      <name>Boyan Li</name>
+    </author>
+    <author>
+      <name>Dekun Wu</name>
+    </author>
+    <author>
+      <name>Fengwei Teng</name>
+    </author>
+    <author>
+      <name>Xiaojun Jia</name>
+    </author>
+    <author>
+      <name>Jiawei Xu</name>
+    </author>
+    <author>
+      <name>Jinyu Xiang</name>
+    </author>
+    <author>
+      <name>Yizhang Lin</name>
+    </author>
+    <author>
+      <name>Tianming Liu</name>
+    </author>
+    <author>
+      <name>Tongliang Liu</name>
+    </author>
+    <author>
+      <name>Yu Su</name>
+    </author>
+    <author>
+      <name>Huan Sun</name>
+    </author>
+    <author>
+      <name>Glen Berseth</name>
+    </author>
+    <author>
+      <name>Jianyun Nie</name>
+    </author>
+    <author>
+      <name>Ian Foster</name>
+    </author>
+    <author>
+      <name>Logan Ward</name>
+    </author>
+    <author>
+      <name>Qingyun Wu</name>
+    </author>
+    <author>
+      <name>Yu Gu</name>
+    </author>
+    <author>
+      <name>Mingchen Zhuge</name>
+    </author>
+    <author>
+      <name>Xinbing Liang</name>
+    </author>
+    <author>
+      <name>Xiangru Tang</name>
+    </author>
+    <author>
+      <name>Haohan Wang</name>
+    </author>
+    <author>
+      <name>Jiaxuan You</name>
+    </author>
+    <author>
+      <name>Chi Wang</name>
+    </author>
+    <author>
+      <name>Jian Pei</name>
+    </author>
+    <author>
+      <name>Qiang Yang</name>
+    </author>
+    <author>
+      <name>Xiaoliang Qi</name>
+    </author>
+    <author>
+      <name>Chenglin Wu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2503.15754v1</id>
+    <title>AutoRedTeamer: Autonomous Red Teaming with Lifelong Attack Integration</title>
+    <updated>2025-03-20T00:13:04Z</updated>
+    <link href="https://arxiv.org/abs/2503.15754v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2503.15754v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>As large language models (LLMs) become increasingly capable, security and safety evaluation are crucial. While current red teaming approaches have made strides in assessing LLM vulnerabilities, they often rely heavily on human input and lack comprehensive coverage of emerging attack vectors. This paper introduces AutoRedTeamer, a novel framework for fully automated, end-to-end red teaming against LLMs. AutoRedTeamer combines a multi-agent architecture with a memory-guided attack selection mechanism to enable continuous discovery and integration of new attack vectors. The dual-agent framework consists of a red teaming agent that can operate from high-level risk categories alone to generate and execute test cases and a strategy proposer agent that autonomously discovers and implements new attacks by analyzing recent research. This modular design allows AutoRedTeamer to adapt to emerging threats while maintaining strong performance on existing attack vectors. We demonstrate AutoRedTeamer's effectiveness across diverse evaluation settings, achieving 20% higher attack success rates on HarmBench against Llama-3.1-70B while reducing computational costs by 46% compared to existing approaches. AutoRedTeamer also matches the diversity of human-curated benchmarks in generating test cases, providing a comprehensive, scalable, and continuously evolving framework for evaluating the security of AI systems.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-03-20T00:13:04Z</published>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Andy Zhou</name>
+    </author>
+    <author>
+      <name>Kevin Wu</name>
+    </author>
+    <author>
+      <name>Francesco Pinto</name>
+    </author>
+    <author>
+      <name>Zhaorun Chen</name>
+    </author>
+    <author>
+      <name>Yi Zeng</name>
+    </author>
+    <author>
+      <name>Yu Yang</name>
+    </author>
+    <author>
+      <name>Shuang Yang</name>
+    </author>
+    <author>
+      <name>Sanmi Koyejo</name>
+    </author>
+    <author>
+      <name>James Zou</name>
+    </author>
+    <author>
+      <name>Bo Li</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2503.04392v2</id>
+    <title>AgentSafe: Safeguarding Large Language Model-based Multi-agent Systems via Hierarchical Data Management</title>
+    <updated>2025-07-08T04:14:01Z</updated>
+    <link href="https://arxiv.org/abs/2503.04392v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2503.04392v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large Language Model based multi-agent systems are revolutionizing autonomous communication and collaboration, yet they remain vulnerable to security threats like unauthorized access and data breaches. To address this, we introduce AgentSafe, a novel framework that enhances MAS security through hierarchical information management and memory protection. AgentSafe classifies information by security levels, restricting sensitive data access to authorized agents. AgentSafe incorporates two components: ThreatSieve, which secures communication by verifying information authority and preventing impersonation, and HierarCache, an adaptive memory management system that defends against unauthorized access and malicious poisoning, representing the first systematic defense for agent memory. Experiments across various LLMs show that AgentSafe significantly boosts system resilience, achieving defense success rates above 80% under adversarial conditions. Additionally, AgentSafe demonstrates scalability, maintaining robust performance as agent numbers and information complexity grow. Results underscore effectiveness of AgentSafe in securing MAS and its potential for real-world application.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-03-06T12:41:54Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Junyuan Mao</name>
+    </author>
+    <author>
+      <name>Fanci Meng</name>
+    </author>
+    <author>
+      <name>Yifan Duan</name>
+    </author>
+    <author>
+      <name>Miao Yu</name>
+    </author>
+    <author>
+      <name>Xiaojun Jia</name>
+    </author>
+    <author>
+      <name>Junfeng Fang</name>
+    </author>
+    <author>
+      <name>Yuxuan Liang</name>
+    </author>
+    <author>
+      <name>Kun Wang</name>
+    </author>
+    <author>
+      <name>Qingsong Wen</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2502.20068v1</id>
+    <title>A Generative Model Enhanced Multi-Agent Reinforcement Learning Method for Electric Vehicle Charging Navigation</title>
+    <updated>2025-02-27T13:24:51Z</updated>
+    <link href="https://arxiv.org/abs/2502.20068v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2502.20068v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>With the widespread adoption of electric vehicles (EVs), navigating for EV drivers to select a cost-effective charging station has become an important yet challenging issue due to dynamic traffic conditions, fluctuating electricity prices, and potential competition from other EVs. The state-of-the-art deep reinforcement learning (DRL) algorithms for solving this task still require global information about all EVs at the execution stage, which not only increases communication costs but also raises privacy issues among EV drivers. To overcome these drawbacks, we introduce a novel generative model-enhanced multi-agent DRL algorithm that utilizes only the EV's local information while achieving performance comparable to these state-of-the-art algorithms. Specifically, the policy network is implemented on the EV side, and a Conditional Variational Autoencoder-Long Short Term Memory (CVAE-LSTM)-based recommendation model is developed to provide recommendation information. Furthermore, a novel future charging competition encoder is designed to effectively compress global information, enhancing training performance. The multi-gradient descent algorithm (MGDA) is also utilized to adaptively balance the weight between the two parts of the training objective, resulting in a more stable training process. Simulations are conducted based on a practical area in Xián, China. Experimental results show that our proposed algorithm, which relies on local information, outperforms existing local information-based methods and achieves less than 8\% performance loss compared to global information-based methods.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-02-27T13:24:51Z</published>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Tianyang Qi</name>
+    </author>
+    <author>
+      <name>Shibo Chen</name>
+    </author>
+    <author>
+      <name>Jun Zhang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2502.19145v2</id>
+    <title>Multi-Agent Security Tax: Trading Off Security and Collaboration Capabilities in Multi-Agent Systems</title>
+    <updated>2025-06-04T18:25:06Z</updated>
+    <link href="https://arxiv.org/abs/2502.19145v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2502.19145v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>As AI agents are increasingly adopted to collaborate on complex objectives, ensuring the security of autonomous multi-agent systems becomes crucial. We develop simulations of agents collaborating on shared objectives to study these security risks and security trade-offs. We focus on scenarios where an attacker compromises one agent, using it to steer the entire system toward misaligned outcomes by corrupting other agents. In this context, we observe infectious malicious prompts - the multi-hop spreading of malicious instructions. To mitigate this risk, we evaluated several strategies: two "vaccination" approaches that insert false memories of safely handling malicious input into the agents' memory stream, and two versions of a generic safety instruction strategy. While these defenses reduce the spread and fulfillment of malicious instructions in our experiments, they tend to decrease collaboration capability in the agent network. Our findings illustrate potential trade-off between security and collaborative efficiency in multi-agent systems, providing insights for designing more secure yet effective AI collaborations.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-02-26T14:00:35Z</published>
+    <arxiv:comment>Accepted to AAAI 2025 Conference</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Pierre Peigne-Lefebvre</name>
+    </author>
+    <author>
+      <name>Mikolaj Kniejski</name>
+    </author>
+    <author>
+      <name>Filip Sondej</name>
+    </author>
+    <author>
+      <name>Matthieu David</name>
+    </author>
+    <author>
+      <name>Jason Hoelscher-Obermaier</name>
+    </author>
+    <author>
+      <name>Christian Schroeder de Witt</name>
+    </author>
+    <author>
+      <name>Esben Kran</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2502.12149v2</id>
+    <title>HARBOR: Exploring Persona Dynamics in Multi-Agent Competition</title>
+    <updated>2025-06-15T15:15:01Z</updated>
+    <link href="https://arxiv.org/abs/2502.12149v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2502.12149v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We investigate factors contributing to LLM agents' success in competitive multi-agent environments, using auctions as a testbed where agents bid to maximize profit. The agents are equipped with bidding domain knowledge, distinct personas that reflect item preferences, and a memory of auction history. Our work extends the classic auction scenario by creating a realistic environment where multiple agents bid on houses, weighing aspects such as size, location, and budget to secure the most desirable homes at the lowest prices. Particularly, we investigate three key questions: (a) How does a persona influence an agent's behavior in a competitive setting? (b) Can an agent effectively profile its competitors' behavior during auctions? (c) How can persona profiling be leveraged to create an advantage using strategies such as theory of mind? Through a series of experiments, we analyze the behaviors of LLM agents and shed light on new findings. Our testbed, called HARBOR, offers a valuable platform for deepening our understanding of multi-agent workflows in competitive environments.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-02-17T18:58:36Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Kenan Jiang</name>
+    </author>
+    <author>
+      <name>Li Xiong</name>
+    </author>
+    <author>
+      <name>Fei Liu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2501.03265v2</id>
+    <title>Cognitive Edge Computing: A Comprehensive Survey on Optimizing Large Models and AI Agents for Pervasive Deployment</title>
+    <updated>2025-11-07T13:51:28Z</updated>
+    <link href="https://arxiv.org/abs/2501.03265v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2501.03265v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>This article surveys Cognitive Edge Computing as a practical and methodical pathway for deploying reasoning-capable Large Language Models (LLMs) and autonomous AI agents on resource-constrained devices at the network edge. We present a unified, cognition-preserving framework spanning: (1) model optimization (quantization, sparsity, low-rank adaptation, distillation) aimed at retaining multi-step reasoning under tight memory/compute budgets; (2) system architecture (on-device inference, elastic offloading, cloud-edge collaboration) that trades off latency, energy, privacy, and capacity; and (3) adaptive intelligence (context compression, dynamic routing, federated personalization) that tailors computation to task difficulty and device constraints. We synthesize advances in efficient Transformer design, multimodal integration, hardware-aware compilation, privacy-preserving learning, and agentic tool use, and map them to edge-specific operating envelopes. We further outline a standardized evaluation protocol covering latency, throughput, energy per token, accuracy, robustness, privacy, and sustainability, with explicit measurement assumptions to enhance comparability. Remaining challenges include modality-aware reasoning benchmarks, transparent and reproducible energy reporting, edge-oriented safety/alignment evaluation, and multi-agent testbeds. We conclude with practitioner guidelines for cross-layer co-design of algorithms, runtime, and hardware to deliver reliable, efficient, and privacy-preserving cognitive capabilities on edge devices.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-01-04T06:17:48Z</published>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Xubin Wang</name>
+    </author>
+    <author>
+      <name>Qing Li</name>
+    </author>
+    <author>
+      <name>Weijia Jia</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2410.16155v2</id>
+    <title>A Troublemaker with Contagious Jailbreak Makes Chaos in Honest Towns</title>
+    <updated>2025-06-26T13:45:10Z</updated>
+    <link href="https://arxiv.org/abs/2410.16155v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2410.16155v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>With the development of large language models, they are widely used as agents in various fields. A key component of agents is memory, which stores vital information but is susceptible to jailbreak attacks. Existing research mainly focuses on single-agent attacks and shared memory attacks. However, real-world scenarios often involve independent memory. In this paper, we propose the Troublemaker Makes Chaos in Honest Town (TMCHT) task, a large-scale, multi-agent, multi-topology text-based attack evaluation framework. TMCHT involves one attacker agent attempting to mislead an entire society of agents. We identify two major challenges in multi-agent attacks: (1) Non-complete graph structure, (2) Large-scale systems. We attribute these challenges to a phenomenon we term toxicity disappearing. To address these issues, we propose an Adversarial Replication Contagious Jailbreak (ARCJ) method, which optimizes the retrieval suffix to make poisoned samples more easily retrieved and optimizes the replication suffix to make poisoned samples have contagious ability. We demonstrate the superiority of our approach in TMCHT, with 23.51%, 18.95%, and 52.93% improvements in line topology, star topology, and 100-agent settings. Encourage community attention to the security of multi-agent systems.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-10-21T16:21:24Z</published>
+    <arxiv:comment>ACL 2025 Main</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Tianyi Men</name>
+    </author>
+    <author>
+      <name>Pengfei Cao</name>
+    </author>
+    <author>
+      <name>Zhuoran Jin</name>
+    </author>
+    <author>
+      <name>Yubo Chen</name>
+    </author>
+    <author>
+      <name>Kang Liu</name>
+    </author>
+    <author>
+      <name>Jun Zhao</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2410.09407v1</id>
+    <title>CAMPHOR: Collaborative Agents for Multi-input Planning and High-Order Reasoning On Device</title>
+    <updated>2024-10-12T07:28:10Z</updated>
+    <link href="https://arxiv.org/abs/2410.09407v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2410.09407v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>While server-side Large Language Models (LLMs) demonstrate proficiency in function calling and complex reasoning, deploying Small Language Models (SLMs) directly on devices brings opportunities to improve latency and privacy but also introduces unique challenges for accuracy and memory. We introduce CAMPHOR, an innovative on-device SLM multi-agent framework designed to handle multiple user inputs and reason over personal context locally, ensuring privacy is maintained. CAMPHOR employs a hierarchical architecture where a high-order reasoning agent decomposes complex tasks and coordinates expert agents responsible for personal context retrieval, tool interaction, and dynamic plan generation. By implementing parameter sharing across agents and leveraging prompt compression, we significantly reduce model size, latency, and memory usage. To validate our approach, we present a novel dataset capturing multi-agent task trajectories centered on personalized mobile assistant use-cases. Our experiments reveal that fine-tuned SLM agents not only surpass closed-source LLMs in task completion F1 by~35\% but also eliminate the need for server-device communication, all while enhancing privacy.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-10-12T07:28:10Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Yicheng Fu</name>
+    </author>
+    <author>
+      <name>Raviteja Anantha</name>
+    </author>
+    <author>
+      <name>Jianpeng Cheng</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2408.13296v3</id>
+    <title>The Ultimate Guide to Fine-Tuning LLMs from Basics to Breakthroughs: An Exhaustive Review of Technologies, Research, Best Practices, Applied Research Challenges and Opportunities</title>
+    <updated>2024-10-30T01:04:15Z</updated>
+    <link href="https://arxiv.org/abs/2408.13296v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2408.13296v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>This report examines the fine-tuning of Large Language Models (LLMs), integrating theoretical insights with practical applications. It outlines the historical evolution of LLMs from traditional Natural Language Processing (NLP) models to their pivotal role in AI. A comparison of fine-tuning methodologies, including supervised, unsupervised, and instruction-based approaches, highlights their applicability to different tasks. The report introduces a structured seven-stage pipeline for fine-tuning LLMs, spanning data preparation, model initialization, hyperparameter tuning, and model deployment. Emphasis is placed on managing imbalanced datasets and optimization techniques. Parameter-efficient methods like Low-Rank Adaptation (LoRA) and Half Fine-Tuning are explored for balancing computational efficiency with performance. Advanced techniques such as memory fine-tuning, Mixture of Experts (MoE), and Mixture of Agents (MoA) are discussed for leveraging specialized networks and multi-agent collaboration. The report also examines novel approaches like Proximal Policy Optimization (PPO) and Direct Preference Optimization (DPO), which align LLMs with human preferences, alongside pruning and routing optimizations to improve efficiency. Further sections cover validation frameworks, post-deployment monitoring, and inference optimization, with attention to deploying LLMs on distributed and cloud-based platforms. Emerging areas such as multimodal LLMs, fine-tuning for audio and speech, and challenges related to scalability, privacy, and accountability are also addressed. This report offers actionable insights for researchers and practitioners navigating LLM fine-tuning in an evolving landscape.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-08-23T14:48:02Z</published>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Venkatesh Balavadhani Parthasarathy</name>
+    </author>
+    <author>
+      <name>Ahtsham Zafar</name>
+    </author>
+    <author>
+      <name>Aafaq Khan</name>
+    </author>
+    <author>
+      <name>Arsalan Shahid</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2407.16667v1</id>
+    <title>RedAgent: Red Teaming Large Language Models with Context-aware Autonomous Language Agent</title>
+    <updated>2024-07-23T17:34:36Z</updated>
+    <link href="https://arxiv.org/abs/2407.16667v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2407.16667v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Recently, advanced Large Language Models (LLMs) such as GPT-4 have been integrated into many real-world applications like Code Copilot. These applications have significantly expanded the attack surface of LLMs, exposing them to a variety of threats. Among them, jailbreak attacks that induce toxic responses through jailbreak prompts have raised critical safety concerns. To identify these threats, a growing number of red teaming approaches simulate potential adversarial scenarios by crafting jailbreak prompts to test the target LLM. However, existing red teaming methods do not consider the unique vulnerabilities of LLM in different scenarios, making it difficult to adjust the jailbreak prompts to find context-specific vulnerabilities. Meanwhile, these methods are limited to refining jailbreak templates using a few mutation operations, lacking the automation and scalability to adapt to different scenarios. To enable context-aware and efficient red teaming, we abstract and model existing attacks into a coherent concept called "jailbreak strategy" and propose a multi-agent LLM system named RedAgent that leverages these strategies to generate context-aware jailbreak prompts. By self-reflecting on contextual feedback in an additional memory buffer, RedAgent continuously learns how to leverage these strategies to achieve effective jailbreaks in specific contexts. Extensive experiments demonstrate that our system can jailbreak most black-box LLMs in just five queries, improving the efficiency of existing red teaming methods by two times. Additionally, RedAgent can jailbreak customized LLM applications more efficiently. By generating context-aware jailbreak prompts towards applications on GPTs, we discover 60 severe vulnerabilities of these real-world applications with only two queries per vulnerability. We have reported all found issues and communicated with OpenAI and Meta for bug fixes.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-07-23T17:34:36Z</published>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Huiyu Xu</name>
+    </author>
+    <author>
+      <name>Wenhui Zhang</name>
+    </author>
+    <author>
+      <name>Zhibo Wang</name>
+    </author>
+    <author>
+      <name>Feng Xiao</name>
+    </author>
+    <author>
+      <name>Rui Zheng</name>
+    </author>
+    <author>
+      <name>Yunhe Feng</name>
+    </author>
+    <author>
+      <name>Zhongjie Ba</name>
+    </author>
+    <author>
+      <name>Kui Ren</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2405.03076v1</id>
+    <title>Traffic Performance GPT (TP-GPT): Real-Time Data Informed Intelligent ChatBot for Transportation Surveillance and Management</title>
+    <updated>2024-05-05T22:54:51Z</updated>
+    <link href="https://arxiv.org/abs/2405.03076v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2405.03076v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The digitization of traffic sensing infrastructure has significantly accumulated an extensive traffic data warehouse, which presents unprecedented challenges for transportation analytics. The complexities associated with querying large-scale multi-table databases require specialized programming expertise and labor-intensive development. Additionally, traditional analysis methods have focused mainly on numerical data, often neglecting the semantic aspects that could enhance interpretability and understanding. Furthermore, real-time traffic data access is typically limited due to privacy concerns. To bridge this gap, the integration of Large Language Models (LLMs) into the domain of traffic management presents a transformative approach to addressing the complexities and challenges inherent in modern transportation systems. This paper proposes an intelligent online chatbot, TP-GPT, for efficient customized transportation surveillance and management empowered by a large real-time traffic database. The innovative framework leverages contextual and generative intelligence of language models to generate accurate SQL queries and natural language interpretations by employing transportation-specialized prompts, Chain-of-Thought prompting, few-shot learning, multi-agent collaboration strategy, and chat memory. Experimental study demonstrates that our approach outperforms state-of-the-art baselines such as GPT-4 and PaLM 2 on a challenging traffic-analysis benchmark TransQuery. TP-GPT would aid researchers and practitioners in real-time transportation surveillance and management in a privacy-preserving, equitable, and customizable manner.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-05-05T22:54:51Z</published>
+    <arxiv:comment>8 pages, 5 figures, submitted to 27th IEEE International Conference on Intelligent Transportation Systems (IEEE ITSC 2024)</arxiv:comment>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Bingzhang Wang</name>
+    </author>
+    <author>
+      <name>Zhiyu Cai</name>
+    </author>
+    <author>
+      <name>Muhammad Monjurul Karim</name>
+    </author>
+    <author>
+      <name>Chenxi Liu</name>
+    </author>
+    <author>
+      <name>Yinhai Wang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2402.08567v2</id>
+    <title>Agent Smith: A Single Image Can Jailbreak One Million Multimodal LLM Agents Exponentially Fast</title>
+    <updated>2024-06-03T14:15:03Z</updated>
+    <link href="https://arxiv.org/abs/2402.08567v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2402.08567v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>A multimodal large language model (MLLM) agent can receive instructions, capture images, retrieve histories from memory, and decide which tools to use. Nonetheless, red-teaming efforts have revealed that adversarial images/prompts can jailbreak an MLLM and cause unaligned behaviors. In this work, we report an even more severe safety issue in multi-agent environments, referred to as infectious jailbreak. It entails the adversary simply jailbreaking a single agent, and without any further intervention from the adversary, (almost) all agents will become infected exponentially fast and exhibit harmful behaviors. To validate the feasibility of infectious jailbreak, we simulate multi-agent environments containing up to one million LLaVA-1.5 agents, and employ randomized pair-wise chat as a proof-of-concept instantiation for multi-agent interaction. Our results show that feeding an (infectious) adversarial image into the memory of any randomly chosen agent is sufficient to achieve infectious jailbreak. Finally, we derive a simple principle for determining whether a defense mechanism can provably restrain the spread of infectious jailbreak, but how to design a practical defense that meets this principle remains an open question to investigate. Our project page is available at https://sail-sg.github.io/Agent-Smith/.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-02-13T16:06:17Z</published>
+    <arxiv:comment>ICML 2024</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Xiangming Gu</name>
+    </author>
+    <author>
+      <name>Xiaosen Zheng</name>
+    </author>
+    <author>
+      <name>Tianyu Pang</name>
+    </author>
+    <author>
+      <name>Chao Du</name>
+    </author>
+    <author>
+      <name>Qian Liu</name>
+    </author>
+    <author>
+      <name>Ye Wang</name>
+    </author>
+    <author>
+      <name>Jing Jiang</name>
+    </author>
+    <author>
+      <name>Min Lin</name>
+    </author>
+  </entry>
+</feed>

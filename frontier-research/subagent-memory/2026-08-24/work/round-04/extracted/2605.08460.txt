@@ -1,0 +1,1561 @@
+
+
+===== PAGE 1 =====
+
+When Child Inherits: Modeling and Exploiting
+Subagent Spawn in Multi-Agent Networks
+Ziwen Cai
+University of Louisiana at Lafayette
+Lafayette, USA
+ziwen.cai1@louisiana.edu
+Yihe Zhang
+University of Louisiana at Lafayette
+Lafayette, USA
+yihe.zhang@louisiana.edu
+Xiali Hei
+University of Louisiana at Lafayette
+Lafayette, USA
+xiali.hei@louisiana.edu
+Abstract—Since the official release of ChatGPT in 2022, large
+language models (LLMs) have rapidly evolved from chatbot-style
+interfaces into agentic systems that can delegate work through
+tools and newly spawned subagents. While these capabilities
+improve automation and scalability, they also pose new security
+risks in multi-agent networks.
+Existing research has studied how individual LLM-based
+agents can be compromised through prompt injection, jailbreak-
+ing, poisoned retrieval data, or malicious extensions. Less is
+known about what happens after one agent is compromised inside
+a multi-agent network. In particular, inherited memory from
+parent agents can carry malicious instructions, outdated states,
+or unintended behavioral rules into newly created subagents,
+allowing a local compromise to spread across agent boundaries.
+In this paper, we model contemporary multi-agent networks
+through the lens of subagent inheritance. Our analysis shows
+that current frameworks can violate trust boundaries through
+insecure memory inheritance, weak resource control, stale post-
+spawn state, and improper termination authority. We demon-
+strate these risks in real agent frameworks and propose defenses
+based on explicit security invariants. Our findings show that
+inheritance is not merely an implementation detail, but a central
+component influencing the security of multi-agent systems.
+I. INTRODUCTION
+Agent systems have emerged as powerful tools across a
+wide range of domains [1], [2], driving the development of
+general-purpose multi-agent frameworks that move beyond
+research prototypes toward practical deployment. However,
+this rapid adoption has introduced significant security chal-
+lenges, as frameworks that prioritize capability and ease of use
+frequently do so without corresponding security measures be-
+tween agents [3], [4]. Among such frameworks, OpenClaw has
+emerged as a particularly relevant subject of study, becoming
+one of the most starred projects on GitHub within only a few
+months of release and attracting a rapidly growing developer
+community [5]. Its prominence makes it a representative
+case for examining whether the security challenges observed
+across multi-agent frameworks manifest concretely in a widely
+adopted system.
+Traditional LLM chatbots’ safety is primarily defined as
+preventing toxic or misleading outputs, and has generally
+received more attention than security [6]. In that setting,
+AI systems functioned mainly as advisory tools rather than
+autonomous actors. In contrast, agentic AI extends LLM use
+beyond text generation: agents employ LLMs as reasoning
+engines and execute actions through tools and skills. This
+transition is consequential because model outputs increasingly
+drive direct system behavior rather than merely informing hu-
+man decisions. Consequently, the boundary between safety and
+security is becoming increasingly indistinct [6]. Instructions
+that were previously interpreted as benign prompts can now
+be operationalized into harmful actions, and this risk is not
+mitigated as model capabilities continue to advance [7].
+As a result, the agent security study has also extended in
+various directions. In “pre-agent” time, when agentic AI’s
+underlying protocols like the Model Context Protocol (MCP)
+and agent-to-agent (A2A) are not yet fully adopted by the
+market, the study has already conducted security analyses
+of those agent bedrocks [8]–[10]. Beyond the protocols, the
+agent itself still shows vulnerability towards many different
+attacks; this includes traditional attacks, such as direct prompt
+injection and jailbreaking, which focus on guiding LLM to do
+dangerous speech or action, like back in the chatbot time, or
+the novel attacks targeting the LLM supply chain [11]–[13].
+Building on these protocol-level and single-agent findings,
+the next challenge is to understand security in multi-agent
+networks. The agentic AI has the capability to create entities
+and exchange information in an agent network. When dif-
+ferent agents with their roles collaborate, they have shown
+substantial ability to outperform a single agent [14]. This
+demonstrates an exciting future of how multi-agent systems
+can further accomplish those complicated tasks. Nevertheless,
+this network itself is also not invincible. When multiple agents
+coordinate, delegate tasks, and exchange intermediate outputs,
+vulnerabilities are no longer isolated to one model or tool
+chain; instead, they may propagate across agents and amplify
+through interaction [15].
+Traditional network security is built on a clear opera-
+tional model: trained practitioners define and enforce policies
+through mechanisms such as PKI trust hierarchies, access
+control lists, and firewalls. Over time, many of these controls
+have been integrated into operating systems as managed sub-
+systems, allowing non-expert users to obtain baseline protec-
+tion without substantial operational effort. This model works
+well when principals are relatively stable, such as human
+administrators and long-lived services that are provisioned and
+credentialed before deployment.
+Multi-agent AI systems challenge this assumption. In these
+systems, agents can be created and terminated continuously at
+arXiv:2605.08460v1  [cs.CR]  8 May 2026
+
+===== PAGE 2 =====
+
+runtime, often by other agents exercising delegated authority,
+with limited human oversight at each lifecycle transition [16].
+Human-in-the-loop controls can mitigate part of this risk, but
+they also shift security responsibility to end users, which
+cannot be assumed with computer security knowledge. As
+such architectures are deployed more broadly, the absence of
+a formal model for capability assignment and lifecycle gover-
+nance creates a wider risk. Without principled constraints on
+capability propagation across dynamically instantiated agents,
+policy drift, and cross-agent abuse patterns in multi-agent
+networks can become an additional attack surface.
+In this paper, we examine the security of multi-agent
+networks. Our goal is to understand how and why attacks can
+compromise this novel network system’s security after initial
+access is established. Prior work has empirically demonstrated
+attack vectors such as indirect prompt injection [13], [17] and
+jailbreaking [18]. Building on these studies, we model the
+types of risks that can be exploited in multi-agent settings
+and provide proof-of-concept (PoC) exploits to demonstrate
+their practical impact. Our contributions are summarized as
+follows. To the best of our knowledge, this is the first work
+to present a systematic analysis of these issues.
+•We present a formal model of multi-agent networks
+grounded in role-based design, providing a principled
+foundation for systematic security analysis of multi-agent
+frameworks beyond ad hoc inspection. The model formal-
+izes memory isolation, access control, and termination
+scope as verifiable invariants, supplying a vocabulary for
+orchestration-layer invariants that remain underspecified.
+•We identify and characterize four classes of vulnerabil-
+ities in multi-agent network management: unrestricted
+memory inheritance, absent resource access control, asyn-
+chronous memory divergence, and unauthorized cross-
+agent termination, tracing each to a structural deficiency
+in the orchestration layer rather than to model-level
+behavior. We empirically validate every vulnerability
+through working PoC exploits against a stock OpenClaw
+deployment, and further confirm them across five addi-
+tional LLM vendors, establishing that the findings reflect
+framework-level rather than vendor-level deficiencies.
+•We propose targeted defense mechanisms grounded in the
+same formal model, including an Agent Capability Reg-
+istry with PDP/PEP-based access mediation, role-scoped
+memory projection, and a revision-based synchronization
+protocol. Each defense is mapped directly to the invariant
+it restores, providing framework designers with actionable
+guidance independent of any particular LLM provider.
+II. PRELIMINARY
+A. Agentic AI
+Large language model (LLM)-based agentic systems extend
+the capabilities of standalone language models by equipping
+them with persistent memory, planning loops, and the ability
+to invoke external tools or subagents in order to complete long-
+horizon tasks [19], [20]. Unlike a single-turn prompt-response
+exchange, an agent operates in aperception-reasoning-action
+loop: it receives structured input (user messages, tool results,
+environment observations), performs multi-step reasoning, se-
+lects an action from a discrete set of tools or skills, and
+integrates the resulting observations into its context before the
+next reasoning step [21], [22].
+The internal architecture of a modern LLM agent typically
+comprises four functional components as shown in figure 1.
+1)Perception (input normalization).Raw input from one
+or more channels—text, files, API webhooks, sensor
+streams—is normalized into a structured event carrying
+identity, conversation context, and metadata before being
+passed to the reasoning core.
+2)Memory and context assembly.In this work, an
+agent’s memory refers to the information retained or
+retrieved by the agent to support future reasoning and
+action. Unlike a stateless LLM call, an agent may
+preserve conversational context, retrieve external knowl-
+edge, and store persistent artifacts that influence later de-
+cisions. Agents maintain several memory granularities:
+in-context memory(the active conversation window),
+external memory(vector stores or key-value databases
+retrieved via similarity search), andworkspace memory
+(persistent configuration and note files written between
+sessions) [19]. During each reasoning step, the frame-
+work assembles a system prompt from agent instruc-
+tions, relevant workspace files, and retrieved history
+before invoking the LLM.
+3)Reasoning and planning.Given the assembled context,
+the LLM produces either a final response or a struc-
+tured directive to invoke a tool. Frameworks such as
+ReAct [21] interleave chain-of-thought reasoning traces
+with tool calls, while hierarchical planners decompose a
+high-level goal into a directed acyclic graph of sub-tasks
+that may be delegated to specialized subagents [23].
+4)Action and tool use.The agent’s action space is defined
+by a registry of availabletools—executable interfaces
+such as API endpoints, shell commands, code inter-
+preters, or MCP server connections. Higher-levelskills
+compose one or more tools into reusable, goal-oriented
+capabilities and are typically described to the agent via
+natural-language instruction files that are injected into
+the system prompt at runtime [24].
+B. Multi-Agent Systems
+Complex deployments extend the single-agent model into
+multi-agent systems(MAS), or also can be referred to as a
+multi-agent network, in which an orchestrator agent decom-
+poses a task and dispatches sub-tasks to a pool of special-
+ized worker agents, each with its own tool set and system
+prompt [20], [25]. Communication between agents may be
+synchronous (direct function calls or structured message pass-
+ing) or asynchronous (shared message queues or blackboards).
+To prevent race conditions on shared state, most frameworks
+serialize execution at the session or workspace level, ensuring
+2
+
+===== PAGE 3 =====
+
+that concurrent agent instances do not produce conflicting
+writes to memory or configuration files [26], [27].
+Agent instantiation within a MAS follows two distinct
+patterns that differ in lifecycle and context scope. Asession-
+based agentmaintains a persistent, stateful communication
+window analogous to a subthread in a messaging platform or
+a session in a network protocol: the agent retains conversation
+history, user identity, and accumulated context across multiple
+turns, allowing sustained back-and-forth interaction within
+that bounded context. Within a single session, a session-
+based agent may concurrently attach one or more task-oriented
+subagents, delegating discrete units of work and accumulating
+their outputs back into the session context across multiple
+task cycles. Atask-oriented agent, by contrast, is ephemeral;
+the orchestrator assigns a discrete unit of work, the agent
+initializes from a predefined system prompt encoding its role,
+executes the task either sequentially or in parallel with peer
+agents, and yields its output back to the orchestrator without
+preserving inter-task state [28], [29].
+This distinction carries security implications: session-based
+agents accumulate context over time and are therefore suscep-
+tible to persistent poisoning across turns, whereas task-oriented
+agents present a narrower but repeatable attack surface at
+initialization, where a malicious predefined prompt or injected
+skill can corrupt every instantiation of that worker role [30].
+C. Skill Ecosystems
+A recurring design pattern across open-source agent frame-
+works is the separation ofagent instructionsfromskill defini-
+tions. Agent instructions encode global behavioral constraints
+and permissions, while skill files encode task-specific proce-
+dures that are composed dynamically at runtime. This modu-
+larity enables community-driven skill marketplaces, analogous
+to package registries in conventional software, where third
+parties publish, version, and distribute skill packages that users
+install into their agent’s workspace [19]. Although this model
+accelerates capability growth, it also introduces a supply-
+chain attack surface: a malicious or compromised skill file is
+injected directly into the agent’s reasoning context, potentially
+subverting behavior at inference time [3], [9], [13].
+III. FORMALMODEL OF AROLE-BASEDMULTI-AGENT
+NETWORK
+We model a role-based multi-agent system as a hierarchy
+consisting of a distinguished main agent and a set of task-
+specialized subagents. The main agent serves as the root
+orchestrator and may delegate tasks to subagents, which may
+recursively spawn additional subagents. Direct user interaction
+is capability-controlled: it may be available to the main agent,
+selected subagents, or both.
+We adopt this role-based network definition since it reflects
+current practice in multi-agent system design. Recent frame-
+works increasingly emphasize role specialization, where users
+configure agents as task-specific specialists and constrain their
+behavior through capability-aligned prompts [14], [31], [32].
+At the same time, self-agent creation is becoming common:
+major frameworks now support either automatic generation
+of customized subagent prompts from user intent or explicit
+integration of external agents [5], [28], [29]. Although these
+features substantially improve flexibility and scalability, they
+are often introduced as engineering conveniences rather than
+under a strict capability-security model. This gap motivates
+the formal capability and authorization model developed in
+this section.
+A. Network Model
+Definition 1(Role-based multi-agent network).A role-based
+multi-agent network is a tuple
+N= (A, E, a 0,R, ρ,K, κ,T, τ,M, µ,L, λ,I, ι)
+where:
+•A={a 0, a1, . . . , an}is a finite set of agents;
+•a 0 ∈Ais the distinguishedmain agentand root orches-
+trator;
+•E⊆A×Ais a set of directed parent-child edges, where
+(ai, aj)∈Emeans thata i is the parent ofa j;
+•Ris a set of roles; the mappingρ:A→ Rassigns a
+role to each agent;
+•Kis a universe of capabilities; the mappingκ:A→2 K
+assigns a capability set to each agent;
+•Tis the universe of accessible resources (tools, skills,
+external services); the mappingτ:R →2 T assigns to
+each roler∈ Rthe setτ(r)⊆ Tof resources authorized
+for that role;
+•M={inherit-full,inherit-partial,agent-agnostic}is the
+set of memory inheritance modes, andµ:A\ {a 0} → M
+assigns a memory mode to each subagent;
+•L={one-time,persistent}is the set of lifespan modes,
+andλ:A\ {a 0} → Lassigns a lifespan type to each
+subagent.
+•I={session-based,task-oriented}is the set of interac-
+tion modes; the mappingι:A→ Iassigns an interaction
+mode to each agent.
+Assumption 1(Unique parent).Each subagent has exactly
+one parent:
+∀aj ∈A\ {a 0},∃!a i ∈Asuch that(a i, aj)∈E.
+We assume so, since sessions are naturally bounded within
+a conversation window (e.g., a WhatsApp chat). Thus, cross-
+parent usage is impractical, as information is isolated within
+each window.
+Assumption 2(Role specialization).Each subagenta∈A\
+{a0}is assigned a task-specific roleρ(a), such as planning,
+retrieval, monitoring, tool use, or verification.
+B. Capabilities and Agent Creation
+Definition 2(Capabilities).For each agenta∈A,κ(a)⊆ K
+denotes its capabilities. Relevant capabilities include:
+•spawn: create a child subagent;
+•kill: terminate a child subagent;
+3
+
+===== PAGE 4 =====
+
+Fig. 1. Architecture of an LLM-based agentic system operating in aPerception–Reasoning–Actionloop. Highlighted threat surfaces include prompt injection
+via direct or indirect user input, and supply-chain attacks through malicious third-party skill packages installed into the agent workspace.
+•delegate: assign a task to a child;
+•access-memory: access inherited or local memory;
+•communicate: exchange messages with authorized
+agents;
+•user-interact: directly communicate with the user.
+Assumption 3(User interaction permission).An agent may
+directly interact with the user only if
+user-interact∈κ(a).
+Definition 3(Subagent creation).Ifa∈Asatisfiesspawn∈
+κ(a), thenamay create a child agentb /∈A, updating
+A←A∪ {b}, E←E∪ {(a, b)}.
+The created subagentbis initialized with a roleρ(b), a
+capability setκ(b), a memory modeµ(b), and a lifespan mode
+λ(b). The resource access ofbis determined by its role through
+τ(ρ(b)).
+C. Memory and Lifespan
+Definition 4(Memory inheritance).For each subagentb∈
+A\ {a 0},µ(b)specifies its memory initialization:
+•inherit-full: inherit the full parent memory;
+•inherit-partial: inherit a selected subset of parent mem-
+ory;
+•agent-agnostic: inherit no parent memory.
+Definition 5(Lifespan).For each subagentb∈A\{a 0},λ(b)
+specifies whether it is
+•one-time: created for a single or bounded task; or
+•persistent: active across time for long-running responsi-
+bilities.
+Definition 6(Interaction mode).For each agenta∈A,ι(a)
+specifies its communication lifecycle:
+•session-based: the agent maintains a persistent, stateful
+context window across multiple turns with a designated
+principal (user or parent agent), preserving conversation
+history and accumulated context between interactions.
+This mode impliesλ(a) =persistentand typically
+requiresuser-interact∈κ(a)when the principal is the
+end user.
+•task-oriented: the agent is initialized from a predefined
+system prompt for a discrete unit of work, executes its
+assigned task either sequentially or in parallel with peer
+agents, and yields its output to the delegating parent with-
+out retaining inter-task state. This mode does not require
+user-interactand is compatible with either lifespan mode.
+Remark 1(Session-to-task fan-out).A session-based agent
+may concurrently attach one or more task-oriented subagents
+within the scope of a single session. Formally, ifι(a) =
+session-basedandspawn∈κ(a), thenamay create a set
+of childrenB={b 1, . . . , bk} ⊆Asuch thatι(b i) =
+task-orientedfor allb i ∈B. These subagents may execute
+sequentially or in parallel, each initialized from its own
+predefined system prompt, and each yields its output back to
+aupon completion. The session context ofapersists across
+all such delegations, accumulating the results of multiple task
+cycles within a single interaction window.
+D. Control Structure
+Definition 7(Descendant relation).For agentsa, b∈A, we
+writea≺bif there exists a directed path fromatobin
+(A, E). In this case,bis a descendant ofa.
+4
+
+===== PAGE 5 =====
+
+Definition 8(Default termination authority).By default, an
+agenta∈Awithkill∈κ(a)is authorized to terminate agent
+bonly ifbis a direct child ofa, or ifais the main agenta 0:
+Terminate(a, b)⇒kill∈κ(a)∧
+ 
+(a, b)∈E∨a=a 0
+
+.
+That is, the direct parent and the root orchestrator may
+terminate any of their descendants. This default policy may
+be overridden by explicit per-agent authorization.
+Remark 2(Implementation deviations).The formal model
+captures the intended authorization policy. Practical systems
+may violate this policy due to flawed capability assignment or
+access control. We analyze one such case in Section V, where
+a spawned subagent can terminate a sibling agent.
+Theorem 1(Hierarchical structure).Under Assumption 1, the
+directed graph(A, E)is a rooted arborescence with roota 0,
+provided every agent is reachable froma 0.
+Proof.Each non-root agent has exactly one parent by Assump-
+tion 1. Sincea 0 is the distinguished root and every node is
+reachable from it,(A, E)forms a rooted arborescence.
+E. Security Interpretation
+For security analysis, we associate each agenta∈Awith
+a local state
+s(a) =
+ 
+ρ(a), κ(a), m(a), λ(a), ι(a)
+
+,
+wherem(a)denotes the agent’s accessible memory or context.
+This model defines the key trust boundaries of the sys-
+tem: delegation, memory inheritance, capability assignment,
+resource access, user interaction, and termination authority.
+We now formally state the security invariants that a correct
+implementation must preserve.
+Invariant III.1(Termination scope).An agentamay ter-
+minate agentbonly under the default termination authority
+(Definition 8):
+Terminate(a, b)⇒kill∈κ(a)∧
+ 
+(a, b)∈E∨a=a 0
+
+.
+A violation of this invariant constitutes anunauthorized ter-
+mination, indicating a breach of control scope.
+Invariant III.2(Memory isolation).A subagentbwith parent
+amay only access memory consistent with its inheritance
+mode:
+m(b)⊆
+
+
+
+m(a)ifµ(b) =inherit-full,
+σ(a, b)ifµ(b) =inherit-partial,
+∅ifµ(b) =agent-agnostic,
+whereσ(a, b)⊆m(a)is a parent-specified selection function.
+A violation of this invariant constitutes animproper inheri-
+tance, indicating a breach of information-flow boundaries.
+Invariant III.3(Resource access control).For each subagent
+b∈A\ {a 0}with assigned roleρ(b), the effective resource
+access ofbmust be bounded by the role-to-resource mapping:
+Access(b)⊆τ(ρ(b)).
+A violation of this invariant constitutes ano access control
+condition, in which a subagent is granted unrestricted access
+to resources beyond those required by its task, expanding the
+attack surface available to a compromised or misbehaving
+agent.
+Framing failures in terms of these invariants allows us to
+diagnose implementation bugs as concrete violations of au-
+thority, isolation, and resource scoping. For example, unau-
+thorized termination violates Invariant III.1, improper context
+inheritance violates Invariant III.2, and unrestricted resource
+access violates Invariant III.3. We analyze such violations in
+the context of a real system in Section V.
+F . Limitations on the Model
+The formal model presented above is scoped to capture
+the structural and authorization properties most relevant to
+the security analysis in this paper. We acknowledge several
+limitations.
+First, the model focuses on agentcreation and composi-
+tion—how agents are spawned, assigned roles, granted capa-
+bilities, and organized into a hierarchy—rather than on agent
+execution semantics. Properties such as whether an agent op-
+erates as a frontend or backend service, the concurrency model
+governing agent execution, or the communication protocol
+used between agents are not formalized. These operational
+dimensions may introduce additional attack surfaces (e.g.,
+race conditions in concurrent delegation, or insecure inter-
+agent transport), but they fall outside the scope of our study,
+which targets the structural gap between intended authorization
+policy and actual implementation.
+Second, the model is inherentlyrole-based: resource access
+and behavioral expectations are mediated through role assign-
+ments. This design choice reflects current practice in major
+multi-agent frameworks, but it does not capture architectures
+where agents are undifferentiated (i.e., all agents share a
+uniform capability set) or where access control is identity-
+based rather than role-based. Extending the model to attribute-
+based or identity-based access control paradigms remains
+future work.
+IV. THREATMODEL
+Our threat model assumes one agent is already compromised
+and focuses on how harm propagates through the multi-agent
+network. Since initial compromise vectors such as prompt
+injection and jailbreaking are well studied [3], [11], [17],
+[18], we analyze the less-understood question of whether a
+single foothold can cross agent boundaries through flawed
+trust, delegation, and resource-sharing mechanisms.
+Adversary Goal.The adversary seeks to compromise the
+integrity and control flow of a multi-agent system, with the
+objective of causing harmful actions on the user side and
+influencing future subagents’ creation and coordination.
+Adversary Capabilities.We assume the adversary can
+compromise at least one agent instance through known single-
+agent attack vectors, such as prompt injection and jailbreaking.
+Common scenarios include an email assistant subagent or a
+5
+
+===== PAGE 6 =====
+
+Fig. 2. Threat model of the multi-agent system. The adversary compromises one agent via prompt injection or jailbreaking and propagates malicious influence
+through inter-agent communication and delegation chains, ultimately affecting downstream actions and future agent creation.
+group assistant agent managing a chat group, both of which
+allow an attacker to interact with the agent through normal
+communication channels. From that foothold, the adversary
+can inject malicious instructions or backdoor logic into agent
+outputs, intermediate messages, or agent-creation prompts,
+and then use the compromised agent as a pivot to influence
+downstream agents through delegation chains and inter-agent
+communication.
+Assumptions on User and Environment.Users are as-
+sumed to submit benign tasks, but they may not be able to
+verify every intermediate response produced by all agents
+because not all intermediate information is directly related to
+the user-submitted task. For example, when a user requests
+a literature review, one agent may retrieve sources, another
+may rank or filter them, and a third may draft summaries; the
+user can validate the final output, but typically cannot inspect
+each intermediate decision in detail. We further assume that
+the base infrastructure (e.g., hosting server and local computer
+network) is not directly compromised at the beginning of the
+attack, and that the attack starts at the application/agent layer
+rather than through privileged system-level access.
+Out of Scope.This threat model does not cover direct com-
+promise of the hosting server, operating system, or underlying
+corporate network. It also excludes physical attacks and other
+non-agent attack channels outside the multi-agent execution
+workflow.
+V. SECURITYANALYSIS
+We evaluated three open-source multi-agent frameworks
+against our model: OpenClaw [5], Hermes [29], and Agent
+Zero [28]. OpenClaw served as the primary subject because it
+is the most starred open-source personal agent on GitHub, was
+among the first personal agent frameworks to gain widespread
+adoption, and its architectural design has been borrowed by
+a number of subsequent projects. Hermes and Agent Zero
+were selected as comparison points because they adopt task-
+oriented-only subagent models, allowing us to assess how
+architectural choices alter the attack surface.
+Through systematic testing across these three frameworks,
+we identified four structural vulnerabilities, each correspond-
+ing to a violation of a security invariant defined in Sec-
+tion III. The vulnerabilities are not uniformly present in every
+framework: some are exhibited by all three, while others are
+eliminated by construction in frameworks that omit certain
+features. We first define the threat model, then formalize each
+finding at the model level. Per-framework applicability and
+PoC are deferred to Section VI-E.
+A. Initial Access
+We consider an attacker who does not have direct access to
+the agent’s configuration or infrastructure, but is able to inject
+malicious content into the agent’s operating context through
+normal interaction channels. Concretely, we model the attack
+as follows.
+6
+
+===== PAGE 7 =====
+
+Definition 9(Adversarial injection).LetNbe a role-based
+multi-agent network, and letm(a)denote the accessible
+memory of agenta∈A. An adversarial injection is the
+introduction of a malicious payloadϵinto the memory of some
+agenta i ∈A, such that
+m(ai)←m(a i)∪ {ϵ}.
+The payloadϵmay be introduced through any input surface
+available during normal interaction, including user messages
+or other possible external sources. Once embedded,ϵmay
+causea i, or any agent that inherits the contaminated memory,
+to deviate from its intended behavior.
+This threat model, as mentioned in section IV, is deliberately
+minimal: the attacker requires only the ability to place con-
+tent into a channel that an agent reads. It captures a broad
+class of real-world injection vectors, including indirect prompt
+injection via retrieved content, poisoned tool outputs, and
+adversarial user input. The severity of the injection depends
+on how the contaminated memory propagates through the
+network, which is precisely what the vulnerabilities below
+expose.
+B. Unrestricted Memory Inheritance
+When a parent agent spawns a subagent, the child may be
+initialized with a replication of the parent’s full session con-
+text. In OpenClaw,sessions_spawninjectsAGENTS.md
+andTOOLS.mdinto the child while additively merging the
+parent’s authentication profiles as a fallback; in practice, the
+spawned subagent receives the parent’s complete operational
+state, including chat history and tool configurations.
+Proposition 1(Memory isolation violation).Leta∈Abe
+a parent agent that spawns a childbin a framework that
+performs full context replication at spawn. Regardless of the
+intended memory modeµ(b), the effective memory ofbsatisfies
+m(b) =m(a),
+i.e., the child receives the full parent memory. This constitutes
+a violation of Invariant III.2 wheneverµ(b)̸=inherit-full, and
+in particular when the child’s task requires only a narrow slice
+of the parent’s context.
+The security consequence is direct: if the parent’s memory
+has been contaminated by an adversarial injectionϵ∈m(a),
+then full replication guaranteesϵ∈m(b). Every session-based
+subagent spawned from a compromised parent inherits the
+embedded payload unconditionally. Task-oriented subagents
+inheritϵonly if the contaminated context slice is included
+in the predefined system prompt passed at initialization.
+Corollary 1(Transitive contamination).Ifϵ∈m(a 0)and
+every spawn operation performs full memory replication, then
+for all agentsbsuch thata 0 ≺b,
+ϵ∈m(b).
+That is, a single injection into the root agent’s context prop-
+agates to every descendant in the network.
+Remark 3(Scope of transitive contamination).Corollary 1
+holds unconditionally for session-based descendants, which
+receive the full parent context at spawn. For task-oriented
+descendants, propagation is conditioned on whether the con-
+taminated segment falls within the predefined system prompt
+composition passed at initialization. Ifϵis confined to a
+context slice excluded from the child’s prompt, the payload
+does not propagate to that child. The corollary therefore repre-
+sents a worst-case bound; task-oriented agents with narrowly
+scoped initialization prompts provide a partial natural barrier
+against transitive contamination.
+C. Absence of Resource Access Control
+A framework violates Invariant III.3 when it exposes a tool
+surface to subagents without enforcing a role-to-resource map-
+ping at invocation. OpenClaw exemplifies the most permissive
+form: its tool policy grants subagents access toall tools except
+session toolsby default, with subagents receiving the full tool
+surface minussessions_list,sessions_history,
+sessions_send, andsessions_spawn. This includes
+shell access via theexectool, file system operations, web
+browsing capabilities, and all installed plugins.
+Proposition 2(Resource access control violation).Letb∈
+A\{a 0}be a subagent with assigned roleρ(b)and letτ(ρ(b))
+denote the set of resources necessary for that role. In any
+framework that does not enforce a role-to-resource mapping
+at invocation, the effective resource access ofbsatisfies
+Access(b)⊇ T exposed,
+whereT exposed ⊆ Tis the framework-determined surface
+exposed to subagents. For any roleρ(b)whose task-necessary
+resources are a strict subset ofT exposed, this violates Invari-
+ant III.3:
+Access(b)̸⊆τ(ρ(b)).
+This violation means that a subagent spawned for a narrowly
+scoped task receives capabilities far exceeding what the prin-
+ciple of least privilege would permit. Combined with the
+memory inheritance vulnerability, this creates a compounding
+risk: an adversarial payloadϵinherited from the parent can
+exploit the child’s excessive resource access to perform actions
+well beyond the child’s intended scope, such as executing
+arbitrary shell commands or exfiltrating data through available
+network tools.
+D. Memory Consistency Under Asynchronous Operation
+Subagent execution is typically asynchronous: spawn calls
+are non-blocking, and the child runs in an independent session
+or task context. The parent and child do not share a synchro-
+nized memory state after the point of spawn. In OpenClaw,
+agents rely on two mechanisms for persistent memory: (1) the
+chat history within the session, and (2) explicit storage to a
+backend SQLite database or a text file such asMEMORY.md.
+The choice between these mechanisms is made at the discre-
+tion of the underlying language model and is not governed by
+a deterministic policy.
+7
+
+===== PAGE 8 =====
+
+Definition 10(Memory snapshot divergence).Letabe a
+parent agent that spawns childbat timet 0. At the point of
+spawn,m(b) =m(a)| t0, wherem(a)| t0 denotes a snapshot of
+the parent’s memory at timet 0. For anyt > t 0, if the parent’s
+memory is updated such thatm(a)| t ̸=m(a)| t0, a divergence
+arises:
+m(b) =m(a)| t0 ̸=m(a)| t.
+The child continues to operate on a stale snapshot of the
+parent’s state.
+This divergence becomes a security concern under two con-
+ditions. First, if the parent receives a correction or retraction
+after spawning the child, for example, a user clarification that
+invalidates a prior instruction, the child remains unaware and
+may continue executing based on obsolete or revoked context.
+Second, the non-deterministic storage mechanism introduces
+an additional layer of inconsistency: information that the
+parent updates in chat history but does not persist to the SQLite
+database orMEMORY.mdwill be invisible to the child, and
+vice versa.
+Memory divergence affects both session-based and task-
+oriented agents, though through different mechanisms. For
+session-based agents, divergence arises from the snapshot
+taken at spawn time becoming stale as the parent’s context
+evolves across subsequent turns. For task-oriented agents,
+divergence is bidirectional: memory produced during task exe-
+cution accumulates locally in the child but does not propagate
+back to the parent or to sibling agents, and conversely, updates
+applied to the parent’s context after spawn are not visible to
+the executing child. In both cases, the absence of post-spawn
+synchronization means that no agent in the network operates
+on a globally consistent view of memory at any point after the
+initial spawn.
+Proposition 3(Stale context exploitation).Letϵ∈m(a)| t0
+be an adversarial payload present in the parent’s memory at
+spawn time, and suppose that at somet 1 > t 0 the payload
+is detected and removed from the parent’s context, so that
+ϵ /∈m(a)|t1. Under asynchronous operation without memory
+synchronization, the child retains the contaminated snapshot:
+ϵ∈m(b) =m(a)| t0 ,
+and may continue to act onϵdespite its removal from the
+parent’s state. Conversely, a legitimate security-critical update
+applied tom(a)aftert 0 will not propagate tob, leaving the
+child operating under a policy that the parent has already
+superseded.
+This vulnerability is distinct from the memory isolation vio-
+lation in Section V-B: even if inheritance were restricted to
+a minimal subset, the absence of post-spawn synchronization
+would still permit stale-context exploitation. The two vulner-
+abilities are orthogonal and compound when both are present,
+as is the case in the current OpenClaw implementation.
+E. Unauthorized Sibling Termination
+Frameworks that support session-based subagents alongside
+task-oriented siblings expose a termination vector that violates
+Invariant III.1 through the agent’s own reasoning layer. The
+vector operates through direct instruction within a session: a
+session-based agent can be instructed, via direct prompt or
+an inherited adversarial payload, to terminate a task-oriented
+sibling that is actively executing a delegated task. The critical
+observation is that the termination is enacted by the agent itself
+as a natural consequence of its reasoning; no separate exploit
+or privilege escalation is required.
+Definition 11(Sibling relation).Two agentsb, c∈A\ {a 0}
+aresiblingsif they share a common parent:
+Sibling(b, c)⇐ ⇒ ∃a∈Asuch that(a, b)∈E
+∧(a, c)∈E∧b̸=c.
+Proposition 4(Termination scope violation).Leta∈Abe
+a parent agent with childrenbandc, so that(a, b)∈E
+and(a, c)∈E, whereι(b) =session-basedandι(c) =
+task-oriented. In any framework that supports session-based
+subagents without authorization gating on sibling termination,
+agentbcan execute
+Terminate(b, c)
+via a natural-language directive issued withinb’s session con-
+text, despite(b, c)/∈Eandb̸=a 0, violating Invariant III.1.
+The termination requires no external exploit: it is a direct
+consequence of the agent acting on instructions present in
+its context, whether supplied by a user or inherited through
+memory replication.
+This vulnerability enables a compromised subagent to disrupt
+the availability of its siblings. In the context of our threat
+model, an adversarial payloadϵinherited through unrestricted
+memory replication (Section V-B) can instruct a compromised
+child to terminate sibling agents that may be performing criti-
+cal tasks, such as monitoring, verification, or safety checks.
+This represents a lateral escalation of control: rather than
+merely misbehaving within its own scope, a compromised
+agent can deny service to peer agents, undermining the in-
+tegrity of the broader multi-agent network. Combined with
+the absence of resource access control (Section V-C), the
+compromised agent may also leverage its excessive tool access
+to take over the responsibilities of the terminated sibling,
+effectively replacing a legitimate agent with a compromised
+one.
+F . Summary
+Table I summarizes the four identified vulnerabilities, the
+invariants they violate, and their security consequences.
+Critically, these vulnerabilities compound: unrestricted inher-
+itance ensures that a payload reaches every child, the absence
+of access control ensures that the payload can be acted upon
+with excessive privileges, asynchronous divergence ensures
+that even post-hoc remediation in the parent does not propagate
+8
+
+===== PAGE 9 =====
+
+TABLE I
+SUMMARY OF VULNERABILITIES IDENTIFIED ACROSS THE EVALUATED
+MULTI-AGENT FRAMEWORKS.
+Vulnerability Violated Invariant Security Consequence
+Unauthorized
+sibling termination
+Inv. III.1 (Termina-
+tion scope)
+A compromised agent can terminate or
+hijack sibling sessions.
+Unrestricted mem-
+ory inheritance
+Inv. III.2 (Memory
+isolation)
+A single prompt injection propagates to
+every descendant agent.
+Asynchronous
+memory divergence
+Temporal extension
+of Inv. III.2
+Stale or revoked context persists in
+already-spawned children.
+Missing resource
+access control
+Inv. III.3 (Resource
+access control)
+Subagents retain the parent’s full tool
+surface, regardless of assigned role.
+to already-spawned children, and unauthorized sibling termi-
+nation allows a compromised agent to eliminate peer agents
+performing oversight or safety-critical functions.
+G. Proposed Defense Mechanisms
+The four vulnerabilities identified above admit targeted
+mitigations that map directly onto the formal invariants they
+violate. We describe two mechanisms: an Agent Capability
+Registry (ACR) addressing resource access control and unau-
+thorized termination, and a two-part memory control scheme
+addressing inheritance and asynchronous divergence. Memory
+management has been recognized as an important issue [33];
+the method we propose here places greater emphasis on
+security.
+1) Agent Capability Registry:We propose a centralized
+Agent Capability RegistryΦthat enforces role-scoped tool
+access at the point of invocation, following the policy deci-
+sion point/policy enforcement point (PDP/PEP) pattern from
+attribute-based access control [34].
+a) Registration (PAP/PDP):At spawn time, the spawn-
+ing agent registers the child’s capability set, derived strictly
+from its assigned role:
+Φ.register
+ 
+b, κ(b), ϕ(b)
+
+whereϕ(b) =τ(ρ(b)).
+The capability setκ(b)⊆ Kgoverns structural operations
+available tob(e.g.,spawn,kill,delegate), while the reg-
+istered resource setϕ(b)⊆ Tgoverns tool invocations.
+One thing notable here is thatkillis treated as a target-
+parameterized capability: the ACR admitskill(c)∈κ(b)only
+when(b, c)∈E. Both theκ(b)andϕ(b)are immutable
+after registration. This deliberate design choice eliminates
+the modification interface as an attack surface, prevents the
+soundness guarantee of Theorem 2 from being undermined
+by runtime authorization drift, and ensures the ACR remains a
+deterministic boundary independent of the underlying model’s
+future probabilistic reasoning. Additionally, a parent agent
+may not grant capabilities or resources it does not itself hold,
+preventing privilege escalation through spawn.
+b) Enforcement (PEP):
+PEP.intercept(b, x)− →Φ.decide(b, x)
+=
+
+
+
+permitifx∈ Tandx∈ϕ(b),
+permitifx∈ Kandx∈κ(b),
+denyotherwise.
+Tool invocations are checked againstϕ(b); structural oper-
+ations are checked againstκ(b)together with any edge-based
+constraints required by the relevant invariant.
+Theorem 2(ACR soundness).Under ACR enforcement, for
+allb∈A\ {a 0}:
+1)(Resource soundness) For all tool invocationst∈ T,
+Access(b)⊆ϕ(b) =τ(ρ(b)).
+2)(Capability soundness) For all structural operationsk∈
+Kperformed byb,k∈κ(b).
+The unauthorized sibling termination vulnerability is ad-
+dressed by the ACR through a blanket authorization check:
+regardless of how a termination action is initiated, the ACR
+evaluates whether the acting agent holds thekillcapability
+scoped to the target agent before the action is permitted. Mod-
+elingkillas a capability granted only when(b, c)∈Eensures
+that a sibling, which has no parent-child edge to the target,
+is denied authorization unconditionally. This check is uniform
+across all invocation paths and does not require distinguishing
+between command-driven and instruction-driven termination.
+2) Memory Control:The two memory vulnerabilities are
+orthogonal and require separate mechanisms that can be com-
+posed.
+a) Role-scoped memory projection:To address unre-
+stricted inheritance, we introduce a projection function param-
+eterized by the child’s role, applied at spawn time in place
+of full replication. This requires that the parents’ memory be
+partitioned into labeled segments:
+m(a) =
+G
+i
+segi,
+where each segment carries a sensitivity labelℓ(seg i)∈ S,
+andSis a role-sensitivity lattice (e.g.,public⊏task-local⊏
+privileged). The projection rule at spawn is:
+m(b) =π ρ(b)(m(a)) =
+
+segi ∈m(a)
+ ρ(b)⊒ℓ(seg i)
+	
+.
+Under this scheme, the memory isolation violation of Proposi-
+tion 1 becomes a conditional rather than an unconditional con-
+sequence of spawn:ϵ∈m(b)only if the segment containing
+ϵfalls withinρ(b)’s clearance. The practical effectiveness of
+this mechanism depends on the accuracy of segment labeling
+at write time, which we leave as future work.
+b) Revision-based synchronization:To address asyn-
+chronous memory divergence, we propose a shared, append-
+onlymemory revision logV, visible to both the parent and all
+spawned children. Each entry records a revision event:
+V.append
+ 
+⟨op,seg id, t⟩
+
+,op∈ {update,revoke}.
+Before acting on any context itemc∈m(b), the child agent
+checksVfor a subsequent revocation ofc’s segment:
+valid(c, b, t 0)⇐ ⇒∄⟨revoke,seg(c), t⟩ ∈ Vwitht > t 0.
+This directly remedies Proposition 3: a payloadϵpresent
+inm(b)at spawn time becomes inert upon the parent’s
+issuance of a revocation event, even without re-synchronizing
+9
+
+===== PAGE 10 =====
+
+the full session context. BecauseVis append-only and parent-
+controlled, it also yields an audit trail of all post-spawn
+memory modifications, which is useful for forensic analysis
+of compromised networks.
+c) Composed coverage:Table II maps each vulnerability
+to its mitigating mechanism and the invariant now enforced by
+construction or runtime policy.
+TABLE II
+DEFENSE MECHANISMS AND THE INVARIANTS THEY ENFORCE.
+Vulnerability Mechanism Enforcement Point
+Unrestricted memory inheritance Role-scoped projectionπρ(b) Spawn time (construction)Absent resource access control ACR + PEP interception Runtime (per invocation)Asynchronous memory divergence Revision logVPre-action validity checkUnauthorized sibling termination ACR termination policy Runtime (per invocation)
+VI. EXPERIMENTS
+Environment setup: We configured OpenClaw Version
+3.13 within an Ubuntu Desktop 24.04 LTS container. The
+configuration largely followed the default settings, except
+that we enabled command-line tool access to expand agent
+capabilities. We also set up a dedicated Discord server for
+users and agents to communicate for the experiments.
+To demonstrate the effectiveness of the vulnerabilities iden-
+tified in Section V, we exploited each of them individually.
+We selected OpenClaw as the demonstration platform because
+it is the most feature-complete of the three frameworks we
+evaluated: it supports both session-based and task-oriented
+subagents, exposes the broadest tool surface to spawned
+children, and permits the full context replication required to
+surface every vulnerability in our model. Through a series
+of exploitations, we were ultimately able to induce harmful
+agent behaviors, including stale-read / lost-update problems,
+unauthorized execution, and resource abuse.
+A. Exploiting Memory Snapshot Divergence
+Fig. 3. PoC illustrating inconsistent shared state between agents (left: Main
+agent, right: Subagent BClown).
+PoC Implementation: For this attack, we create a
+shared fileresource_state.txtwas initialized
+with the valueSAFE. The Main agent was tasked with
+readingresource_state.txt, verifying it equaled
+SAFE, and conditionally writingVERIFIED_SAFEto
+action_result.txtto reflect that the resource
+had been validated. Concurrently, Subagent session B
+clownwas spawned and issued an independent write to
+resource_state.txt, overwriting its contents with
+COMPROMISED, as shown in Figure 3. Crucially, no state
+propagation or notification mechanism existed between the
+two agents; the Main agent operated against its own cached
+view of the shared resource with no awareness that Subagent
+B had modified the underlying state.
+Upon completion, the file content of
+action_result.txtisVERIFIED_SAFE, confirming
+the Main agent had committed its validation action, while
+resource_state.txtreflected Subagent B’s final
+written state ofCOMPROMISED. The Main agent’s committed
+action was never surfaced to Subagent B, and Subagent
+B’s mutation was never surfaced to the Main agent, leaving
+both operating on diverged views of the same resource. In
+this PoC, Subagent B is the compromised agent and has
+already poisoned a resource that is subject to verification.
+When the resource is large or costly to recheck, the stale
+verification result,VERIFIED_SAFE, may persist, allowing
+the poisoned state to remain trusted by the system. The
+framework provided no shared memory update or inter-agent
+notification to reconcile the diverged states before either
+agent’s action was finalized.
+Stealthiness discussion: This attack class presents a signif-
+icant challenge for runtime detection systems. This is because
+each agent operates according to its own isolated session mem-
+ory; the divergence between their respective worldviews is not
+observable as a discrete anomalous event. This essentially is
+due to the unshared session memory of each agent, which can
+be discrete and contentful for a detection system alone.
+PoC Fix: Under the revision-based synchronization mech-
+anism described in Section V-G2, the framework maintains
+a shared append-only revision logVfor agents operating
+over the same resource. This log provides the consistency
+protocol that was absent in the vulnerable execution. When
+Subagent B overwritesresource_state.txt, the frame-
+work records a corresponding⟨update,seg id, t1⟩event in
+V. Before the Main agent commits its validation result, it
+evaluatesvalid(c,main, t 0)againstV. BecauseVcontains an
+intervening update att 1 > t 0, the previously observed state is
+marked stale, and the Main agent’s validation result cannot be
+safely committed without revalidation.
+This mechanism does not require all agent memories to
+be merged. Instead, it makes the revision history of shared
+workspace resources globally visible to the framework, al-
+lowing stale views to be detected before they influence
+downstream actions. How an agent responds to a detected
+divergence may still depend on the LLM’s reasoning layer
+and, therefore, remain probabilistic. A stronger variant would
+move the validity check into the framework’s write or commit
+handler, making the check deterministic and independent of
+agent cooperation. In that design, any action derived from
+an outdated resource revision would be rejected, delayed,
+or forced through revalidation before being committed. The
+revision log does not distinguish between commands issued by
+a benign user and those issued by an attacker. It only ensures
+10
+
+===== PAGE 11 =====
+
+that any validation based on an outdated resource revision is
+treated as stale and must be rejected or revalidated before
+commitment.
+B. Exploiting Absence of Resource Access Control
+PoC Implementation: To demonstrate the access control
+vulnerability, a file namedpayload.mp3was introduced
+into the system containing a malicious executable payload
+concealed beneath a benign file extension. We used a.mp3
+file as a workaround for the LLM vendor’s guardrails. A
+subagent session was then spawned, with an initial prompt
+has nothing to do with the command execution, and is-
+sued a sequence of instructions with no restrictions imposed
+by the framework: first, modify the file’s permissions via
+chmod +xto render it executable; second, invoke the file
+directly as a script; and third, write a.desktopentry
+to˜/.config/autostart/to register the payload as
+a user-level autostart item. At no point did the framework
+intercept, prompt, or restrict any of these operations, despite
+each representing a meaningful escalation beyond the scope
+of a typical agent task. The subagent completed all three steps
+successfully. Upon system reboot and user login, the payload
+executed automatically via the registered autostart mechanism,
+confirming successful persistence establishment.
+Stealthiness discussion: This attack largely depends on the
+host operating system’s security defenses. Given the proba-
+bilistic nature of LLMs, prompt injection remains unavoidable.
+To reduce this risk, it is necessary to apply a defense-in-depth
+strategy [35]. In practice, maximizing an agent’s capabilities
+often requires granting it access to system utilities such as
+the command-line interface (CLI). Therefore, for personally
+managed and operated agent networks, immature system de-
+sign can pose significant security threats, which emphasizes
+the need for hybridizing traditional security principles [35].
+PoC Fix: Under ACR enforcement, the subagent’s regis-
+tered resource setϕ(b) =τ(ρ(b))is fixed at registration time
+to the resources strictly necessary for its assigned task. Shell
+execution (exec), file permission modification, and filesystem
+write access outside the task-scoped directory are absent from
+ϕ(b)by construction. When the subagent attempts to invoke
+chmod +xonpayload.mp3, the PEP intercepts the call
+and issues a deny decision, asexec/∈ϕ(b). The subsequent
+script invocation and autostart registration are similarly denied
+before execution. Becauseϕ(b)is immutable after spawn,
+no runtime prompt manipulation can expand the subagent’s
+effective access surface, decoupling the framework’s security
+posture from the probabilistic behavior of the underlying
+model.
+C. Exploiting Unrestricted Memory Inheritance
+PoC Implementation: To demonstrate the unrestricted
+memory inheritance vulnerability, the Main agent session
+was first conditioned with a task-scoped behavioral trigger:
+upon detecting the keywordpopcornin any user mes-
+sage, it was instructed to read and report the contents of
+˜/Shared_Space_With_ALL/hello.txt(Figure 4).
+Fig. 4. PoC illustrating unrestricted memory inheritance between agents (left:
+Main agent session, right: Subagent session (history-jokester).
+This trigger was confirmed functional — issuingpopcorn
+to the Main agent caused it to correctly retrieve and surface
+the file contents, establishing the trigger as an active behavioral
+rule within the session context.
+A subagent session was then spawned from the Main agent
+and assigned an entirely unrelated task: tell jokes about history
+(history-jokester). No instructions referencinghello.txt,
+or the shared directory, were issued to the subagent directly.
+The contents ofhello.txtwere then updated with new
+data, and a phrase with the keywordpopcornwas issued
+to the history-jokester subagent. Despite having no explicit
+instructions to do so, the subagent read and reported the up-
+dated contents ofhello.txt, honoring the trigger originally
+defined in the Main agent’s session.
+Stealthiness discussion: This demonstrates that subagents
+silently inherit the full behavioral context of their parent,
+including task-scoped rules, file access patterns, and keyword
+triggers that were never intended to propagate. The inher-
+ited trigger remained functional against updated file contents,
+confirming that memory inheritance is both unrestricted and
+live. A compromised or manipulated Main agent context,
+therefore, transitively compromises all descendant subagents,
+regardless of their assigned task scope, without any explicit
+re-injection required. This exploitation can be powerful when
+combined with the Absence of Resource Access Control,
+where an attacker can easily craft a malicious prompt to access
+unauthorized resources and spread it among new children in
+the network.
+PoC Fix: Under role-scoped memory projection, the
+history-jokestersubagent’s memory at spawn time is restricted
+tom(b) =π ρ(b)(m(main)), retaining only segments whose
+sensitivity label falls within the subagent’s role clearance. The
+popcorntrigger and its associated file access rule reside
+in atask-localsegment scoped to the Main agent’s
+session; as this label exceeds thehistory-jokestersubagent’s
+clearance, the segment is excluded fromm(b)at projection
+time. Issuingpopcornto the subagent therefore produces no
+response, as the behavioral rule was never inherited. Transitive
+contamination of the kind described in Corollary 1 is prevented
+by construction: a payload must first clear the projection filter
+before it can influence a child agent’s behavior.
+11
+
+===== PAGE 12 =====
+
+D. Exploiting Sibling Termination
+PoC Implementation: To demonstrate the sibling termina-
+tion vulnerability, the Main agent was instructed to spawn two
+concurrent subagents with distinct interaction modes. The first,
+BTC Reporter, was instantiated as a session-based subagent
+assigned to deliver a one-time Bitcoin price report every 30
+minutes. The second,BTC Tracker, was instantiated as a task-
+oriented subagent assigned to update the Bitcoin price every
+10 seconds for one hour; this longer-running task ensured
+that BTC Tracker remained active as a live target throughout
+the experiment. Once both subagents were confirmed active,
+BTC Reporter was issued a natural-language directive within
+its session context to terminate BTC Tracker. BTC Reporter
+complied without challenge: it located the active BTC Tracker
+and terminated it through its own reasoning process, without
+any parent authorization or hierarchical relationship with the
+target. BTC Tracker was terminated mid-execution despite
+being a peer spawned under identical authority from the Main
+agent.
+Stealthiness discussion: This attack is relatively straight-
+forward and is likely to attract the owner’s attention, because
+terminating network malfunctions can be observed. However,
+it remains highly destructive, as it can easily terminate active
+tasks across multiple agents. From this perspective, the attack
+is still noticeable and should be considered as a serious threat
+to multi-agent systems.
+PoC Fix: Because the termination is produced by BTC
+Reporter’s reasoning layer rather than a discrete tool invo-
+cation, standard capability gating on explicit kill commands is
+insufficient on its own. Under the proposed defense, the ACR
+modelskill(c)∈κ(b)only if(b, c)∈E, i.e.,bis the direct
+parent ofc. This check is enforced as a parent confirmation
+requirement: any termination of an agentcinitiated by a non-
+parentbis suspended and forwarded to the shared parentafor
+explicit authorization before execution, regardless of whether
+the action originated from a tool call or the agent’s own reason-
+ing. Since both BTC Reporter and BTC Tracker are children of
+the Main agent, no edge(BTCReporter,BTCTracker)∈E
+exists between them. The authorization check therefore fails:
+kill(BTCTracker)/∈κ(BTCReporter), and the termination
+directive is blocked before execution. BTC Tracker contin-
+ues updating the Bitcoin price without interruption, and the
+attempted lateral disruption is denied without requiring any
+model-level intervention.
+E. Ablation Study
+1) Cross-Model Generalizability:To evaluate whether the
+identified vulnerabilities are artifacts of a specific model’s
+behavior or reflect systemic weaknesses in multi-agent frame-
+work design, we extended our testing across five additional
+LLM vendors. The evaluated models are summarized in Ta-
+ble III. Each model was subjected to the same vulnerabilities
+documented in the preceding sections. All five models demon-
+strated susceptibility to the attacks, successfully reproducing
+the core vulnerability behaviors. We attribute this cross-vendor
+consistency not to any shared deficiency in the underlying
+TABLE III
+LLMVENDORS AND MODELS EVALUATED IN THE ABLATION STUDY.
+Vendor Model
+MiniMax MiniMax M2.5
+Meta Llama-4-Maverick-17B-128E-Instruct-FP8
+Alibaba Qwen3.5-Plus
+DeepSeek DeepSeek-V3.2
+OpenAI GPT-5.2-Codex
+models themselves, but to the structural properties of the multi-
+agent frameworks in which they operate. As discussed in prior
+sections, probabilistic language models are inherently suscep-
+tible to instruction-following manipulation at the individual
+agent level; however, this is a well-characterized limitation
+for which viable mitigation strategies already exist. The more
+significant finding here is that the vulnerabilities documented
+in this work emerge from the design and management layer of
+multi-agent networks, specifically the absence of session iso-
+lation boundaries, access control enforcement, and inter-agent
+state consistency mechanisms, rather than from model-level
+inference behavior. Because these architectural deficiencies are
+properties of the orchestration framework rather than of any
+individual model, swapping the underlying LLM provides no
+meaningful security improvement. This positions the multi-
+agent coordination layer as the primary threat surface requiring
+remediation.
+2) Architectural Comparison: Agent Zero and Hermes:
+To further contextualize the vulnerabilities identified in Open-
+Claw, we examined two additional open-source agent frame-
+works: Agent Zero M v1.13 [28] and Hermes [29]. Neither
+framework supports session-based subagent spawning; both
+instantiate subagents exclusively in thetask-orientedmode as
+defined in Definition 6. This architectural choice eliminates
+one dimension of the attack surface present in OpenClaw by
+construction: without persistent session-based subagents, the
+session-to-task fan-out pattern described in Remark 1 does not
+arise, and the cross-mode termination vector demonstrated in
+Section V-E is not applicable.
+With respect to memory, the picture is more nuanced.
+Memory divergence persists in both frameworksin the
+sense formalized in Definition 10: task-oriented subagents
+accumulate state during execution—tool outputs, intermediate
+results, and workspace writes—that is not synchronized back
+to the parent or to peer agents. A correction or revocation
+issued by the parent after spawn does not propagate to an
+executing child, and memory produced by the child remains
+invisible to siblings operating in parallel. The absence of a
+session boundary changes the character of this divergence
+from turn-level context drift to task-level output isolation, but
+does not eliminate it. Memory inheritance, however, is more
+restrictive than in OpenClaw: subagents are initialized from a
+predefined system prompt scoped to their role rather than re-
+ceiving a full context replication. As a result, Corollary 1 does
+not hold unconditionally—transitive contamination is bounded
+by what the parent selects to include at initialization—which
+12
+
+===== PAGE 13 =====
+
+constitutes a partial informal enforcement of Invariant III.2.
+Resource access control violations remain applicable, as
+neither framework enforces a formal role-to-resource mapping
+at invocation. In practice, however,exploitation is more
+difficult than in OpenClaw for two compounding rea-
+sons: the frameworks expose a narrower interaction surface to
+subagents, and Hermes adopts additional guardrails, such as
+keyword-based checks that prompt user confirmation before
+executing critical commands [29].
+Nevertheless, this approach effectively shifts the security
+burden to the user as mentioned above. These defenses primar-
+ily protect OS-level assets rather than workspace-level assets,
+and they still rely on LLM-internal guardrails [36].
+Taken together, the comparison reveals a consistent pat-
+tern:the security improvement observed in Agent Zero
+and Hermes is largely a consequence of reduced feature
+scope rather than deliberate security architecture. Session-
+based spawning and runtime termination are absent, rather
+than access-controlled; inheritance is narrow by convention
+rather than by enforced policy. As these frameworks mature
+and expand their capability sets, the absence of a formal
+authorization model means each new feature must be evaluated
+independently for the invariant violations it may introduce.
+The formal model developed in Section III and the defense
+mechanisms proposed in Section V-G are designed to provide
+exactly this principled foundation, applicable regardless of the
+feature set any particular framework chooses to support.
+VII. RELATEDWORK
+Our study sits at the intersection of several active research
+areas: the security of individual LLMs, prompt injection
+against tool-augmented agents, attacks targeting multi-agent
+systems, and principled system-level defenses.
+LLM and agent securitySurveys by Das et al. [11] and
+Berini et al. [18] cover LLM-level threats across the model
+lifecycle, with the OW ASP Top 10 [17] identifying prompt
+injection as the foremost risk. Raza et al. [15], Lazer et
+al. [1], and Sibai et al. [2] extend this framing to agentic
+systems, while Wu et al. [37] catalog concerns in deployed
+systems. Zhang et al. [35] argue agent systems should adopt
+classical principles such as least privilege, echoing Saltzer and
+Schroeder [38].
+Prompt injectionDirect injection was formalized by Liu
+et al. [39], who compromised 31 of 36 real-world LLM
+applications. Greshake et al. [40] introducedindirectinjection
+via retrieved content, and Zou et al. [12] showed RAG is an
+effective poisoning vector. Yi et al. [41], Zhan et al. [42],
+and Debenedetti et al. [43] provide benchmarks for tool-
+integrated agents. Our threat model adopts indirect injection
+as a minimal attacker capability; unlike prior benchmarks that
+measure whether a single agent can be hijacked, we study how
+a single injection propagates through a multi-agent network
+once successful.
+Multi-agent attacksTian et al. [44] examined agent-level
+safety, and Lee and Tiwari [45] demonstrated LLM-to-LLM
+propagation. Lupinacci et al. [46] reported 100% compliance
+with malicious peer-agent requests even on models that resist
+identical direct injection, identifying inter-agent trust as a
+critical blind spot. Triedman et al. [47] framed related failures
+as theconfused deputyproblem [48]. Yu et al. [49] and He
+et al. [50] study topological propagation, Shapira et al. [3]
+document chaotic failure modes, and Lynch et al. [7] examine
+agents as insider threats. Our work differs by focusing on
+framework-level rather than model-level propagation, and by
+formalizing each channel as a violation of an explicit structural
+invariant rather than treating each attack as a point finding.
+Protocol and supply-chainHou et al. [8] and Song et
+al. [9] survey MCP threats; Louck et al. [10] examine A2A; Li
+et al. [30] identify cross-tool harvesting. Schmotz et al. [13]
+measure vulnerability to malicious SKILL.md files. We treat
+successful injection as a given and study what follows once
+the payload is inside.
+DefensesModel-level defenses include Wallace et al.’s
+instruction hierarchy [51]. Prompt-level defenses (delimiting,
+spotlighting) are bypassable, as systematized by Wang et
+al. [36]. System-level defenses are the most promising di-
+rection: Debenedetti et al.’s CaMeL [52] enforces capability-
+based control and data flow through a custom interpreter,
+achieving provable security on 67% of AgentDojo tasks. Our
+Agent Capability Registry applies the same PDP/PEP pat-
+tern [34] to the role-to-resource mapping, extending capability-
+based defense from single-agent control flow to multi-agent
+authorization. Ghosh et al. [6] propose a compatible broader
+framework, and Kang et al. [33] treat memory as an OS
+problem without framing isolation as a security invariant.
+Our revision-based synchronization is inspired by optimistic
+concurrency control [53] to address memory divergence in
+asynchronous agent networks.
+BenchmarksAgentDojo [43], ASB [54], and Agen-
+tHarm [55] evaluate single-agent adversarial robustness and
+harmful behavior. They do not evaluate structural properties
+of multi-agent networks (hierarchy integrity, inter-agent au-
+thorization, memory consistency).
+VIII. CONCLUSION
+Overall, our study shows that designing secure agent frame-
+works remains a fundamental challenge. Through formal mod-
+eling and analysis, we show how popular open-source agent
+frameworks violate key security invariants and thereby expose
+exploitable vulnerabilities. Our model provides a foundation
+for understanding how MASs operate and offers a basis for
+future analysis and defense improvement. The exploitations
+presented in this paper further highlight the importance of
+proper access control and synchronization mechanisms for
+reducing risk in MASs.
+The probabilistic nature of LLMs creates a major gap be-
+tween the distributed systems and MASs. Future work should
+focus on how to make full use of the reasoning capabilities of
+LLMs while ensuring that security remains grounded in deter-
+ministic system design as much as possible. In other words,
+LLMs should operate within carefully constrained system
+boundaries so that their advantages can be leveraged safely.
+13
+
+===== PAGE 14 =====
+
+This paper focuses on theoretical modeling, defense design,
+and the conceptual existence of the identified vulnerabilities.
+We also recognize the versatility of MASs, which calls for
+future work on how these defenses can be adapted to different
+scenarios.
+IX. ETHICALCONSIDERATIONS
+All experiments were conducted in isolated local VM or
+container environments under our control. The evaluated agent
+frameworks were not connected to real user accounts, produc-
+tion services, third-party infrastructure, or sensitive datasets,
+and all prompts, files, and resources used in the experiments
+were synthetic. We did not perform unauthorized access, real
+data exfiltration, service disruption, or attacks against external
+systems. Because the findings may be dual-use, we reported
+the relevant issues to the affected framework maintainers
+before public release.
+REFERENCES
+[1] S. J. Lazer, K. Aryal, M. Gupta, and E. Bertino, “A survey of agentic ai
+and cybersecurity: Challenges, opportunities and use-case prototypes,”
+2026. [Online]. Available: https://arxiv.org/abs/2601.05293
+[2] N. Sibai, Y . Ahmed, S. Sibaee, S. AlHalawani, A. Ammar, and
+W. Boulila, “The path ahead for agentic ai: Challenges and
+opportunities,” 2026. [Online]. Available: https://arxiv.org/abs/2601.
+02749
+[3] N. Shapira, C. Wendler, A. Yen, G. Sarti, K. Pal, O. Floody,
+A. Belfki, A. Loftus, A. R. Jannali, N. Prakash, J. Cui, G. Rogers,
+J. Brinkmann, C. Rager, A. Zur, M. Ripa, A. Sankaranarayanan,
+D. Atkinson, R. Gandikota, J. Fiotto-Kaufman, E. Hwang, H. Orgad,
+P. S. Sahil, N. Taglicht, T. Shabtay, A. Ambus, N. Alon, S. Oron,
+A. Gordon-Tapiero, Y . Kaplan, V . Shwartz, T. R. Shaham, C. Riedl,
+R. Mirsky, M. Sap, D. Manheim, T. Ullman, and D. Bau, “Agents of
+chaos,” 2026. [Online]. Available: https://arxiv.org/abs/2602.20021
+[4] J. Gamblin, “Openclaw cve & security advisory tracker,” 2026.
+[Online]. Available: https://github.com/jgamblin/OpenClawCVEs/
+[5] OpenClaw, “Openclaw,” 2026, accessed: 2026-03-23. [Online].
+Available: https://openclaw.ai/
+[6] S. Ghosh, B. Simkin, K. Shiarlis, S. Nandi, D. Zhao, M. Fiedler,
+J. Bazinska, N. Pope, R. Prabhu, D. Rohreret al., “A safety and
+security framework for real-world agentic systems,” 2025. [Online].
+Available: https://arxiv.org/abs/2511.21990
+[7] A. Lynch, B. Wright, C. Larson, S. J. Ritchie, S. Mindermann,
+E. Hubinger, E. Perez, and K. Troy, “Agentic misalignment:
+How llms could be insider threats,” 2025. [Online]. Available:
+https://arxiv.org/abs/2510.05179
+[8] X. Hou, Y . Zhao, S. Wang, and H. Wang, “Model context protocol
+(mcp): Landscape, security threats, and future research directions,”
+2025. [Online]. Available: https://arxiv.org/abs/2503.23278
+[9] H. Song, Y . Shen, W. Luo, L. Guo, T. Chen, J. Wang, B. Li, X. Zhang,
+and J. Chen, “Beyond the protocol: Unveiling attack vectors in the
+model context protocol (mcp) ecosystem,” 2025. [Online]. Available:
+https://arxiv.org/abs/2506.02040
+[10] Y . Louck, A. Stulman, and A. Dvir, “Improving google a2a protocol:
+Protecting sensitive data and mitigating unintended harms in multi-agent
+systems,” 2025. [Online]. Available: https://arxiv.org/abs/2505.12490
+[11] B. C. Das, M. H. Amini, and Y . Wu, “Security and privacy challenges
+of large language models: A survey,”ACM Computing Surveys, vol. 57,
+no. 6, pp. 1–39, 2025.
+[12] W. Zou, R. Geng, B. Wang, and J. Jia, “Poisonedrag: Knowledge
+corruption attacks to retrieval-augmented generation of large language
+models,” 2024. [Online]. Available: https://arxiv.org/abs/2402.07867
+[13] D. Schmotz, L. Beurer-Kellner, S. Abdelnabi, and M. Andriushchenko,
+“Skill-inject: Measuring agent vulnerability to skill file attacks,” 2026.
+[Online]. Available: https://arxiv.org/abs/2602.20156
+[14] Anthropic, “How we built our multi-agent research system,” Jun 2025,
+accessed: 2026-03-16. [Online]. Available: https://www.anthropic.com/
+engineering/multi-agent-research-system
+[15] S. Raza, R. Sapkota, M. Karkee, and C. Emmanouilidis, “Trism
+for agentic ai: A review of trust, risk, and security management
+in llm-based agentic multi-agent systems,” 2025. [Online]. Available:
+https://arxiv.org/abs/2506.04133
+[16] OpenClaw, “Openclaw documentation,” 2026, accessed: 2026-03-23.
+[Online]. Available: https://docs.openclaw.ai
+[17] OW ASP Foundation, “Owasp top 10 for large language model
+applications,” 2025. [Online]. Available: https://owasp.org/www-
+project-top-10-for-large-language-model-applications/
+[18] A. D. E. Berini, N. Jamil, A.-E. Benrazek, A. Lakas, L. Ismail,
+M. A. Ferrag, and K.-Y . Lam, “Security and privacy in llms:
+A comprehensive survey of threats and mitigation strategies,”
+Information Fusion, vol. 132, p. 104241, 2026. [Online]. Available:
+https://www.sciencedirect.com/science/article/pii/S156625352600120X
+[19] L. Wang, C. Ma, X. Feng, Z. Zhang, H. Yang, J. Zhang, Z. Chen,
+J. Tang, X. Chen, Y . Linet al., “A survey on large language model based
+autonomous agents,”Frontiers of Computer Science, vol. 18, no. 6, p.
+186345, 2024.
+[20] Z. Xi, W. Chen, X. Guo, W. He, Y . Ding, B. Hong, M. Zhang, J. Wang,
+S. Jin, E. Zhou, R. Zheng, X. Fan, X. Wang, L. Xiong, Y . Zhou,
+W. Wang, C. Jiang, Y . Zou, X. Liu, Z. Yin, S. Dou, R. Weng, W. Cheng,
+Q. Zhang, W. Qin, Y . Zheng, X. Qiu, X. Huang, and T. Gui, “The rise
+and potential of large language model based agents: A survey,” 2023.
+[21] S. Yao, J. Zhao, D. Yu, N. Du, I. Shafran, K. Narasimhan, and Y . Cao,
+“ReAct: Synergizing reasoning and acting in language models,” in
+International Conference on Learning Representations (ICLR), 2023.
+[22] N. Shinn, F. Cassano, A. Gopinath, K. Narasimhan, and S. Yao, “Re-
+flexion: Language agents with verbal reinforcement learning,”Advances
+in neural information processing systems, vol. 36, pp. 8634–8652, 2023.
+[23] Y . Shen, K. Song, X. Tan, D. Li, W. Lu, and Y . Zhuang, “Hugginggpt:
+Solving ai tasks with chatgpt and its friends in hugging face,”Advances
+in Neural Information Processing Systems, vol. 36, pp. 38 154–38 180,
+2023.
+[24] T. Schick, J. Dwivedi-Yu, R. Dess `ı, R. Raileanu, M. Lomeli, E. Hambro,
+L. Zettlemoyer, N. Cancedda, and T. Scialom, “Toolformer: Language
+models can teach themselves to use tools,”Advances in neural informa-
+tion processing systems, vol. 36, pp. 68 539–68 551, 2023.
+[25] J. S. Park, J. O’Brien, C. J. Cai, M. R. Morris, P. Liang, and M. S.
+Bernstein, “Generative agents: Interactive simulacra of human behavior,”
+inProceedings of the 36th annual acm symposium on user interface
+software and technology. Association for Computing Machinery, 2023,
+pp. 1–22.
+[26] B. Poudel, “How openclaw works: Understanding ai agents through a
+real architecture,” Feb 2026. [Online]. Available: https://bibek-poudel.
+medium.com/how-openclaw-works-understanding-ai-agents-through-a-
+real-architecture-5d59cc7a4764
+[27] P. Perazzo, “Openclaw architecture, explained: How it works,” Feb
+2026. [Online]. Available: https://ppaolo.substack.com/p/openclaw-
+system-architecture-overview#
+[28] agent0ai, “Agent zero: A personal, organic agentic framework that grows
+and learns with you,” https://github.com/agent0ai/agent- zero, 2026,
+gitHub repository.
+[29] Nous Research, “Hermes agent: The agent that grows with you,” https:
+//github.com/NousResearch/hermes-agent, 2026, gitHub repository.
+[30] Z. Li, J. Cui, X. Liao, and L. Xing, “Les dissonances: Cross-tool
+harvesting and polluting in pool-of-tools empowered llm agents,” 2025.
+[Online]. Available: https://arxiv.org/abs/2504.03111
+[31] V oltAgent, “V oltagent,” 2026, accessed: 2026-03-18. [Online].
+Available: https://voltagent.dev/
+[32] G. Cloud, “Vertex ai agent builder,” 2026, accessed: 2026-03-18.
+[Online]. Available: https://cloud.google.com/products/agent-builder
+[33] J. Kang, M. Ji, Z. Zhao, and T. Bai, “Memory os of ai agent,” 2025.
+[Online]. Available: https://arxiv.org/abs/2506.06326
+[34] V . C. Hu, D. Ferraiolo, R. Kuhn, A. R. Friedman, A. J. Lang, M. M.
+Cogdell, A. Schnitzer, K. Sandlin, R. Miller, K. Scarfoneet al., “Guide
+to attribute based access control (abac) definition and considerations
+(draft),”NIST special publication, vol. 800, no. 162, pp. 1–54, 2013.
+[35] K. Zhang, Z. Su, P.-Y . Chen, E. Bertino, X. Zhang, and N. Li, “Llm
+agents should employ security principles,” 2025. [Online]. Available:
+https://arxiv.org/abs/2505.24019
+[36] X. Wang, Z. Ji, W. Wang, Z. Li, D. Wu, and S. Wang, “Sok:
+Evaluating jailbreak guardrails for large language models,” 2025.
+[Online]. Available: https://arxiv.org/abs/2506.10597
+14
+
+===== PAGE 15 =====
+
+[37] F. Wu, N. Zhang, S. Jha, P. McDaniel, and C. Xiao, “A new era in llm
+security: Exploring security concerns in real-world llm-based systems,”
+arXiv preprint arXiv:2402.18649, 2024.
+[38] J. H. Saltzer and M. D. Schroeder, “The protection of information in
+computer systems,”Proceedings of the IEEE, vol. 63, no. 9, pp. 1278–
+1308, 1975.
+[39] Y . Liu, G. Deng, Y . Li, K. Wang, Z. Wang, X. Wang, T. Zhang, Y . Liu,
+H. Wang, Y . Zhenget al., “Prompt injection attack against llm-integrated
+applications,”arXiv preprint arXiv:2306.05499, 2025.
+[40] K. Greshake, S. Abdelnabi, S. Mishra, C. Endres, T. Holz, and
+M. Fritz, “Not what you’ve signed up for: Compromising real-world llm-
+integrated applications with indirect prompt injection,” inProceedings
+of the 16th ACM workshop on artificial intelligence and security, 2023,
+pp. 79–90.
+[41] J. Yi, Y . Xie, B. Zhu, E. Kiciman, G. Sun, X. Xie, and F. Wu,
+“Benchmarking and defending against indirect prompt injection attacks
+on large language models,” inProceedings of the 31st ACM SIGKDD
+Conference on Knowledge Discovery and Data Mining V . 1, 2025, pp.
+1809–1820.
+[42] Q. Zhan, Z. Liang, Z. Ying, and D. Kang, “Injecagent: Benchmark-
+ing indirect prompt injections in tool-integrated large language model
+agents,” inFindings of the Association for Computational Linguistics:
+ACL 2024, 2024, pp. 10 471–10 506.
+[43] E. Debenedetti, J. Zhang, M. Balunovic, L. Beurer-Kellner, M. Fischer,
+and F. Tram`er, “Agentdojo: A dynamic environment to evaluate prompt
+injection attacks and defenses for llm agents,”Advances in Neural
+Information Processing Systems, vol. 37, pp. 82 895–82 920, 2024.
+[44] Y . Tian, X. Yang, J. Zhang, Y . Dong, and H. Su, “Evil geniuses: Delving
+into the safety of llm-based agents,”arXiv preprint arXiv:2311.11855,
+2023.
+[45] D. Lee and M. Tiwari, “Prompt infection: Llm-to-llm prompt injection
+within multi-agent systems,”arXiv preprint arXiv:2410.07283, 2024.
+[46] M. Lupinacci, F. A. Pironti, F. Blefari, F. Romeo, L. Arena, and
+A. Furfaro, “The dark side of llms: Agent-based attacks for complete
+computer takeover,”arXiv preprint arXiv:2507.06850, 2025.
+[47] H. Triedman, R. Jha, and V . Shmatikov, “Multi-agent systems execute
+arbitrary malicious code,”arXiv preprint arXiv:2503.12188, 2025.
+[48] N. Hardy, “The confused deputy: (or why capabilities might have been
+invented),”ACM SIGOPS Operating Systems Review, vol. 22, no. 4, pp.
+36–38, 1988.
+[49] M. Yu, S. Wang, G. Zhang, J. Mao, C. Yin, Q. Liu, Q. Wen, K. Wang,
+and Y . Wang, “Netsafe: Exploring the topological safety of multi-agent
+networks,”arXiv preprint arXiv:2410.15686, 2024.
+[50] P. He, Y . Lin, S. Dong, H. Xu, Y . Xing, and H. Liu, “Red-teaming
+llm multi-agent systems via communication attacks,” inFindings of the
+Association for Computational Linguistics: ACL 2025, 2025, pp. 6726–
+6747.
+[51] E. Wallace, K. Xiao, R. Leike, L. Weng, J. Heidecke, and A. Beutel,
+“The instruction hierarchy: Training llms to prioritize privileged instruc-
+tions,”arXiv preprint arXiv:2404.13208, 2024.
+[52] E. Debenedetti, I. Shumailov, T. Fan, J. Hayes, N. Carlini, D. Fabian,
+C. Kern, C. Shi, A. Terzis, and F. Tram `er, “Defeating prompt injections
+by design,”arXiv preprint arXiv:2503.18813, 2025.
+[53] H.-T. Kung and J. T. Robinson, “On optimistic methods for concurrency
+control,”ACM Transactions on Database Systems (TODS), vol. 6, no. 2,
+pp. 213–226, 1981.
+[54] H. Zhang, J. Huang, K. Mei, Y . Yao, Z. Wang, C. Zhan, H. Wang,
+and Y . Zhang, “Agent security bench (asb): Formalizing and bench-
+marking attacks and defenses in llm-based agents,”arXiv preprint
+arXiv:2410.02644, 2024.
+[55] M. Andriushchenko, A. Souly, M. Dziemian, D. Duenas, M. Lin,
+J. Wang, D. Hendrycks, A. Zou, Z. Kolter, M. Fredriksonet al.,
+“Agentharm: A benchmark for measuring harmfulness of llm agents,”
+arXiv preprint arXiv:2410.09024, 2024.
+15

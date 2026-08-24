@@ -1,0 +1,70 @@
+{
+  "finished_at": "2026-08-23T18:33:50Z",
+  "from": "2026-05-27",
+  "limitations": "Point-in-time stars are retained only as a snapshot. No growth or acceleration is inferred.",
+  "measurement_status": "complete",
+  "observation_count": 1,
+  "provider": "github-observe",
+  "record_type": "github-repository-observation-run",
+  "repo_observed": "microsoft/UFO",
+  "repo_requested": "microsoft/UFO",
+  "requests": [
+    {
+      "kind": "repository",
+      "observed_at": "2026-08-23T18:33:46Z",
+      "params": {},
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\microsoft--UFO\\github-observe-001-35c83e89f098fa0ae5ce1788e62f35a226ebc33017ea25955009239398be591b.raw",
+      "response_sha256": "35c83e89f098fa0ae5ce1788e62f35a226ebc33017ea25955009239398be591b",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:33:46Z",
+      "url": "https://api.github.com/repos/microsoft/UFO"
+    },
+    {
+      "kind": "latest-release",
+      "observed_at": "2026-08-23T18:33:47Z",
+      "params": {
+        "page": 1,
+        "per_page": 1
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\microsoft--UFO\\github-observe-002-e0d0490a46073e161fde14f5b43e3072a9279aa93561f44d2c278d439fb100f2.raw",
+      "response_sha256": "e0d0490a46073e161fde14f5b43e3072a9279aa93561f44d2c278d439fb100f2",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:33:47Z",
+      "url": "https://api.github.com/repos/microsoft/UFO/releases?per_page=1&page=1"
+    },
+    {
+      "kind": "default-branch-commit",
+      "observed_at": "2026-08-23T18:33:48Z",
+      "params": {},
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\microsoft--UFO\\github-observe-003-93d4ca7174a0796d5e3a36015b6c1f5f54e8cda3f4ea42f00ab3a87aa9e12237.raw",
+      "response_sha256": "93d4ca7174a0796d5e3a36015b6c1f5f54e8cda3f4ea42f00ab3a87aa9e12237",
+      "result_count": 1,
+      "retrieved_at": "2026-08-23T18:33:48Z",
+      "url": "https://api.github.com/repos/microsoft/UFO/commits/main"
+    },
+    {
+      "kind": "commits-in-window",
+      "observed_at": "2026-08-23T18:33:50Z",
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "sha": "main",
+        "since": "2026-05-27T00:00:00Z",
+        "until": "2026-08-24T23:59:59Z"
+      },
+      "provider": "github-observe",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-05\\observations\\raw\\microsoft--UFO\\github-observe-004-c49b4e8cb93b7f6a7a4a6045a867b8bb8c6eed0e572e3306b457195a8c33d816.raw",
+      "response_sha256": "c49b4e8cb93b7f6a7a4a6045a867b8bb8c6eed0e572e3306b457195a8c33d816",
+      "result_count": 24,
+      "retrieved_at": "2026-08-23T18:33:50Z",
+      "url": "https://api.github.com/repos/microsoft/UFO/commits?sha=main&since=2026-05-27T00%3A00%3A00Z&until=2026-08-24T23%3A59%3A59Z&per_page=100&page=1"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T18:33:46Z",
+  "to": "2026-08-24",
+  "window_id": "W_ROLLING_90D"
+}

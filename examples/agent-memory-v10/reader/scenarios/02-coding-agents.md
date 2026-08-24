@@ -51,6 +51,8 @@ Coding Agent 的跨会话 Memory 面对的是持续变化的软件项目。它�
 
 近一年的变化是项目状态越来越从“说明文件”转为可更新的结构索引、事件账本和受反馈约束的策略；近 90 天的新工程项目也更常通过 MCP 暴露检索与写入。但这是一种工程供给信号，不等于性能或生产采用已经收敛。
 
+2026-08-23 对 [`openai/codex`](https://github.com/openai/codex) 的固定版本检查补充了一种此前没有进入 v09 深潜的现役 Coding Agent 形状：它从近期 idle root threads 中做逐 rollout 抽取，再启动受限内部 Agent 把候选巩固为全局 `MEMORY.md`、prompt-resident `memory_summary.md` 和按需展开的 rollout summaries/skills；读取端没有向量检索，而是 Agent 根据常驻摘要做词法搜索和渐进披露。它同时暴露了全局物理 store 与 cwd/branch 逻辑 scope、使用次数驱动保留、subagent 不独立生成 Memory、以及 item-level delete/跨项目隔离仍较弱等边界。完整代码级分析见 [Codex 本地 Memory 系统](../projects/openai--codex.md)。
+
 仍没有一个公开协议能在相同仓库、任务、模型、预算和回放条件下公平比较代码图、事件账本、静态上下文和反馈策略。并发工作树、索引失效、机密捕获、删除派生索引、以及“检索到了正确前例却仍修改错误”的行动失配，也缺少共同的端到端证据。因而这个场景的成熟度不是一个分数：底层索引和日志很常见，跨版本治理与可验证的反馈学习仍较早期。
 
 相关机制可继续阅读：表示/索引、生命周期、检索与上下文构造、经验与技能，以及安全和可观测性专题。本页只说明它们围绕项目版本和开发行动如何组合。

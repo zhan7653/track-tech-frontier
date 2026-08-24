@@ -1,0 +1,4 @@
+{"window_id":"W_PRE_FRONTIER","label":"Pre-frontier context needed to explain current routes","start":"2000-01-01","end":"2025-08-24","kind":"foundational"}
+{"window_id":"W_ROLLING_12M","label":"Rolling twelve-month frontier","start":"2025-08-25","end":"2026-08-24","kind":"recent-12m"}
+{"window_id":"W_ROLLING_90D","label":"Rolling ninety-day weak-signal window","start":"2026-05-27","end":"2026-08-24","kind":"recent-90d"}
+{"window_id":"W_FUTURE_INVALID","label":"Future or invalid metadata after cutoff","start":"2026-08-25","end":"2100-12-31","kind":"custom"}

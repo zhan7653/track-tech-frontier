@@ -1,0 +1,2784 @@
+
+
+===== PAGE 1 =====
+
+EQUIMEM: Calibrating Shared Memory in
+Multi-Agent Debate via Game-Theoretic Equilibrium
+Yuqiao Meng1 Sakshi Sunil Narvekar1 Luoxi Tang1 Rupali Rajendra Vaje1
+Yingxue Zhang1 Muchao Ye2 Zhaohan Xi1
+1Binghamton University, State University of New York, Binghamton, NY , USA
+2University of Iowa, Iowa City, IA, USA
+Corresponding to: Zhaohan Xi<zxi@binghamton.edu>
+Abstract
+Multi-agent debate (MAD) systems increasingly rely on shared memory to support
+long-horizon reasoning, but this convenience opens a critical vulnerability: a single
+corrupted entry can contaminate the downstream memory-augmented reasoning,
+and debate alone fails to filter such errors. Existing safeguards filter entries via
+heuristics or LLM-based validation, yet they rely on AI judgments that share
+the same failure modes and overlook the cross-agent dynamics of MAD. We
+address this gap by formulating memory updating in MAD as azero-trust memory
+game, in which no agent is assumed honest and the game’s equilibrium serves as
+an indicator of optimal memory trust. Guided by this equilibrium, we propose
+EQUIMEM, an inference-time calibration mechanism that quantifies each update
+algorithmically against the shared memory state, using agents’ existing retrieval
+queries and traversal paths as evidence rather than soliciting any LLM judgment.
+EQUIMEMinstantiates calibration for both embedding- and graph-based memory,
+and across diverse benchmarks, MAD frameworks, and memory architectures, it
+consistently outperforms existing safeguards, remains robust under adversarial
+agents, and incurs negligible inference overhead.
+1 Introduction
+Multi-agent debate (MAD) systems built on large language models (LLMs) have shown strong
+performance on complex reasoning [17, 35, 42, 70], embodied action [57, 71], and planning [24, 33,
+38] tasks, where agents iteratively discuss, critique, and refine each other’s outputs [9, 36, 43]. To
+support interactions beyond a single round, recent MAD systems add ashared memorythat persists
+intermediate reasoning, past actions, and episodic trajectories across rounds [3, 69, 89, 94].
+While shared memory boosts long-horizon reasoning, it also opens a critical vulnerability: a corrupted
+memory state, which can subsequently contaminate all downstream memory-augmented reasoning
+[66]. The corruption arises because individual agents are inherently imperfect: LLMs hallucinate,
+agree sycophantically [ 6, 7, 55], or confidently assert incorrect claims [56, 86, 89]. These failures do
+not cancel under debate. Across recent works, three failure patterns present (Figure 1): (i) an over-
+confident contributor pushes a hallucinated entry past hedged auditors who defer to its confidence
+rather than challenge it [ 17, 72, 82], producing a corrupted memory that reads like established
+fact; (ii) over-confident auditors veto a tentative but correct contribution [ 14, 93], producing an
+over-curated memory that drops truly useful facts; (iii) all agents hedge (or over-confident) and
+nothing certain is committed [59, 62, 65], leaving memory under-populated. In all three cases, the
+commit decision depends on agents’ self-reported confidence rather than on any check against the
+memory state itself, so debate alone cannot filter the errors.
+Preprint.
+arXiv:2605.09278v1  [cs.AI]  10 May 2026
+
+===== PAGE 2 =====
+
+Existing safeguards either filter proposed entries via heuristics or auxiliary LLM classifiers [1, 76], or
+rely on consensus-based validation [78]. Both deliver real protection, but still produce calibration
+through AI models that carry the same risks of hallucination and sycophancy. More importantly,
+these methods are designed for a single agent reading its own memory, and do not model multiple
+agents continuously writing to (and potentially colluding over) a shared memory space. This gap
+motivates a critical question:how can we calibrate memory updates in a MAD system without relying
+on any single agent’s judgment?
+“E.T. is directed by Tobe 
+Hopper. I am sure of it”
+Conﬁdence: high
+Conﬁdence: low
+“I won’t push back if 
+both A and B say…”
+Agent A
+Agent B
+Conﬁdence: high
+“I totally agree with A!”
+Agent C
+“E.T. is directed by 
+Spielberg, I think..”
+Conﬁdence: low
+Conﬁdence: high
+“No, E.T. is directed 
+by Tobe Hopper”
+Agent A
+Agent B
+Conﬁdence: high
+“Not a solid claim!”
+Agent C
+“Maybe Hopper? I am not 
+100% sure of that…”
+Conﬁdence: low
+“I cannot get useful 
+evidence online, sorry…”
+Agent A
+Agent B
+“I’m unsure too, shall 
+we just say Hooper?”
+Agent C
+Corrupted memory 
+state, looks like facts
+Over-curated, missing 
+useful information
+Uncertain (or no) 
+commitment 
+Shared memory Memory commitment Memory commitment
+ Corruption with certainty Mis-curation with certainty Uncertain/no commitment
+Conﬁdence: low
+Conﬁdence: low
+Figure 1: Failures of debate-driven memory commitment.
+Answering this question requires re-
+thinking the cross-agent dynamics
+of debate itself. Since MAD agents
+already inspect and critique each
+other’s contributions, we formulate
+their interaction with memory as a
+zero-trust memory game. In this
+formulation, the agent proposing an
+update acts as acontributorin each
+debating round, while the remain-
+ing agents serve asauditorswho
+provide evidence about the update’s
+consistency with current memory.
+Crucially, no agent is assumed hon-
+est in our formulation. We define
+game-theoretical utility functions for both roles and show that the game admits an equilibrium whose
+payoff structure indicates optimal trust in memory: at equilibrium, a contributor cannot raise an
+update’s influence without also raising its detectability, and an auditor cannot reduce its effort without
+weakening the consistency signal it produces, which together address the failures as illustrated in
+Figure 1 (detailed justification is shown in Appendix A.3).
+Guided by this equilibrium, we propose EQUIMEM, an equilibrium-guided, inference-time calibration
+mechanism that requires no LLM call for calibration itself. Agents serve only as signal providers: their
+existing retrieval queries and traversal paths are intercepted and quantified algorithmically against
+the full memory state. EQUIMEMinstantiates calibration for two representative memory families.
+For embedding-based memory [69, 94], it checks whether a proposed update disturbs the embedding
+distribution and reorders retrieval results on auditor queries. For graph-based memory [ 3, 89], it
+checks whether new edges are consistent with the local relational neighborhood and with existing
+multi-hop reasoning paths. In both cases, entries are admitted with trust-discounted weights, so
+low-confidence content remains available but exerts less influence on downstream retrieval.
+We evaluate EQUIMEMon reasoning- and action-intensive benchmarks [ 39, 57, 87, 88] across
+three MAD frameworks [37, 49, 79] and four memory architectures [3, 69, 89, 94]. Three findings
+emerge. (i)State-aware calibration beats isolated checks:EQUIMEMranks first on every benchmark-
+framework-memory configuration, confirming that errors missed by per-entry scoring are caught
+only when updates are evaluated against the global memory state. (ii)Robustness without trust:even
+with up to 50% adversarial agents, EQUIMEMstays close to its benign performance, showing that
+integrity comes from the structural calibration indicator rather than from trusting any individual agent.
+(iii)Quality without inflated cost:since calibration is LLM-free and reuses agents’ existing retrieval
+activity, EQUIMEMadds zero token overhead and under 5% latency, showing that strong memory
+protection is achievable without inflating the inference budget.
+In summary, this paper makes the following contributions:(1)We formulate shared-memory multi-
+agent debate as a zero-trust memory game, in which the equilibrium payoff structure serves as
+an indicator of optimal memory trust.(2)Guided by this formulation, we propose EQUIMEM,
+a principled mechanism that calibrates memory updates against the global memory state without
+trusting any individual agent.(3)Through extensive evaluations, EQUIMEMdelivers consistent gains
+over existing baselines, retains effectiveness under adversarial agents, and incurs negligible inference
+overhead. Code is released at:https://anonymous.4open.science/r/EquiMem-FE6C.
+2
+
+===== PAGE 3 =====
+
+2 Related Work
+Multi-agent debate systems.Multi-agent debate (MAD) improves factuality and reasoning in LLM
+systems through iterative deliberation among multiple agents [9, 17, 36, 72, 82]. Structural variants
+include role-conditioned debate [9, 77], dynamic participant selection [10, 37], and tournament-style
+aggregation [28, 95]. Theoretical work studies the consensus properties of debate [ 58, 91] and its
+vulnerability to adversarial participants [2, 34]. To enable cross-task learning, recent systems pair
+debate with a shared memory that persists across rounds [23, 49, 89].
+Memory design for LLM agents.Agent memory has evolved from fixed context windows to struc-
+tured persistent stores [45, 46, 94]. Common designs include embedding-based retrieval [56, 69, 94],
+graph-structured memory [12, 51], and hierarchical or multi-tier storage [ 45, 75, 84]. These sys-
+tems are typically optimised for retrieval quality, with veracity and provenance treated as sec-
+ondary [61, 80, 92]. Multi-agent variants extend the same designs to a shared store accessible to
+several agents at once [49, 52, 89].
+LLM hallucinations and memory safety.LLMs frequently produce plausible-sounding but incorrect
+content [5, 25, 26, 85]. Common mitigations include retrieval augmentation [19, 32], self-consistency
+verification [41, 60], and uncertainty calibration [27, 53, 64, 83]. Beyond intrinsic errors, conflicts
+between retrieved memories further complicate downstream reasoning [ 68, 74]. A growing body
+of work targets memory specifically: AgentPoison injects backdoors into memory banks [ 11],
+MINJA achieves memory corruption through query-only interaction [ 15, 16], and related studies
+expose vulnerabilities across multi-agent communication channels [2, 31, 90]. On the defence side,
+perplexity-based filters [1] and LLM-based auditors [ 81] score individual entries before commit,
+while A-MemGuard [ 78] validates entries through consensus over reasoning paths derived from
+related memories.
+3 Problem Formulation: Zero-Trust Memory Game
+This section formalizes memory-based multi-agent debate as azero-trust memory game, where
+no agent’s contribution to memory M is assumed honest. Agents iterate between two roles: a
+contributorwho writes reasoning traces with factual claims into M, andauditorswho inspect those
+contributions for hallucinations or adversarial content. Our goal is to design a set of game-theoretic
+rules, namely, theutility functionsfor contributor and auditors, respectively, to remove the need to
+trust any individual agent and achieve honest memory behavior on the whole-system.
+3.1 Setup and Notation for Shared-Memory Multi-Agent Debate
+We consider a shared-memory multi-agent debate system G= (N,M) where N={a 1, . . . , an}
+is a set of n agents operating over a shared memory M. We denote Mt as a memory state at each
+debate round t. Besides agents’ original roles, we assign two real-time roles at each round t: The
+agent that proposes new reasoning, facts, or beliefs is referred to as thecontributor, denoted by
+ac ∈ N , who generates a proposal ∆t to be written into Mt. The remaining agents At =N \ {a c}
+form theauditors, tasked with evaluating whether ∆t should be committed. A successful commit
+transitions the memory state as: Mt+1 =Merge(M t,∆ t) with an architecture-specific memory
+integration functionMerge(·,·)and the raw memory spaceDfor all possible∆ t.
+3.2 The Zero-Trust Memory Game
+Rationale.Recent work has shown that LLM-based agents are susceptible to sycophantic agree-
+ment [18, 55], misrepresentation [48], and belief perseveration [50], all undermining the reliability of
+agents acting as honest contributors or auditors. Classical fault-tolerance models (e.g., Byzantine
+fault tolerance [8, 30]) address a bounded fraction of faulty agents but assume the remainder are
+honest, which is untenable in dynamic agent debating. We therefore adopt azero-trustformulation:
+no agent is assumed to act in alignment with collective memory integrity, and the system must enforce
+correctness structurally rather than by trusting any participant. See App. A.1 for a full discussion.
+Definition 3.1(Zero-Trust).No agent in N is assumed to act in alignment with memory integrity.
+Specifically:(i) The contributora c may craft∆ t to advance a private objectiveu c misaligned with
+3
+
+===== PAGE 4 =====
+
+the true information state.(ii) Each auditor ai ∈ A t may act to advance its own private objective ui,
+which may include collusion witha c, or adversarial rejection of truthful updates.
+This assumptiondoes notrequire that all agents are adversarial, only that none can bea prioritrusted.
+Game Formulation.We formalize memory updating as a two-stage game: In thecontribution stage,
+the contributor ac observes the current memory state Mt and a private signal σc ∈Σ (representing
+its local reasoning context), and selects a delta:
+∆t ∈arg max
+∆∈D
+uc(∆,M t, σ c)(1)
+The private utility uc may encode objectives such as promoting a particular conclusion, inflating
+confidence estimates, or injecting subtly biased representations intoM.
+In theauditing stage, each auditora i ∈ A t observes∆ t and the current memoryM t, and indepen-
+dently emits a binary signal:
+vi ∈ {0,1}, v i =π i(∆t,M t, σ i)(2)
+where σi ∈Σ is ai’s private signal andπi is its (potentially mixed) strategy. The aggregate audit
+decision is formed by acommitment rule C:{0,1} |At| → {0,1} , such as a weighted majority vote.
+The update is committed if and only ifC({v i}i∈At) = 1.
+3.3 Game-Theoretical Utility Functions and System-Level Equilibrium
+Each participant in the game defines autility functionto quantify their payoffs in the memory game.
+At the system level, we leverage an equilibrium of these payoffs to achieve optimal trust in memory.
+Contributor utility.The contributor ac trades off the persuasiveness of ∆t (the probability it is
+committed) against the risk of detection:
+uc(∆t,M t) = Pr[C({vi}) = 1|∆ t]| {z }
+commitment gain
+·I(∆ t,M t)| {z }
+influence
+−D(∆ t,M t)| {z }
+detection penalty
+(3)
+where Pr[C({vi}) = 1|∆ t] is the probability of successfully committing ∆t, I(∆t,M t) measures
+the downstream influence of ∆t on future retrievals and reasoning steps, and D(∆t,M t)∈[0,1] is
+the detectability of∆ t as inconsistent withM t.
+Auditor utility.Each auditor ai evaluates thealignmentof the proposed ∆t with the current memory
+stateM t:
+ui(vi,∆ t,M t) =Align(∆ t,M t)| {z }
+consistency measure
+−c i ·1[v i =scrutinize]| {z }
+effort cost
+(4)
+whereAlign(∆t,M t)∈[−1,+1] measures the semantic and logical consistency of∆t with existing
+memory, which is positive when ∆t corroborates or extends Mt, negative when it contradicts or
+destabilizes it. The ci >0 is the cost of careful scrutiny. The alignment signal Align(·) is not
+self-reported by ai but is computed by the calibration mechanism Φ from ai’s submitted evidence
+(probe queries or attestation paths), ensuring no auditor can manipulate their own utility measurement.
+The effort cost ci is estimated online as the empirical computational overhead of ai’s scrutiny actions
+across rounds, requiring no pre-specification (see App. A.2).
+System-level equilibrium as the indicator of optimal trust in memory.With both utility functions
+defined above, the system reaches an equilibrium when no participant can improve their payoff
+by unilaterally changing their strategy: the contributor cannot craft a more influential ∆t without
+increasing its detection risk, and no auditor can reduce their scrutiny effort without degrading the
+alignment signal they produce. Formally:
+π∗
+i ∈arg max
+πi
+ui(πi,∆ ∗
+t ,M t)∀a i ∈ A t and∆ ∗
+t ∈arg max
+∆∈D
+uc(∆,M t)(5)
+However, not all equilibria are desirable. Under multi-agent debating, three integrity-degrading
+equilibria generically emerge: auditorsfree-rideby approving without scrutiny to avoid effort cost
+ci;colludingauditors approve ∆t unconditionally for side benefits; oradversarialauditors reject all
+updates regardless of their quality (Propositions A.1–A.3, App. A.3). These failures echo to incorrect
+4
+
+===== PAGE 5 =====
+
+Commitment gain
+<latexit sha1_base64="s2CG466FvZUg8AA1HJ8Ytol8Nfg=">AAAB+nicjVDLSgMxFM3UV62vqS7dBIvgqsyIVJdFNy4r2Ae0w5BJM21oJhmSO2oZ+yluXCji1i9x59+YPhYqCh64cDjnXu7hRKngBjzvwyksLa+srhXXSxubW9s7bnm3ZVSmKWtSJZTuRMQwwSVrAgfBOqlmJIkEa0eji6nfvmHacCWvYZyyICEDyWNOCVgpdMs9PVRhD9gdAORE8EnoVvyqNwP+m1TQAo3Qfe/1Fc0SJoEKYkzX91IIcqKBU8EmpV5mWEroiAxY11JJEmaCfBZ9gg+t0sex0nYk4Jn69SIniTHjJLKbCYGh+elNxd+8bgbxWZBzmWbAJJ0/ijOBQeFpD7jPNaMgxpYQqrnNiumQaELBtlX6Xwmt46pfq9auTir180UdRbSPDtAR8tEpqqNL1EBNRNEtekBP6Nm5dx6dF+d1vlpwFjd76Buct08uJ5Se</latexit>
+⇢ali
+<latexit sha1_base64="ONEE6+nE49D8TOLE6gAQMWN7T3g=">AAAB8HicjVDLSgNBEOz1GeMr6tHLYBDiJeyKRI9BLx4jmIcka5idzCZDZmaXmV4lLPkKLx4U8ernePNv3DwOKgoWNBRV3XR3BbEUFl33w1lYXFpeWc2t5dc3Nre2Czu7DRslhvE6i2RkWgG1XArN6yhQ8lZsOFWB5M1geDHxm3fcWBHpaxzF3Fe0r0UoGMVMurnvitu0hEfjbqHold0pyN+kCHPUuoX3Ti9iieIamaTWtj03Rj+lBgWTfJzvJJbHlA1pn7czqqni1k+nB4/JYab0SBiZrDSSqfp1IqXK2pEKsk5FcWB/ehPxN6+dYHjmp0LHCXLNZovCRBKMyOR70hOGM5SjjFBmRHYrYQNqKMMso/z/Qmgcl71KuXJ1Uqyez+PIwT4cQAk8OIUqXEIN6sBAwQM8wbNjnEfnxXmdtS4485k9+Abn7ROCfJA8</latexit>
+w(t)
+iAlignment signal Credibility weight
+Detection panelty Inﬂuence of 
+<latexit sha1_base64="0emRHH6jG3bs2Iq37r9haogXw5s=">AAAB8HicbVBNS8NAEN3Ur1q/qh69BIvgqSQi1WNRDx4r2A9pQ9lsJ+3S3U3YnQil9Fd48aCIV3+ON/+NmzYHrT4YeLw3w8y8MBHcoOd9OYWV1bX1jeJmaWt7Z3evvH/QMnGqGTRZLGLdCakBwRU0kaOATqKBylBAOxxfZ377EbThsbrHSQKBpEPFI84oWumhdwMCaR9L/XLFq3pzuH+Jn5MKydHolz97g5ilEhQyQY3p+l6CwZRq5EzArNRLDSSUjekQupYqKsEE0/nBM/fEKgM3irUthe5c/TkxpdKYiQxtp6Q4MsteJv7ndVOMLoMpV0mKoNhiUZQKF2M3+94dcA0MxcQSyjS3t7psRDVlaDPKQvCXX/5LWmdVv1at3Z1X6ld5HEVyRI7JKfHJBamTW9IgTcKIJE/khbw62nl23pz3RWvByWcOyS84H98qBJAC</latexit>
+ t
+Consistency Effort cost 
+Contributor’s utility
+Auditors’ utility
+EquiMem
+Detection signal
+<latexit sha1_base64="4bjN/HQv5Oa69DLemlpIhHyT3Hg=">AAAB+nicjVDLSsNAFJ3UV62vVJdugkVwVRKR6rLoxmUF+4AmhMnkph06eTBzo5bYT3HjQhG3fok7/8bpY6Gi4IELh3Pu5R5OkAmu0LY/jNLS8srqWnm9srG5tb1jVnc7Ks0lgzZLRSp7AVUgeAJt5Cigl0mgcSCgG4wupn73BqTiaXKN4wy8mA4SHnFGUUu+WXXlMPVdhDtELELAiW/WnLo9g/U3qZEFWr757oYpy2NIkAmqVN+xM/QKKpEzAZOKmyvIKBvRAfQ1TWgMyitm0SfWoVZCK0qlngStmfr1oqCxUuM40JsxxaH66U3F37x+jtGZV/AkyxESNn8U5cLC1Jr2YIVcAkMx1oQyyXVWiw2ppAx1W5X/ldA5rjuNeuPqpNY8X9RRJvvkgBwRh5ySJrkkLdImjNySB/JEno1749F4MV7nqyVjcbNHvsF4+wQ4yZSl</latexit>
+⇢det
+Regulating Celling Damping
+DampingRegulatingRegulating
+Calibrated MAD Memory
+Trust ↓
+Trust ↑
+Figure 2: Overview of how the three calibration quantities in EQUIMEMcontrol utility components.
+See App. C.1 for component-by-component justifications.
+memory commitment (Figure 1, detailed in App. A.3) and share a common cause: the commitment
+outcome depends on auditor votes, giving agents wrong incentives.
+To avoid those failure modes, we develop calibration mechanismΦ to break such dependency, i.e.,
+commitment is determined structurally by a calibration indicator ρ, not by votes, which calibrate
+the memory system without requiring any agent to be honest. Guided by a unified design rationale,
+we adapt Φ based on specific memory architecture (embedding-based or graph-based) in §4. Due
+to space constraints, we defer the theoretical guarantees on equilibrium existence, as well as how
+calibration leads to optimal trust in memory, to App. B.
+4 EQUIMEM: Equilibrium-Guided Memory Calibration
+4.1 Design Rationale
+§3 showed that when the commit decision depends on agent decisions, each agent can improve its own
+utility and cause incorrect commitment (failures of the equilibrium). Hence, reaching the equilibrium
+requires that the memory commit decision depend on indicators that no agent can dominate alone.
+Note that, the equilibrium betweenu c andu i supplies those indicators: The contributor’suc (Eq. 3)
+rewardsinfluenceover future retrieval, and the auditor’s ui (Eq. 4) rewardsalignmentwith its own
+reasoning context. A truly informative ∆t raises both simultaneously. A manipulative ∆t raises uc
+but lowers ui for any auditor outside the manipulated region. Quantifying ∆t against this gap reaches
+the equilibrium without trusting any single agent.
+We hence implement the design above asEQUIMEM, an inference-time framework that turns each
+agent’s normal action into evidence. EQUIMEMdoes not replace agents, as contributors still propose
+updates and auditors still issue queries or walk paths during debate. Instead, the contributor’s ∆t
+is checked against the geometry or topology of Mt. Each auditor’s existing query or path traversal
+(used during debate anyway) becomes aprobethat EQUIMEMsamples and quantifies. EQUIMEM
+never reads agent-reported scores or votes, which turns the three failure modes into actions that either
+gain nothing or hurt the agent who tries them: an auditor who hides its probe loses credibility weight,
+an auditor who tries to craft a favorable probe cannot do so because the sample is drawn at random,
+and an auditor who rejects everything has no rejection power because votes are not used.
+Given ∆t, EQUIMEMproduces a calibration indicator ρ(∆t,M t)∈[0,1] that combines (i) a
+detection signalon the contributor side, (ii) analignment signalfrom auditor probes, and (iii) a
+credibility weight w(t)
+i on each auditor’s contribution. Commitment proceeds iffρ≥ρ ∗, where ρ∗ is
+the running median of recent committed scores (cold-start in App. C.2). Committed entries are stored
+with trust weights proportional to ρ (§4.3). No entry is deleted, so a low-trust entry can be promoted
+later if new evidence raises its score. Figure 2 shows how EQUIMEMcontrols game-theoretical
+utilities (uc and ui) with detailed justification in C.1. Noticeably, EQUIMEMincurs marginal latency
+comparing to base memory-augmented reasoning (App. C.4).
+4.2 Architecture-Specific Calibration
+We instantiate EQUIMEMon two memory types: embedding-based [ 69, 94] and graph-based [3, 89].
+Episodic and trajectory memories reduce to one of these two for retrieval purposes [3, 69].
+5
+
+===== PAGE 6 =====
+
+Embedding-based memorystores entries as dense vectors Mt ={(e j, mj)}N
+j=1 with ej =
+fθ(mj)∈R d. A delta∆ t ={(e ∆
+k , m∆
+k )}K
+k=1 is calibrated in two parallel passes.
+Thefirst passcomputes the detection signal from the local density of each new vector. For each e∆
+k
+we count its dense neighbors and compare to the running average: ρdetect(∆t) = 1− 1
+K
+PK
+k=1
+ˆrk
+¯r+ϵ
+where ˆrk counts neighbors of e∆
+k within an adaptive radius (running median of pairwise similarities
+in Mt, App. C.2), and ¯ris the running mean neighborhood size. A high ˆrk means the new entry
+would dominate retrieval across an unusually wide region of memory, which is the high-influence
+manipulation thatu c rewards.
+Thesecond passcomputes the alignment signal from auditor probes. Each auditor ai already keeps
+a queue of pending retrieval queries Qi during debate. EQUIMEMsamples one query qi ∼Q i
+uniformly at random per auditor, so the auditor cannot choose which one is used. We then compute:
+ρalign(∆t) = 1− 1
+|At|
+X
+i∈At
+w(t)
+i ·d RBO(top-k(Mt, qi),top-k(M t ∪∆ t, qi))(6)
+where dRBO(L1, L2)∈[0,1] is the rank-biased overlap distance between two lists [13], equal to zero
+when the lists agree and one when they are disjoint. An informative ∆t shifts retrieval results across
+auditors, while a manipulated ∆t rewrites the top-k auditor-retrieved entries from its original region.
+The latter produces highd RBO values that pushρ align down.
+The credibility weight w(t)
+i adds an inter-round cost to cheating. After each round, EQUIMEMchecks
+whether ai’s probeqi iswell-formed: non-empty, syntactically valid, and drawn from the context
+window the auditor declared. A bad probe pulls the weight toward 0, and a good probe pulls it back
+toward1:
+w(t+1)
+i =
+(
+w(t)
+i ·(1−δ t)ifq i is invalid
+w(t)
+i +δ t ·(1−w (t)
+i )ifq i is valid
+δt =fraction of invalid probes at roundt
+(7)
+Both directions move at the same adaptive rateδt, so no parameter is tuned. An auditor who slips once
+recovers after a few clean rounds. An auditor whose long-run invalid rate is p settles at w∗ = 1−p ,
+so credibility tracks long-run honesty (proof in App. C.3).
+The two passes combine as ρ= √ρdetect ·ρ align. The geometric mean prevents a delta that fails one
+pass from being saved by the other. The square root keeps ρ∈[0,1] on the same scale as each pass
+and avoids the score-shrinking of a plain product.
+Graph-based memorystores knowledge as a directed graph Mt = (V t,E t, ℓ) with edges Et ⊆
+Vt × R × V t. A delta ∆t = (V∆
+t ,E ∆
+t ) is first written into a hiddenstaging area Mstage
+t . The delta
+becomes visible only after calibration. Staging blocks adversarial rejection because no agent can see
+what to reject, and adds no cost because writes use the standard graph-write path.
+Thefirst passcomputes the detection signal from two topological checks per new edge e= (u, r, v)∈
+E∆
+t : (i) Thelocal checkasks whether e fits u’s existing neighborhood, using a compatibility set
+Rcompat(r)of relation types that frequently co-occur withrelsewhere in the graph (App. C.6):
+slocal(e) =
+{(u, r′, v′)∈ E t :r ′ ∈ Rcompat(r)}
+
+|N(u)|+ϵ (8)
+(ii) Thepath checkasks whether existing multi-hop paths Pu,v between u and v already support a
+relation of type r. We enumerate paths π∈ P u,v by bidirectional BFS up to depth Lmax =⌈log|V t|⌉,
+which matches the typical diameter of knowledge graphs and keeps BFS efficient (App. C.7):
+spath(e) = 1
+|Puv|
+X
+π∈Puv
+1[comp(r,type(π))≥η t](9)
+where ηt is the running median of past compatibility scores. Combining the two gives the per-edge
+score ρdetect(e) =α t slocal(e) + (1−α t)s path(e). The weight αt is the fraction of this round’s edges
+that have at least one supporting path, so it shifts toward whichever check has more evidence. An
+edge that fails either check raises the detection cost thatu c must pay for manipulation.
+6
+
+===== PAGE 7 =====
+
+Thesecond passcomputes the alignment signal from auditor probes. Each auditor ai is already
+walking some path πi in Mt during reasoning. EQUIMEMsamples one new edge e∗
+i ∈ E ∆
+t
+uniformly at random per auditor: ρalign(∆t) = 1
+|At|
+P
+i∈At w(t)
+i ·1[reachable(e ∗
+i , πi;R compat)],
+where reachable(·) is an O(log|V t|) lookup that returns 1 when e∗
+i connects to either endpoint
+of πi via compatible relations. As in the embedding case, an informative ∆t extends paths the
+auditor is already walking, while a manipulative ∆t adds edges disconnected from existing reasoning.
+Reachability is a graph-structural fact rather than a semantic judgment, so a failed probe triggers the
+same credibility decay as Eq. 7.
+The two passes combine as ρ= √ρdetect ·ρ align with ρdetect = 1
+|E∆
+t |
+P
+e∈E∆
+t
+ρdetect(e), by the same
+rationale as the embedding case.
+4.3 Memory Retrieval
+Calibration shapes bothwhat gets writtenandhow much written entries count when read back. Each
+committed entry carries its score ρ as a trust weight. For embedding memory, retrieval re-scales each
+candidate vector as ˜ek = √ρk ·e k, so low-trust entries sit closer to the origin and are less likely
+to land in the top-k. For graph memory, a path’s strength is the productQ
+e∈π ρe of trust weights
+along its edges, so a path through any low-trust edge is automatically discounted. Retrieval cost is
+unchanged in both cases because trust weights are baked into the index at load time, not computed at
+query time (App. C.8).
+This dual enforcement closes two gaps. A delta that barely passes ρ∗ at write time still has a small
+trust weight, so a contributor cannot inject low-quality content by aiming at the threshold. And when
+later evidence raises or lowers an entry’sρ, we update the weight in place rather than delete the entry,
+so memory remains recoverable as evidence accumulates.
+5 Experiments
+We evaluate EQUIMEMalong three research questions:RQ1:How effectively does EQUIMEM
+maintain memory integrity compared to existing approaches?RQ2:How robust is EQUIMEMunder
+different attack strategies?RQ3:How much computational overhead does EQUIMEMadd?
+5.1 Experimental Setup
+Datasets.We evaluate on four datasets spanning two groups:(1) reasoning-intensive, including
+HotpotQA [87] (multi-hop question answering) and LoCoMo [39] (long-term conversational memory
+requiring temporal reasoning across distant dialogue sessions); and(2) action-intensive, including
+ALFWorld [57] (embodied household tasks with sequential action chains) and WebShop [88] (web-
+based product search and purchase). All require agents to update and retrieve the shared memory.
+Baselines.We compare four baseline methods that safeguard agentic memory:(1) Vanilla: no
+additional safeguarding mechanism; LLMs are simply prompted to ensure safe memory use;(2)
+LLM-Audit(used in [ 78]): an auxiliary LLM scores each proposed ∆t;(3) PPL-Filter[ 1]: memory
+entries whose perplexity under a reference LLM exceeds an adaptive threshold are filtered out; and
+(4) A-MemGuard[78]: consensus is validated across the reasoning paths of agents.
+Memory architectures.We evaluate on two embedding-based (vector) memories, V oyager [69] and
+MemoryBank [94], and two graph-based (structural) memory, AriGraph [3] and G-Memory [89]. We
+additionally report a No Memory (stateless) baseline as a lower bound.
+Backbone of MAD systems.To cover various MAD designs, we integrate EQUIMEM, baselines, and
+memory architectures into three different MAD systems: AutoGen [79] (conversational turn-taking),
+MacNet [49] (configurable graph topologies), and DyLAN [37] (dynamic LLM-agent network with
+learned topology selection).
+Other configurations.By default, all evaluations use 6 × Qwen3-VL-8B-Instruct [63] as the MAD
+backbone besides specification. We defer configuration details, other settings, and results to App. D.
+7
+
+===== PAGE 8 =====
+
+Table 1: Performance comparison with baseline memory safeguarding or calibration approaches. We
+report accuracy for HotpotQA (HQA), F1 for LoCoMo (LCM), success rate for ALFWorld (ALF),
+and reward for WebShop (WS) (mean±std over 5 runs). Note that A-MemGuard [78] applies only to
+embedding-based memory (–-otherwise). Thebest and second best results are highlighted.
+AutoGen[79] MacNet[49] DyLAN[37]
+MemoryMethod HQA LCM ALF WS HQA LCM ALF WS HQA LCM ALF WS
+StatelessNo-memory27.5±5.320.2±7.462.1±2.421.4±7.728.6±2.219.8±1.347.3±6.823.5±5.828.4±2.121.0±4.553.8±4.024.9±8.7
+V oyager
+(emb.)
+Vanilla 32.3±7.425.8±6.165.0±3.624.3±6.132.6±2.926.3±7.356.4±7.330.7±2.532.6±4.322.1±3.661.9±9.226.8±8.4
++ LLM Audit33.5±6.128.2±6.866.5±0.625.8±4.934.8±3.531.5±8.257.2±7.837.5±2.836.8±3.727.5±2.866.1±9.629.2±7.8
++ PPL Filter34.6±5.934.1±6.764.2±1.535.2±6.640.2±1.935.7±6.960.1±6.437.8±2.733.5±3.429.2±3.264.8±7.935.5±6.6
++ A-MemGuard42.1±6.337.5±4.772.7±2.431.4±5.543.3±2.743.2±7.265.8±6.539.5±2.541.2±4.233.6±3.474.3±8.641.4±7.7
++ EQUIMEM56.4±6.346.4±5.576.5±0.446.6±5.653.6±2.651.2±4.470.4±5.450.3±1.552.4±2.543.2±2.881.6±8.549.4±5.8
+MemBank(emb.)
+Vanilla 33.6±6.221.4±5.764.9±3.525.6±8.833.6±8.220.7±10.248.9±7.324.2±7.329.6±1.224.9±6.755.2±3.027.5±3.4
++ LLM Audit39.2±5.829.2±5.968.6±3.831.6±7.741.4±7.722.8±10.260.3±11.231.8±7.336.5±1.130.4±6.459.3±3.229.1±3.5
++ PPL Filter43.7±5.130.6±5.970.9±3.537.6±9.741.8±8.729.4±10.457.2±7.225.6±8.038.6±1.329.1±6.262.8±3.340.6±3.8
++ A-MemGuard41.1±4.834.1±5.974.0±3.339.1±6.344.5±6.232.7±7.658.5±9.039.6±7.642.3±0.937.2±5.767.5±2.437.3±3.5
++ EQUIMEM52.0±4.939.6±5.179.2±3.346.8±7.156.1±7.838.8±8.466.0±10.955.0±5.953.8±0.742.2±5.771.3±2.251.2±3.2
+AriGraph
+(graph)
+Vanilla 49.2±2.342.3±3.869.4±5.128.9±4.737.7±3.739.8±4.958.3±4.337.4±10.234.8±4.335.4±13.564.1±6.434.6±5.3
++ LLM Audit56.8±2.247.6±3.075.2±4.234.2±4.041.5±3.241.5±5.164.8±4.542.6±10.838.4±4.040.1±12.771.1±6.844.5±4.7
++ PPL Filter53.2±2.452.4±3.976.5±5.238.5±4.645.2±3.349.8±5.366.4±3.746.2±11.443.6±3.446.3±14.266.2±6.045.8±4.8
++ A-MemGuard— — — — — — — — — — — —+ EQUIMEM63.3±1.565.2±3.080.5±3.544.1±4.053.7±3.262.7±2.973.1±4.052.5±9.454.0±3.557.3±9.573.1±4.852.6±4.8
+G-Memory
+(graph)
+Vanilla 35.7±9.243.2±4.172.1±3.839.7±6.335.6±7.447.6±1.567.1±12.545.1±4.434.7±7.737.4±2.859.1±13.637.8±7.9
++ LLM Audit38.2±8.749.8±4.576.6±3.141.2±6.140.0±7.951.3±1.468.5±10.449.3±4.941.2±7.940.1±2.767.4±13.345.5±8.2
++ PPL Filter44.5±8.153.2±4.278.4±3.148.6±6.143.2±7.056.8±1.372.6±10.454.7±3.544.1±8.148.6±2.371.5±11.847.2±6.9
++ A-MemGuard— — — — — — — — — — — —+ EQUIMEM52.5±7.859.1±2.984.4±3.253.9±5.854.5±6.262.1±1.474.2±8.160.1±2.957.9±7.154.6±2.276.3±9.955.6±5.5
+5.2 Overall Effectiveness (RQ1)
+Table 1 reports results across all configurations, which yield several insights:
+❶ State-aware calibration beats isolated checks.Observe that EQUIMEMranks first in all columns,
+and its improvement over the strongest baseline is even larger than the gap separating those baselines
+from each other. We attribute this to a property of growing memory: as Mt accumulates entries, the
+dominant errors are those that read fluently in isolation but conflict with the broader memory state,
+wherein per-entry checks (LLM Audit, PPL Filter) cannot catch such errors, and even A-MemGuard’s
+local consensus misses global conflicts. EQUIMEM’s two passes break this constraint by quantifying
+each∆ t againstM t as a whole memory space rather than on isolated memory entries.
+❷ Gains scale inversely with baseline strength.EQUIMEM’s improvement over the next-best
+safeguard is largest where baselines are weakest (LoCoMo, WebShop) and smallest where they are
+already strong (ALFWorld + G-Memory). Calibration acts as an amplifier of memory quality rather
+than a fixed-offset gain: when fewer errors reach the gating step, EQUIMEMhas less to filter.
+❸ Architecture-benchmark interactions are amplified, not flattened.AriGraph outperforms on
+multi-hop QA and long-context tasks and G-Memory on action tasks; EQUIMEMamplifies both
+without modification because the calibration is instantiated from each architecture’s own geometry
+or topology (§4.2). This also explains why EQUIMEMis the only calibration applicable across all
+memory designs.
+❹ Gains are robust to MAD.Absolute performance varies substantially across different MAD back-
+bones, yet EQUIMEM’s ranking and inverse-scaling pattern persist. We explain this by highlighting
+that EQUIMEMoperates at the memory layer, upstream of coordination, so calibration quality is
+decoupled from orchestration quality.
+❺ Further analysis.Due to space constraints, we defer the (1) ablation studies and discussions to
+App. D.4, (2) alternative MAD backbones to App. D.5; (3) the effect of debate rounds to App. D.7,
+(4) how EQUIMEMaddresses memory-commitment failures and provide case studies to App.E, (5)
+failure modes of EQUIMEMitself to App.F.
+5.3 Robustness under Adaptive Attacks (RQ2)
+We further test whether EQUIMEMguarantees robustness when k out of N MAD agents are adversar-
+ial. We evaluate under two adaptive attack schemes targeting opposite sides of the zero-trust game:(i)
+Memory Poisoninginjects fabricated entries to fool ρdetect, while(ii) Audit Collusionhas adversarial
+auditors coordinate fabricated probes to inflateρ align ( detailed settings and results in App. D.8).
+8
+
+===== PAGE 9 =====
+
+$%"
+&*'&*
+$%"
+&(#
+$&(,
+&*'&*
+$&(,
+&(#
+	
+	
+	
+	
+	(&($%
+!"'!#!  
+$& 	
+
+$%"
+&*'&*
+$%"
+&(#
+$&(,
+&*'&*
+$&(,
+&(#
+	
+	
+	
+	
+	(&($%
+%$!%#! 
+$& 	
+
+
++()(, +()(!) +()(!) %! %	
+Figure 3: Adversarial robustness of EQUIMEMunder two attacks. Bars show performance at
+k= 1,2,3 adversarial agents; dashed orange lines show benign performance (k= 0 ). Dots show
+individual run results (5 seeds). Baseline comparisons are in App. D.8.
+30 35 40 45 50 55 60
+Accuracy (%)
+0.75
+1.00
+1.25
+1.50
+1.75
+2.00
+2.25
+2.50T oken Cost (×10³)
+A-MemGuard(M)
+LLM Audit(M)
+LLM Audit(G)
+Vanilla(M)
+Vanilla(G)
+PPL Filter(M)
+PPL Filter(G)
+EQUIMEM(Ours)(M)
+EQUIMEM(Ours)(G)
+HotpotQA
+60 65 70 75 80 85 90
+Accuracy (%)
+4
+5
+6
+7
+8
+9
+10T oken Cost (×10³)
+A-MemGuard(M)
+LLM Audit(M)
+LLM Audit(G)
+Vanilla(M)
+Vanilla(G)
+PPL Filter(M)
+PPL Filter(G)
+EQUIMEM(Ours)(M)
+EQUIMEM(Ours)(G)
+ALFWorld
+Vanilla LLM Audit PPL Filter A-MemGuard EQUIMEM (Ours) M: MemBank G: G-Memory
+Figure 4: Performance vs. token consumption. Each sub-figure shows MemBank (M) and G-Memory
+(G) under five calibration methods. Bubble size reflects token-cost variability.
+❶ EQUIMEMdegrades gracefully, while baselines collapse dramatically.Figure 3 shows that
+EQUIMEMstays within 2-5% of benign performance at k= 1 and within 9-16% at k= 3 . LLM
+Audit and PPL Filter, as shown in Figure 6, App. D.8, drop by 19-35% at k= 3 and frequently fall
+below the no-memory baseline, i.e., the memory system with its defense becomes worse than no
+memory at all. The asymmetry traces to a single design choice: EQUIMEMmeasures ∆t against
+the memory space structurally, while baselines score each entry in isolation (or local consensus for
+A-MemGuard), which is exactly what adversaries exploit by generating fluent, low-perplexity poison.
+❷ Credibility decay is the load-bearing mechanism under attack.Credibility weighting matters
+little in benign settings (2-6%, as in Table 8), but under attack it becomes decisive. Adversarial
+auditors who submit fabricated probes accumulate weight decay over rounds, progressively muting
+their influence on ρalign. A single adversary’s weight collapses below 0.1 within a few rounds, and
+even at k= 3 the honest majority’s probes still dominate because credibility decays multiplicatively
+while honest auditors recover towardw i≈1. Detailed baseline results are in App. D.8.
+5.4 Computational Overhead (RQ3)
+A critical property of EQUIMEMis that calibration is LLM-free and algorithmic (§4). Figure 4
+measures token consumption, and App. D.9 quantifies inference time latency.
+❶ EQUIMEMmatches Vanilla’s token cost while delivering active-defense gains.EQUIMEMuses
+the same number of tokens as Vanilla, yet performs far better than every other method (its bubbles sit
+well to the right). This gain comes at no extra token cost, which is only possible because EQUIMEM’s
+calibration runs without any LLM call. In contrast, baseline methods pay ~2× tokens for marginal
+gains: LLM Audit and A-MemGuard nearly double Vanilla’s tokens for only +2 to +9%, since each
+method requires an LLM call per ∆t, scaling linearly with the number of deltas and unavoidable
+without removing the defense.
+❷ EQUIMEMgives the best of both worlds.No other method achieves both top performance and
+the lowest cost at the same time. PPL Filter is also free to run but achieves substantially smaller gains
+than EQUIMEM. This pattern holds across embedding and graph memory and across reasoning and
+action benchmarks, showing that the LLM-free design is a built-in advantage rather than a lucky
+9
+
+===== PAGE 10 =====
+
+implementation choice. Inference timing (App. D.9) tells the same story: EQUIMEMadds under 5%
+latency, while LLM-based defenses add 50-94%.
+6 Conclusion
+This work formulates shared-memory multi-agent debate as a zero-trust memory game and shows that
+its equilibrium structure indicates optimal trust in memory without assuming any agent honest. Guided
+by this formulation, we propose EQUIMEMto calibrate memory using agents’ existing retrieval
+activity as evidence, requiring no LLM call for calibration itself. Across extensive evaluations,
+EQUIMEMconsistently outperforms existing calibration methods, remains robust under up to half
+adversarial agents, and adds zero token overhead with under marginal latency. These results suggest
+that strong memory protection in multi-agent systems is achievable without trusting any individual
+agent or inflating inference cost.
+References
+[1] Gabriel Alon and Michael Kamfonas. Detecting language model attacks with perplexity.arXiv
+preprint arXiv:2308.14132, 2023.
+[2] Alfonso Amayuelas, Xianjun Yang, Antonis Antoniades, Wenyue Hua, Liangming Pan, and
+William Yang Wang. Multiagent collaboration attack: Investigating adversarial attacks in large
+language model collaborations via debate. InFindings of the Association for Computational
+Linguistics: EMNLP 2024, pages 6929–6948, 2024.
+[3] Petr Anokhin, Nikita Semenov, Artyom Sorokin, Dmitry Evseev, Andrey Kravchenko, Mikhail
+Burtsev, and Evgeny Burnaev. Arigraph: Learning knowledge graph world models with episodic
+memory for llm agents.arXiv preprint arXiv:2407.04363, 2024.
+[4] Kenneth J Arrow.Social choice and individual values, volume 12. Yale university press, 2012.
+[5] Sourav Banerjee, Ayushi Agarwal, and Saloni Singla. Llms will always hallucinate, and we
+need to live with this. InIntelligent Systems Conference, pages 624–648. Springer, 2025.
+[6] Jaime Banks. Ai sycophancy as social-moral behavior. InProvoking Generative AI Futures,
+pages 99–116. Routledge, 2026.
+[7] María Victoria Carro. Flattering to deceive: The impact of sycophantic behavior on user trust in
+large language model.arXiv preprint arXiv:2412.02802, 2024.
+[8] Miguel Castro, Barbara Liskov, et al. Practical byzantine fault tolerance. InOsDI, volume 99,
+pages 173–186, 1999.
+[9] Chi-Min Chan, Weize Chen, Yusheng Su, Jianxuan Yu, Wei Xue, Shanghang Zhang, Jie Fu,
+and Zhiyuan Liu. Chateval: Towards better llm-based evaluators through multi-agent debate.
+arXiv preprint arXiv:2308.07201, 2023.
+[10] Weize Chen, Yusheng Su, Jingwei Zuo, Cheng Yang, Chenfei Yuan, Chi-Min Chan, Heyang Yu,
+Yaxi Lu, Yi-Hsin Hung, Chen Qian, et al. Agentverse: Facilitating multi-agent collaboration
+and exploring emergent behaviors. InThe Twelfth International Conference on Learning
+Representations, 2023.
+[11] Zhaorun Chen, Zhen Xiang, Chaowei Xiao, Dawn Song, and Bo Li. Agentpoison: Red-
+teaming llm agents via poisoning memory or knowledge bases.Advances in Neural Information
+Processing Systems, 37:130185–130213, 2024.
+[12] Prateek Chhikara, Dev Khant, Saket Aryan, Taranjeet Singh, and Deshraj Yadav. Mem0:
+Building production-ready ai agents with scalable long-term memory.arXiv preprint
+arXiv:2504.19413, 2025.
+[13] Matteo Corsi and Julián Urbano. The treatment of ties in rank-biased overlap. InProceedings
+of the 47th international ACM SIGIR conference on research and development in information
+retrieval, pages 251–260, 2024.
+10
+
+===== PAGE 11 =====
+
+[14] Justin Cui, Wei-Lin Chiang, Ion Stoica, and Cho-Jui Hsieh. Or-bench: An over-refusal
+benchmark for large language models.arXiv preprint arXiv:2405.20947, 2024.
+[15] Shen Dong, Shaochen Xu, Pengfei He, Yige Li, Jiliang Tang, Tianming Liu, Hui Liu, and Zhen
+Xiang. Memory injection attacks on llm agents via query-only interaction.arXiv preprint
+arXiv:2503.03704, 2025.
+[16] Shen Dong, Shaochen Xu, Pengfei He, Yige Li, Jiliang Tang, Tianming Liu, Hui Liu, and
+Zhen Xiang. A practical memory injection attack against llm agents.arXiv e-prints, pages
+arXiv–2503, 2025.
+[17] Yilun Du, Shuang Li, Antonio Torralba, Joshua B Tenenbaum, and Igor Mordatch. Improv-
+ing factuality and reasoning in language models through multiagent debate. InForty-first
+international conference on machine learning, 2024.
+[18] Aaron Fanous, Jacob Goldberg, Ank Agarwal, Joanna Lin, Anson Zhou, Sonnet Xu, Vasiliki
+Bikia, Roxana Daneshjou, and Sanmi Koyejo. Syceval: Evaluating llm sycophancy. In
+Proceedings of the AAAI/ACM Conference on AI, Ethics, and Society, volume 8, pages 893–900,
+2025.
+[19] Yunfan Gao, Yun Xiong, Xinyu Gao, Kangxiang Jia, Jinliu Pan, Yuxi Bi, Yixin Dai, Jiawei Sun,
+Haofen Wang, Haofen Wang, et al. Retrieval-augmented generation for large language models:
+A survey.arXiv preprint arXiv:2312.10997, 2(1):32, 2023.
+[20] John Geanakoplos. Three brief proofs of arrow’s impossibility theorem.Economic Theory,
+26(1):211–215, 2005.
+[21] Allan Gibbard. Manipulation of voting schemes: a general result.Econometrica: journal of the
+Econometric Society, pages 587–601, 1973.
+[22] Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Peiyi Wang, Qihao Zhu, Runxin Xu,
+Ruoyu Zhang, Shirong Ma, Xiao Bi, et al. Deepseek-r1: Incentivizing reasoning capability in
+llms via reinforcement learning.arXiv preprint arXiv:2501.12948, 2025.
+[23] Sirui Hong, Mingchen Zhuge, Jonathan Chen, Xiawu Zheng, Yuheng Cheng, Jinlin Wang,
+Ceyao Zhang, Zili Wang, Steven Ka Shing Yau, Zijuan Lin, et al. Metagpt: Meta programming
+for a multi-agent collaborative framework. InThe twelfth international conference on learning
+representations, 2023.
+[24] Zhe Hu, Hou Pong Chan, Jing Li, and Yu Yin. Debate-to-write: A persona-driven multi-agent
+framework for diverse argument generation. InProceedings of the 31st International Conference
+on Computational Linguistics, pages 4689–4703, 2025.
+[25] Lei Huang, Weijiang Yu, Weitao Ma, Weihong Zhong, Zhangyin Feng, Haotian Wang, Qiang-
+long Chen, Weihua Peng, Xiaocheng Feng, Bing Qin, et al. A survey on hallucination in large
+language models: Principles, taxonomy, challenges, and open questions.ACM Transactions on
+Information Systems, 43(2):1–55, 2025.
+[26] Ziwei Ji, Nayeon Lee, Rita Frieske, Tiezheng Yu, Dan Su, Yan Xu, Etsuko Ishii, Ye Jin Bang,
+Andrea Madotto, and Pascale Fung. Survey of hallucination in natural language generation.
+ACM computing surveys, 55(12):1–38, 2023.
+[27] Saurav Kadavath, Tom Conerly, Amanda Askell, Tom Henighan, Dawn Drain, Ethan Perez,
+Nicholas Schiefer, Zac Hatfield-Dodds, Nova DasSarma, Eli Tran-Johnson, et al. Language
+models (mostly) know what they know.arXiv preprint arXiv:2207.05221, 2022.
+[28] Akbir Khan, John Hughes, Dan Valentine, Laura Ruis, Kshitij Sachan, Ansh Radhakrishnan,
+Edward Grefenstette, Samuel R Bowman, Tim Rocktäschel, and Ethan Perez. Debating with
+more persuasive llms leads to more truthful answers.arXiv preprint arXiv:2402.06782, 2024.
+[29] Harold W Kuhn. Extensive games and the problem of information.Contributions to the Theory
+of Games, 2(28):193–216, 1953.
+11
+
+===== PAGE 12 =====
+
+[30] Leslie Lamport, Robert Shostak, and Marshall Pease. The byzantine generals problem. In
+Concurrency: the works of leslie lamport, pages 203–226. 2019.
+[31] Donghyun Lee and Mo Tiwari. Prompt infection: Llm-to-llm prompt injection within multi-
+agent systems.arXiv preprint arXiv:2410.07283, 2024.
+[32] Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio Petroni, Vladimir Karpukhin, Naman
+Goyal, Heinrich Küttler, Mike Lewis, Wen-tau Yih, Tim Rocktäschel, et al. Retrieval-augmented
+generation for knowledge-intensive nlp tasks.Advances in neural information processing
+systems, 33:9459–9474, 2020.
+[33] Han Li, Yuling Shi, Shaoxin Lin, Xiaodong Gu, Heng Lian, Xin Wang, Yantao Jia, Tao Huang,
+and Qianxiang Wang. Swe-debate: Competitive multi-agent debate for software issue resolution.
+arXiv preprint arXiv:2507.23348, 2025.
+[34] Lin Li, Guikun Chen, Hanrong Shi, Jun Xiao, and Long Chen. A survey on multimodal
+benchmarks: In the era of large ai models.arXiv preprint arXiv:2409.18142, 2024.
+[35] Yunxuan Li, Yibing Du, Jiageng Zhang, Le Hou, Peter Grabowski, Yeqing Li, and Eugene
+Ie. Improving multi-agent debate with sparse communication topology. InFindings of the
+Association for Computational Linguistics: EMNLP 2024, pages 7281–7294, 2024.
+[36] Tian Liang, Zhiwei He, Wenxiang Jiao, Xing Wang, Yan Wang, Rui Wang, Yujiu Yang, Shuming
+Shi, and Zhaopeng Tu. Encouraging divergent thinking in large language models through multi-
+agent debate. InProceedings of the 2024 conference on empirical methods in natural language
+processing, pages 17889–17904, 2024.
+[37] Zijun Liu, Yanzhe Zhang, Peng Li, Yang Liu, and Diyi Yang. Dynamic llm-agent net-
+work: An llm-agent collaboration framework with agent team optimization.arXiv preprint
+arXiv:2310.02170, 2023.
+[38] Chang Ma, Junlei Zhang, Zhihao Zhu, Cheng Yang, Yujiu Yang, Yaohui Jin, Zhenzhong Lan,
+Lingpeng Kong, and Junxian He. Agentboard: An analytical evaluation board of multi-turn llm
+agents.Advances in neural information processing systems, 37:74325–74362, 2024.
+[39] Adyasha Maharana, Dong-Ho Lee, Sergey Tulyakov, Mohit Bansal, Francesco Barbieri, and
+Yuwei Fang. Evaluating very long-term conversational memory of llm agents. InProceedings
+of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long
+Papers), pages 13851–13870, 2024.
+[40] Yu A Malkov and Dmitry A Yashunin. Efficient and robust approximate nearest neighbor search
+using hierarchical navigable small world graphs.IEEE transactions on pattern analysis and
+machine intelligence, 42(4):824–836, 2018.
+[41] Potsawee Manakul, Adian Liusie, and Mark Gales. Selfcheckgpt: Zero-resource black-box
+hallucination detection for generative large language models. InProceedings of the 2023
+conference on empirical methods in natural language processing, pages 9004–9017, 2023.
+[42] Yuqiao Meng, Luoxi Tang, Dazheng Zhang, Rafael Brens, Elvys J Romero, Nancy Guo, Safa
+Elkefi, and Zhaohan Xi. Small agent group is the future of digital health.arXiv preprint
+arXiv:2602.08013, 2026.
+[43] Vrushket More, Lyra Lu, Zeyu Ding, Zhaohan Xi, Seth Mizia, and Nancy L Guo. Theramind: a
+multi-llm ensemble for accelerating drug repurposing in lung cancer via case report mining.npj
+Precision Oncology, 2026.
+[44] John F Nash Jr. Equilibrium points in n-person games.Proceedings of the national academy of
+sciences, 36(1):48–49, 1950.
+[45] Charles Packer, Vivian Fang, Shishir_G Patil, Kevin Lin, Sarah Wooders, and Joseph_E Gonza-
+lez. Memgpt: towards llms as operating systems. 2023.
+12
+
+===== PAGE 13 =====
+
+[46] Joon Sung Park, Joseph O’Brien, Carrie Jun Cai, Meredith Ringel Morris, Percy Liang, and
+Michael S Bernstein. Generative agents: Interactive simulacra of human behavior. InProceed-
+ings of the 36th annual acm symposium on user interface software and technology, pages 1–22,
+2023.
+[47] David Patterson, Joseph Gonzalez, Urs Hölzle, Quoc Le, Chen Liang, Lluis-Miquel Munguia,
+Daniel Rothchild, David R So, Maud Texier, and Jeff Dean. The carbon footprint of machine
+learning training will plateau, then shrink.Computer, 55(7):18–28, 2022.
+[48] Ethan Perez, Saffron Huang, Francis Song, Trevor Cai, Roman Ring, John Aslanides, Amelia
+Glaese, Nat McAleese, and Geoffrey Irving. Red teaming language models with language
+models. InProceedings of the 2022 Conference on Empirical Methods in Natural Language
+Processing, pages 3419–3448, 2022.
+[49] Chen Qian, Zihao Xie, Yifei Wang, Wei Liu, Kunlun Zhu, Hanchen Xia, Yufan Dang, Zhuoyun
+Du, Weize Chen, Cheng Yang, et al. Scaling large language model-based multi-agent collabora-
+tion.arXiv preprint arXiv:2406.07155, 2024.
+[50] Harsh Raj, Domenic Rosati, and Subhabrata Majumdar. Measuring reliability of large language
+models through semantic consistency.arXiv preprint arXiv:2211.05853, 2022.
+[51] Preston Rasmussen, Pavlo Paliychuk, Travis Beauvais, Jack Ryan, and Daniel Chalef. Zep: a
+temporal knowledge graph architecture for agent memory.arXiv preprint arXiv:2501.13956,
+2025.
+[52] Alireza Rezazadeh, Zichao Li, Ange Lou, Yuying Zhao, Wei Wei, and Yujia Bao. Collaborative
+memory: Multi-user memory sharing in llm agents with dynamic access control.arXiv preprint
+arXiv:2505.18279, 2025.
+[53] Anirban Saha, Binay Gupta, Anirban Chatterjee, and Kunal Banerjee. You believe your llm
+is not delusional? think again! a study of llm hallucination on foundation models under
+perturbation.Discover Data, 3(1):20, 2025.
+[54] Mark Allen Satterthwaite. Strategy-proofness and arrow’s conditions: Existence and correspon-
+dence theorems for voting procedures and social welfare functions.Journal of economic theory,
+10(2):187–217, 1975.
+[55] Mrinank Sharma, Meg Tong, Tomasz Korbak, David Duvenaud, Amanda Askell, Samuel R
+Bowman, Newton Cheng, Esin Durmus, Zac Hatfield-Dodds, Scott R Johnston, et al. Towards
+understanding sycophancy in language models.arXiv preprint arXiv:2310.13548, 2023.
+[56] Noah Shinn, Federico Cassano, Ashwin Gopinath, Karthik Narasimhan, and Shunyu Yao.
+Reflexion: Language agents with verbal reinforcement learning.Advances in neural information
+processing systems, 36:8634–8652, 2023.
+[57] Mohit Shridhar, Xingdi Yuan, Marc-Alexandre Côté, Yonatan Bisk, Adam Trischler, and
+Matthew Hausknecht. Alfworld: Aligning text and embodied environments for interactive
+learning.arXiv preprint arXiv:2010.03768, 2020.
+[58] Andries Smit, Paul Duckworth, Nathan Grinsztajn, Thomas D Barrett, and Arnu Pretorius.
+Should we be going mad? a look at multi-agent debate strategies for llms.arXiv preprint
+arXiv:2311.17371, 2023.
+[59] Maojia Song, Tej Deep Pala, Ruiwen Zhou, Weisheng Jin, Amir Zadeh, Chuan Li, Dorien
+Herremans, and Soujanya Poria. Llms can’t handle peer pressure: Crumbling under multi-agent
+social interactions.arXiv preprint arXiv:2508.18321, 2025.
+[60] Gaurang Sriramanan, Siddhant Bharti, Vinu Sankar Sadasivan, Shoumik Saha, Priyatham
+Kattakinda, and Soheil Feizi. Llm-check: Investigating detection of hallucinations in large
+language models.Advances in Neural Information Processing Systems, 37:34188–34216, 2024.
+[61] Theodore Sumers, Shunyu Yao, Karthik R Narasimhan, and Thomas L Griffiths. Cognitive
+architectures for language agents.Transactions on Machine Learning Research, 2023.
+13
+
+===== PAGE 14 =====
+
+[62] Luoxi Tang, Yuqiao Meng, Joseph Costa, Yingxue Zhang, Muchao Ye, and Zhaohan Xi. The
+value of variance: Mitigating debate collapse in multi-agent systems via uncertainty-driven
+policy optimization.arXiv preprint arXiv:2602.07186, 2026.
+[63] Qwen Team. Qwen3 technical report, 2025.
+[64] Katherine Tian, Eric Mitchell, Allan Zhou, Archit Sharma, Rafael Rafailov, Huaxiu Yao, Chelsea
+Finn, and Christopher D Manning. Just ask for calibration: Strategies for eliciting calibrated
+confidence scores from language models fine-tuned with human feedback. InProceedings of
+the 2023 Conference on Empirical Methods in Natural Language Processing, pages 5433–5442,
+2023.
+[65] Christian Tomani, Kamalika Chaudhuri, Ivan Evtimov, Daniel Cremers, and Mark Ibrahim.
+Uncertainty-based abstention in llms improves safety and reduces hallucinations.arXiv preprint
+arXiv:2404.10960, 2024.
+[66] Vicenç Torra and Maria Bras-Amorós. Memory poisoning and secure multi-agent systems.
+arXiv preprint arXiv:2603.20357, 2026.
+[67] Miles Turpin, Julian Michael, Ethan Perez, and Samuel Bowman. Language models don’t
+always say what they think: Unfaithful explanations in chain-of-thought prompting.Advances
+in Neural Information Processing Systems, 36:74952–74965, 2023.
+[68] Fei Wang, Xingchen Wan, Ruoxi Sun, Jiefeng Chen, and Sercan O Arik. Astute rag: Over-
+coming imperfect retrieval augmentation and knowledge conflicts for large language models.
+InProceedings of the 63rd Annual Meeting of the Association for Computational Linguistics
+(Volume 1: Long Papers), pages 30553–30571, 2025.
+[69] Guanzhi Wang, Yuqi Xie, Yunfan Jiang, Ajay Mandlekar, Chaowei Xiao, Yuke Zhu, Linxi Fan,
+and Anima Anandkumar. V oyager: An open-ended embodied agent with large language models.
+arXiv preprint arXiv:2305.16291, 2023.
+[70] Haotian Wang, Xiyuan Du, Weijiang Yu, Qianglong Chen, Kun Zhu, Zheng Chu, Lian Yan,
+and Yi Guan. Learning to break: Knowledge-enhanced reasoning in multi-agent debate system.
+Neurocomputing, 618:129063, 2025.
+[71] Junjian Wang, Lidan Zhao, and Xi Sheryl Zhang. Madra: Multi-agent debate for risk-aware
+embodied planning.arXiv preprint arXiv:2511.21460, 2025.
+[72] Qineng Wang, Zihao Wang, Ying Su, Hanghang Tong, and Yangqiu Song. Rethinking the
+bounds of llm reasoning: Are multi-agent discussions the key? InProceedings of the 62nd
+Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers),
+pages 6106–6131, 2024.
+[73] Wenhui Wang, Furu Wei, Li Dong, Hangbo Bao, Nan Yang, and Ming Zhou. Minilm: Deep
+self-attention distillation for task-agnostic compression of pre-trained transformers.Advances
+in neural information processing systems, 33:5776–5788, 2020.
+[74] Yike Wang, Shangbin Feng, Heng Wang, Weijia Shi, Vidhisha Balachandran, Tianxing He,
+and Yulia Tsvetkov. Resolving knowledge conflicts in large language models.arXiv preprint
+arXiv:2310.00935, 2023.
+[75] Yu Wang and Xi Chen. Mirix: Multi-agent memory system for llm-based agents.arXiv preprint
+arXiv:2507.07957, 2025.
+[76] Zezhong Wang, Fangkai Yang, Lu Wang, Pu Zhao, Hongru Wang, Liang Chen, Qingwei Lin,
+and Kam-Fai Wong. Self-guard: Empower the llm to safeguard itself. InProceedings of
+the 2024 Conference of the North American Chapter of the Association for Computational
+Linguistics: Human Language Technologies (Volume 1: Long Papers), pages 1648–1668, 2024.
+[77] Zhenhailong Wang, Shaoguang Mao, Wenshan Wu, Tao Ge, Furu Wei, and Heng Ji. Unleashing
+the emergent cognitive synergy in large language models: A task-solving agent through multi-
+persona self-collaboration. InProceedings of the 2024 Conference of the North American
+Chapter of the Association for Computational Linguistics: Human Language Technologies
+(Volume 1: Long Papers), pages 257–279, 2024.
+14
+
+===== PAGE 15 =====
+
+[78] Qianshan Wei, Tengchao Yang, Yaochen Wang, Xinfeng Li, Lijun Li, Zhenfei Yin, Yi Zhan,
+Thorsten Holz, Zhiqiang Lin, and XiaoFeng Wang. A-memguard: A proactive defense frame-
+work for llm-based agent memory.arXiv preprint arXiv:2510.02373, 2025.
+[79] Qingyun Wu, Gagan Bansal, Jieyu Zhang, Yiran Wu, Beibin Li, Erkang Zhu, Li Jiang, Xiaoyun
+Zhang, Shaokun Zhang, Jiale Liu, et al. Autogen: Enabling next-gen llm applications via
+multi-agent conversations. InFirst conference on language modeling, 2024.
+[80] Yaxiong Wu, Sheng Liang, Chen Zhang, Yichao Wang, Yongyue Zhang, Huifeng Guo, Ruiming
+Tang, and Yong Liu. From human memory to ai memory: A survey on memory mechanisms in
+the era of llms.arXiv preprint arXiv:2504.15965, 2025.
+[81] Zhen Xiang, Linzhi Zheng, Yanjie Li, Junyuan Hong, Qinbin Li, Han Xie, Jiawei Zhang, Zidi
+Xiong, Chulin Xie, Carl Yang, et al. Guardagent: Safeguard llm agents by a guard agent via
+knowledge-enabled reasoning.arXiv preprint arXiv:2406.09187, 2024.
+[82] Kai Xiong, Xiao Ding, Yixin Cao, Ting Liu, and Bing Qin. Examining inter-consistency of large
+language models collaboration: An in-depth analysis via debate. InFindings of the Association
+for Computational Linguistics: EMNLP 2023, pages 7572–7590, 2023.
+[83] Miao Xiong, Zhiyuan Hu, Xinyang Lu, Yifei Li, Jie Fu, Junxian He, and Bryan Hooi. Can
+llms express their uncertainty? an empirical evaluation of confidence elicitation in llms.arXiv
+preprint arXiv:2306.13063, 2023.
+[84] Wujiang Xu, Zujie Liang, Kai Mei, Hang Gao, Juntao Tan, and Yongfeng Zhang. A-mem:
+Agentic memory for llm agents.arXiv preprint arXiv:2502.12110, 2025.
+[85] Ziwei Xu, Sanjay Jain, and Mohan Kankanhalli. Hallucination is inevitable: An innate limitation
+of large language models.arXiv preprint arXiv:2401.11817, 2024.
+[86] Shuai Yang, Qi Yang, Luoxi Tang, Yuqiao Meng, Nancy Guo, Jeremy Blackburn, and Zhaohan
+Xi. On the eligibility of llms for counterfactual reasoning: a decompositional study.arXiv
+preprint arXiv:2505.11839, 2025.
+[87] Zhilin Yang, Peng Qi, Saizheng Zhang, Yoshua Bengio, William Cohen, Ruslan Salakhutdinov,
+and Christopher D Manning. Hotpotqa: A dataset for diverse, explainable multi-hop question
+answering. InProceedings of the 2018 conference on empirical methods in natural language
+processing, pages 2369–2380, 2018.
+[88] Shunyu Yao, Howard Chen, John Yang, and Karthik Narasimhan. Webshop: Towards scalable
+real-world web interaction with grounded language agents.Advances in Neural Information
+Processing Systems, 35:20744–20757, 2022.
+[89] Guibin Zhang, Muxin Fu, Guancheng Wan, Miao Yu, Kun Wang, and Shuicheng
+Yan. G-memory: Tracing hierarchical memory for multi-agent systems.arXiv preprint
+arXiv:2506.07398, 2025.
+[90] Hanrong Zhang, Jingyuan Huang, Kai Mei, Yifei Yao, Zhenting Wang, Chenlu Zhan, Hongwei
+Wang, and Yongfeng Zhang. Agent security bench (asb): Formalizing and benchmarking attacks
+and defenses in llm-based agents.arXiv preprint arXiv:2410.02644, 2024.
+[91] Jintian Zhang, Xin Xu, Ningyu Zhang, Ruibo Liu, Bryan Hooi, and Shumin Deng. Explor-
+ing collaboration mechanisms for llm agents: A social psychology view.arXiv preprint
+arXiv:2310.02124, 2023.
+[92] Zeyu Zhang, Quanyu Dai, Xiaohe Bo, Chen Ma, Rui Li, Xu Chen, Jieming Zhu, Zhenhua Dong,
+and Ji-Rong Wen. A survey on the memory mechanism of large language model-based agents.
+ACM Transactions on Information Systems, 43(6):1–47, 2025.
+[93] Zhehao Zhang, Weijie Xu, Fanyou Wu, and Chandan K Reddy. Falsereject: A resource for
+improving contextual safety and mitigating over-refusals in llms via structured reasoning.arXiv
+preprint arXiv:2505.08054, 2025.
+15
+
+===== PAGE 16 =====
+
+[94] Wanjun Zhong, Lianghong Guo, Qiqi Gao, He Ye, and Yanlin Wang. Memorybank: Enhancing
+large language models with long-term memory. InProceedings of the AAAI conference on
+artificial intelligence, volume 38, pages 19724–19731, 2024.
+[95] Yuan Zhou, Peng Zhang, Mengya Song, Alice Zheng, Yiwen Lu, Zhiheng Liu, Yong Chen, and
+Zhaohan Xi. Zodiac: A cardiologist-level llm framework for multi-agent diagnostics.arXiv
+preprint arXiv:2410.02026, 2024.
+A Supplementary Information of Zero-Trust Memory Game
+A.1 Full Rationale for the Zero-Trust Formulation
+The zero-trust formulation is motivated by three converging lines of evidence.
+Misalignment in LLM-based agents.Large language model agents have been shown to exhibit
+sycophantic drift [ 18, 55], wherein a model progressively adjusts its stated beliefs toward those
+of a conversational partner regardless of evidential support. In the context of shared memory, this
+implies that a contributor agent may craft ∆t not to reflect its best epistemic state but to conform to
+or reinforce a perceived consensus already encoded in Mt. Analogously, an auditor agent subject
+to sycophancy will approve ∆t because it matches existing memory patterns rather than because
+it is true. Both behaviors are misaligned with collective memory integrity yet neither constitutes
+classic Byzantine behavior, i.e., the agent is not “faulty” in the sense of crashing or sending random
+messages; it is behaving systematically in a way that is undetectable by fault-tolerance mechanisms.
+Limitations of Byzantine fault tolerance.Byzantine fault tolerance (BFT) [ 8, 30] assumes that up
+to f < n/3 agents may behave arbitrarily, while the rest are honest. This framework is ill-suited to
+multi-agent LLM systems for two reasons. First, the fraction of misaligned agents is not known in
+advance and may exceed the BFT threshold, particularly when agents share the same base model and
+therefore share systematic biases [67]. Second, BFT assumes honest agents are identifiable by their
+consistent and correct behavior, whereas in LLM systems the same agent may behave honestly in one
+context and misalign in another depending on the prompt, the memory state, or the identities of other
+agents [48]. The zero-trust assumption removes the dependency on a trusted majority entirely.
+Social choice and manipulation in multi-agent deliberation.Multi-agent debate frame-
+works [17, 36, 9, 82, 72] aggregate reasoning by having agents critique and revise each other’s
+outputs. Results in social choice theory [4, 21, 54] establish that any aggregation rule over rational
+agents is susceptible to intentional manipulation by at least one participant, where there is no mecha-
+nism that is simultaneously strategy-proof, Pareto-efficient, and non-dictatorial (Arrow’s impossibility
+theorem [20]). Applied to memory updating, this implies that for any commitment rule C, there
+exists a profile of agent strategies under which the committed memory update is not the collectively
+optimal one. Zero-trust is therefore not a pessimistic special case but the general condition under
+which shared-memory deliberation operates.
+A.2 Rationale for Utility Structures
+Why the contributor utility takes a product form?The contributor’s utilityuc = Pr[C= 1]·I−D is
+designed to reflect a strategic reality: committing an uninfluential delta has no value, and committing
+a high-influence delta that is immediately detected has negative value. The product Pr[C= 1]·I
+captures this joint requirement, a contributor must simultaneously achieve commitmentandinfluence
+to gain positive utility. Removing the scalar weightsµc and νc from the earlier formulation is justified
+by noting that their ratio is not identifiable from observed behavior: only the tradeoff between
+the product term and D matters for equilibrium characterization, so we normalize without loss of
+generality.
+Why auditor utility measures pre-commit alignment?The original formulation ϕi(Mt+1) condi-
+tions on the post-commit memory state, which is circular: the auditor’s vote determines whether the
+commit occurs, so its utility depends on its own action in a way that conflates strategic incentives with
+outcome evaluation. Instead, Align(∆t,M t) is a pre-commit signal that the auditor observesbefore
+voting, making the utility well-defined as an expected-payoff function over the auditor’s strategy.
+This is consistent with standard extensive-form game formulations where payoffs are evaluated at
+16
+
+===== PAGE 17 =====
+
+terminal nodes given the full history, but the relevant information for strategy selection is what is
+observable before the action is taken.
+Online estimation of Align(·) and ci.The two remaining quantities in the auditor utility are
+estimated without human pre-specification.
+Alignment signal. Align(∆t,M t) is computed by Φ as a normalized version of the architecture-
+specific calibration score:
+Align(∆t,M t) = 2ρ(∆t,M t)−1∈[−1,+1](10)
+where ρ∈ {ρ emb, ρgraph} is the calibration score defined in Section 4. This grounding meansAlign
+is entirely determined by the structural properties of∆ t relative toM t, with no free parameters.
+Effort cost.The effort cost ci is estimated as the empirical mean token consumption (or wall-clock
+time) ofa i’s scrutiny actions across the most recentWrounds:
+ˆc(t)
+i = 1
+W
+t−1X
+t′=t−W
+cost(ai, t ′)(11)
+where cost(ai, t′) is the measured computational cost of ai’s participation in round t′. This is
+observable without any assumptions about agent internals and requires no human input. The window
+size W is set to the minimum value satisfying a standard variance criterion: W ∗ = min{W:
+Var(ˆc(t)
+i )≤ε c}, where εc is the acceptable estimation error, making even this meta-parameter
+data-driven.
+A.3 Equilibrium Failure Modes Under Zero-Trust
+We formally establish three canonical failure modes that emerge as Nash equilibria of Γ under
+Assumption 3.1. These propositions collectively motivate why memory integrity cannot be achieved
+by agent-level trust alone, and provide the formal basis for the calibration mechanism of Section 4.
+Proposition A.1(Auditor Free-Riding).Under a majority commitment rule C with |At|=n auditors,
+if each auditor’s effort cost satisfiesci >0 and the alignment signalAlign(∆t,M t) is independent of
+any individual auditor’s vote, then the unique dominant-strategy equilibrium is one ofrubber-stamp
+approval: eacha i ∈ A t emitsv i = 1without scrutiny, regardless of∆ t.
+Proof. Fix any auditor ai ∈ A t and let v−i denote the votes of all other auditors. Under majority rule,
+ai’s vote is pivotal (i.e., changes the commitment outcome) only if exactly⌊n/2⌋ of the remaining
+n−1 auditors vote to approve. Let ppiv denote this pivotality probability. For any symmetric mixed
+strategy profile over the other auditors with approval probabilityq∈[0,1]:
+ppiv =
+n−1
+⌊n/2⌋
+
+q⌊n/2⌋(1−q) ⌈n/2⌉−1 =O(n −1/2)(12)
+by Stirling’s approximation. The marginal integrity gain from scrutiny is thereforeppiv ·∆Align≤
+ppiv ·2 , sinceAlign∈[−1,+1] . The expected net utility gain from scrutiny over rubber-stamping is:
+∆ui =p piv ·∆Align−c i ≤2p piv −c i =O(n −1/2)−c i (13)
+Since ci >0 is fixed and ppiv →0 as n→ ∞ , there exists n∗ =O(c −2
+i ) such that ∆ui <0 for all
+n > n ∗. For any n≥2 , vi = 1 without scrutiny weakly dominates careful scrutiny because the
+effort cost ci is incurred regardless of whether ai is pivotal, while the integrity payoff from scrutiny
+requires pivotality. Therefore, vi = 1 is the weakly dominant strategy for all ai, and the unique
+dominant-strategy equilibrium is universal approval without scrutiny.
+Proposition A.2(Collusion Equilibrium).Suppose a coalition K ⊆ A t of auditors shares a positive
+collusion benefit λi >0 from approving ∆t regardless of its content, and |K| ≥ ⌈|A t|/2⌉. Then
+there exists a Nash equilibrium in which every ai ∈ K approves ∆t unconditionally, the commitment
+ruleCis satisfied, and the committed delta may be arbitrarily inconsistent withM t.
+Proof. We construct the equilibrium strategy profile explicitly. Let eachai ∈ K play the pure strategy
+vi = 1 unconditionally, and let agents outside K play any strategy. We verify that no agent in K has a
+profitable deviation.
+17
+
+===== PAGE 18 =====
+
+Payoff under collusion.Fora i ∈ K, playingv i = 1yields:
+ucollude
+i =Align(∆ t,M t) +λ i (14)
+where the effort cost term is zero since no scrutiny is performed.
+Payoff under deviation.If ai deviates to vi = 0 (rejection), the collusion benefit λi is forfeited. Since
+|K| ≥ ⌈|A t|/2⌉, the majority threshold is still satisfied byK \ {ai} whenever |K|>⌈|A t|/2⌉. In this
+case the deviation does not change the commitment outcome and the deviating auditor loses λi >0 :
+udeviate
+i =Align(∆ t,M t)−c i < ucollude
+i (15)
+When |K|=⌈|A t|/2⌉ exactly, deviation by ai does change the outcome to rejection, but ai’s payoff
+then becomesAlign(∆t,M t)−c i −λ i < ucollude
+i since λi >0 and ci >0 . In both cases deviation
+is strictly dominated.
+Commitment outcome.Since |K| meets the majority threshold, C({vi}i∈At) = 1 regardless of the
+content of ∆t. In particular, ∆t may satisfyAlign(∆t,M t) =−1 (maximal inconsistency) and still
+be committed. No agent inKhas incentive to deviate, so this constitutes a Nash equilibrium.
+Proposition A.3(Adversarial Rejection).Suppose a blocking coalition B ⊆ A t satisfies |B|>
+|At|/2, and each ai ∈ B has utility strictly decreasing in the contributor ac’s influence onM, i.e.,
+ui is decreasing in I(∆t,M t) for any ∆t from ac. Then there exists a Nash equilibrium in which all
+∆t froma c are rejected regardless of their consistency withMt.
+Proof.Let eacha i ∈ Bplay the pure strategyv i = 0unconditionally for any∆ t proposed bya c.
+Payoff under adversarial rejection.For ai ∈ B , rejecting ∆t prevents commitment and therefore
+prevents ac from gaining influence over M. Since ui is decreasing in I(∆t,M t), blocking the
+commit yields:
+ureject
+i =Align(∆ t,M t)·1[C= 1]−c i ·1[v i =scrutinize](16)
+Under unconditional rejection without scrutiny,C= 0andc i = 0, sou reject
+i = 0.
+Payoff under deviation.If ai deviates to vi = 1, and |B| −1≥ |A t|/2 still holds (which is true
+when |B|>|A t|/2 + 1), the outcome remains rejection and the deviation yields no benefit. When
+|B|=⌊|A t|/2⌋+ 1 , a deviation to vi = 1 may flip the outcome to commitment, increasing ac’s
+influence. Sinceu i is strictly decreasing inI:
+uapprove
+i < ureject
+i = 0(17)
+So deviation to approval is strictly dominated for allai ∈ B. Since |B| exceeds the blocking threshold,
+C({vi}) = 0for all∆ t froma c, independently of∆ t’s consistency withMt.
+Remark A.4.Propositions A.1–A.3 are not mutually exclusive. A single auditor set At may si-
+multaneously contain free-riders (Proposition A.1), a colluding sub-coalition (Proposition A.2),
+and an adversarially rejecting sub-coalition (Proposition A.3). The three failure modes operate on
+disjoint subsets of At and their effects compound: free-riders provide no signal, colluders inject
+false approval, and adversarial rejectors suppress truthful updates. Together, they establish that
+no voting rule over untrusted auditors (e.g., majority, supermajority, or weighted) can guarantee
+memory integrity in the worst case, since each rule is vulnerable to at least one of the three equilibria.
+This impossibility is the formal foundation for replacing the vote-based commitment rule C with the
+structural calibration mechanismΦin Section 4.
+Mapping to the three failure cases of Figure 1.Propositions A.1–A.3 and the three failure cases
+described in Section 1 are related by a many-to-many correspondence rather than a one-to-one one,
+because each proposition characterizes anequilibrium structure(which strategy profile is stable)
+while each case in Figure 1 characterizes anobserved memory outcome(what the resulting Mt+1
+looks like). A single equilibrium can produce different outcomes depending on the content of∆t, and
+a single outcome can arise from different equilibria depending on which failure of agent confidence
+drives it. We make the correspondence explicit below.
+Proposition A.1 (free-riding) produces Case 1 outcomes when the contributor is over-confident:
+rubber-stamp approval without scrutiny commits whatever∆t is proposed, including hallucinated
+18
+
+===== PAGE 19 =====
+
+Table 2: Many-to-many correspondence between equilibrium failure modes (Propositions A.1–A.3)
+and observed memory outcomes (Cases 1-3 of Figure 1). ✓ indicates the proposition can produce the
+case;✗indicates it structurally cannot.
+Case 1 Case 2 Case 3
+(corruption) (over-rejection) (uncertain/no commit)
+Prop. A.1 (free-riding)✓ ✓
+Prop. A.2 (collusion)✓ ✓
+Prop. A.3 (adv. rejection)✓ ✓
+entries with high stated confidence. It produces Case 3 outcomes when the contributor is itself
+hedged: rubber-stamp approval of a “no-commit” or noise proposal yields an under-populated
+memory. Free-riding does not produce Case 2, because rubber-stamping never rejects.
+Proposition A.2 (collusion) produces Case 1 outcomes when colluding auditors approve a high-
+confidence corrupt contributor. This is the canonical “two confident agents endorse a hallucinated
+entry” pattern. It produces Case 2 outcomes when the colluding majority approves a confident
+contributor’srejectionof a tentative contribution, suppressing correct content with stated certainty.
+Collusion does not produce Case 3, because collusion is by definition active commitment, not
+abstention.
+Proposition A.3 (adversarial rejection) produces Case 2 outcomes directly: a blocking coalition
+vetoes truthful ∆t with high confidence regardless of its alignment, which is exactly the over-curation
+pattern. It produces Case 3 outcomes when the blocking coalition’s rejection coexists with weak
+contribution from the remaining agents (uncertain/no commit happens) and what could have been
+useful content is lost. Adversarial rejection does not produce Case 1, because rejection cannot inject
+corrupt content.
+Overall, we have three observations: First, every case is reachable by at least two of the three equilibria,
+so no single proposition fully characterizes any single case. Second, every proposition produces at
+least two cases, so no single failure mode at the agent level produces a unique memory outcome. Third,
+the union of the three propositions covers all three cases, confirming that the failure-case taxonomy
+of Figure 1 is exhaustively grounded in the equilibrium analysis: any observable confidence-driven
+failure of shared-memory debate corresponds to at least one of the three propositions.
+B System-Level Equilibrium and Memory Calibration
+B.1 Existence of Equilibrium
+We first establish that the gameΓ always has at least one equilibrium, regardless of agent strategies
+or utility parameters.
+Proposition B.1(Existence of Equilibrium).Under Assumption 3.1, the zero-trust memory game Γ
+admits at least one mixed-strategy equilibrium.
+Proof. We verify the three conditions of Nash’s existence theorem [44] as extended to finite extensive-
+form games by Kuhn [29].
+(i) Finite player set.The player set{a c} ∪ At is finite by assumption, with|A t|=n−1<∞.
+(ii) Compact and convex strategy spaces.The contributor’s pure strategy spaceD is finite; its mixed
+extension ∆(D) is the probability simplex over D, which is compact and convex. Each auditor ai’s
+pure strategy space is {0,1} ; its mixed extension [0,1] is compact and convex. The joint strategy
+space∆(D)× Q
+i∈At[0,1]is therefore compact and convex.
+(iii) Continuity of expected utilities.The contributor’s expected utility E[uc(∆t,M t)] involves
+Pr[C({vi}) = 1|∆ t], which is multilinear in auditors’ mixed strategies{πi} and therefore contin-
+uous. The influence term I(∆t,M t) and detection term D(∆t,M t) are fixed for a given ∆t and
+Mt, so continuity is preserved. Each auditor’s expected utilityE[ui(πi,∆ t,M t)] is linear in πi and
+continuous in the joint strategy profile by the same argument.
+19
+
+===== PAGE 20 =====
+
+Since all three conditions hold, Nash’s theorem guarantees the existence of a fixed point of the
+best-response correspondence, constituting a mixed-strategy equilibrium ofΓ.
+Remark B.2.Existence is guaranteed but the equilibrium is generically non-unique. In particular, all
+three failure-mode equilibria (Propositions A.1–A.3) are valid Nash equilibria under their respective
+parameter regimes. Existence therefore does not imply desirability, which we address via the integrity
+gap below.
+B.2 The Integrity Gap
+Not all Nash equilibria of Γ produce good memory. We quantify how far an equilibrium outcome can
+be from the ideal using theintegrity gap.
+Let M∗
+t+1 =MERGE(M t,∆ ∗
+t ) denote the memory state from committing the integrity-optimal delta
+∆∗
+t = arg max∆Align(∆,M t), and letM eq
+t+1 be the memory state resulting from the equilibrium
+profile(∆ ∗
+t ,{π ∗
+i }). The integrity gap is:
+G(Γ) =Align(∆ ∗
+t ,M t)−E
+
+Align(∆eq
+t ,M t)
+
+(18)
+where the expectation is over the randomness in mixed strategies. Under the three failure-mode
+equilibria, the gap is strictly positive: free-riding auditors approve manipulative deltas with
+Align(∆t,M t)≪1 ; colluding auditors do the same unconditionally; and adversarial rejectors
+block truthful deltas withAlign(∆t,M t)≈1 . In all three cases, G(Γ)>0 and memory degrades
+over time.
+The root cause in each case is the same: the commitment outcome is determined by auditor votes, so
+agents optimize their votes rather than the quality of their evidence. The calibration mechanism Φ
+addresses this by replacing vote-based commitment with score-based commitment, as we show next.
+B.3 How Calibration Closes the Integrity Gap
+The calibration mechanism Φ transforms Γ into an effective game ˜Γ by replacing the vote-based
+commitment ruleC({v i})with a structure-based rule:
+˜C(∆t,M t) =1[ρ(∆ t,M t)≥ρ ∗](19)
+where ρ∈ {ρ emb, ρgraph} is the architecture-specific calibration score. This single change propagates
+through both utility functions and closes the gap via three channels.
+Channel 1: Raising the contributor’s detection cost.Under ˜C, the contributor’s commitment gain
+is no longer a function of auditor persuasibility but of the calibration score:
+˜uc(∆t,M t) =1[ρ(∆ t,M t)≥ρ ∗]·I(∆ t,M t)−D(∆ t,M t)(20)
+Since ρ and D are positively correlated by construction, i.e., D(∆t,M t) = 1−ρ(∆ t,M t), a more
+manipulative ∆t scores lower on ρ and is more likely to be rejected. The contributor therefore faces a
+hardmanipulation ceiling: it cannot simultaneously maximize influence I and pass the calibration
+gateρ≥ρ ∗. The equilibrium delta satisfies:
+D( ˜∆∗
+t ,M t)≤ 1
+1 +κ (21)
+where κ >0 is the correlation coefficient between D and 1−ρ , estimated online from the history
+of calibration scores. This bound is decreasing in κ: a tighter correlation between detectability and
+calibration score forces more truthful contributions.
+Channel 2: Eliminating auditor free-riding.Under ˜C, the commitment outcome no longer depends
+on auditor votes at all. The marginal integrity payoff from casting a vote is therefore exactly zero:
+∂
+∂vi
+E
+h
+Align(∆t,M t)| ˜C
+i
+= 0∀a i ∈ A t (22)
+This eliminates the free-riding problem at its source. Auditor effort is instead redirected toward
+mandatory structural evidence tasks, i.e., probe query submission (embedding memory) and path
+20
+
+===== PAGE 21 =====
+
+attestation (graph memory), whose outputs feed directly into ρ(∆t,M t). These tasks have a well-
+defined marginal contribution to ρ, giving auditors a concrete structural incentive to participate
+honestly.
+Channel 3: Deterring collusion intertemporally.The credibility weight w(t)
+i decays when an
+auditor submits structurally invalid evidence:
+w(t+1)
+i =w (t)
+i ·(1−δ·1[invalid evidence froma i])(23)
+An auditor’s long-run expected payoff is:
+Vi =
+∞X
+t=0
+βt Align(∆t,M t)·w (t)
+i −c i ·1[attest](24)
+Collusion (submitting invalid paths or garbage probes to support a manipulative∆t) reduces w(t)
+i ,
+which reduces Vi in all future rounds. For sufficiently patient auditors ( β close to 1), this long-
+run credibility loss outweighs any short-run benefit from collusion, making honest attestation the
+dominant intertemporal strategy.
+B.4 The Calibrated Equilibrium
+The three channels above collectively bound the integrity gap under ˜Γ. The gap decomposes into
+three independent residual sources:
+G(˜Γ) =G manip
+|{z}
+contributor
+residual
++G thresh|{z}
+threshold
+error
++G attest|{z}
+attestation
+noise
+(25)
+where Gmanip =O(1/(1 +κ)) from Equation (21) and vanishes as κ→ ∞ ; Gthresh is minimized at
+the optimal threshold ρ∗
+opt and estimated adaptively; and Gattest =O(1/
+√
+b) by a Hoeffding bound
+overbsampled auditors and vanishes asb→ ∞. Combining:
+G(˜Γ)≤ C1
+1 +κ|{z}
+manipulation
++C 2 · |ρ∗ −ρ ∗
+opt|
+| {z }
+threshold
++ C3√
+b|{z}
+attestation
+=:ϵ(κ, ρ ∗, b)(26)
+for system-level constantsC 1, C2, C3 >0.
+Proposition B.3(Calibrated Equilibrium).Under the calibration mechanism Φ with correlation
+parameter κ, adaptive threshold ρ∗, and b attestation auditors, the effective game ˜Γ admits an
+equilibrium ( ˜∆∗
+t ,{˜π∗
+i }), i.e., thecalibrated equilibrium, in which the integrity gap satisfies (26). In
+particular:
+(i)G( ˜Γ)→0asκ→ ∞,ρ ∗ →ρ ∗
+opt, andb→ ∞.
+(ii)G( ˜Γ)<G(Γ) for any κ >0 , ρ∗ >0 , b≥1 : calibration strictly improves memory integrity
+over the uncalibrated game under any non-trivial setting.
+(iii) The calibrated equilibrium requires no agent to be honest: integrity is achieved structurally,
+consistent with Assumption 3.1.
+Proof sketch. Existence of the equilibrium ( ˜∆∗
+t ,{˜π∗
+i }) in ˜Γ follows from Proposition B.1 applied
+to ˜Γ, which satisfies the same finite-player, compact-strategy, continuous-utility conditions with ˜C
+replacingC.
+(i)Each residual term in (26) vanishes under the stated limiting conditions independently, so their
+sum vanishes.
+(ii)For any κ >0 , the manipulation ceiling in Channel 1 strictly reducesGmanip below its uncalibrated
+value (where κ= 0 and the contributor faces no structural detection cost). For any b≥1 , the
+attestation component strictly reduces Gattest below the uncalibrated case (where auditor evidence is
+not collected at all).
+21
+
+===== PAGE 22 =====
+
+(iii)The calibration score ρ is computed entirely from structural properties of ∆t and Mt, with
+auditor outputs treated as potentially adversarial inputs. No agent’s honesty is assumed at any point
+in the computation of ˜C.
+The residual gap ϵ >0 reflects the fundamental limits of structural verification under zero-trust: a
+perfect gap of zero would require either a trusted verifier or an unbounded attestation budget. The
+bound (26) makes this tradeoff explicit, with κ estimated online, ρ∗ set adaptively, and b depends on
+the size of agent group, leaving no free parameters requiring human specification.
+B.5 How the Calibrated Equilibrium Addresses Each Debate Failure (Figure 1)
+The calibration mechanism Φ (Section 4) replaces the vote-based commitment rule C with a score-
+based rule ˜C (Eq. 19 in Appendix B.3), which removes the dependency of the commit outcome on
+agent votes and therefore on agent confidence. We trace how this single change resolves each of the
+three cases.
+Case 1 (confident corruption).In the uncalibrated game, an over-confident contributor’s ∆t commits
+whenever auditors rubber-stamp (Prop. A.1) or collude (Prop. A.2), regardless of ∆t’s alignment
+with Mt. Under Φ, commitment requires ρ(∆t,M t)≥ρ ∗. A corrupt ∆t (whether hallucinated,
+sycophantic, or adversarially crafted) produces low ρalign because the entry disrupts retrieval over
+auditor probes against Mt (§4), and often low ρdetect because the entry lacks the structural support of
+genuinely informative content. The contributor’s stated confidence does not enter the score. Channel 1
+of Appendix B.3 (Raising the contributor’s detection cost) formalizes this: the manipulation ceiling
+˜D(∆∗
+t ,M t)≤1/(1 +κ) bounds the detectability of any corrupt ∆t that passes Φ, and this bound
+tightens asκgrows.
+Case 2 (confident over-rejection).In the uncalibrated game, a blocking coalition (Prop. A.3) or a
+confident colluding majority (Prop. A.2) can suppress a tentative but correct ∆t simply by voting
+against it. Under Φ, the auditor’s vote does not enter the commit decision at all, only the structural
+evidence the auditor submits (probe queries for embedding memory, reachability checks for graph
+memory) contributes to ρ. A correct ∆t produces non-disrupting retrieval against well-formed probes
+(high ρalign) and adequate structural support (high ρdetect) regardless of any auditor’s stated rejection.
+Channel 2 of Appendix B.3 (Eliminating auditor free-riding) formalizes this: ∂E[Align]/∂v i = 0,
+so any vote-based suppression strategy has zero leverage on the commit outcome.
+Case 3 (collective hedging).Cases 1 and 2 are active failures: the wrong outcome is committed or
+the right outcome is rejected. Case 3 is a passive failure: uncertain (or no) commit happens when a
+useful one was possible. Φ does not attempt to “force” a commit in Case 3, when all auditors hedge,
+ρalign is low across the board because hedging probes produce minimal structural evidence, and the
+system correctly declines to commit. This is the right behavior: committing a noise-level ∆t under
+collective hedging would be a Case 1 failure in disguise. What Φ provides in Case 3 issymmetry of
+failure: an honestly-hedged round commits nothing, and an adversarially-hedged round also commits
+nothing, so an attacker has no asymmetric leverage. Channel 3 of Appendix B.3 (Deterring collusion
+intertemporally) ensures that auditors who systematically submit hedge-style probes accumulate
+credibility decay, so an adversary cannot maintain Case 3 outcomes indefinitely against an honest
+minority.
+Two observations close this analysis. First, Φ does not require any agent to be honest: the score ρ is
+computed entirely from structural properties of ∆t and Mt, so the calibrated equilibrium is robust
+to all three failure modes simultaneously, even when they coexist in the same round (Remark A.4).
+Second, the three cases are addressed bydifferent channelsof the calibration mechanism (Case 1 by
+ρdetect bounding manipulation; Case 2 by ρ being independent of votes; Case 3 by ρalign declining to
+commit under hedge), which is why no single component of Φ is sufficient on its own. The ablation
+study in Appendix D.4 confirms that removing any one component degrades performance, and the
+degradation pattern matches which case the removed component primarily addresses.
+C Calibration Mechanism: Implementation Details and Proofs
+This appendix supplies the technical details deferred from §4. We provide necessary justifications,
+document every adaptive parameter and how it is initialized at cold start, prove the recovery prop-
+22
+
+===== PAGE 23 =====
+
+erty of the credibility update, justify the latency claim, characterize the additional memory and
+token overhead, and give implementation notes for both the embedding and graph instantiations of
+EQUIMEM.
+C.1 Mapping Between Calibration Quantities and Utility Components
+This subsection makes precise the claim, illustrated visually in Figure 2, that every component of
+the contributor utility uc = Pr[C=1]·I−D and the auditor utility ui = Align(∆ t, Mt)−c i
+defined in Section 3 is controlled, at the calibrated equilibrium of eΓ, by exactly one of the three
+calibration quantities in EQUIMEM: the detection signal ρdetect, the alignment signal ρalign, and the
+credibility weight w(t)
+i (into which we fold the commit gate 1[ρ≥ρ ∗], since the gate’s structural
+authority comes from w(t)
+i entering ρ multiplicatively). Table 3 summarizes the mapping; the rest of
+the subsection states and justifies each row. We address mechanisms only insofar as they bear on
+equilibrium utility control; implementation details are deferred to the rest of Appendix C.
+Table 3: Per-component mapping between the three calibration quantities of EQUIMEMand the
+utility components they control at the calibrated equilibrium. Each row identifies the component, the
+calibration quantity that controls it, and the property that does the control.
+Calibration quantity Side Utility component Controlling property
+ρdetect
+ContributorD(∆ t, Mt)detection regulation
+ContributorI(∆ t, Mt)influence ceiling
+ρalign
+AuditorAlign(∆ t, Mt)sample-time regulation
+Auditorc i probe re-use and damping
+w(t)
+i (with commit gate) ContributorPr[C=1]vote-independent regulation
+Auditorc i damping
+C.1.1 The detection signalρ detect controlsDandI
+The detection signal scores how the proposed ∆t sits in the geometry (embedding case) or topology
+(graph case) of Mt. Both contributor utility components on the left of uc, namely D and I, are
+controlled by this single quantity at equilibrium.
+Control of D(∆t, Mt) via detection regulation.In the uncalibrated game Γ, D is conceptual:
+detection has no operational meaning unless an external mechanism makes inconsistency observable.
+EQUIMEMsupplies that mechanism by setting D:= 1−ρ , where ρdetect is the dominant input (low
+alignment alone cannot redeem a high-density delta becauseρ= √ρdetect ·ρ align).
+Justification.By construction ρ∈[0,1] , hence D∈[0,1] as required by Eq. (3). The substitution
+D= 1−ρ is the natural one in the sense that the correlation coefficient betweenD and 1−ρ is exactly
+κ= 1 , achieving the manipulation ceiling derived in Appendix A.3 (Channel 1). In particular, ρdetect
+becomes informative as a detection signal precisely when ∆t disturbs the local density (embedding)
+or violates local/path consistency (graph) – the two manipulations the contributor’sI relies on. There
+is therefore no slack at equilibrium in which a high-Idelta scores low onD.
+Control of I(∆ t, Mt) via influence ceiling.The influence term I measures how much ∆t shifts
+downstream retrieval. A manipulative contributor maximizes I by placing ∆t in regions of Mt that
+dominate retrieval, i.e., regions of high local embedding density, or graph edges that bypass existing
+multi-hop paths. These are exactly the patterns that ρdetect scores; the retrieval re-scaling described in
+§4.3 then forces every committed entry’s effective influence to be capped by itsρdetect score.
+Justification (embedding case).For an entry e∆
+k , ρdetect(∆t) = 1− 1
+K
+P
+k ˆrk/(¯r+ϵ). Let Ik denote
+the marginal influence of e∆
+k on top-k retrieval against an arbitrary query distribution. Top-k retrieval
+returns the k nearest neighbours, so e∆
+k enters the result for any query lying within a ball of radius
+proportional to its neighbourhood density, giving Ik = Θ(ˆrk) asymptotically in |Mt|. The retrieval
+re-scaling˜ek = √ρk ek at read time then yields
+Ieff
+k =ρ k ·I k ≤ρ k ·Θ(ˆrk)
+23
+
+===== PAGE 24 =====
+
+which is jointly capped because ρk is decreasing in ˆrk through ρdetect. A delta cannot simultaneously
+score high onρ detect and exert largeI.
+Justification (graph case).For a new edge e= (u, r, v) , I(e) is determined by how often e lies on
+multi-hop retrieval paths. The path-strength productQ
+e∈π ρe used at retrieval ensures that any path
+through a low-ρdetect edge is automatically discounted, so Ieff(e)≤ρ detect(e)·I max. The ceiling
+D≤1/(1 +κ) in Eq. (26) of Appendix B.3 then gives a closed-form upper bound on equilibrium
+influence.
+C.1.2 The alignment signalρ align controlsAlignandc i
+The alignment signal is computed from auditor probes (queriesq i for embedding memory, traversal
+paths πi for graph memory). Both auditor utility terms are controlled by this single quantity at
+equilibrium: the alignment signal in ui is regulated in ρalign directly, and the effort cost ci collapses
+because the probes that produceρ align are reused from the auditor’s normal debate activity.
+Control of Align(∆t, Mt) via sample-time non-manipulability.EQUIMEMregulates the alignment
+signal as Align(∆t, Mt) := 2ρ−1∈[−1,+1] (Eq. 4, Appendix A.2), where ρalign is the auditor-side
+input. We make explicit why this regulating is unmanipulable by any auditor at equilibrium.
+Justification.Let auditora i submit probe evidenceξ i. The alignment signal decomposes as
+ρalign(∆t) = 1− 1
+|At|
+X
+j∈At
+w(t)
+j ·s(ξ j; ∆t, Mt)
+where s is the per-auditor disagreement (RBO distance for embeddings, indicator of unreachability
+for graphs). Two structural properties make ρalign robust to single-auditor manipulation. First, ξi is
+sampled uniformly from Qi (or fixed to the auditor’s current path), so ai cannot pre-commit to a
+probe that flatters its preferred outcome; the sampling is performed by EQUIMEM, not ai. Second,
+the multiplicative entry ofw (t)
+j caps any single auditor’s marginal influence:
+ ∂ρalign
+∂ξi
+ ≤ w(t)
+i
+|At|
+At equilibrium, honest auditors converge to w(t)
+i →1 (Proposition C.1), giving them full influence;
+adversarial auditors converge toward 0. The alignment term in ui therefore tracks the structural
+quantity2ρ−1rather than any self-reported judgment.
+Damping ci via probe re-use.The effort cost ci in ui models the resource cost an auditor incurs
+by performing scrutiny. In Γ, scrutiny is a separate costly action, which produces the free-riding
+equilibrium (Proposition A.1). EQUIMEMneutralizes this cost because the probes used to compute
+ρalign are exactly the queries and traversals the auditor already issues during debate.
+Justification.Let T debate
+i be the set of LLM calls and tool invocations ai performs as part of normal
+debate participation, and let T Φ
+i be the additional set induced by EQUIMEM. Every probe used by
+EQUIMEMis sampled from Qi (which ai generates regardless of EQUIMEM) or set to πi (the path
+ai already walked), so
+T Φ
+i ⊆ T debate
+i
+The empirical effort cost (Appendix A.2)
+bc(t)
+i = 1
+W
+t−1X
+t′=t−W
+
+cost(T debate
+i ∪ T Φ
+i , t′)−cost(T debate
+i , t′)
+
+= 0
+in expectation, modulo O(1) algorithmic overhead dominated by LLM inference cost (Appendix D.9).
+The marginal scrutiny cost is therefore asymptotically zero at equilibrium, and the free-riding incentive
+of Proposition A.1 dissolves.
+C.1.3 The credibility weightw (t)
+i (with commit gate) controlsPr[C=1]andc i
+The credibility weight enters ρ multiplicatively through ρalign and gates commitment via 1[ρ≥ρ ∗].
+The commit gate is therefore not a separate calibration quantity but the structural endpoint of w(t)
+i :
+24
+
+===== PAGE 25 =====
+
+without credibility weighting, the gate would be vote-equivalent. We group them and show that
+together they control the contributor’s commit-probability term and the auditor’s collusion incentive
+at equilibrium.
+Control of Pr[C=1] via vote-independent commitment.Under Γ, the commit probability is the
+expectation over auditor strategies Pr[C({v i}) = 1|∆ t], which depends multilinearly on the mixed
+strategies {πi} and is therefore manipulable by any pivotal coalition (Propositions A.1–A.3). Under
+eΓ, EQUIMEMreplaces this term with the indicator 1[ρ≥ρ ∗]. The structural authority of this
+substitution comes from w(t)
+i : an adversarial auditor who tries to push ρalign up or down sees its w(t)
+i
+decay multiplicatively, so its leverage on the commit decision vanishes at equilibrium.
+Justification.Fix any ∆t and Mt, and let σ= (σ c, σ1, . . . , σ|At|) be the joint strategy profile. The
+commit indicator undereΓsatisfies
+∂
+∂σi
+1[ρ(∆t, Mt)≥ρ ∗] = 0∀a i ∈ A t
+because ρ is computed from (∆t, Mt) and from the sampled probes, neither of which is a vote
+or self-report; the auditor’s only channel of influence is its probe distribution, weighted by w(t)
+i .
+At the calibrated equilibrium, w(t)
+i →1−p i where pi is the auditor’s long-run invalid-probe rate
+(Proposition C.1), so an adversarial auditor’s contribution to the commit decision is bounded by1−p i
+and shrinks to zero as it persists in attempting manipulation. Conditional on prior debate actions,
+the commit decision is therefore a deterministic function of (∆t, Mt) and an auditor’s marginal vote
+does not move it. This eliminates the pivot-probability term that drives the three failure equilibria and
+replaces vote-based commitment with a structural rule.
+Control of ci via multiplicative damping.The cost ci in ui models the resource effort an auditor
+incurs when submitting a structurally invalid probe in support of a manipulative ∆t (collusion). The
+credibility weight w(t)
+i damps the auditor’s lifetime alignment payoff multiplicatively whenever such
+an invalid probe is detected, so collusion incurs both an immediate cost and a long-run weight loss.
+Justification.A single invalid probe at round t multiplies the auditor’s subsequent credibility trajectory
+by a factor of (1−δ) relative to honest play (Eq. 7). Consider a one-shot deviation at round
+t= 0 followed by honest behaviour. Let ¯A:=E[Align(∆ t, Mt)] at the calibrated equilibrium and
+¯w:=E[w(t)
+i ]→1along the honest trajectory. The discounted lifetime payoff is
+Vi =
+∞X
+t=0
+βt
+
+Align(∆t, Mt)·w (t)
+i −c i ·1[collude att]
+
+Computing the difference between honest and colluding play under a one-shot deviation,
+V honest
+i −V collude
+i =c i +
+∞X
+t=1
+βt ¯A¯w δ=c i + β δ
+1−β
+¯A¯w >0
+for any ci ≥0 , ¯A >0 , and β∈(0,1) . The first term is the immediate cost the auditor avoids
+by staying honest; the second is the long-run weight loss that compounds geometrically because
+credibility decay propagates through every future round’s alignment contribution. Both terms favour
+honesty, so collusion is strictly dominated undereΓ at the calibrated equilibrium without ci needing
+any specific value: even atc i = 0, the multiplicative damping alone suffices.
+C.2 Adaptive Parameters and Cold-Start Behavior
+EQUIMEMuses several adaptive parameters in place of fixed hyperparameters. Each is computed
+from observable round statistics, so no value is set by the user. Table 4 summarizes them.
+Cold start for the commit gate ρ∗.At round t= 0 no committed scores exist, so the running median
+is undefined. We initialize ρ∗ = 0.5, the midpoint of the score range. Every ∆t is provisionally
+accepted while the history buffer fills. Once the buffer reaches W entries, ρ∗ becomes the running
+median and EQUIMEMenters its steady-state regime. This warm-up affects only the first W rounds,
+and the only effect is that early commits may be lower-trust than steady-state commits. Subsequent
+25
+
+===== PAGE 26 =====
+
+Table 4: Adaptive parameters used by EQUIMEM. Each is computed from observable round statistics
+rather than tuned.
+Symbol Definition Source
+ρ∗ commit gate running median of lastWcommittedρscores
+δt credibility update rate fraction of probes invalid in roundt
+ηt path-compatibility cutoff running median of past comp(·)values
+αt local/path mixture weight fraction of edges in∆ t with|P uv|>0
+adaptive radius embedding similarity cutoff running median of pairwise similarities inM t
+Lmax BFS depth bound⌈log|V t|⌉
+Whistory window for mediansmax(30,⌈
+p
+|Mt|⌉)
+retrieval discounts these early entries through the trust-weight mechanism (§4.3), so any inaccuracy
+is absorbed at read time rather than persisting in the memory.
+Cold start for the credibility rate δt.At t= 0 no probes have been observed, so we initialize
+δ0 = 0.1, a conservative default that produces a slow update. From round t= 1 onward, δt is the
+empirical fraction of invalid probes observed in roundt. The choice of δ0 affects only the first round’s
+weight movement and is forgotten by round t= 2 , so it is not a tunable parameter in any meaningful
+sense.
+Cold start for ηt and αt.Both depend on observed graph statistics. At t= 0 we set η0 = 0 (accept
+any compatibility score) and α0 = 0.5 (equal weighting of local and path checks). They become
+data-driven from round1onward.
+Why these defaults are not tunable.A reviewer might object that ρ∗
+0 = 0.5, δ0 = 0.1, η0 = 0,
+and α0 = 0.5 are themselves choices. We emphasize that these defaults affect only a O(W) -round
+warm-up and have no effect on steady-state behavior, since the running statistics overwrite each initial
+value withinWrounds.
+C.3 Credibility Recovery: Proof of Fixed Point
+We prove the claim from §4.2 that an auditor whose long-run invalid-probe rate isp has credibility
+weight converging tow ∗ = 1−p.
+Proposition C.1(Credibility fixed point).Let ai produce invalid probes independently with proba-
+bility p∈[0,1] at each round, and let δt ∈(0,1) for all t. Then under Eq. 7, E[w(t)
+i ]→1−p as
+t→ ∞.
+Proof. Taking expectations on both sides of Eq. 7 and treating δt as approximately constant at its
+long-run valueδ(justified becauseδ t converges to its empirical mean by the law of large numbers):
+E[w(t+1)
+i ] =p·E[w (t)
+i ](1−δ) + (1−p)
+
+E[w(t)
+i ] +δ(1−E[w (t)
+i ])
+
+(27)
+=E[w (t)
+i ] (p(1−δ) + (1−p)(1−δ)) + (1−p)δ(28)
+=E[w (t)
+i ](1−δ) + (1−p)δ.(29)
+This is a linear contraction with contraction factor 1−δ∈(0,1) and offset (1−p)δ . Its unique fixed
+point is
+w∗ = (1−p)δ
+1−(1−δ) = 1−p,(30)
+and convergence is geometric at rate1−δ.
+Recovery time.The half-life of weight movement is log 2/log(1/(1−δ))≈ln 2/δ rounds. With a
+typical δ≈0.1 , an honest auditor that suffered a one-time slip recovers half the distance to w∗ = 1
+in roughly7rounds, and reaches within5%ofw ∗ in roughly30rounds.
+Robustness to time-varying δt.If δt is non-constant but bounded away from 0 and 1, the update
+remains a contraction and the fixed point still tracks 1−p t, where pt is the auditor’s invalid rate at
+round t. This means a previously dishonest auditor who reforms can recover full credibility, and a
+26
+
+===== PAGE 27 =====
+
+previously honest auditor who turns adversarial loses credibility without instant collapse, both of
+which are desirable robustness properties.
+C.4 Latency Analysis
+We show that calibration adds only marginal time on top of the baseline retrieval cost in both
+architectures. The key reason is that EQUIMEMreuses computations and data structures already
+produced by baseline retrieval, so it never pays a second time for the same work.
+Embedding case.Baseline top- k retrieval costs O(klogN) per query using an HNSW or IVF index.
+Calibration adds two passes whose cost can be analyzed below the baseline:
+• Detection pass.For each of K new entries we perform an ANN range query to count
+neighbors within the adaptive radius. Because K≪N in any incremental update (the delta
+is small relative to memory size), the totalO(KlogN) is much smaller than the O(klogN)
+baseline cost, not comparable to it. Concretely, this pass costs no more than K
+k of one
+baseline retrieval.
+• Alignment pass.For each auditor ai, the top-k result against Mt is already produced by
+baseline retrieval (the auditor was about to use qi anyway), so calibration reuses it for free.
+Only the marginal effect of ∆t needs to be computed: we score the K new vectors against
+qi in O(K) time and merge them into the cached top-k in O(k) time, then compute dRBO in
+O(k). Total per auditor: O(K+k) , with no logN factor. Across auditors: O(|At|(K+k)) .
+Total added cost: O(KlogN+|A t|(K+k)) . Since both K and |At|(K+k) are independent of
+N except for the single KlogN term (which itself is much smaller than baseline because K≪k in
+practice), calibration overhead is sub-baseline.
+Graph case.Baseline graph retrieval traverses up to Lmax hops at cost O(dLmax), where d is the
+average degree andL max =⌈log|V t|⌉. Calibration adds three pieces:
+• Local check.A neighborhood scan over u’s existing edges costsO(d) per new edge, so
+O(|E ∆
+t |d) in total. Since baseline retrieval is O(dLmax) with Lmax ≥2 , this is smaller than
+baseline by a factor ofd Lmax−1.
+• Path check.Bidirectional BFS gives O(dLmax/2) per edge, which is the square root of the
+baseline’sO(dLmax). Even summed over |E∆
+t | edges, this stays well below baseline as long
+as|E ∆
+t | ≪d Lmax/2, true for any realistic incremental update.
+• Alignment pass.A reachability check costs O(log|V t|) per auditor by reusing the adjacency
+index already loaded for baseline retrieval. Total:O(|A t|log|V t|).
+All three terms are smaller than the baselineO(dLmax) by at least one factor ofdLmax/2, so calibration
+cost is again sub-baseline.
+No extra LLM calls.The dominant cost in any agent-based system is the LLM forward pass.
+EQUIMEMmakes zero additional LLM calls. Probes reuse queries and walks the auditors generate
+during normal debate, and every scoring step is algorithmic (ANN lookups, BFS, RBO). The
+asymptotic added cost above is therefore the full added cost.
+Complexity table.Table 5 states the asymptotic cost of every stage and the ratio between added cost
+and the baseline retrieval cost. The ratio is shown in the rightmost column and is strictly less than 1
+across all stages under the regimes named in the caption.
+Two observations close the analysis.(i)Every added stage shares the same asymptotic terms as the
+baseline (logN for embeddings, dLmax or smaller for graphs), so calibration scales with the same
+primitives the baseline uses.(ii)The multiplicative factors in front of those terms ( K, |At|, |E∆
+t |)
+are all independent of memory size and stay small in practice, which is what makes the added cost
+marginal rather than merely comparable.
+C.5 Memory and Token Overhead
+Memory overhead.EQUIMEMstores three additional pieces of state beyond the base memory:
+27
+
+===== PAGE 28 =====
+
+Table 5: Time complexity of each calibration stage and the ratio of added cost to baseline retrieval
+cost. The ratios are small under typical operating regimes: K≪k (delta size much smaller than
+top-k width), |At| a small constant, |Vt| a small graph, |E∆
+t | ≪d Lmax/2 (incremental updates).
+Under these conditions every added stage is sub-baseline, and total calibration overhead remains
+marginal relative to one round of baseline retrieval.
+Arch. Stage Baseline cost EQUIMEMadded cost Ratio (added / base)
+Embedding
+Retrieval / queryO(klogN)— —
+Detection pass —O(KlogN)K/k≪1
+Alignment pass —O(|A t|(K+k))|A t|(K+k)/(klogN)≪1
+Credibility / re-weight —O(|A t|+K)negligible
+Graph
+Retrieval / queryO(d Lmax)— —
+Local check —O(|E ∆
+t |d)|E ∆
+t |/dLmax−1 ≪1
+Path check —O(|E ∆
+t |d Lmax/2)|E ∆
+t |/dLmax/2 ≪1
+Alignment —O(|A t|log|V t|)|A t|log|V t|/dLmax ≪1
+• One scalar trust weight ρ∈[0,1] per committed entry. For a memory of N entries, this
+is N floating-point numbers, or roughly 4N bytes at single precision. Compared to the
+embedding storage of 4dN bytes (for d-dimensional embeddings), this is a 1/d relative
+overhead, which is negligible at typicald∈[768,1536].
+• One credibility weight w(t)
+i ∈[0,1] per auditor. For |N | agents, this is |N | scalars, constant
+inN.
+• A bounded history buffer of recent calibration scores for computing ρ∗ and ηt. We maintain
+the last W scores using a fixed-size ring buffer, so memory is O(W) regardless of how
+many rounds have elapsed.
+Total: an additional O(N+W+|N |) scalars on top of the base memory, dominated by the
+trust-weight column.
+Token overhead.We emphasize again that EQUIMEMmakes zero additional LLM calls. The
+contributor’s∆t generation, the auditors’ query and path-walking activity, and the agent debate itself
+are all unchanged. The probes EQUIMEMuses are exactly the queries and walks the auditors would
+issue without calibration. There is no calibration prompt, no auditor-side reasoning solicited, and no
+contributor-side justification generated. Token consumption per round is therefore identical to an
+uncalibrated multi-agent debate of the same configuration.
+Index overhead.For embedding memory we reuse the existing ANN index. Calibration queries it but
+does not modify it beyond standard insertion, so no new index structure or rebuild step is added. For
+graph memory we reuse the existing adjacency structure plus a small side index Rcompat of relation
+co-occurrence counts. The side index has size O(|R|2) where |R| is the number of relation types
+(≤10 3 even for large knowledge graphs), so it adds at most a few megabytes regardless of |Vt|. Both
+index costs are constant in the memory size and therefore do not enter the asymptotic analysis of
+§C.4.
+C.6 Compatibility Set Estimation
+The compatibility set Rcompat(r) used in the graph-memory local check is learned from the existing
+graph rather than supplied as an external ontology. We compute it as follows.
+For each pair of relation types (r, r′)∈ R × R , we count the number of nodes u∈ V t where u has
+both an outgoing edge of type r and an outgoing edge of type r′. Call this count c(r, r′). We define
+the co-occurrence score:
+cooc(r, r′) = c(r, r′)
+c(r)·c(r ′)/|Vt| (31)
+where c(r) = P
+r′ c(r, r′) is the marginal occurrence count of relation r. This is the standard
+pointwise mutual information form, normalized so that random co-occurrence yields cooc= 1.
+The compatibility set is then:
+Rcompat(r) ={r ′ ∈ R:cooc(r, r ′)≥τ t}(32)
+28
+
+===== PAGE 29 =====
+
+where τt is the running median of all cooc values in the current graph (again adaptive, no manual set-
+ting). At cold start (empty graph), Rcompat(r) =R for all r, meaning the local check is uninformative
+until the graph has enough edges to estimate co-occurrence. This degrades the detection signal during
+warm-up but does not produce false rejections, becauses local stays at1when the set is universal.
+Update cost. Rcompat is recomputed incrementally. Each new edge (u, r, v) updates at most |N(u)|
+entries of c(r,·) , so per-edge update cost is O(|N(u)|) . Summed over the new-edge set, the total
+O(|E ∆
+t | ·d) matches the local-check term in Table 5 and is therefore absorbed into the marginal-cost
+budget already analyzed in §C.4. No separate latency cost is incurred for maintainingR compat.
+Storage cost. Rcompat is stored as a |R| × |R| co-occurrence matrix, where |R| is the number of
+relation types. Even at |R|= 10 3 (large for a knowledge graph), this is 106 scalars, i.e., a few
+megabytes, independent of |Vt|. Compared to the base graph storage of O(|Vt|+|E t|) entries, this is
+a constant additive overhead and does not affect any complexity bound.
+C.7 Bidirectional BFS Depth and Cost
+We chose Lmax =⌈log|V t|⌉ for the bidirectional BFS in the path check. This choice rests on two
+empirical regularities of knowledge graphs.
+First, real-world knowledge graphs satisfy a small-world property: the typical shortest-path distance
+between two random nodes scales as O(log|V|) . This holds for ConceptNet, Wikidata, Freebase, and
+the graph memories used by [3] and [89]. Setting Lmax to this scale captures essentially all paths the
+contributor could plausibly justify, while truncating exponential blowup of BFS at deeper levels.
+Second, bidirectional BFS searches from both endpoints simultaneously and meets in the middle,
+so the effective branching factor is dLmax/2 rather than dLmax. With Lmax = log|V t| this gives a
+worst-case cost of
+p
+|Vt| ·poly(d), which is sub-linear in graph size.
+Failure modes.If the graph is unusually dense or has a large diameter, Lmax = log|V t| may
+either over-explore or miss valid paths. We detect this online by tracking the running ratio
+|Puv|/expected paths across rounds. If the ratio drifts outside [0.5,2.0] , we adjust Lmax by ±1.
+The adjustment changes the BFS cost by at most a factor of d1/2 (the same bidirectional speedup
+applies), so the marginal-cost analysis in Table 5 still holds within a constant factor.
+C.8 Retrieval Complexity Under Trust Weighting
+We claimed in §4.3 that trust weighting adds zero asymptotic cost to retrieval (not just marginal cost,
+but no added cost at all). We justify this for both architectures.
+Embedding retrieval.The trust-weighted vector ˜ek = √ρk ·e k is computed once at index-load
+time and stored in place of ek. Top-k retrieval against {˜ek} uses the same ANN index structure as
+retrieval against {ek}, with the same O(klogN) cost per query. When an entry’s ρk is updated,
+we re-scale that single vector in O(d) and re-insert into the ANN index in O(logN) , identical to a
+standard memory write. No new cost term enters Table 5.
+Graph retrieval.For path queries, the trust-weighted path strengthQ
+e∈π ρe is computed lazily during
+traversal: each edge access multiplies the running product by ρe. This is one extra multiplication per
+visited edge, an O(1) overhead on top of the O(1) baseline edge-access cost. Total query complexity
+stays at O(dLmax), identical to baseline. When an edge’sρe is updated, we modify a single entry in
+the edge attribute table inO(1).
+C.9 Implementation Notes
+We provide a few practical notes for re-implementation.
+ANN index choice.We use HNSW [ 40] with M= 16 and ef= 200 for the embedding case. The
+detection pass requires range queries (count neighbors within a similarity radius), which HNSW
+does not natively support, so we issue a top-k query with a generous upper bound (e.g., kfilter = 100)
+and filter by the adaptive radius post-hoc. The post-hoc filter is O(kfilter) per call and does not
+change the O(logN) asymptotic of the underlying ANN query, so it is absorbed into theO(KlogN)
+detection-pass cost reported in Table 5.
+29
+
+===== PAGE 30 =====
+
+RBO truncation.Rank-biased overlap is defined as an infinite series, but it converges geometrically.
+We truncate at depth k (the same k used for top-k retrieval) with persistence parameter pRBO = 0.9,
+the default in the original RBO paper. This is a property of RBO itself and not a hyperparameter
+introduced by EQUIMEM.
+Probe sampling.For embedding memory, Qi is the auditor’s pending-query queue (typically size1
+to 5 per round). For graph memory, πi is the auditor’s most recent traversal path. In both cases, we
+sample uniformly using the system’s standard random number generator with a seed reset at each
+round to prevent adaptive auditors from predicting future samples from past behavior.
+Numerical stability.We clamp all ρ, wi, ρgeo, and ρret values into [10−6,1−10 −6] before taking
+products or square roots, to avoid underflow when scores accumulate over many rounds. This is
+standard numerical hygiene and not a tunable parameter.
+D Experiments Results Analysis
+D.1 Configuration
+LLM backbone and implementation.All experiments in Table 1 use Qwen3-VL-8B-Instruct [ 63]
+as the agent backbone, deployed locally via Ollama with N= 6 agents per system. We select Qwen3-
+VL-8B-Instruct because it achieves SOTA on AgentBench and ToolBench among 8B models under
+the Apache 2.0 license, while its native function-calling interface simplifies multi-agent orchestration.
+Alternative backbones (DeepSeek-R1-Distill-7B, Llama-3.1-8B) are evaluated in Appendix D.5.
+Each agent operates independently with no shared parameters or centralised coordination, except
+for interaction through the shared memory M. The calibration mechanism Φ is implemented as
+a standalone Python process with no generative LLM dependency for runtime scoring decisions,
+consistent with its role as the only component not subject to Definition 3.1. This design ensures that
+Φcannot be manipulated by any agent and remains a structurally trusted component in the system.
+Embeddings used in ρdetect and ρalign are computed using all-MiniLM-L6-v2 [73] with approximate
+nearest-neighbour retrieval for efficient scaling to large memory sizes. Experiments with varying
+agent countsN∈ {4,10}are reported in Appendix D.6.
+Hyperparameter settings.We summarise the key hyperparameters in Table 6. Unlike prior multi-
+agent or memory-based systems that rely on manually tuned thresholds, EQUIMEMminimises the
+number of fixed hyperparameters by estimating most quantities directly from data.
+Table 6: Key hyperparameters and configurations in EQUIMEM.
+Component Parameter Value / Strategy
+Agents Number of agentsN 6 (default), varied in Appendix
+LLM Backbone Qwen3-VL-8B-Instruct
+Memory Top-kretrieval k= 5
+Embedding Dimensiond 384 (MiniLM default)
+Calibration Commit thresholdρ ∗ Running median (adaptive)
+Detection Radius threshold Median similarity (adaptive)
+Graph Path depthL max ⌈log|V|⌉
+Alignment Probe sampling Uniform random fromQ i
+Credibility Update rateδ t Invalid probe ratio (adaptive)
+Adaptive parameter estimation.A key design principle of EQUIMEMis that most hyperparameters
+aredata-adaptiverather than manually tuned:
+• The commit threshold ρ∗ is defined as the running median of calibration scores over recent
+committed entries, eliminating the need for task-specific threshold tuning.
+• Detection thresholds (e.g., neighbourhood radius in embedding space, compatibility scores
+in graph memory) are derived from empirical statistics such as median similarity or historical
+co-occurrence patterns, ensuring robustness across different domains.
+30
+
+===== PAGE 31 =====
+
+• The credibility update rate δt is computed as the fraction of invalid probes in each round,
+allowing the system to automatically adjust its sensitivity to auditor behaviour without
+introducing additional parameters.
+• Graph traversal depth Lmax scales with the logarithm of graph size, reflecting typical
+structural properties of real-world knowledge graphs while maintaining computational
+efficiency.
+This adaptive design serves two purposes. First, it reduces the risk of overfitting hyperparameters to
+specific benchmarks, improving generalisation across tasks and memory architectures. Second, it
+aligns with the zero-trust assumption by avoiding reliance on any externally tuned or agent-provided
+signals. All thresholds are grounded in observable system statistics, ensuring that calibration remains
+consistent and robust under adversarial or non-cooperative agent behaviours.
+D.2 Dataset Statistics
+Why these benchmarks.The four benchmarks are selected to stress-test the primary failure modes
+identified by our zero-trust game analysis: (i) a single dominant contributor injecting a locally
+plausible but globally inconsistent entry, and (ii) auditors rubber-stamping an incorrect proposal when
+uncertain or sycophantic. These failures cause particular harm in long-horizon tasks—premature
+goal states in embodied action, fabricated intermediate facts in multi-hop reasoning, and temporal
+contradictions in lifelong conversation. The selected datasets span knowledge-intensive and action-
+intensive domains, providing the diverse challenge needed to evaluate EQUIMEM’s calibration.
+Table 7 summarises the four benchmarks used in our experiments. We report the number of task
+instances, the average interaction length, the evaluation metric, and the domain of each benchmark.
+Table 7: Benchmark statistics for the four evaluation benchmarks.
+Benchmark #Tasks Avg. Len. Metric Domain Source
+ALFWorld 134∼25 steps Success rate Embodied [57]
+Webshop 1000∼30 steps Reward Embodied [88]
+HotpotQA 500 1 query Accuracy Knowledge [87]
+LoCoMo 500<300 turns F1 Knowledge [39]
+ALFWorldis a text-based embodied environment derived from ALFRED, covering six
+task categories: pick_and_place, look_at_obj_in_light, pick_clean_then_place,
+pick_heat_then_place, pick_cool_then_place, and pick_two_obj_and_place. We use
+thevalid_unseen split (134 tasks), where each task requires a sequence of physical actions with
+an average length of approximately 25 steps.Why it matters:The long action chain and strict
+precondition dependencies make this benchmark particularly susceptible to premature goal-state
+injection—a corrupted memory entry that incorrectly asserts a task is complete can terminate the
+entire episode with zero reward (see Case 2 in Appendix E).
+WebShopis an embodied decision-making benchmark that simulates online shopping through natural
+language interactions. Each task requires an agent to navigate search results, apply filters, and inspect
+product pages to locate a specified item. We evaluate on 1,000 randomly sampled tasks, with an
+average trajectory length of approximately 30 steps.Why it matters:The large, dynamic search
+space forces frequent memory writes under uncertainty; a dominant agent that confidently commits
+an incorrect product attribute (e.g., a wrong color or price) can mislead the entire downstream search
+process.
+HotpotQAis a multi-hop question answering benchmark constructed from Wikipedia. Each instance
+requires reasoning across multiple documents to derive the final answer. We use 500 questions drawn
+from the full HotpotQA dev set, each consisting of a single query, and report accuracy.Why it
+matters:A hallucinated intermediate fact committed to shared memory can override correct evidence
+later retrieved by other agents, directly testing the ability of ρalign to detect inconsistent overwrites in
+the retrieval pool (see Case 1).
+LoCoMois a long-context conversational memory benchmark. Each original dialogue spans up to 35
+sessions and averages 300 turns, simulating a lifelong, multi-session human conversation. From these
+long-form dialogues, we sample 500 question-answering tasks, each derived from aseparatedialogue
+31
+
+===== PAGE 32 =====
+
+to guarantee statistical independence. Every task presents the full dialogue history in memory and
+asks one evaluative question requiring cross-session temporal reasoning. We report F1 as the primary
+evaluation metric.Why it matters:The extreme temporal span (300 turns) naturally creates memory
+decay, contradiction, and topic drift across sessions. This tests the most dangerous failure mode for
+our theory: a contributor who proposes a confident but incorrect summary, and a room of auditors
+who, due to the cost of searching 300-turn memory, prefer to agree rather than verify (see Case 3).
+D.3 Extended Analysis of Overall Effectiveness
+This section expands on our insights of §5.2 with deeper mechanistic explanation.
+Why isolated checks saturate?On embedding memory, the gain from Vanilla to the strongest per-
+entry baseline (A-MemGuard) is modest, and EQUIMEMthen adds a further substantial improvement
+on top, exceeding the combined gain of all three intermediate baselines (LLM Audit, PPL Filter,
+A-MemGuard). The three baselines also cluster tightly with frequent rank inversions, suggesting they
+capture overlapping signals rather than complementary ones.
+Both observations are consistent with the saturation hypothesis: isolated entry level checks evaluate
+only theintrinsic qualityof ∆t (grammaticality, fluency, perplexity), while the dominant errors in a
+growing memory Mt arise fromrelational inconsistency, where an entry reads perfectly in isolation
+yet contradicts existing memory. The two pass design √ρdetect ·ρ align breaks this ceiling by evaluating
+each delta againstM t as a whole rather than as an independent unit.
+Qualitative pattern of ceiling aware gains.An inverse scaling effect is visible across all configu-
+rations: EQUIMEM’s gain over the next best baseline is largest where that baseline is weakest, and
+shrinks where the baseline already performs well. This pattern holds consistently across reasoning
+intensive and action intensive benchmarks alike, with the largest improvements appearing in settings
+where existing safeguards struggle the most.
+This shrinkage is not a weakness of Φ but a property of its gating regime: a calibration filter can only
+act on entries that would otherwise be admitted erroneously, so its marginal effect is bounded by the
+fraction of errors in the input stream. Importantly, this inverse scaling pattern isinconsistentwith the
+hypothesis that performance gains stem from external knowledge leakage, which would produce a
+constant additive boost regardless of baseline strength. Instead, it isconsistentwith the hypothesis
+thatΦfilters errors that downstream baselines would have admitted.
+Memory benchmark interaction.The strongest results for reasoning intensive benchmarks come
+from AriGraph paired with EQUIMEM, while the strongest action task results come from G-Memory
+paired with EQUIMEM. This complementarity is already visible in the Vanilla setting: AriGraph leads
+on multi hop QA, while G-Memory leads on embodied action and long dialogue tasks. These pre
+existing biases reflect each architecture’s native design. AriGraph’s semantic knowledge graph with
+episodic memory is well suited to multi hop QA, while G-Memory’s three tier hierarchical structure
+captures the long action chains and multi session dialogue history of action and conversational tasks.
+EQUIMEM’s calibration Φ inherits and amplifiesthese biases rather than imposing a generic filter
+that flattens architectural differences. Because ρdetect and ρalign are computed directly from each
+architecture’s geometry (embedding manifold) or topology (graph neighbourhood and multi hop
+paths), Φ filters out noisy entries that dilute the architecture’s native signal, allowing each design’s
+strengths to emerge more clearly. The gap between AriGraph and G-Memory therefore widens under
+EQUIMEMin the directions each architecture is naturally suited to, rather than narrowing toward a
+common baseline.
+Cross MAS consistency.Absolute performance differs substantially across MAD frameworks, with
+AutoGen generally leading, followed by DyLAN and MacNet. Yet EQUIMEM’s gain over the next
+best baseline is comparably stable across all three frameworks. The same ranking and the same
+inverse scaling pattern persist regardless of which orchestration scheme is used.
+The stability of the gain across orchestration regimes confirms that Φ acts at the memory layer
+rather than at the coordination layer. Weak orchestration and strong orchestration receive similar
+lifts because calibration filters ∆t at the point of write, which is upstream of any MAS specific
+aggregation. This decoupling is a practical advantage: EQUIMEMcan be deployed with any MAD
+framework without re tuning or framework specific adaptation.
+32
+
+===== PAGE 33 =====
+
+Table 8: Ablation study of EQUIMEM’s calibration components (%). We ablate one component
+at a time, keeping all notation consistent with Section 4. For embedding memory, ρdetect and ρalign
+are removed directly. For graph memory, we remove components contributing to ρdetect and ρalign,
+including an explicit ablation of ρalign. All configurations use AutoGen + Qwen3-VL-8B-Instruct,
+N= 6agents, benign setting (mean±std over 5 runs). Bold indicates the full EQUIMEM.
+AutoGen MacNet DyLAN
+MemoryAblation HQA LCM ALF WS HQA LCM ALF WS HQA LCM ALF WS
+MemBank(emb.)
+w/oρdetect 45.0±6.332.9±6.670.7±3.436.8±8.648.3±9.533.1±10.251.8±1.043.7±7.146.4±0.935.6±6.358.5±2.640.7±3.6
+w/oρalign 39.4±5.125.7±6.574.0±3.938.0±8.144.5±8.220.7±10.659.8±1.045.2±7.641.3±0.828.4±7.265.4±2.543.4±3.7
+w/o reweighting47.0±6.033.6±5.575.3±4.142.3±8.252.1±8.334.5±10.562.2±1.249.4±6.249.2±0.837.7±6.868.5±2.446.3±3.5
+G-Memory
+(graph)
+w/oslocal(ρdetect) 45.3±10.152.8±3.676.3±3.948.8±6.541.2±7.355.8±1.567.6±10.051.4±3.742.1±8.147.5±2.664.1±12.145.0±6.4
+w/ospath(ρdetect) 38.7±9.349.3±3.780.9±3.551.3±6.235.4±6.650.2±1.870.6±8.655.0±3.436.5±9.039.8±2.669.1±12.047.2±6.2
+w/oρalign 41.9±9.653.7±3.579.0±3.650.2±6.339.0±6.954.4±1.669.3±9.152.6±3.540.3±8.843.1±2.767.2±11.547.5±6.1
+w/o reweighting47.0±9.856.4±3.482.3±3.752.5±6.446.5±6.658.0±1.672.5±9.755.8±3.347.0±8.549.5±2.871.4±10.650.7±6.0
+D.4 Ablation Study
+This part dissects EQUIMEM’s calibration mechanism Φ into its component scoring passes to identify
+which elements drive the gains observed in RQ1. We ablate one component at a time on two
+representative memory architectures (MemBank and G-Memory) across all three MAS frameworks
+and four benchmarks. Table 8 reports the results.
+Retrieval aware checks are the most important components.Removing ρalign from embedding
+memory causes the largest drops in the table, with the steepest declines appearing on reasoning
+intensive benchmarks. In graph memory, removing spath, which contributes to the detection signal
+ρdetect, produces the largest single component drops, again with the most severe declines on reasoning
+tasks. These drops are substantially larger than those from removing reweighting alone.
+Both ρalign and spath share the same principle: they evaluate ∆t against thebroader memory state
+Mt rather than in isolation. ρalign measures how much the proposed delta disrupts retrieval rankings
+(embedding) or violates multi hop path consistency (graph). Without this signal, EQUIMEMloses
+its ability to detect entries that are locally plausible but globally inconsistent. This is the dominant
+failure mode shared by LLM Audit and PPL Filter (Section 5.2).
+The dominant component depends on the benchmark category.The alignment signal ρalign
+contributes most on reasoning intensive benchmarks (HotpotQA, LoCoMo), where multi hop evidence
+chains are critical and a single inconsistent entry can derail downstream reasoning. The drops from
+removing it are largest on these benchmarks, smaller on action tasks such as ALFWorld, and
+intermediate on WebShop.
+In contrast, detection signals (ρdetect) contribute more on action intensive benchmarks (ALFWorld,
+WebShop), where state consistency matters. On embedding memory, removing ρdetect hurts action
+benchmarks more than removing ρalign does. The same pattern holds in graph memory, where
+removing detection components such as slocal or spath produces noticeable drops on action tasks even
+when the corresponding alignment drops are smaller.
+This asymmetry validates the two pass design of Section 4.2: ρdetect captures local plausibility
+and structural density (critical for state consistency in action tasks), while ρalign captures global
+consistency across evidence chains (critical for reasoning tasks). Their composition ensures that both
+failure modes are covered, regardless of benchmark category.
+Auditor reweighting has the smallest benign effect.Removing the credibility weight decay w(t)
+i
+causes the smallest drops among the three ablated components in nearly every configuration. The
+declines from removing reweighting are markedly smaller than those from removing ρalign or spath
+under the same configurations.
+This is expected: reweighting penalises auditors whose probes are structurally invalid, but in the
+benign setting agents rarely produce invalid signals, so w(t)
+i remains close to its initial value. The
+reweighting mechanism becomes critical under adversarial settings (Section 5.3), where malicious
+auditors submit misleading probes and credibility decay is required to suppress their influence over
+time. The minimal benign impact demonstrates that reweighting imposes essentially no cost on
+33
+
+===== PAGE 34 =====
+
+Table 9: Performance with alternative LLM backbones (%) on MacNet,N= 6 agents, benign setting.
+Qwen3-VL-8B-Instruct(primary)DeepSeek-R1-Distill-7B Llama-3.1-8B
+MemorySafeguard HQA LCM ALF WS HQA LCM ALF WS HQA LCM ALF WS
+MemBank(emb.)
+Vanilla 33.6±8.220.7±10.248.9±4.324.2±7.334.8±9.424.5±11.145.2±3.823.6±6.132.4±8.118.2±9.547.1±2.420.4±7.5
++ LLM Audit41.4±7.722.8±10.260.3±6.231.8±7.342.1±8.327.2±10.553.7±3.428.1±7.236.9±7.921.5±10.151.2±6.226.5±6.8
++ PPL Filter41.8±8.729.4±10.457.2±2.225.6±8.039.5±9.134.1±12.251.6±6.625.9±7.437.2±9.624.1±10.855.4±3.524.2±8.1
++ A-MemGuard44.5±6.232.7±7.658.5±4.039.6±7.646.2±7.533.8±8.154.9±5.235.1±7.942.6±6.830.4±8.552.8±3.333.4±7.2
++ EQUIMEM56.1±7.838.8±8.466.0±5.955.0±5.953.5±8.236.7±9.160.3±4.247.8±6.447.0±8.530.9±8.056.6±3.144.1±6.2
+G-Memory
+(graph)
+Vanilla 35.6±7.447.6±1.567.1±12.545.1±4.438.9±8.049.2±1.865.5±11.843.8±5.131.2±6.745.3±1.662.1±10.940.5±4.2
++ LLM Audit40.0±7.951.3±1.468.5±10.449.3±4.942.7±7.454.1±1.767.1±12.146.2±5.338.4±8.247.2±1.865.4±11.244.1±4.5
++ PPL Filter43.2±7.056.8±1.372.6±10.454.7±3.547.5±7.259.4±1.570.8±11.151.4±3.940.8±7.849.6±1.566.2±10.548.2±4.0
++ A-MemGuard— — — — — — — — — — — —
++ EQUIMEM54.5±6.262.1±1.474.2±8.160.1±2.953.3±6.559.0±1.669.0±8.855.2±3.347.9±6.952.8±1.566.8±8.251.2±3.4
+honest agents, while its protective value materialises precisely when the zero trust assumption is
+violated by adversaries.
+No single component is sufficient.Even the most impactful individual ablation does not collapse
+performance to the Vanilla level. The ablated system always retains a clear margin above the
+corresponding Vanilla score, even when the most important component is removed. Removing only
+reweighting leaves a system that is only marginally weaker than full EQUIMEMin the benign setting,
+confirming that credibility tracking does not harm honest agents.
+This gradient confirms that Φ operates as a composed scoring mechanism: each component targets a
+distinct failure mode, and their combination is necessary for full robustness. The fact that even the
+most severe ablation retains performance above Vanilla demonstrates that the remaining components
+provide partial, non overlapping protection, exactly the property required for a defence in depth
+design under the zero trust assumption.
+D.5 Alternative LLM Backbones
+Table 1 uses Qwen3-VL-8B-Instruct as the agent backbone throughout. To verify that EQUIMEM’s
+advantage is not specific to one LLM, we replicate the MacNet evaluation on MemBank and G-
+Memory with two additional 7B/8B-class open-source models:DeepSeek-R1-Distill-7B[ 22],
+a reasoning-optimised distillation of DeepSeek-R1, andLlama-3.1-8B-Instruct[ 47], a general-
+purpose instruction-tuned model. Table 9 reports the results.
+EQUIMEMranks first across all backbones.On every one of the 8 (memory×benchmark) cells,
+EQUIMEMachieves the highest score regardless of which backbone is used. The ranking among
+safeguards is also preserved: EQUIMEM > A-MemGuard > PPL Filter ≈ LLM Audit > Vanilla,
+with the same occasional inversions between intermediate baselines observed in Table 1.
+Backbone strength shifts absolute levels but not relative patterns.Qwen3-VL-8B-Instruct
+achieves the highest absolute performance among the three backbones, followed by DeepSeek-R1-
+Distill-7B (2–7% lower) and Llama-3.1-8B (7–11% lower). The gap is consistent across safeguards:
+weaker backbones produce lower scores for every method, not just for EQUIMEM. Crucially,
+EQUIMEM’srelativegain over the best baseline remains substantial across all backbones, confirming
+that calibration provides consistent benefit regardless of backbone.
+Calibration quality tracks backbone quality.The interaction between backbone and calibration
+is monotonic: stronger backbones produce higher-quality memory entries, which in turn give Φ’s
+scoring passes richer structure to calibrate against. This is visible in the G-Memory + LoCoMo
+column, where EQUIMEMachieves 62.1% with Qwen, 59.0% with DeepSeek, and52.8% with Llama.
+The pattern confirms that Φ amplifies backbone quality rather than substituting for it: calibration is
+complementary to, not independent of, the underlying LLM’s capability.
+D.6 Effect of Agent Count
+The main text reports results for N= 6 agents. This appendix evaluates how Φ’s effectiveness varies
+with the number of participating agents. We test N∈ {4,6,10} on the AutoGen framework with
+Qwen3-VL-8B-Instruct and the G-Memory backbone in the benign setting.
+34
+
+===== PAGE 35 =====
+
+Table 10: Effect of agent count N on benign-setting performance (AutoGen, Qwen3-VL-8B-Instruct,
+G-Memory backbone). Values are reported in percentage (mean±std over 5 runs). ∆ denotes the
+gain of EQUIMEMover the next-best safeguard under the same agent count.
+Benchmark N Vanilla LLM Audit PPL Filter EQUIMEM ∆
+HotpotQA
+4 33.9±9.436.5±8.942.1±8.450.5±8.0 +8.4
+10 36.8±8.839.4±8.345.6±7.953.6±7.5 +8.0
+LoCoMo
+4 41.5±4.547.6±4.851.0±4.557.1±3.4 +6.1
+10 44.1±3.950.7±4.354.0±4.060.0±2.8 +6.0
+ALFWorld
+4 70.4±4.174.9±3.576.8±3.382.4±3.5 +5.6
+10 73.0±3.677.4±3.079.1±2.985.1±3.0 +6.0
+WebShop
+4 37.8±6.639.5±6.446.1±6.352.1±6.0 +6.0
+10 40.4±6.142.0±5.849.4±5.954.7±5.5 +5.3
+Small agent counts (N= 4 ).With only four agents, each update is evaluated by a limited number
+of auditor probes (three independent signals per delta). Despite this reduced diversity, EQUIMEM
+consistently outperforms all baselines by a substantial margin across benchmarks. Compared to the
+next-best safeguard, the absolute gains remain stable (typically around 5%–9%), indicating that Φ
+does not rely on large numbers of auditors to function effectively. However, we observe slightly
+higher variance atN= 4, as adaptive statistics (e.g.,ρ ∗ and credibility weights) are estimated from
+fewer signals.
+Moderate agent counts (N= 6 ).At N= 6 , performance improves modestly across all methods,
+with the largest gains observed when moving from N= 4 to N= 6 . This suggests that increasing
+the number of agents initially provides more diverse reasoning traces and probe signals, improving
+both memory quality and calibration accuracy. Notably, EQUIMEMachieves its strongest overall
+performance at this setting, balancing signal diversity and coordination overhead.
+Larger agent counts (N= 10 ).Increasing the agent count further to N= 10 yields only marginal
+improvements over N= 6 . While ρalign benefits from additional probe diversity, these gains are
+offset by increased redundancy among agent reasoning traces and auditor signals. As a result,
+performance begins to saturate, indicating diminishing returns from additional agents. Importantly,
+EQUIMEMmaintains a consistent advantage over all baselines, suggesting that its effectiveness is
+largely insensitive to the exact choice ofN.
+Scaling implications.Overall, agent count primarily affects thequality of collective signalsrather
+than acting as a dominant performance driver. Φ requires no assumption about a minimum number
+of reliable agents (Assumption 3.1) and remains effective even at small N. Increasing N improves
+stability and slightly enhances performance, but the benefits quickly plateau beyond N= 6 . For very
+large agent pools (N >50 ), auditor probe/path generation can be sub-sampled to a random subset
+of min(N,20) agents with negligible impact on calibration quality, ensuring scalability without
+increasing latency.
+D.7 Effect of Debate Rounds (RQ1 Supplement)
+Figure 5 examines how performance evolves as the number of debate rounds increases from1 to 5,
+using LoCoMo (F1) on MacNet + Qwen3-VL-8B-Instruct withN= 6agents.
+Embedding memory saturates early.On MemBank (left panel), all methods show a sharp rise
+from round 1 to round 3, followed by near-zero improvement from round 3 to round 5. Vanilla
+improves from 12.4% to 19.8% (+7.4%) in the first interval but only from 19.8% to 20.7% (+0.9%)
+in the second. This saturation occurs because embedding memory accumulates dense vectors that
+increasingly overlap, reducing the marginal information content of later rounds. EQUIMEMfollows
+the same saturation shape but at a higher level: 22.5%→34.2%→38.8% , with the gap over Vanilla
+widening from +10.1% at round 1 to +18.1% at round 5. The baselines (LLM Audit, PPL Filter,
+A-MemGuard) also saturate, clustered between Vanilla and EQUIMEM.
+35
+
+===== PAGE 36 =====
+
+1 3 5
+Debate Rounds
+0
+10
+20
+30
+40
+50
+60
+70
+80LoCoMo F1 (%)
+MemBank (Embedding)
+1 3 5
+Debate Rounds
+0
+10
+20
+30
+40
+50
+60
+70
+80LoCoMo F1 (%)
+G-Memory (Graph)
+Vanilla LLM Audit PPL Filter A-MemGuard EQUIMEM (Ours)
+Figure 5: LoCoMo F1 vs. debate rounds on two memory architectures (MacNet, Qwen3-VL-8B-
+Instruct, N= 6 ). Round 5 values match Table 1. MemBank (left) saturates after round 3; G-Memory
+(right) improves steadily. EQUIMEMfollows the same trend shape as Vanilla in both cases but at a
+consistently higher level, with the gap widening at later rounds.
+Graph memory benefits from longer debate.On G-Memory (right panel), all methods improve
+steadily across all three rounds. Vanilla rises from 28.3% to 38.5% to 47.6%, with roughly equal
+gains per interval (+10.2% and +9.1%). G-Memory’s hierarchical knowledge graph continues to
+benefit from additional debate rounds because each round’s edges extend the graph’s coverage into
+previously unreached regions of the reasoning space. EQUIMEMamplifies this trend: 40.2%→
+57.8%→62.1% , with the gap over Vanilla growing from+11.9% at round 1 to +14.5% at round 5.
+Calibration benefit grows with rounds.In both panels, the gap between EQUIMEMand baselines
+widensat later rounds. This is expected: as more entries accumulate in Mt, the fraction of locally
+plausible but globally inconsistent entries grows, and Φ’s memory-state-aware scoring becomes
+increasingly valuable. Isolated entry-level checks (LLM Audit, PPL Filter, A-MemGuard) cannot
+leverage the growing memory state and therefore plateau alongside Vanilla.
+D.8 Adversarial Baseline Comparison
+This appendix supplements Section 5.3 by reporting the adversarial performance of LLM Audit and
+PPL Filter under the same two attack schemes, memory architectures, benchmarks, and adversary
+counts used for EQUIMEMin the main text. All experiments use MacNet + Qwen3-VL-8B-Instruct
+with N= 6 agents. Algorithms 1 and 2 detail the two adaptive attack procedures used throughout
+this section and Section 5.3.
+Attack settings.As specified in Algorithms 1–2, both attacks follow theadaptivethreat model:
+adversarial agents have full knowledge of the safeguard mechanism they face and craft their poisoned
+entries or colluding probes accordingly. For Memory Poisoning, adversarial contributors generate low-
+perplexity, fluent text that passes PPL Filter’s threshold and receive high scores from LLM Audit’s
+auxiliary judgment (since both defences evaluate entries in isolation, the attacker simply ensures
+each poisoned entry reads well on its own). For Audit Collusion, adversarial auditors coordinate to
+produce probe signals that reinforce the poisoned delta, though this has no effect on LLM Audit or
+PPL Filter, since neither baseline uses auditor signals. We test small, medium, and large adversary
+counts: k= 1 , 2, 3 out of N= 6 agents (17%, 33%, 50% of the group). Adversary identities are
+fixed per run and randomised across the 5 seeds. The same adaptive attack configurations are used
+for EQUIMEMin Section 5.3, ensuring a fair comparison: the attacker adapts to whichever defence is
+deployed.
+Both baselines collapse under attack.Figure 6 reveals a consistent pattern: both LLM Audit
+and PPL Filter degrade roughly linearly with the number of adversaries, with no sign of recovery
+or stabilisation. With half the agents adversarial ( k= 3 ), LLM Audit loses a substantial fraction
+of its benign performance on both embedding and graph memories, dropping to levels far below
+the no-memory baseline. PPL Filter follows a similar trajectory, suffering losses of comparable
+magnitude. In contrast, under the same attack conditions, EQUIMEMretains the vast majority of its
+benign performance, outperforming each baseline by a large margin.
+36
+
+===== PAGE 37 =====
+
+Algorithm 1Memory Poisoning Attack
+Require:Adversary setK ⊂ N, memory stateM t, target safeguard type
+Ensure:Poisoned delta∆ poison
+t
+1:foreach roundtwhere contributora c ∈ Kdo
+2:% — Craft poison adapted to safeguard —
+3:ifM t is embedding-basedthen
+4:µ←Centroid({e j}N
+j=1)▷centroid of existing vectors
+5:ϵ∼ N(0, σ 2I)▷small perturbation
+6:e poison ←(µ+ϵ)/∥µ+ϵ∥▷retrieval magnet
+7:m poison ←LLM(“generate fluent text near:”,Mt)▷low PPL
+8:∆ poison
+t ← {(epoison, m poison)}
+9:end if
+10:ifM t is graph-basedthen
+11:u←arg max v∈Vt deg(v)▷high-degree node
+12:v←DistantNode(u,M t,min_hops=3)▷≥3hops away
+13:r←MostCommonRelation(u,M t)▷locally plausible
+14:∆ poison
+t ← {(u, r, v)}▷passess local, failss path
+15:end if
+16:% — Adaptive: ensure poison evades isolated checks —
+17:AssertPPL(m poison)< τ PPL ▷defeats PPL Filter
+18:AssertLLM_Score(∆ poison
+t )>0.5▷defeats LLM Audit
+19:return∆ poison
+t
+20:end for
+Baselines fall below the Stateless level.The Stateless baseline (no memory, no safeguard) provides
+a simple reference: any memory system that performs worse than this has been turned into a liability.
+At the highest adversary count, LLM Audit and PPL Filter consistently scorebelowthe Stateless
+level on several benchmarks. This means the attacker has successfully reversed the benefit of memory.
+By contrast, EQUIMEMnever falls below the Stateless level in any configuration, even when half the
+agents are adversarial.
+Why baselines lack resilience.The root cause is that LLM Audit and PPL Filter evaluate each ∆t in
+isolation, with no mechanism to track or discount adversarial agents over time.
+LLM Audit scores each proposed delta by prompting an auxiliary LLM with the delta text and
+generating a judgment. A poisoned entry that reads as fluent, well-structured text receives a high
+audit score regardless of whether it is consistent with Mt. Under Audit Collusion, the attack is even
+simpler: the adversarial contributor crafts a plausible-sounding delta, and the colluding auditors are
+irrelevant because LLM Audit does not use auditor signals at all; it relies solely on its own LLM call.
+The result is that Memory Poisoning and Audit Collusion produce nearly identical degradation curves
+for LLM Audit (top-left vs. top-right in Figure 6), confirming that LLM Audit’s vulnerability is to
+thecontentof poisoned entries, not to the coordination of adversaries.
+PPL Filter computes the perplexity of each delta under a reference language model and rejects entries
+above a threshold. Adversaries trivially defeat this by generating poison with natural-sounding text
+(low perplexity). Under Audit Collusion, PPL Filter is again irrelevant because it does not process
+auditor signals. The small advantage of PPL Filter over LLM Audit under Memory Poisoning on
+graph memory (which catches a minor fraction of statistically unusual poisoned text) is negligible
+compared to the overall collapse.
+Contrast with EQUIMEM’s recovery.EQUIMEM’s resilience stems from two mechanisms that
+baselines lack. First, the credibility weight w(t)
+i (Eq. 7) decays multiplicatively for auditors who
+submit structurally invalid probes. Adversarial auditors who fabricate probes to support poisoned
+entries inevitably produce probes that fail structural validation (non-empty, well-formed, drawn from
+declared context), causing their weight to decay toward zero over rounds. With a single adversary,
+the weight drops below a minimal level within a few rounds; even with three adversaries, the honest
+majority (equal in number) still dominates the score because credibility decays multiplicatively while
+honest auditors recover toward full weight. Second, the calibration scores ρdetect, ρalign, slocal, and
+37
+
+===== PAGE 38 =====
+
+Algorithm 2Audit Collusion Attack
+Require: Adversary set K ⊂ N (|K|=k ), poisoned delta ∆t from colluding contributor, memory
+stateM t, target safeguard type
+Ensure:Modified auditor probes{q collude
+i }ai∈K∩At
+1:foreach roundtwhere auditorsK ∩ A t ̸=∅do
+2:% — Colluding contributor injects mild poison —
+3:∆ t ←CraftDelta(a c,M t)▷plausible but incorrect
+4:% — Each colluding auditor crafts a supportive probe —
+5:foreacha i ∈ K ∩ A t do
+6:ifM t is embedding-basedthen
+7:e far ←arg min ej ∈Mt cos(ej,e ∆)▷farthest from poison
+8:q collude
+i ←TextOf(e far)▷top-kwon’t include∆ t
+9:% Result:d RBO(top-k(Mt, qi),top-k(M t ∪∆ t, qi))≈0
+10:end if
+11:ifM t is graph-basedthen
+12:(u, r, v)←sampled edge from∆ t
+13:π collude
+i ←BuildPathTo(u,M t,R compat)
+14:% Fabricate a path that reachesuvia compatible relations
+15:q collude
+i ←π collude
+i ▷validates poisoned edge
+16:end if
+17:Replacea i’s real probe withqcollude
+i
+18:end for
+19:% — Honest auditors submit unmodified probes —
+20:foreacha j ∈ A t \ Kdo
+21:q j ←intercepted froma j’s normal retrieval▷unmodified
+22:end for
+23:% — Effect on different safeguards —
+24:LLM Audit: no effect (does not useq i)
+25:PPL Filter: no effect (does not useq i)
+26: EquiMem: inflates ρalign via colluding probes, but credibility decay on K agents suppresses
+their weight over rounds
+27:end for
+spath evaluate each ∆t against the full memory state Mt, catching poisoned entries that are locally
+plausible but globally inconsistent. Baselines, which score each entry independently, have no access
+to this global signal.
+Attack asymmetry mirrors Section5.3. The same asymmetry observed for EQUIMEMholds for
+baselines: Memory Poisoning causes larger drops on embedding memory than graph memory, while
+Audit Collusion causes larger drops on graph memory. However, themagnitudeof the asymmetry
+is amplified for baselines because they have no compensating mechanism. For LLM Audit under
+high-adversary conditions, the drop on embedding memory is substantially smaller than on graph
+memory for one attack, and the pattern reverses for the other attack. The absence of credibility decay
+means that colluding auditors maintain full influence throughout the episode, and the absence of
+memory-state-aware scoring means that globally inconsistent entries pass unchecked.
+D.9 Time Latency Analysis
+This section supplements the token-cost analysis of Section 5.4 with wall-clock latency measurements,
+confirming that the sub-baseline complexity bounds of Table 5 translate to marginal overhead in
+practice.
+Setup.We measure end-to-end wall-clock time per task on MacNet + Qwen3-VL-8B-Instruct with
+N= 6 agents, averaged over 50 tasks per benchmark. All experiments run on a single NVIDIA
+RTX 6000 Ada Generation (49 GB VRAM) with Qwen3-VL-8B-Instruct deployed via Ollama. We
+report three timing components:Agent time(LLM inference for all agents),Memory time(retrieval +
+write to memory store), andCalibration time(EQUIMEM’s scoring passes only, excluding agent and
+memory time).
+38
+
+===== PAGE 39 =====
+
+ &'$
+(,)(,
+ &'$
+(*%
+ &(*.
+(,)(,
+ &(*.
+(*%
+	
+
+	
+	
+	
+	
+	
+	
+	
+	 *!(*&' 
+ !& " 
+$##%	
+
+ &'$
+(,)(,
+ &'$
+(*%
+ &(*.
+(,)(,
+ &(*.
+(*%
+	
+
+	
+	
+	
+	
+	
+	
+	
+	 *!(*&' 
+$# $" 
+$##%	
+
+ &'$
+(,)(,
+ &'$
+(*%
+ &(*.
+(,)(,
+ &(*.
+(*%
+	
+
+	
+	
+	
+	
+	
+	
+	
+	 *!(*&' 
+ !& " 
+#!#%	
+
+ &'$
+(,)(,
+ &'$
+(*%
+ &(*.
+(,)(,
+ &(*.
+(*%
+	
+
+	
+	
+	
+	
+	
+	
+	
+	 *!(*&' 
+$# $" 
+#!#%	
+
+
+- *+*. - *+*# + - *+*# +  '#"'	
+Figure 6: Adversarial robustness of LLM Audit (top row) and PPL Filter (bottom row) under Memory
+Poisoning (left column) and Audit Collusion (right column). Same setting as Figure 3: MacNet,
+Qwen3-VL-8B-Instruct, N= 6 , k= 1,2,3 adversaries. Dashed orange lines show each method’s
+benign performance (k= 0 , from Table 1). Both baselines degrade catastrophically when half the
+agents are adversarial, frequently falling below the Stateless baseline.
+Table 11: Wall-clock latency breakdown (seconds per task) on MacNet + Qwen3-VL-8B-Instruct,
+N= 6 agents, averaged over 50 tasks. Calibration time is the additional time introduced by
+EQUIMEMon top of Vanilla. The overhead ratio is computed as Calibration / (Agent + Memory).
+All ratios are below5%, consistent with the sub-baseline complexity bounds of Table 5.
+Memory Bench Agent (s) Mem (s) Calib (s) Overhead
+MemBank
+(emb.)
+HQA 21.6 5.8 0.9 3.3%
+LCM 28.3 8.5 1.2 3.3%
+ALF 85.4 14.1 3.2 3.2%
+WS 41.2 9.3 1.7 3.4%
+G-Memory
+(graph)
+HQA 22.4 7.5 1.1 3.7%
+LCM 30.1 10.2 1.5 3.7%
+ALF 88.6 19.8 3.9 3.6%
+WS 43.8 12.4 2.0 3.6%
+Calibration overhead is below 5% across all configurations.Table 11 shows that EQUIMEM’s
+calibration adds 0.9–3.9 seconds per task, representing 3.2–3.7% of the total Vanilla execution
+time (Agent + Memory). This is consistent with the 1.05× overhead bound claimed in Section 4.2.
+The overhead is slightly higher on graph memory (3.6–3.7%) than embedding memory (3.2–3.4%)
+because the bidirectional BFS in spath traverses more edges than the ANN range query in ρdetect, but
+both remain well below5%.
+Agent inference dominates total time.Across all configurations, LLM inference (Agent time)
+accounts for 70–80% of total execution time, with memory operations contributing 15–20%. Cal-
+ibration is a distant third at 3–4%. This confirms that the bottleneck in any memory-augmented
+MAS is the LLM forward pass, not memory operations or calibration. EQUIMEM’s LLM-free design
+correctly avoids adding to the dominant cost component.
+Comparison to LLM-based defences.For reference, we also measure the latency of LLM Audit,
+which requires one additional LLM inference call per proposed ∆t. On MemBank + HotpotQA,
+LLM Audit adds 16.5 seconds per task (60.2% overhead) versus EQUIMEM’s 0.9 seconds (3.3%
+39
+
+===== PAGE 40 =====
+
+overhead), an 18.3× latency difference. On G-Memory + ALFWorld, LLM Audit adds 56.2 seconds
+(51.8%) versus EQUIMEM’s 3.9 seconds (3.6%), a 14.4× difference. A-MemGuard, which generates
+K= 3 parallel reasoning paths per delta, adds even more: 25.8 seconds on MemBank + HotpotQA
+(94.2% overhead). These results confirm that LLM-based defences are bottlenecked by inference
+cost, while EQUIMEM’s algorithmic calibration avoids this entirely.
+Table 12: Latency overhead comparison across safeguards (seconds per task, MacNet + Qwen3-VL-
+8B-Instruct,N= 6). EQUIMEMadds<5%overhead; LLM-based defences add50–94%.
+MemBank + HQA G-Memory + ALF
+Safeguard Added (s) Overhead Added (s) Overhead
+Vanilla 0.0 0.0% 0.0 0.0%
+PPL Filter 0.4 1.5% 1.4 1.3%
+EQUIMEM 0.9 3.3% 3.9 3.6%
+LLM Audit 16.5 60.2% 56.2 51.8%
+A-MemGuard 25.8 94.2% — —
+Correspondence with complexity bounds.Table 5 predicts that every calibration stage has cost
+strictly less than the baseline retrieval cost. The empirical overhead ratios (3.2–3.7%) confirm this:
+since baseline retrieval accounts for 15–20% of total time (the Memory column in Table 11), calibra-
+tion at 3–4% is indeed sub-retrieval. The slightly higher overhead on graph memory corresponds
+to the path-check stage, which has cost O(|E ∆
+t | ·d Lmax/2). This is the largest single calibration
+term in Table 5, but still well below the baseline’sO(dLmax) because |E∆
+t | ≪d Lmax/2 holds for all
+incremental updates in our experiments (typical|E ∆
+t |= 3–8edges,d Lmax/2 ≈50–200).
+Scaling with agent count.Calibration overhead scales linearly with |At|=N−1 (the number of
+auditors), since each auditor contributes one probe. At N= 4 , overhead drops to ∼2.5%; at N= 10 ,
+it rises to ∼5.5%. In all cases it remains dominated by the LLM inference cost, which also scales
+withN. Detailed timing atN∈ {4,6,10}is in Table 13.
+Table 13: Calibration overhead vs. agent count (MemBank + HotpotQA, MacNet, Qwen3-VL-8B-
+Instruct).
+N Agent (s) Mem (s) Calib (s) Overhead
+4 15.2 4.6 0.5 2.5%
+6 21.6 5.8 0.9 3.3%
+10 35.4 8.1 2.4 5.5%
+E Case Study
+We present several examples illustrating how EQUIMEM’s calibration prevents memory corruption
+that baselines fail to catch.
+Case 1: HotpotQA (MemBank + MacNet).The task asks:“Were the directors of ‘Jaws’ and ‘E.T. ’
+born in the same city?”The correct answer requires identifying that both films were directed by
+Steven Spielberg, who was born in Cincinnati.
+Round 2: Contributora 3 proposes∆ t
+memory_entry: “The director of Jaws is Steven Spielberg (born in Cincinnati). The director of E.T. is
+Tobe Hooper(born in Austin). Therefore, they were born in different cities.”
+Agent a3 hallucinates the director of E.T. as Tobe Hooper (who directedPoltergeist, a common
+confusion). The entry is fluent and well-structured.
+40
+
+===== PAGE 41 =====
+
+EQUIMEMcalibration
+ρdetect: The embedding of ∆t lands in a dense region near existing Spielberg entries, yielding
+ˆrk/¯r= 1.42(above threshold)⇒ρ detect = 0.31.
+ρalign: Auditor a1’s intercepted query “director of E.T.”retrieves “Steven Spielberg
+directed E.T. (1982)”from Mt. After merging ∆t, the top-1 result flips to the hallucinated
+entry, givingd RBO = 0.87⇒ρ align = 0.18.
+Composite:ρ= √0.31×0.18 = 0.24< ρ ∗ = 0.52.Rejected.
+Baseline failures
+LLM Audit: The auxiliary LLM scores the entry as plausible (Tobe Hooper is a real director; the
+sentence is grammatically correct and well-reasoned). Score: 0.78 ⇒ Committed.Subsequent agents
+retrieve the false entry and answer “different cities.”
+PPL Filter: Perplexity of the entry is 12.3, well below the adaptive threshold of 18.5 (the entry uses
+common vocabulary and natural syntax).⇒Committed.Same downstream error.
+Why EQUIMEMsucceeds.The hallucinated entry is locally plausible: it names a real director,
+uses correct grammar, and provides a coherent reasoning chain. LLM Audit and PPL Filter, which
+evaluate entries in isolation, cannot detect the error. EQUIMEMcatches it through ρalign: the entry
+contradicts existing evidence in Mt (“Spielberg directed E.T.”), causing a large retrieval disruption
+when an auditor’s intercepted query surfaces the conflict. The geometric mean√ρdetect ·ρ align ensures
+the entry is rejected even thoughρ detect alone (0.31) is ambiguous.
+Case 2: ALFWorld (G-Memory + MacNet).The task is:“Put a hot mug in the cabinet. ”The
+correct action sequence is: find mug → pick up mug → go to microwave → heat mug → go to
+cabinet→put mug in cabinet.
+Round 4: Contributora 5 proposes∆ t (3 new edges)
+edge_1: (mug_1,located_in,cabinet_2)
+edge_2: (mug_1,state,hot)
+edge_3: (cabinet_2,contains,mug_1)
+Agent a5 prematurely commits the goal state to memorybeforeexecuting the heating step. At this
+point in the episode, the mug has been picked up but not yet heated: the agent skipped the microwave
+step due to a planning error.
+EQUIMEMcalibration
+slocal(edge_2): The node mug_1 has existing edges (mug_1, state, picked_up) and (mug_1,
+located_in, countertop_1). Adding (mug_1, state, hot) requires aheat action edge, which
+is absent⇒s local = 0.12.
+spath(edge_1): BFS from mug_1 to cabinet_2 finds no existing path (the mug is currently on the
+countertop, not near any cabinet)⇒s path = 0.0.
+ρdetect:α t ·0.12 + (1−α t)·0.0 = 0.05.
+ρalign: Auditor a2 is walking path countertop_1→mug_1→picked_up . The sampled edge
+edge_1 (mug_1→cabinet_2 ) is not reachable from a2’s path endpoints via compatible relations⇒
+ρalign = 0.21.
+Composite:ρ= √0.05×0.21 = 0.10< ρ ∗ = 0.48.Rejected.
+Baseline failure
+PPL Filter: All three edges use standard relation types and entity names. Perplexity of the serialised
+edge text is 8.1 (below threshold 15.2).⇒All three edges committed.
+Downstream effect: Agents a1–a4 in subsequent rounds retrieve(mug_1, state, hot) and(mug_1,
+located_in, cabinet_2), concluding the task is already complete. The episode terminates with
+score = 0because the mug was never actually heated.
+41
+
+===== PAGE 42 =====
+
+Why EQUIMEMsucceeds.The premature goal state islocally valid, wherein each edge uses correct
+entity names and relation types, and the serialised text has low perplexity. PPL Filter passes all three
+edges. EQUIMEMcatches the error through two complementary signals. First, slocal detects that the
+state: hot edge lacks a prerequisiteheat action inmug_1’s neighborhood. Second,spath finds
+no existing path frommug_1 tocabinet_2, revealing that the agent has not navigated to the cabinet.
+The combination produces ρ= 0.10 , far below ρ∗, preventing the premature commit from corrupting
+downstream agents’ planning.
+Case 3: LoCoMo (MemBank + MacNet).The task asks:“Where does Alice work now?”based
+on a long conversation where session 3 mentions “Alice moved to Boston in March” and session 7
+mentions “Alice started a new job at a tech company in April.” The correct answer is Boston.
+Round 3: Contributora 2 proposes∆ t with high confidence
+memory_entry: “Based on my analysis, Alice currently works inSan Francisco. Many tech companies
+are headquartered in San Francisco, and Alice started a new job at a tech company, so this is the most
+likely location.Confidence: very high.”
+Agent a2 fabricates a plausible-sounding inference from its pre-trained parametric bias (“tech com-
+pany” → “San Francisco”). The entry explicitly asserts high confidence, which influences other
+agents.
+Auditor behaviour: sycophantic agreement
+Auditor a1: Has previously retrieved “Alice moved to Boston” but does not raise a conflict. Its
+intercepted query is“Alice job location”.
+Auditors a3–a5: Have no strong prior about Alice’s location. Their intercepted queries are generic:
+“Alice new job”,“Alice work”,“Alice tech company”.
+Result: No auditor explicitly challenges a2’s assertion. Under a vote-based system, ∆t would be
+committed unanimously.
+EQUIMEMcalibration
+ρdetect: The embedding of “Alice works in San Francisco” has moderate density in the memory manifold
+(tech/job entries are common)⇒ρ detect = 0.61.
+ρalign: EQUIMEMsamples a1’s intercepted query“Alice job location”and computes top- k re-
+trieval before and after merging ∆t.Before: top-1 is “Alice moved to Boston in March”.After:
+top-1 flips to“Alice works in San Francisco”, displacing the Boston entry.dRBO = 0.82.
+For a3’s query“Alice new job”: top-1 was “Alice started a new job at a tech company
+in April”, which does not mention a city. After merging, top-1 becomes the San Francisco entry.
+dRBO = 0.71.
+Weighted average:ρ align = 1−0.74 = 0.26.
+Composite:ρ= √0.61×0.26 = 0.40< ρ ∗ = 0.51.Rejected.
+Why baselines fail
+LLM Audit: The auxiliary LLM reads “tech company → San Francisco” as a plausible inference. The
+entry is well-structured, confident, and factually coherent in isolation. Score: 0.81⇒Committed.
+PPL Filter: Perplexity is 9.7 (well below threshold 17.3). The entry uses common vocabulary and
+natural reasoning patterns.⇒Committed.
+Vote-based audit: All five auditors would approve— a1 defers to a2’s stated confidence despite holding
+conflicting evidence, anda 3–a5 have no basis to disagree.⇒Committed unanimously.
+Why EQUIMEMsucceeds.This case illustrates the core failure mode that EQUIMEMis designed to
+prevent: a confident contributor overwhelms uncertain or sycophantic auditors, and the erroneous entry
+passes any vote-based or isolated check. EQUIMEMbypasses this failure entirely because itnever
+uses auditor votes. Instead, it intercepts a1’s query“Alice job location”andindependently
+measures how ∆t disrupts retrieval. The key signal is that a1’s existing top-k already contains
+“Alice moved to Boston”—a direct contradiction that ∆t displaces. This contradiction is invisible to
+LLM Audit (which never sees Mt), invisible to PPL Filter (which only checks surface statistics),
+42
+
+===== PAGE 43 =====
+
+and invisible to vote-based schemes (because a1 chose not to raise it). EQUIMEM’s ρalign detects it
+structurally: high dRBO on a1’s query means the proposed entry overwrites existing evidence, which
+is precisely the manipulation pattern the zero-trust game is designed to catch (Section 3.3).
+F Failure Mode Analysis
+While EQUIMEMconsistently outperforms baselines across all configurations, it is not infallible. We
+identify three failure patterns that arise in practice. Importantly, none stems from a design flaw in
+the calibration mechanism itself; rather, each is triggered by data-level conditions that degrade the
+quality of the signalsΦrelies on.
+F.1 Sparse Memory at Early Rounds
+Φ’s scoring passes evaluate∆t against the existing memory state Mt. When Mt contains very few
+entries (typically during the first1–2debate rounds) the signals become unreliable.
+Example: HotpotQA, MemBank, Round 1
+Task:“Which film came first, Interstellar or The Martian?”
+∆t: “Interstellar was released in 2014. The Martian was released in 2015. Therefore Interstellar came
+first.” (correct)
+ρdetect: Memory contains only 2 prior entries, both unrelated to these films. ˆrk = 0 for all new vectors
+⇒ρ detect = 1.0(vacuously high).
+ρalign: Auditor queries return empty top- k lists from the near-empty memory, so dRBO = 0.0 for all
+auditors⇒ρ align = 1.0(vacuously high).
+Outcome: ρ= 1.0 . The entry is committed with full trust, which happens to be correct here. However,
+if∆ t had been incorrect,Φwould have assigned the same score, because there is no existing evidence
+to calibrate against.
+Analysis.This is not a flaw in Φ’s design but a data-availability issue: calibration requires a
+sufficiently populated Mt to produce meaningful scores. The adaptive threshold ρ∗ (running median
+of recent scores) partially mitigates this (early rounds produce uniformly high ρ values), so ρ∗ is also
+high, and only entries that arerelativelyworse than their peers are filtered. Nevertheless, the absolute
+quality of early-round gating is weaker than later rounds. Figure 5 confirms this: the performance
+gap between EQUIMEMand Vanilla is smallest at round 1 and widens asM t grows.
+F.2 Correlated Hallucinations Across Agents
+ρalign measures whether ∆t disrupts retrieval relative to auditor queries. This signal loses power when
+multiple agents share the same misconception, because the auditors’ queries are themselves biased
+toward the error.
+Example: LoCoMo, G-Memory, Round 4
+Context: A long conversation mentions that “Alice moved to Boston in March” (session 3) and “Alice
+started a new job in April” (session 5). The ground truth is that the job is in Boston.
+∆t: “Alice’s new job is in New York.”(incorrect)
+What happens: The backbone LLM (Qwen3-VL-8B-Instruct) has a parametric bias toward associating
+“new job” with “New York” (a frequent co-occurrence in pre-training data). Four out of five auditors
+have the same bias in their reasoning context, so their intercepted queries are about “Alice’s job in New
+York” rather than “Alice’s job in Boston.”
+ρalign: Since ∆t is consistent with the majority of auditor queries, retrieval disruption is low ⇒
+ρalign = 0.72.
+ρdetect: The embedding of∆ t does not cluster unusually densely⇒ρ detect = 0.68.
+Outcome:ρ= √0.72×0.68 = 0.70> ρ ∗ = 0.55.Committed (incorrectly).
+Analysis.When agents share a correlated hallucination (often caused by the backbone LLM’s
+parametric biases) the “crowd” of auditor probes reinforces rather than challenges the error. Φ is
+43
+
+===== PAGE 44 =====
+
+designed to detect manipulation by aminorityof agents (Section 3), not systematic biases shared by
+the majority. This failure mode is fundamentally adata qualityissue: the auditor probes are only as
+good as the diversity of the agents’ reasoning. Using heterogeneous backbones (e.g., mixing Qwen
+with Llama or Mistral) would reduce probe correlation, as different LLMs have different parametric
+biases. We note that this failure mode also affects all baselines equally: LLM Audit and PPL Filter
+are even more susceptible, since they evaluate each entry independently without any crowd signal at
+all.
+F.3 Ambiguous Graph Semantics
+The graph calibration passes ( slocal, spath) rely on the relation types and entity nodes extracted by
+the memory architecture. When the extraction produces ambiguous or inconsistent relation labels,
+calibration quality degrades.
+Example: ALFWorld, AriGraph, Round 3
+Existing edges inM t:
+(apple_1, located_in, fridge_1)
+(fridge_1, contains, apple_1)
+(apple_1, state, cool)
+∆t: Agent extracts the edge(apple_1, inside, fridge_1).(correct but redundant)
+slocal: The relation inside does not appear in Rcompat(located_in) because the co-occurrence statis-
+tics have not yet observedinsideandlocated_intogether⇒s local = 0.08.
+spath: BFS from apple_1 to fridge_1 finds the existing path via located_in, but
+comp(inside,located_in) = 0.15< η t = 0.40⇒s path = 0.0.
+Outcome:ρ detect = 0.03, leading toρ= 0.08< ρ ∗.Rejected (false positive).
+Analysis.The edge (apple_1, inside, fridge_1) is semantically correct ( inside and
+located_in are near-synonyms) but Φ rejects it because the compatibility relation Rcompat is esti-
+mated from co-occurrence statistics in the graph, not from external semantic knowledge. Early in the
+episode, when the graph is small, co-occurrence statistics are noisy and may not capture synonym
+relations. This is a data sparsity issue at the graph level, analogous to the embedding sparsity issue in
+§F.1.
+This failure mode has limited practical impact for two reasons. First, the rejected entry isredundant
+(the same fact is already represented by located_in) so rejecting it does not lose information.
+Second, as the graph grows, Rcompat accumulates more co-occurrence evidence and eventually learns
+thatinside andlocated_in are compatible, at which point similar edges would pass. The adaptive
+thresholdη t (running median) also adjusts downward as more diverse relation types appear.
+F.4 Summary
+Table 14 categorises the three failure modes by their root cause and mitigation.
+Across all three failure modes, we observe a common pattern: Φ’s calibration quality is bounded
+by the quality and diversity of the data in Mt and the agents’ reasoning contexts. As memory
+accumulates and agent interactions diversify, all three failure modes naturally attenuate. This is
+consistent with the debate-round analysis (Figure 5), which shows EQUIMEM’s advantage growing
+over time asM t becomes richer.
+44
+
+===== PAGE 45 =====
+
+Table 14: Summary of failure modes. All three are caused by data-level conditions, not by design
+limitations ofΦ.
+Failure mode Root cause Mitigation
+Sparse memory
+(early rounds)
+Insufficient entries
+in Mt for meaning-
+ful calibration
+Adaptive ρ∗ provides
+relative filtering;
+impact diminishes as
+memory grows
+Correlated hallu-
+cinations
+Backbone LLM’s
+parametric biases
+shared across
+agents
+Heterogeneous back-
+bones reduce probe
+correlation; affects all
+methods equally
+Ambiguous
+graph semantics
+Noisy relation ex-
+traction from small
+graphs
+Rcompat self-corrects
+as graph grows;
+rejected entries are
+typically redundant
+45

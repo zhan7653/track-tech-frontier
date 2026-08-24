@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T16:38:52Z",
+  "from": "2025-08-25",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "crossref",
+  "query": "multi-agent shared memory large language model agents",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T16:38:50Z",
+      "page": 1,
+      "params": {
+        "filter": "from-pub-date:2025-08-25,until-pub-date:2026-08-24",
+        "offset": 0,
+        "query.bibliographic": "multi-agent shared memory large language model agents",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "multi-agent shared memory large language model agents",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-01\\pilot\\raw\\P05\\crossref-001-ea91672645d0e438f64f3436f9c31396aac34f25c575f591ad17df1439d72069.raw",
+      "reported_total": 608110,
+      "response_sha256": "ea91672645d0e438f64f3436f9c31396aac34f25c575f591ad17df1439d72069",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=multi-agent+shared+memory+large+language+model+agents&rows=100&offset=0&filter=from-pub-date%3A2025-08-25%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T16:38:52Z",
+      "page": 2,
+      "params": {
+        "filter": "from-pub-date:2025-08-25,until-pub-date:2026-08-24",
+        "offset": 100,
+        "query.bibliographic": "multi-agent shared memory large language model agents",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "multi-agent shared memory large language model agents",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-01\\pilot\\raw\\P05\\crossref-002-7c53420b12be5a907c4e8e42742ceec9c9699e765a1cbfa769944b0efcc059d4.raw",
+      "reported_total": 608110,
+      "response_sha256": "7c53420b12be5a907c4e8e42742ceec9c9699e765a1cbfa769944b0efcc059d4",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=multi-agent+shared+memory+large+language+model+agents&rows=100&offset=100&filter=from-pub-date%3A2025-08-25%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T16:38:50Z",
+  "to": "2026-08-24"
+}

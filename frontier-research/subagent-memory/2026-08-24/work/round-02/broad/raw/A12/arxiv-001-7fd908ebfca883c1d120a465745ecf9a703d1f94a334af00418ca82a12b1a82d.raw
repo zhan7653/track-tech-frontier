@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api//9+85vk45psp3IEAUwPsrac6zrg</id>
+  <title>arXiv Query: search_query=( (all:"decentralized memory" OR all:"federated memory") AND all:agent) AND submittedDate:"202301010000 TO 202608242359"&amp;id_list=&amp;start=0&amp;max_results=100</title>
+  <updated>2026-08-23T17:06:54Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=((all:%22decentralized+memory%22+OR+all:%22federated+memory%22)+AND+all:agent)+AND+submittedDate:%22202301010000+TO+202608242359%22&amp;start=0&amp;max_results=100&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>100</opensearch:itemsPerPage>
+  <opensearch:totalResults>3</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2605.22721v1</id>
+    <title>Self-Evolving Multi-Agent Systems via Decentralized Memory</title>
+    <updated>2026-05-21T16:55:40Z</updated>
+    <link href="https://arxiv.org/abs/2605.22721v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.22721v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Self-evolving multi-agent systems (MAS) have emerged as a promising route to LLM agents that continually improve from experience, with persistent memory at their foundation. However, existing designs almost exclusively adopt a centralized repository shared across agents, incurring communication and coordination overhead, raising privacy concerns, and collapsing agent diversity. We propose DecentMem, a decentralized memory framework in which each agent maintains its own dual-pool memory -- an exploitation pool of consolidated past trajectories and an exploration pool of LLM-generated candidates for unseen contexts. The two pools are reweighted online based on stage-wise feedback from an LLM-as-a-judge. Theoretically, we prove that this design guarantees global reachability of the solution space and achieves $O(\log T)$ cumulative regret, matching the stochastic bandit lower bound up to constants. In practice, across three MAS frameworks (AutoGen, DyLAN, AgentNet), three Qwen3 backbones (4B/8B/14B), two Gemma4 backbones (E2B/E4B) and five benchmarks spanning math, code, QA, and embodied tasks, DecentMem improves average accuracy by up to 23.8% over the strongest centralized memory baseline and by up to 52.5% over the no-memory baseline, while reducing token usage by up to 49%.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-21T16:55:40Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Guangya Hao</name>
+    </author>
+    <author>
+      <name>Yunbo Long</name>
+    </author>
+    <author>
+      <name>Zhuokai Zhao</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.14212v1</id>
+    <title>Memory as Asset: From Agent-centric to Human-centric Memory Management</title>
+    <updated>2026-03-15T04:03:50Z</updated>
+    <link href="https://arxiv.org/abs/2603.14212v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.14212v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We proudly introduce Memory-as-Asset, a new memory paradigm towards human-centric artificial general intelligence (AGI). In this paper, we formally emphasize that human-centric, personal memory management is a prerequisite for complementing the collective knowledge of existing large language models (LLMs) and extending their knowledge boundaries through self-evolution. We introduce three key features that shape the Memory-as-Asset era: (1) Memory in Hand, which emphasizes human-centric ownership to maximize benefits to humans; (2) Memory Group, which provides collaborative knowledge formation to avoid memory islands, and (3) Collective Memory Evolution, which enables continuous knowledge growth to extend the boundary of knowledge towards AGI. We finally give a potential three-layer memory infrastructure to facilitate the Memory-as-Asset paradigm, with fast personal memory storage, an intelligent evolution layer, and a decentralized memory exchange network. Together, these components outline a foundational architecture in which personal memories become persistent digital assets that can be accumulated, shared, and evolved over time. We believe this paradigm provides a promising path toward scalable, human-centric AGI systems that continuously grow through the collective experiences of individuals and intelligent agents.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-15T04:03:50Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Yanqi Pan</name>
+    </author>
+    <author>
+      <name>Qinghao Huang</name>
+    </author>
+    <author>
+      <name>Weihao Yang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2511.10030v1</id>
+    <title>Multi-agent In-context Coordination via Decentralized Memory Retrieval</title>
+    <updated>2025-11-13T07:08:31Z</updated>
+    <link href="https://arxiv.org/abs/2511.10030v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2511.10030v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large transformer models, trained on diverse datasets, have demonstrated impressive few-shot performance on previously unseen tasks without requiring parameter updates. This capability has also been explored in Reinforcement Learning (RL), where agents interact with the environment to retrieve context and maximize cumulative rewards, showcasing strong adaptability in complex settings. However, in cooperative Multi-Agent Reinforcement Learning (MARL), where agents must coordinate toward a shared goal, decentralized policy deployment can lead to mismatches in task alignment and reward assignment, limiting the efficiency of policy adaptation. To address this challenge, we introduce Multi-agent In-context Coordination via Decentralized Memory Retrieval (MAICC), a novel approach designed to enhance coordination by fast adaptation. Our method involves training a centralized embedding model to capture fine-grained trajectory representations, followed by decentralized models that approximate the centralized one to obtain team-level task information. Based on the learned embeddings, relevant trajectories are retrieved as context, which, combined with the agents' current sub-trajectories, inform decision-making. During decentralized execution, we introduce a novel memory mechanism that effectively balances test-time online data with offline memory. Based on the constructed memory, we propose a hybrid utility score that incorporates both individual- and team-level returns, ensuring credit assignment across agents. Extensive experiments on cooperative MARL benchmarks, including Level-Based Foraging (LBF) and SMAC (v1/v2), show that MAICC enables faster adaptation to unseen tasks compared to existing methods. Code is available at https://github.com/LAMDA-RL/MAICC.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-11-13T07:08:31Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <arxiv:journal_ref>Proceedings of the AAAI Conference on Artificial Intelligence, Vol. 40, No. 27, pp. 22363-22371, 2026</arxiv:journal_ref>
+    <author>
+      <name>Tao Jiang</name>
+    </author>
+    <author>
+      <name>Zichuan Lin</name>
+    </author>
+    <author>
+      <name>Lihe Li</name>
+    </author>
+    <author>
+      <name>Yi-Chen Li</name>
+    </author>
+    <author>
+      <name>Cong Guan</name>
+    </author>
+    <author>
+      <name>Lei Yuan</name>
+    </author>
+    <author>
+      <name>Zongzhang Zhang</name>
+    </author>
+    <author>
+      <name>Yang Yu</name>
+    </author>
+    <author>
+      <name>Deheng Ye</name>
+    </author>
+    <arxiv:doi>10.1609/aaai.v40i27.39394</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1609/aaai.v40i27.39394" title="doi"/>
+  </entry>
+</feed>

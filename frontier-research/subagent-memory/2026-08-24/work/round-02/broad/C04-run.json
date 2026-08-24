@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:07:19Z",
+  "from": "2023-01-01",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "crossref",
+  "query": "blackboard multi-agent large language model",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:17Z",
+      "page": 1,
+      "params": {
+        "filter": "from-pub-date:2023-01-01,until-pub-date:2026-08-24",
+        "offset": 0,
+        "query.bibliographic": "blackboard multi-agent large language model",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "blackboard multi-agent large language model",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\C04\\crossref-001-4bfff361bb4dfdf123794af53925701625bcd021ab34e92729a17c09c73683c3.raw",
+      "reported_total": 1787429,
+      "response_sha256": "4bfff361bb4dfdf123794af53925701625bcd021ab34e92729a17c09c73683c3",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=blackboard+multi-agent+large+language+model&rows=100&offset=0&filter=from-pub-date%3A2023-01-01%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:19Z",
+      "page": 2,
+      "params": {
+        "filter": "from-pub-date:2023-01-01,until-pub-date:2026-08-24",
+        "offset": 100,
+        "query.bibliographic": "blackboard multi-agent large language model",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "blackboard multi-agent large language model",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\C04\\crossref-002-f1d8843c8d2f81fd341477c035a734465fc066dcc7c36258a8c6d97fe8fd929f.raw",
+      "reported_total": 1787429,
+      "response_sha256": "f1d8843c8d2f81fd341477c035a734465fc066dcc7c36258a8c6d97fe8fd929f",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=blackboard+multi-agent+large+language+model&rows=100&offset=100&filter=from-pub-date%3A2023-01-01%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:07:17Z",
+  "to": "2026-08-24"
+}

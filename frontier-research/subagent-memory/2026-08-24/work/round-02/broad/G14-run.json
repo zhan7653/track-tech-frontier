@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:09:14Z",
+  "from": null,
+  "github_date_field": "created",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 9,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "langgraph subagent memory",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:12Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "langgraph subagent memory"
+      },
+      "provider": "github-search",
+      "query": "langgraph subagent memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G14\\github-search-001-5ecd995dc946a1713e87a97e02258ae2548924cb2a73feb85e70e426bdf2395c.raw",
+      "reported_total": 9,
+      "response_sha256": "5ecd995dc946a1713e87a97e02258ae2548924cb2a73feb85e70e426bdf2395c",
+      "result_count": 9,
+      "url": "https://api.github.com/search/repositories?q=langgraph+subagent+memory&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:14Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "langgraph subagent memory"
+      },
+      "provider": "github-search",
+      "query": "langgraph subagent memory",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G14\\github-search-002-53b1a907729e338851bd25c1bcd25c0f7ff9f1ae15b03f6cbd265aaa27353698.raw",
+      "reported_total": 9,
+      "response_sha256": "53b1a907729e338851bd25c1bcd25c0f7ff9f1ae15b03f6cbd265aaa27353698",
+      "result_count": 0,
+      "url": "https://api.github.com/search/repositories?q=langgraph+subagent+memory&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:09:12Z",
+  "to": null
+}

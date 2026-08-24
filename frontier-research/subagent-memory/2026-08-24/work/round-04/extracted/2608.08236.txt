@@ -1,0 +1,1724 @@
+
+
+===== PAGE 1 =====
+
+LatticeMind: A Conflict-Aware Memory Primitive for Multi-Agent Systems
+Heng Zhou1* Lian Zhang2* Yutao Fan3* Tiancheng He4
+Siki Chen5 Hejia Geng5 Philip Torr5 Zhenfei Yin5
+1University of Science and Technology of China 2University of Illinois Urbana-Champaign
+3Shanghai AI Laboratory 4Beijing University of Posts and Telecommunications 5University of Oxford
+Abstract
+Multi-agent LLM systems often fail not for
+lack of candidate answers, but because they
+have no persistent mechanism for deciding
+which incompatible claim should currently be
+trusted. Majority vote, debate, and judge-based
+selection choose an output without recording
+which claim wins, which is contested, or why
+a later update supersedes it. We present LAT-
+TICEMIND, a conflict-aware structured mem-
+ory that handles contradiction at write time. It
+maintains explicit item status, applies cheap
+symbolic conflict checks, and invokes LLM
+reconciliation only for unresolved semantic
+cases. On a label-blind ConflictBank evalu-
+ation that removes source-name hints, Lattice-
+Mind reaches 0.97 accuracy versus 0.61 for the
+strongest aggregation baseline, with the gap sig-
+nificant at p<10 −6 by paired McNemar test.
+Ablations show that removing the checker or
+the reconciler costs 12 to 14 points. On four
+secondary planning benchmarks the picture is
+mixed: LatticeMind beats naive merge on three
+of four, but does not replace deliberation meth-
+ods on tasks rewarding iterative search.
+1 Introduction
+Consider a multi-agent system answering a ques-
+tion about an updated approval policy. Agent A
+reads the authoritative policy document and writes
+the new version. Agent B has only seen an outdated
+note and asserts the legacy policy. Agent C cites
+a recent third-party report whose recency is mis-
+leading. Standard aggregation strategies, includ-
+ing majority vote (Wang et al., 2023), debate (Du
+et al., 2024), and judge-based selection (Zheng
+et al., 2023), decide what to output, but they leave
+no trace of which claim won, which one was con-
+tested, or why. The next time a similar question
+arrives, the same conflict has to be relitigated from
+scratch. This is the failure mode we target: not a
+* Equal contribution.
+shortage of context, but the absence of a persistent
+mechanism for managing disagreement over time.
+We argue that the missing primitive is conflict-
+aware memory. Existing agent-memory architec-
+tures (Packer et al., 2023; Sumers et al., 2024; Park
+et al., 2023) cover retrieval, compression, and re-
+flection, but none treats contradiction handling as
+a first-class memory update operation. Free-form
+summarization can produce coherent prose while
+erasing why a fact is trusted or which older claim it
+replaced; raw concatenation keeps everything but
+provides no suppression mechanism. A recent sur-
+vey organizes agent memory by form, function, and
+temporal dynamics (Hu et al., 2025b), yet none of
+its axes treatsconflict statusas a first-class property:
+which claim currently wins, which is contested, and
+which is superseded. Combined with the rise of
+knowledge conflicts as a core LLM challenge (Xu
+et al., 2024), this motivates an explicit conflict-
+handling primitive. The same problem reappears
+in long-horizon software projects, where reposito-
+ries evolve and different scopes such as production,
+staging, and feature branches temporarily disagree
+about the current state.
+We therefore study a narrow question. Should
+contradiction handling in multi-agent systems be
+treated as a memory problem rather than an answer-
+selection problem? Our answer is LATTICEMIND,
+a structured memory framework with explicit item
+status, symbolic conflict checks, and selective LLM
+reconciliation. Cheap symbolic checks detect me-
+chanical conflicts such as dependency cycles or
+resource violations. The reconciler is invoked only
+when needed, and it classifies each remaining con-
+flict as a credibility decision, where one claim
+should defeat another, or as a coordination deci-
+sion, where multiple locally valid proposals must
+coexist while planning is revised. Our empirical
+evaluation focuses on the credibility regime; coor-
+dination handling is present as a conservative safety
+override rather than as a validated claim.
+1
+arXiv:2608.08236v1  [cs.AI]  8 Aug 2026
+
+===== PAGE 2 =====
+
+We structure the paper around one main claim
+and one application study. On ConflictBank (Su
+et al., 2024), evaluated under a label-blind protocol
+that anonymizes source names to Source A/B/C and
+removes any trust hint, LatticeMind reaches 0.97
+accuracy versus 0.63 for single-agent inference and
+0.61 for the strongest aggregation baseline, with
+every gap significant at p<10 −6 by paired Mc-
+Nemar test. Secondary planning results are de-
+liberately mixed, mapping where conflict-aware
+memory helps. The application study then shows
+the same update rules transfer to long-horizon
+software-state tracking, with a learned-operator
+study localizing the remaining gap to extraction
+rather than to conflict resolution.
+Our contributions are fourfold:
+⋄ We identify contradiction handling as a missing
+primitive in multi-agent systems and formulate
+it as a structured memory update problem rather
+than an answer-aggregation problem.
+⋄ We introduce LATTICEMIND, which com-
+bines explicit status tracking, symbolic conflict
+checks, and selective LLM reconciliation in a
+single update loop.
+⋄ We report strong ConflictBank gains with statis-
+tical tests and a single-pass ablation that isolates
+the complementary roles of the checker and the
+reconciler.
+⋄ We instantiate the same rules for software-state
+tracking and a learned-operator study that local-
+izes the remaining gap to extraction rather than
+to conflict resolution.
+2 Related Work
+2.1 Memory Systems and Benchmarks
+Memory has become a central concern for LLM-
+based agents. The recent survey by Hu et al.
+(2025b) organizes the field along three axes: mem-
+ory form (token-level, parametric, latent), func-
+tion (factual, experiential, working), and temporal
+dynamics. It explicitly separates agent memory
+from LLM memory, retrieval-augmented genera-
+tion (Lewis et al., 2020), and context engineering.
+None of its functional categories, however, repre-
+sents or resolves contradictory claims over time,
+which is the gap LatticeMind targets. Earlier ar-
+chitectures explore different points in this space:
+MemGPT (Packer et al., 2023) treats the LLM as an
+OS with explicit paging; Generative Agents (Park
+et al., 2023) maintain a memory stream of observa-
+tions and reflections; Reflexion (Shinn et al., 2023)
+uses verbal self-reflection; and CoALA (Sumers
+et al., 2024) unifies working, episodic, seman-
+tic, and procedural stores. More recent token-
+level systems extend this store: Mem0 (Chhikara
+et al., 2025) consolidates salient facts, A-MEM (Xu
+et al., 2025) self-organizes notes into a linked
+graph, and HippoRAG (Gutiérrez et al., 2024) in-
+dexes memory through a knowledge graph, while
+a parametric line edits facts directly into model
+weights (Meng et al., 2022). Three recent sys-
+tems are closest to ours. Zep (Rasmussen et al.,
+2025) stores memory as a temporal knowledge
+graph but exposes no explicit per-item status (pro-
+posed, contested, superseded); supersession is im-
+plicit in the temporal index. MIRIX (Wang and
+Chen, 2025) composes multi-agent memory at the
+retrieval-and-summarization layer rather than at a
+shared write target with conflict resolution. Faith-
+fulRAG (Zhang et al., 2025) resolves fact-level
+conflicts just before generation rather than persist-
+ing the resolution for later agents. LatticeMind
+instead makes conflict resolution a write-time oper-
+ation on shared memory with explicit item status,
+so the next reader sees a resolved state rather than
+relitigating the conflict.
+Recent memory benchmarks improve evaluation
+but mostly target conversational or single-agent set-
+tings. LoCoMo (Maharana et al., 2024) and Long-
+MemEval (Wu et al., 2025) cover chat memory,
+MemBench (Tan et al., 2025) covers factual and
+reflective memory, MemoryAgentBench (Hu et al.,
+2025a) measures incremental multi-turn memory
+in agents, and ConflictBank (Su et al., 2024) tar-
+gets knowledge conflicts. The companion survey
+of Xu et al. (2024) taxonomizes context-memory,
+inter-context, and intra-memory conflicts. A par-
+allel line builds benchmarks over knowledge that
+changes underneath the model, so that yesterday’s
+correct answer becomes today’s stale one (Zhou
+et al., 2026b); this shares our concern with super-
+session but measures retrieval against a moving
+corpus rather than the memory update itself. None
+of these benchmarks isolates the multi-agent set-
+ting where memory must decide which of several
+incompatible facts to trust, under what scope, and
+with what provenance.
+2.2 Multi-Agent and Long-Horizon Software
+Settings
+Multi-agent LLM frameworks built on ReAct (Yao
+et al., 2023) have grown rapidly. Auto-
+2
+
+===== PAGE 3 =====
+
+Gen (Wu et al., 2023), CAMEL (Li et al., 2023),
+MetaGPT (Hong et al., 2024), and ChatDev (Qian
+et al., 2024) focus on task decomposition, role
+assignment, and communication protocols, leav-
+ing disagreement handling to downstream aggre-
+gation or human oversight (Guo et al., 2024; Xi
+et al., 2023). Later work makes the organization
+itself adaptive, either by letting a reward signal re-
+shape the agent topology (Zhou et al., 2025) or by
+training the policy that drives the agents (Zhang
+et al., 2026); both optimize how work is assigned
+rather than how conflicting results are reconciled
+once they are written. Long-horizon software
+benchmarks such as SWE-bench (Jimenez et al.,
+2024) and LongCLI-Bench (Feng et al., 2026)
+measure end-to-end implementation under realistic
+execution constraints, and recent agent systems
+such as SWE-agent (Yang et al., 2024), Agent-
+less (Xia et al., 2024), and OpenHands (Wang et al.,
+2024) target patch generation directly. Our goal is
+complementary. Rather than benchmarking patch
+generation or bug fixing, we isolate the memory
+subproblem that precedes those tasks, maintain-
+ing a consistent and queryable view of evolving
+project state over long trajectories, with software-
+specific slots, provenance-aware queries, scope-
+sensitive retrieval, and budgeted downstream arti-
+facts. We therefore do not compare against SWE-
+agent, Agentless, or OpenHands directly, since
+their target task is end-to-end issue resolution rather
+than auditable state maintenance.
+2.3 Aggregation Versus Persistent Memory
+Many LLM systems handle multiple sources via
+answer-level aggregation: majority vote (Wang
+et al., 2023), multi-agent debate (Du et al., 2024),
+or judge-based selection (Zheng et al., 2023). We
+compare against these directly. They operate over
+answers rather than an auditable persistent mem-
+ory with explicit item status, scope, and super-
+session. The analogy to conflict-free replicated
+data types (Shapiro et al., 2011) is intentional: as
+CRDTs maintain eventual consistency through al-
+gebraic merge rules, LatticeMind maintains a con-
+sistent memory view through explicit status transi-
+tions and conflict-aware update policies.
+3 Method
+3.1 Problem Formulation
+We consider long-horizon multi-agent settings in
+which a system observes a sequence of information
+updates S= (S 1, . . . ,ST ). An update may come
+from another agent, a note, or a tool result. The
+core difficulty is that updates may contradict each
+other, differ in authority, or imply incompatible ac-
+tions. The goal is therefore to maintain a memory
+MT that remains auditable and queryable despite
+contradiction, supersession, and coordination fail-
+ure.
+We model each memory item as m=
+(k,c,ρ,τ,η) , where k is a key or routing handle, c
+is the content, ρ is evidence metadata, τ is a times-
+tamp, and η is a status drawn from {PROPOSED,
+CONFIRMED, CONTESTED, SUPERSEDED}. The
+memory problem is to update these items so that
+currently trusted facts become easy to retrieve,
+weaker or incompatible claims are not silently lost,
+and important transitions remain inspectable.
+Running example.Consider three agents updat-
+ing a project’s approval policy. Agent A reads the
+authoritative policy document and writes that ap-
+provals should follow a new path. Agent B trusts
+an outdated note and writes that the legacy path is
+still active. Agent C proposes a Tuesday rollout
+that overlaps an already accepted deployment win-
+dow. A summary-only system would flatten these
+into a single answer immediately. LatticeMind in-
+stead stores each finding as a separate item, routes
+the two policy claims into a credibility compari-
+son, flags the rollout overlap through the symbolic
+checker, and preserves the losing or blocked items
+as contested rather than deleting them.
+3.2 Proposed Approach
+LatticeMind has three ingredients: structured
+writes, conflict-aware update rules, and rendered
+views for downstream use. Figure 1 sketches the
+loop, and Algorithm 1 states it precisely.
+Structured writes.Agents produce findings such
+as FACT, CONSTRAINT, and SUB_PLAN; these are
+written as explicit memory entries rather than im-
+mediately flattened into a final answer. For the
+software-state application study, we additionally
+extract normalized state claims of the form z=
+(u,σ,v,β,ε,ρ,τ) , where u is an entity, σ is a slot,
+v is the slot value, β is branch scope, ε is environ-
+ment, ρ is evidence metadata, and τ is timestamp.
+The canonical key for a state claim is
+k(z) = (u,σ,β,ε).(1)
+This keying lets the application-specific memory
+3
+
+===== PAGE 4 =====
+
+LatticeMind: Conflict-Resolver for Persistent Memory
+Resolve disagreement as memory updates, not one-shot answer selection.
+structured write → check conflicts→ reconcile if needed → update status→ render→ persist
+Approval policy update: A authoritative policy → new path B stale note → legacy path C rollout Tue 34 overlaps accepted window
+Structured Writes
+incoming writes at time t
+Rendered Memory View
+externalized for downstream agents
+write status update
+render
+consume
+Agent A
+Source: Policy Doc
+Claim: new approval path
+Evidence: authoritative
+Agent B
+Source: Old Note
+Claim: legacy approval
+path
+Evidence: stale
+Agent C
+Source: Rollout Plan
+Claim: rollout Tue 34
+Evidence: overlaps window
+strong / trustworthy
+evidence
+conflicting or problematic
+Conflict Resolver
+decides how conflicting writes update memory
+A. Symbolic Gate
+cheap deterministic checks
+dependency resource
+timing
+B. Semantic
+Reconciler
+only unresolved semantic
+conflicts
+credibility tie-break
+LLM only when rules cannot decide
+1 Aauthoritative>Bstale ✓confirm new path ! keep legacy contested
+2 C overlaps accepted window flag coordination conflict revise rollout
+Example Trace (why these outcomes)
+Update Policies (how writes are turned into memory updates)
+Same claim
+evidence
+accumulation
+merge provenance
+Incompatible claims
+credibility reconciliation
+winner confirmed
+loser contested / superseded
+Colliding valid plans
+coordination handling
+keep both visible
+revise plan
+unresolvedonly
+Shared Memory
+stores shared memory items: key · content · evidence · time · status
+key content evidence status
+approval_policy new approval path policy doc, recent CONFIRMED
+approval_policy legacy approval path stale note CONTESTED
+rollout_window Tue 34 rollout rollout plan; overlap PROPOSED
+approval_policy prior approval rule prior policy SUPERSEDED
+Trusted Current State
+approval_policy: new path
+evidence: policy doc
+Kept Visible
+legacy path: contested claim
+rollout Tue 34: overlap flagged
+Transition Log
+new path → confirmed
+legacy path → contested
+rollout kept for revision
+Downstream Reader
+/ Next Agent
+persist to next round
+Figure 1: LatticeMind overview on an approval-policy example. Agents write structured findings into shared
+memory; a symbolic checker catches mechanical conflicts and selective LLM reconciliation resolves the rest,
+separating credibility from coordination; the system then renders an auditable memory view.
+reason over one scope-local slot at a time instead of
+treating the entire history as undifferentiated text.
+Conflict-aware update rules.LatticeMind uses
+different update rules for different conflict types.
+A symbolic checker first catches mechanical vi-
+olations such as dependency cycles or resource
+collisions. The reconciler then classifies the re-
+maining semantic conflicts, in the spirit of routing
+an input to the procedure that suits it rather than
+applying one fixed strategy (Zhou et al., 2026a).
+Credibility conflicts, where one claim should beat
+another and which are the focus of our empirical
+evaluation, trigger evidence-weighted supersession.
+Coordination conflicts, where multiple locally valid
+proposals collide over a shared resource, trigger a
+conservative safety override that keeps both candi-
+dates visible and re-runs planning rather than delet-
+ing either. The coordination branch is included as
+a design-level safety mechanism, and we do not
+present it as an empirically validated improvement.
+For the software-state application study, incom-
+ing claims are first routed by the canonical key
+in Equation (1). If a new value matches the cur-
+rent value after normalization, we merge evidence
+and provenance. If it differs, we compare evi-
+dence strength before considering semantic sim-
+ilarity. Our score is s(z) =w(evidence-type) +
+40· 1[git_commit̸=/ 0], where w(·) gives higher
+weight to code-backed facts than to human notes or
+explicitly stale observations. In the implementation,
+code-changeandincident-hotfixare strongest, fol-
+lowed by configuration and runtime observations;
+stale-observationis weakest.
+If an incoming claim is stronger than the existing
+claim for the same key, it supersedes the old state
+and becomes the new current value. If it is weaker,
+it is retained as a contested observation rather than
+silently discarded. When evidence strength ties, we
+use recency; only then do we fall back to an LLM
+judge.
+LatticeMind defines four update policies, each
+triggered by a distinct conflict pattern. Credibility
+reconciliation fires when incompatible claims de-
+scribe the same fact or answer; the stronger claim
+is confirmed and the weaker one is preserved as
+SUPERSEDED or CONTESTED with full provenance.
+Coordination handling fires on dependency cycles
+or resource overlap among otherwise useful pro-
+posals; candidate items remain visible, a conflict
+signal is attached, and planning is rerun rather
+4
+
+===== PAGE 5 =====
+
+than deleting proposals prematurely. Slot-first
+state merge fires when two claims share the same
+(entity,slot,branch,env) key but disagree on value;
+the winner becomes current state and the loser is
+marked contested. Evidence accumulation fires
+when the same key and normalized value reappear;
+sources, timestamps, and supporting evidence are
+merged into the existing entry rather than spawning
+duplicates.
+Rendered memory.The final memory view is
+externalized rather than kept as an inaccessible
+hidden structure. For multi-agent reasoning, the
+rendered view contains the resolved findings that
+survive conflict checking and reconciliation. For
+software-state tasks, the renderer produces current
+scope state, contested observations, and transitions;
+under tight budgets it groups tightly coupled slots
+such as database with ORM or deployment with
+compute/hosting. In both cases, downstream read-
+ers only see the rendered memory document, so the
+evaluation measures the usefulness of the memory
+representation itself.
+Learned operators for software-state memory.
+To probe whether the memory update rules them-
+selves are learnable rather than purely hand-
+written, we also train lightweight LoRA (Hu et al.,
+2022) adapters for three software-state operators:
+extract-state,compare-claims, andupdate-memory.
+extract-statemaps raw notes into normalized slot
+claims;compare-claimspredicts a relation label
+and winner for two competing claims; andupdate-
+memorypredicts whether a new claim should be
+added, merged, supersede the current state, or re-
+main contested. These learned operators are used
+only in the repository replay study, not in the main
+ConflictBank result. This separation lets us ask a
+sharper question: which parts of the software-state
+pipeline transfer across repositories once the basic
+conflict-aware abstraction is fixed?
+3.3 Why Structured Memory?
+The core design choice behind LatticeMind is that
+many long-horizon failures come from implicit
+memory. If multiple findings are collapsed into
+a paragraph, or if all history is retained as raw text,
+the system has no explicit notion of which fact
+currently wins, which claim is contested, or which
+update caused the transition. Structured memory re-
+duces this ambiguity in three ways. First, it forces
+incompatible items to meet at an explicit key or
+checker-defined conflict point. Second, it preserves
+Algorithm 1LatticeMind update loop
+1:Input:current memoryM, new updateS t
+2:Extract structured itemsE t fromS t
+3:for alliteme∈E t do
+4:ifeis an agent findingthen
+5: append e to M with explicit status and
+evidence
+6:else ifeis a software-state claimthen
+7:routeeby canonical keyk(e)
+8: compare against current value using ev-
+idence score, recency, and LLM tie-break only
+if needed
+9: mark the winner current and keep the
+loser as contested or superseded
+10:end if
+11:end for
+12: Run symbolic checks for dependency or re-
+source conflicts
+13:ifviolations existthen
+14: classify them as credibility or coordination
+conflicts
+15: invoke LLM reconciliation only for the un-
+resolved semantic cases
+16:end if
+17: Render M into current state, contested items,
+and transition view
+18:Return:rendered memory document
+supersession and contestation rather than deleting
+disagreement. Third, it makes later provenance and
+temporal reasoning possible because changes are
+stored instead of only narrated.
+4 Experiments
+4.1 Experimental Setup
+We organize the experiments around one main
+claim and one application study.
+Main public contradiction benchmark.Our
+main public benchmark is ConflictBank (Su et al.,
+2024), where multiple evidence sources disagree
+and the model must select the correct answer.
+We compare LatticeMind against five baselines:
+SINGLE-AGENTreads all evidence in one pass,
+NO-MERGEmerges multiple agent outputs naively,
+and MAJORITYVOTE, DEBATE, and JUDGEaggre-
+gate at the answer level. All methods are evaluated
+on the same 75 examples with Qwen3-Max.
+Label-blind protocol.The original ConflictBank
+construction names each source by its role (au-
+5
+
+===== PAGE 6 =====
+
+thoritative source,alternative source,recent re-
+port), and these names are a potential oracle cue: a
+reader could prefer “authoritative source” regard-
+less of memory state. To remove this confound, we
+evaluate every method under a label-blind proto-
+col that renames the three sources to neutral iden-
+tifiersSource A,Source B, andSource C, drops
+any trust hint from the reader prompts, and uses
+the same neutral labels across LatticeMind and
+all baselines. All ConflictBank methods consume
+the same evidence pool under the same neutral
+identifiers. The principal difference at the answer-
+aggregation layer is whether incompatible findings
+are resolved through an explicit persistent memory
+update (LatticeMind) or aggregated at the answer
+level (all baselines); the appendix quantifies the
+additional checker and reconciler overhead and re-
+ports a fairness check via an evidence-tag ablation
+(Section A.10 and the discussion of same-pool base-
+line parity). All ConflictBank numbers reported in
+the main paper are produced under this protocol.
+Secondary public benchmarks.We also re-
+port NaturalPlan Calendar (Zheng et al., 2024),
+PlanBench (Valmeekam et al., 2023), TravelPlan-
+ner (Xie et al., 2024), and REALM JSSP (Geng
+and Chang, 2025). These are not contradiction
+benchmarks in the same sense as ConflictBank; we
+include them to map the boundary of the method.
+Application study: software-state tracking.As
+an application of the same memory design, we
+instantiate LatticeMind as a slot-first state mem-
+ory for long-horizon repository tracking. We com-
+pare four methods: CONCATconcatenates session
+notes, LLM-MERGEproduces a one-pass sum-
+mary, LLM-MERGE-INCupdates a summary in-
+crementally, and STATEMEMORYis the slot-first
+LatticeMind instantiation. The benchmark contains
+three scenario families:authority-overwrite,scope-
+divergence, andincident-timeline. We focus on
+the strongest stress test,BUDGETED LONG-NOISE,
+where scenarios are lengthened with stale, branch,
+and documentation noise; methods produce docu-
+ments of at most 1700 characters and the reader
+sees at most 1400 characters.
+Metrics.ConflictBank is measured by answer ac-
+curacy. Software-state query answering evaluates
+current-state,scoped-state,provenance,temporal,
+andstale-suppression. Answers are generated by
+an LLM reader but scored deterministically with
+required, forbidden, and any-of token checks.
+Single-
+Agent
+No-
+Merge
+Majority
+Vote
+Debate Judge Lattice-
+Mind
+0.00
+0.25
+0.50
+0.75
+1.00Accuracy
+0.63
+0.32
+0.61
+0.45
+0.60
+0.97
+Figure 2: Label-blind ConflictBank accuracy across
+methods (75 examples). LatticeMind reaches 0.97, far
+above the strongest baseline overall (Single-Agent, 0.63)
+and the strongest answer-aggregation baseline (Majority
+V ote, 0.61). All baselines are paired-McNemar signifi-
+cantly below LatticeMind atp<10 −6.
+Real-repository bridge.To partially improve ex-
+ternal validity, we add a replay-based bridge over
+two real Codex commit trajectories: a permissions-
+flow rollout and an exec/app-server rollout. Scenar-
+ios are built from real commit subjects, summaries,
+dates, and touched files, then replayed through the
+same state-memory pipeline.
+Learned repo-operator study.We train 4-bit
+QLoRA (Dettmers et al., 2023) adapters on
+Qwen2.5-14B-Instruct (Qwen Team, 2024) for
+the three operator tasks of Section 3:extract-state,
+compare-claims, andupdate-memory. We evalu-
+ate them in a five-way leave-one-out setting over
+replayed Codex trajectories, holding out one tra-
+jectory and reporting schema-only scores on the
+unseen trajectory.
+4.2 Main Public Results
+Figure 2 is the core result of the paper. Under the
+label-blind protocol described in Section 4.1, in
+which the three evidence sources are presented to
+every method as Source A, Source B, and Source
+C without any role-revealing names or trust hints,
+LatticeMind reaches 0.97. The strongest answer-
+level baselines cluster more than 30 points below:
+Single-Agent at 0.63, Majority V ote at 0.61, and
+Judge at 0.60; NO-MERGEand DEBATElag further
+at 0.32 and 0.45. The discordant-pair counts in
+Table 9 are highly asymmetric: e.g. NO-MERGEis
+wrong on 49 examples that LatticeMind answers
+correctly and never wins on the cases LatticeMind
+misses. The advantage is therefore not produced by
+6
+
+===== PAGE 7 =====
+
+Table 1: ConflictBank single-pass ablation, 50 sam-
+ples. Conflict rate is the fraction of examples where the
+symbolic checker flags an unresolved conflict in the ren-
+dered memory at answer time (lower is better). The last
+row is not an ablation: it re-runs the full configuration
+and serves as a run-to-run noise control (see text).
+Configuration Accuracy↑Conflict↓
+Full 0.96 0.00
+−checker 0.84 0.10
+−reconciler 0.82 0.08
+Full (repeat) 0.96 0.02
+the prompt naming any source as authoritative; it
+comes from forcing incompatible findings through
+an explicit memory update and reconciliation step
+before rendering an answer.
+4.3 Ablation on Contradiction Handling
+Table 1 reports the single-pass setting used by the
+final system. Point estimates drop 12 to 14 points
+when either the checker or the reconciler is re-
+moved. McNemar tests on the per-sample correct-
+ness array (Section A.11) confirm the reconciler
+ablation at p<0.05 , while the checker ablation is
+directionally consistent at p=0.07 (limited by the
+50-sample size). The last row deserves an explicit
+caveat. It was originally intended as an evidence-
+label ablation, stripping role names such as “au-
+thoritative source” from the evidence attached to
+each finding. Under the label-blind protocol those
+role names are already absent, so the configuration
+reduces to a second run of the full system. We re-
+port it as a run-to-run noise control: it lands on the
+same accuracy with zero discordant pairs, which
+bounds sampling variance but says nothing about
+the contribution of evidence labels. That question is
+answered instead by Table 8, where removing role
+names from the reader prompt costs every baseline
+8 to 15 points and LatticeMind only 2.
+The per-metric breakdown in Table 2 (bottom)
+shows where the software-state gains come from
+after hardening the benchmark. The informative
+gap remains in provenance and temporal reasoning,
+which is where free-form summaries tend to com-
+press away the evidence needed for auditable state
+tracking.
+4.4 Boundary on Coordination and Planning
+Figure 3 compares LatticeMind against NO-
+MERGE, the most apples-to-apples baseline since
+both methods use the same multi-agent pool and
+NaturalPlan
+Calendar
+PlanBench Travel
+Planner
+REALM
+JSSP
+0.00
+0.25
+0.50
+0.75
+1.00Score
+0.67
+0.47
+0.87
+0.10
+0.80
++0.13
+0.60
++0.13
+0.80
+-0.07
+0.20
++0.10
+No-Merge LatticeMind
+Figure 3: Secondary public benchmarks. Apples-to-
+apples comparison against NO-MERGE, the natural
+baseline that uses the same multi-agent pool but no rec-
+onciliation. LatticeMind matches or beats NO-MERGE
+on three of four tasks. The full table including SINGLE-
+AGENT, MAJORITYVOTE, DEBATE, and JUDGEis in
+Table 3.
+differ only in whether conflicts are reconciled.
+The reconciliation step adds 13 points on Natu-
+ralPlan Calendar (n=15) and 13 points on Plan-
+Bench (n=15), and shows a 10-point exploratory
+gain on REALM JSSP (n=10, 2/10 vs. 1/10), while
+it costs 7 points on TravelPlanner (n=10). The Trav-
+elPlanner regression is informative: the benchmark
+is a single-shot constraint problem that single-agent
+inference already solves at 0.97, so the multi-agent
+overhead introduces variance without conflicts to
+resolve. The REALM gap is small in absolute
+samples and we read it as exploratory rather than
+confirmatory.
+The full per-method numbers in Table 3 show
+LatticeMind is top on PlanBench (0.60 vs. next-
+best 0.47) and third on NaturalPlan Calendar be-
+hind DEBATEand JUDGE(both 0.87); both delib-
+eration methods exploit iterative refinement toward
+a globally consistent schedule, which one-shot rec-
+onciliation does not target.
+4.5 Application Study: Software-State
+Tracking
+Table 2 reports the application study under a harder
+query set. On the targeted budgeted long-noise
+benchmark, STATEMEMORYreaches 0.83 over-
+all, compared with 0.70 for the strongest summary
+baseline LLM-MERGE-INC. The gap is informa-
+tive because all methods operate under the same
+document and reader budgets, and the queries stress
+7
+
+===== PAGE 8 =====
+
+Table 2: Software-state results. Top: overall scores on the two benchmarks. Bottom: per-metric breakdown on the
+harder budgeted long-noise benchmark (near-ceiling current-state retrieval is in the appendix). Higher is better.
+Concat LLM-Merge LLM-Merge-Inc StateMemory
+Overall scores
+Budgeted long-noise 0.52 0.51 0.70 0.83
+Repo bridge (v2) 0.18 0.61 0.41 0.51
+Per-metric breakdown (budgeted long-noise)
+Scoped state 0.78 0.89 0.89 0.89
+Provenance 0.50 0.00 0.61 0.81
+Temporal 0.23 0.18 0.38 0.77
+Stale suppression 0.67 0.78 0.78 0.78
+authority
+overwrite
+scope
+divergence
+incident
+timeline
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0Score
+0.25
+0.60
+0.72
+0.83
+0.72
+0.95
+Concat StateMemory
+Figure 4: Per-family scores on the budgeted long-noise
+benchmark. STATEMEMORYdominates CONCATon
+every scenario family, with the largest absolute gap on
+authority-overwritewhere stale claims must be sup-
+pressed.
+provenance, temporal ordering, and stale suppres-
+sion. The per-metric breakdown shows the gap is
+dominated by provenance, 0.81 against 0.61, and
+temporal reasoning, 0.77 against 0.38, which are
+the dimensions free-form summaries tend to com-
+press away.
+Figure 4 confirms the pattern at the family level:
+CONCATdrops to 0.25 onauthority-overwrite
+where stale claims must be actively suppressed,
+while STATEMEMORYreaches 0.83. The harder
+repo bridge is challenging for the current instan-
+tiation (LLM-MERGE0.61 vs. STATEMEMORY
+0.51), suggesting the slot schema can miss sparse
+commit-level evidence a strong summarizer com-
+presses well.
+0.0
+0.5
+1.0Score
+0.76
+0.88 0.88 0.81
+0.710.74
+0.94 0.89 0.85 0.86
+Overall
+Permissions
+flow
+Exec/
+app-server
+Browser
+surface
+Model
+routing
+Patch
+guardrails
+0.0
+0.5
+1.0Score
+0.25
+0.60
+0.42
+0.25
+0.00
+0.17
+0.80
+0.50
+0.42
+0.50
+Extract
+Direct Two-stage
+Figure 5: Five-way leave-one-out replay for learned op-
+erators. Top: overall; bottom: extraction-only.compare-
+claimsandupdate-memorysaturate at 1.00 in both set-
+tings and are omitted; full per-holdout breakdown in
+Section A.6.
+4.6 Learned Operators on Unseen Repository
+Trajectories
+The Direct bars in Figure 5 separate the operator-
+level story from the end-to-end bridge:compare-
+claimsandupdate-memorysaturate, so variation
+comes from overall transfer and especiallyextract-
+state(mean 0.30, worst casepatch-guardrailsat
+zero). The learned memory policy transfers; extrac-
+tion does not yet match.
+The Two-stage bars mitigate this: a constrained
+procedure that first selects supported entity-slot
+pairs and then generates values raises overall from
+0.81 to 0.86 and extraction from 0.30 to 0.48, with
+the largest gain onpatch-guardrails(0 to 0.50 ex-
+traction). Four of five holdouts improve; the single
+regression onpermissions-flowshows constrained
+decoding can prune correct values when the direct
+8
+
+===== PAGE 9 =====
+
+extractor already grounds the right entity.
+4.7 Discussion
+LatticeMind wins when the bottleneck is deciding
+which incompatible claim to trust, and underper-
+forms when it is search, deliberation, or holistic
+generation: ConflictBank is the cleanest case, and
+the ablation confirms the checker and reconciler
+are complementary. The secondary planning tasks
+map this boundary, where the memory-update ad-
+vantage cannot fully fire yet LatticeMind still beats
+naive merge on three of four. On the software-
+state surface the gain concentrates in provenance
+and temporal questions; qualitative cases appear in
+Section A.8.
+5 Conclusion
+We presented LatticeMind, a conflict-aware mem-
+ory primitive that represents item status, evidence,
+and supersession, and combines cheap symbolic
+checks with selective LLM reconciliation. It sub-
+stantially improves over single-agent and aggre-
+gation baselines on ConflictBank, and the same
+update rules transfer to long-horizon software-state
+tracking. A learned-operator study localizes the
+remaining gap to extraction rather than the update
+rule, pointing future work toward stronger extrac-
+tion.
+Limitations
+LatticeMind targets contradiction handling and is
+not a universal replacement for search or delib-
+eration, as our secondary results illustrate. The
+evaluation uses a single hosted LLM with default
+decoding; the released runners record per-sample
+outcomes and draw their samples under a fixed
+seed, so any future model can be scored on the
+same examples in subsequent work.
+Ethics Statement
+This work studies structured memory representa-
+tions and conflict handling for LLM agents. It
+does not introduce a human-subject dataset, and
+the software-state bridge uses only public Codex
+repository metadata. By design, the rendered mem-
+ory exposes provenance, contested states, and ex-
+plicit status transitions to support human oversight;
+deployments in high-stakes settings should pair the
+rendered view with appropriate validation.
+References
+Prateek Chhikara, Dev Khant, Saket Aryan, Taranjeet
+Singh, and Deshraj Yadav. 2025. Mem0: Building
+production-ready AI agents with scalable long-term
+memory.arXiv preprint arXiv:2504.19413.
+Tim Dettmers, Artidoro Pagnoni, Ari Holtzman, and
+Luke Zettlemoyer. 2023. QLoRA: Efficient finetun-
+ing of quantized LLMs. InAdvances in Neural Infor-
+mation Processing Systems (NeurIPS).
+Yilun Du, Shuang Li, Antonio Torralba, Joshua B.
+Tenenbaum, and Igor Mordatch. 2024. Improving
+factuality and reasoning in language models through
+multiagent debate. InInternational Conference on
+Machine Learning (ICML).
+Yukang Feng, Jianwen Sun, Zelai Yang, Jiaxin Ai,
+Chuanhao Li, Zizhen Li, Fanrui Zhang, Kang He,
+Rui Ma, Jifan Lin, Jie Sun, Yang Xiao, Sizhuo Zhou,
+Wenxiao Wu, Yiming Liu, Pengfei Liu, Yu Qiao,
+Shenglin Zhang, and Kaipeng Zhang. 2026. Longcli-
+bench: A preliminary benchmark and study for long-
+horizon agentic programming in command-line inter-
+faces.arXiv preprint arXiv:2602.14337.
+Longling Geng and Edward Y . Chang. 2025. REALM-
+Bench: A benchmark for evaluating multi-agent sys-
+tems on real-world, dynamic planning and scheduling
+tasks.arXiv preprint arXiv:2502.18836.
+Taicheng Guo, Xiuying Chen, Yaqi Wang, Ruidi Chang,
+Shichao Pei, Nitesh V . Chawla, Olaf Wiest, and Xi-
+angliang Zhang. 2024. Large language model based
+multi-agents: A survey of progress and challenges.
+InProceedings of the 33rd International Joint Con-
+ference on Artificial Intelligence (IJCAI).
+Bernal Jiménez Gutiérrez, Yiheng Shu, Yu Gu, Michi-
+hiro Yasunaga, and Yu Su. 2024. HippoRAG: Neu-
+robiologically inspired long-term memory for large
+language models. InAdvances in Neural Information
+Processing Systems (NeurIPS).
+Sirui Hong, Mingchen Zhuge, Jonathan Chen, Xiawu
+Zheng, Yuheng Cheng, Jinlin Wang, Ceyao Zhang,
+Zili Wang, Steven Ka Shing Yau, Zijuan Lin, Liyang
+Zhou, Chenyu Ran, Lingfeng Xiao, Chenglin Wu,
+and Jürgen Schmidhuber. 2024. MetaGPT: Meta pro-
+gramming for a multi-agent collaborative framework.
+InInternational Conference on Learning Representa-
+tions (ICLR).
+Edward J. Hu, Yelong Shen, Phillip Wallis, Zeyuan
+Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and
+Weizhu Chen. 2022. LoRA: Low-rank adaptation of
+large language models. InInternational Conference
+on Learning Representations (ICLR).
+Yuanzhe Hu, Yu Wang, and Julian McAuley. 2025a.
+Evaluating memory in LLM agents via incre-
+mental multi-turn interactions.arXiv preprint
+arXiv:2507.05257.
+9
+
+===== PAGE 10 =====
+
+Yuyang Hu, Shichun Liu, Yanwei Yue, Guibin Zhang,
+Boyang Liu, Fangyi Zhu, Jiahang Lin, Honglin Guo,
+Shihan Dou, Zhiheng Xi, Senjie Jin, Jiejun Tan, Yan-
+bin Yin, Jiongnan Liu, Zeyu Zhang, Zhongxiang Sun,
+Yutao Zhu, Hao Sun, Boci Peng, and 28 others. 2025b.
+Memory in the age of AI agents.arXiv preprint
+arXiv:2512.13564.
+Carlos E. Jimenez, John Yang, Alexander Wettig,
+Shunyu Yao, Kexin Pei, Ofir Press, and Karthik R.
+Narasimhan. 2024. SWE-bench: Can language mod-
+els resolve real-world GitHub issues? InInter-
+national Conference on Learning Representations
+(ICLR).
+Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio
+Petroni, Vladimir Karpukhin, Naman Goyal, Hein-
+rich Küttler, Mike Lewis, Wen-tau Yih, Tim Rock-
+täschel, Sebastian Riedel, and Douwe Kiela. 2020.
+Retrieval-augmented generation for knowledge-
+intensive NLP tasks. InAdvances in Neural Informa-
+tion Processing Systems (NeurIPS).
+Guohao Li, Hasan Abed Al Kader Hammoud, Hani
+Itani, Dmitrii Khizbullin, and Bernard Ghanem. 2023.
+CAMEL: Communicative agents for “mind” explo-
+ration of large language model society. InAdvances
+in Neural Information Processing Systems (NeurIPS).
+Adyasha Maharana, Dong-Ho Lee, Sergey Tulyakov,
+Mohit Bansal, Francesco Barbieri, and Yuwei Fang.
+2024. Evaluating very long-term conversational
+memory of LLM agents. InProceedings of the 62nd
+Annual Meeting of the Association for Computational
+Linguistics (Volume 1: Long Papers), pages 13851–
+13870. Association for Computational Linguistics.
+Kevin Meng, David Bau, Alex Andonian, and Yonatan
+Belinkov. 2022. Locating and editing factual associ-
+ations in GPT. InAdvances in Neural Information
+Processing Systems (NeurIPS).
+Charles Packer, Sarah Wooders, Kevin Lin, Vivian Fang,
+Shishir G. Patil, Ion Stoica, and Joseph E. Gonzalez.
+2023. MemGPT: Towards LLMs as operating sys-
+tems.arXiv preprint arXiv:2310.08560.
+Joon Sung Park, Joseph C. O’Brien, Carrie J. Cai,
+Meredith Ringel Morris, Percy Liang, and Michael S.
+Bernstein. 2023. Generative agents: Interactive simu-
+lacra of human behavior. InProceedings of the 36th
+Annual ACM Symposium on User Interface Software
+and Technology (UIST).
+Chen Qian, Wei Liu, Hongzhang Liu, Nuo Chen, Yufan
+Dang, Jiahao Li, Cheng Yang, Weize Chen, Yusheng
+Su, Xin Cong, Juyuan Xu, Dahai Li, Zhiyuan Liu,
+and Maosong Sun. 2024. ChatDev: Communicative
+agents for software development. InProceedings of
+the 62nd Annual Meeting of the Association for Com-
+putational Linguistics (ACL), pages 15174–15186.
+Qwen Team. 2024. Qwen2.5 technical report.arXiv
+preprint arXiv:2412.15115.
+Preston Rasmussen, Pavlo Paliychuk, Travis Beauvais,
+Jack Ryan, and Daniel Chalef. 2025. Zep: A tempo-
+ral knowledge graph architecture for agent memory.
+arXiv preprint arXiv:2501.13956.
+Marc Shapiro, Nuno Preguiça, Carlos Baquero, and
+Marek Zawirski. 2011. Conflict-free replicated data
+types. InStabilization, Safety, and Security of Dis-
+tributed Systems (SSS), volume 6976 ofLecture Notes
+in Computer Science. Springer.
+Noah Shinn, Federico Cassano, Ashwin Gopinath,
+Karthik Narasimhan, and Shunyu Yao. 2023. Re-
+flexion: Language agents with verbal reinforcement
+learning. InAdvances in Neural Information Pro-
+cessing Systems (NeurIPS).
+Zhaochen Su, Jun Zhang, Xiaoye Qu, Tong Zhu, Yanshu
+Li, Jiashuo Sun, Juntao Li, Min Zhang, and Yu Cheng.
+2024. ConflictBank: A benchmark for evaluating
+the influence of knowledge conflicts in LLM. In
+Advances in Neural Information Processing Systems
+(NeurIPS), Datasets and Benchmarks Track.
+Theodore R. Sumers, Shunyu Yao, Karthik Narasimhan,
+and Thomas L. Griffiths. 2024. Cognitive architec-
+tures for language agents.Transactions on Machine
+Learning Research (TMLR).
+Haoran Tan, Zeyu Zhang, Chen Ma, Xu Chen, Quanyu
+Dai, and Zhenhua Dong. 2025. Membench: Towards
+more comprehensive evaluation on the memory of
+llm-based agents. InFindings of the Association for
+Computational Linguistics: ACL 2025, pages 19336–
+19352. Association for Computational Linguistics.
+Karthik Valmeekam, Matthew Marquez, Alberto Olmo,
+Sarath Sreedharan, and Subbarao Kambhampati.
+2023. PlanBench: An extensible benchmark for
+evaluating large language models on planning and
+reasoning about change. InAdvances in Neural In-
+formation Processing Systems (NeurIPS), Datasets
+and Benchmarks Track.
+Xingyao Wang, Boxuan Li, Yufan Song, Frank F. Xu,
+Xiangru Tang, Mingchen Zhuge, Jiayi Pan, Yueqi
+Song, Bowen Li, Jaskirat Singh, Hoang H. Tran,
+Fuqiang Li, Ren Ma, Mingzhang Zheng, Bill Qian,
+Yanjun Shao, Niklas Muennighoff, Yizhe Zhang,
+Binyuan Hui, and 5 others. 2024. OpenHands: An
+open platform for AI software developers as general-
+ist agents.arXiv preprint arXiv:2407.16741.
+Xuezhi Wang, Jason Wei, Dale Schuurmans, Quoc V .
+Le, Ed H. Chi, Sharan Narang, Aakanksha Chowd-
+hery, and Denny Zhou. 2023. Self-consistency im-
+proves chain of thought reasoning in language mod-
+els. InInternational Conference on Learning Repre-
+sentations (ICLR).
+Yu Wang and Xi Chen. 2025. MIRIX: Multi-agent mem-
+ory system for LLM-based agents.arXiv preprint
+arXiv:2507.07957.
+Di Wu, Hongwei Wang, Wenhao Yu, Yuwei Zhang,
+Kai-Wei Chang, and Dong Yu. 2025. Longmemeval:
+10
+
+===== PAGE 11 =====
+
+Benchmarking chat assistants on long-term interac-
+tive memory. InInternational Conference on Learn-
+ing Representations.
+Qingyun Wu, Gagan Bansal, Jieyu Zhang, Yiran Wu,
+Beibin Li, Erkang Zhu, Li Jiang, Xiaoyun Zhang,
+Shaokun Zhang, Jiale Liu, Ahmed Hassan Awadal-
+lah, Ryen W. White, Doug Burger, and Chi Wang.
+2023. AutoGen: Enabling next-gen LLM applica-
+tions via multi-agent conversation.arXiv preprint
+arXiv:2308.08155.
+Zhiheng Xi, Wenxiang Chen, Xin Guo, Wei He, Yiwen
+Ding, Boyang Hong, Ming Zhang, Junzhe Wang, Sen-
+jie Jin, Enyu Zhou, Rui Zheng, Xiaoran Fan, Xiao
+Wang, Limao Xiong, Yuhao Zhou, Weiran Wang,
+Changhao Jiang, Yicheng Zou, Xiangyang Liu, and
+10 others. 2023. The rise and potential of large lan-
+guage model based agents: A survey.arXiv preprint
+arXiv:2309.07864.
+Chunqiu Steven Xia, Yinlin Deng, Soren Dunn, and
+Lingming Zhang. 2024. Agentless: Demystifying
+LLM-based software engineering agents.arXiv
+preprint arXiv:2407.01489.
+Jian Xie, Kai Zhang, Jiangjie Chen, Tinghui Zhu, Renze
+Lou, Yuandong Tian, Yanghua Xiao, and Yu Su. 2024.
+TravelPlanner: A benchmark for real-world planning
+with language agents. InInternational Conference
+on Machine Learning (ICML).
+Rongwu Xu, Zehan Qi, Zhijiang Guo, Cunxiang Wang,
+Hongru Wang, Yue Zhang, and Wei Xu. 2024.
+Knowledge conflicts for LLMs: A survey. In
+Proceedings of the 2024 Conference on Empirical
+Methods in Natural Language Processing (EMNLP),
+pages 8541–8565.
+Wujiang Xu, Zujie Liang, Kai Mei, Hang Gao, Jun-
+tao Tan, and Yongfeng Zhang. 2025. A-MEM:
+Agentic memory for LLM agents.arXiv preprint
+arXiv:2502.12110.
+John Yang, Carlos E. Jimenez, Alexander Wettig, Kilian
+Lieret, Shunyu Yao, Karthik Narasimhan, and Ofir
+Press. 2024. SWE-agent: Agent-computer interfaces
+enable automated software engineering. InAdvances
+in Neural Information Processing Systems (NeurIPS).
+Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak
+Shafran, Karthik Narasimhan, and Yuan Cao. 2023.
+ReAct: Synergizing reasoning and acting in language
+models. InInternational Conference on Learning
+Representations (ICLR).
+Guibin Zhang, Hejia Geng, Xiaohang Yu, Zhenfei Yin,
+Zaibin Zhang, Zelin Tan, Heng Zhou, Zhongzhi Li,
+Xiangyuan Xue, Yijiang Li, Yifan Zhou, Yang Chen,
+Chen Zhang, Yutao Fan, Zihu Wang, Songtao Huang,
+Francisco Piedrahita-Velez, Yue Liao, Hongru Wang,
+and 6 others. 2026. The landscape of agentic rein-
+forcement learning for LLMs: A survey.Transac-
+tions on Machine Learning Research (TMLR).
+Qinggang Zhang, Zhishang Xiang, Yilin Xiao, Le Wang,
+Junhui Li, Xinrun Wang, and Jinsong Su. 2025. Faith-
+fulRAG: Fact-level conflict modeling for context-
+faithful retrieval-augmented generation.arXiv
+preprint arXiv:2506.08938.
+Huaixiu Steven Zheng, Swaroop Mishra, Hugh Zhang,
+Xinyun Chen, Minmin Chen, Azade Nova, Le Hou,
+Heng-Tze Cheng, Quoc V . Le, Ed H. Chi, and Denny
+Zhou. 2024. NATURAL PLAN: Benchmarking
+LLMs on natural language planning.arXiv preprint
+arXiv:2406.04520.
+Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Siyuan
+Zhuang, Zhanghao Wu, Yonghao Zhuang, Zi Lin,
+Zhuohan Li, Dacheng Li, Eric P. Xing, Hao Zhang,
+Joseph E. Gonzalez, and Ion Stoica. 2023. Judging
+LLM-as-a-judge with MT-Bench and chatbot arena.
+InAdvances in Neural Information Processing Sys-
+tems (NeurIPS), Datasets and Benchmarks Track.
+Heng Zhou, Hejia Geng, Xiangyuan Xue, Li Kang, Yi-
+ran Qin, Zhiyong Wang, Zhenfei Yin, and Lei Bai.
+2025. RESO: A reward-driven self-organizing LLM-
+based multi-agent system for reasoning tasks. In
+Proceedings of the Conference on Empirical Meth-
+ods in Natural Language Processing (EMNLP).
+Heng Zhou, Zelin Tan, Zhemeng Zhang, Yutao Fan,
+Yibing Lin, Li Kang, Xiufeng Song, Rui Li, Songtao
+Huang, Ao Yu, Yuchen Fan, Yanxu Chen, Kaixin
+Xu, Xiaohong Liu, Yiran Qin, Philip Torr, Chen
+Zhang, and Zhenfei Yin. 2026a. Select-then-solve:
+Paradigm routing as inference-time optimization for
+LLM agents. InICML Workshop on Failure Modes
+of Agentic AI.
+Heng Zhou, Ao Yu, Yuchen Fan, Jianing Shi, Li Kang,
+Hejia Geng, Yongting Zhang, Yutao Fan, Yuhao Wu,
+Tiancheng He, Yiran Qin, Lei Bai, and Zhenfei Yin.
+2026b. LiveSearchBench: An automatically con-
+structed benchmark for retrieval and reasoning over
+dynamic knowledge. InICML Workshop on Failure
+Modes of Agentic AI.
+A Additional Experimental Details
+A.1 Reproducibility Statement
+Artifacts.The implementation comprises the
+LatticeMind memory, the benchmark runners, the
+prompt-based baselines, all prompt templates ver-
+batim, and stand-alone analysis scripts that com-
+pute the bootstrap intervals and McNemar tests
+of Section A.11 and draw Figures 2 to 4. Each
+runner records per-sample outcomes rather than
+aggregates alone, alongside the command, sample
+size, seed and model that produced them, so every
+reported statistic recomputes offline from a com-
+pleted run without re-querying the hosted model.
+Two artifacts are not reusable in that way. The
+raw prompt/response logs embed ConflictBank ev-
+idence passages verbatim, and that corpus carries
+11
+
+===== PAGE 12 =====
+
+no redistribution license. The numbers behind Fig-
+ure 5 depend on QLoRA adapter checkpoints, so re-
+producing them requires re-running the fine-tuning
+rather than replaying a stored array.
+Models and versions.Prompt-based experi-
+ments use Qwen3-Max accessed through Open-
+Router (snapshot of the public Qwen3-Max end-
+point at submission time, default temperature). The
+learned-operator study uses 4-bit QLoRA adapters
+on Qwen2.5-14B-Instruct (Qwen Team, 2024)
+with rank 16, alpha 32, applied to all attention and
+MLP projection matrices. Because hosted LLMs
+may evolve, exact reruns may vary with provider-
+side model updates unless the endpoint is version-
+pinned; the runners therefore record per-sample
+outcomes rather than aggregates alone, so every
+reported statistic can be recomputed from a run
+without re-querying the model for each figure.
+Compute.Prompt-based runs were executed on
+a single workstation, and per-sample cost is dom-
+inated by hosted-LLM API latency rather than lo-
+cal compute. The QLoRA adapter training used a
+single NVIDIA H100 80GB GPU. Each five-way
+leave-one-out run, including training and evalua-
+tion across all five folds, completes in roughly 6 to
+8 GPU-hours, for an aggregate budget of approxi-
+mately 40 GPU-hours.
+Dataset and artifact licenses.ConflictBank (Su
+et al., 2024) is released for research use by
+its authors. NaturalPlan (Zheng et al., 2024),
+PlanBench (Valmeekam et al., 2023), TravelPlan-
+ner (Xie et al., 2024), and REALM-Bench (Geng
+and Chang, 2025) are publicly released for aca-
+demic evaluation under their respective project li-
+censes. The Codex commit trajectories used in
+the repo-bridge are derived from a public open-
+source repository under its declared license; we re-
+play only commit metadata (subject, date, touched
+files) and short hand-written summaries, never pro-
+prietary content. Unit tests cover the core lattice,
+merge, reconciler, belief, and software-state bench-
+mark components.
+A.2 Public Benchmark Context
+Beyond ConflictBank, we evaluated LatticeMind
+on four public long-horizon tasks. Table 3 reports
+every available method on each task; the main pa-
+per compares only against NO-MERGEfor clarity.
+LatticeMind is the top method on PlanBench, beats
+NO-MERGEon three of four tasks, and is competi-
+tive on NaturalPlan Calendar where two stronger
+deliberation methods exploit the iterative-schedule
+structure of the task.
+Table 3: Full per-method scores on the four secondary
+public benchmarks. Calendar is exact match (n=15),
+PlanBench is goal-reached rate (n=15), TravelPlanner
+is constraint pass rate (n=10), REALM JSSP is validity
+rate (n=10). A dash means the baseline was not run on
+that task.
+Method Calendar PlanBench Travel REALM
+Single-Agent 0.20 0.27 0.97 0.20
+No-Merge 0.67 0.47 0.87 0.10
+Majority V ote 0.13 0.40 — —
+Debate 0.87 0.40 — —
+Judge 0.87 0.20 — —
+LatticeMind0.80 0.60 0.80 0.20
+A.3 Software-State Tracks
+The software-state benchmark includes four tracks:
+structured,raw-notes, budgeted, andrepo-
+bridge. The main paper emphasizes the budgeted
+track because it is the strongest stress test of mem-
+ory under document constraints. In that track, the
+writer budget is 1700 characters and the reader bud-
+get is 1400 characters. The compact renderer is
+enabled so that all methods are compared under
+the same external memory budget rather than the
+internal size of their hidden data structures. In the
+latest harder version used in the paper, the query
+sets were expanded to include more provenance,
+rollback, scope-confusion, and stale-suppression
+questions, which lowers the earlier ceiling effects.
+Table 4: Full metric breakdown for the harder budgeted
+long-noise software-state benchmark. The current-state
+row is included here rather than in the main paper be-
+cause it is already near ceiling for the stronger methods.
+SM = StateMemory.
+Metric Concat Merge Merge-Inc SM
+Current state 0.78 1.00 1.00 1.00
+Scoped state 0.78 0.89 0.89 0.89
+Provenance 0.50 0.00 0.61 0.81
+Temporal 0.23 0.18 0.38 0.77
+Stale suppression 0.67 0.78 0.78 0.78
+A.4 Scenario Families
+Authority overwrite.Sessions interleave code-
+backed changes with stale observations and out-
+dated documentation. This family stresses whether
+12
+
+===== PAGE 13 =====
+
+the memory can suppress stale claims while pre-
+serving provenance to the winning update.
+Scope divergence.Production, staging, and
+feature-preview states coexist. This family tests
+whether the memory preserves branch and environ-
+ment scope rather than collapsing everything into a
+single project-wide summary.
+Incident timeline.Rollback and restore events
+create non-monotonic state histories. This family
+emphasizes temporal questions such as when a roll-
+back happened and which later commit restored
+the prior configuration.
+A.5 Real-Repository Bridge
+The bridge experiment replays two real Codex com-
+mit trajectories: (i) a permissions-flow rollout and
+(ii) an exec/app-server rollout. Each replay ses-
+sion contains the real commit date, subject, a short
+summary, touched-file hints, and a structured state
+card derived from the commit. We additionally
+interleave later stale notes that make plausible but
+wrong inferences about the rollout, so the bridge
+now probes whether a memory system can retain
+the authoritative change history while suppress-
+ing late contradictory observations. In the harder
+v2 used by the final paper draft, each case re-
+ceives extra distractor sessions and more multi-hop
+provenance/temporal questions; under this setting,
+LLM-MERGEreaches 0.61 overall, STATEMEM-
+ORY0.51, LLM-MERGE-INC0.41, and CONCAT
+0.18. The bridge is therefore more realistic than
+purely synthetic scenarios, but it is still a curated
+replay rather than an unrestricted benchmark over
+raw diffs.
+A.6 Learned Operator Study
+To separate the memory update rule from the ex-
+traction bottleneck, we trained QLoRA adapters
+on Qwen2.5-14B-Instruct for three software-
+state operators:extract-state,compare-claims, and
+update-memory. Training data mixes the synthetic
+software-state scenarios with replay-derived repo
+examples, and evaluation uses five leave-one-out
+Codex trajectories:permissions-flow,exec-app-
+server,browser-surface,model-routing, andpatch-
+guardrails. Under schema-only normalization, the
+learned adapters are already at ceiling on the cur-
+rentcompare-claimsandupdate-memoryevalua-
+tion across all five holdouts, whileextract-state
+averages 0.30 claim-F1. We therefore interpret the
+learned study as evidence that the conflict/update
+abstraction itself transfers, while extraction re-
+mains the limiting factor.
+Table 5: Full per-holdout learned-operator breakdown
+for the five-way leave-one-out repository replay study.
+The compare/update columns saturate to 1.0 in both
+direct and two-stage settings; the main paper folds these
+into Figure 5.
+Holdout Overall Extract Compare Update
+Permissions flow 0.76 0.25 1.00 1.00
+Exec/app-server 0.88 0.60 1.00 1.00
+Browser surface 0.88 0.42 1.00 1.00
+Model routing 0.81 0.25 1.00 1.00
+Patch guardrails 0.71 0.00 1.00 1.00
+Mean0.81 0.30 1.00 1.00
+The constrained two-stage decoder helps most
+when the direct extractor emits the wrong entity
+family or collapses under longer evidence strings.
+This is whypatch-guardrailsgains the most: the di-
+rect extractor often drifts into neighboring approval
+or TUI entities, while the two-stage extractor at
+least selects the correctpatch-runtimeslots before
+attempting value generation.
+Representative error pattern.Onpatch-
+guardrails, the direct extractor often maps the
+note about guarded apply_patch execution onto
+the wrong entity family, producing malformed
+or irrelevant exec/tui claims and yielding
+zero extraction credit. The two-stage extrac-
+tor fixes the entity-slot selection and recovers
+patch_runtime.execution, but it can still
+generate an overly generic value such as “patch
+requests use the experimental tool-call approval
+flow” instead of the gold “ apply_patch runs
+through the structured diff engine.” Onbrowser-
+surface, by contrast, the two-stage extractor often
+recovers both the browser_runtime.execution
+and browser_runtime.file_storage slots
+from the same note, which is enough to move
+the example from partial credit to full semantic
+match. These cases reinforce the same conclusion
+as the aggregate numbers: extraction errors are
+now mostly about grounding the right value, not
+about conflict/update logic. Figure 6 visualizes a
+representativepatch-guardrailsexample.
+A.7 Earlier Open-Ended Coding-Memory
+Iteration
+Before building the current software-state bench-
+mark, we also ran an earlier open-ended coding-
+13
+
+===== PAGE 14 =====
+
+Figure 6: Representativepatch-guardrailsextraction example. The direct extractor drifts into the wrong
+entity/slot family and normalizes to an empty claim set, while the two-stage extractor recovers the correct
+patch_runtime/approvalsframe and only misses on value specificity.
+memory benchmark over multi-session project evo-
+lution scenarios. That earlier setup often favored
+free-form summarization baselines and did not con-
+sistently show an advantage for the structured belief
+pipeline. In hindsight, it rewarded broad overview
+generation more than precise stale-suppression,
+scope preservation, or provenance retrieval. This
+negative result directly motivated the narrower
+software-state benchmark used in the main paper.
+A.8 Qualitative Case Studies
+Table 6 shows two replayed cases from the real
+Codex bridge. We use real commit trajectories
+rather than synthetic scenarios because the qualita-
+tive value of LatticeMind is easiest to see when sev-
+eral small implementation changes must be turned
+into a stable operational picture. In both cases, the
+rendered memory is compact enough to fit within
+the benchmark budget while still preserving the
+commit-level provenance that downstream ques-
+tions require.
+These cases illustrate a practical difference be-
+tween structured state memory and summary-only
+approaches. The summary baselines can often re-
+state the current architecture in fluent prose, but
+they do not reliably keep the exact commit attri-
+bution aligned with the correct change boundary.
+The rendered LatticeMind state, by contrast, makes
+the causal chain explicit enough that a downstream
+reader can answer both “what is true now?” and
+“which change introduced it?” from the same com-
+pact document.
+A.9 Implementation Details
+Memory item state machine.Each
+memory item carries a status η∈
+{PROPOSED,CONFIRMED,CONTESTED,SUPERSEDED} .
+All items start as PROPOSED; the symbolic checker
+can transition to CONTESTED; the reconciler
+transitions to CONFIRMEDor SUPERSEDED; and
+SUPERSEDEDis terminal (backward transitions are
+forbidden). State transitions are applied centrally
+by the orchestrator so that the rendered view
+reflects only confirmed and explicitly contested
+items.
+Symbolic checker.The checker performs
+two cheap structural passes. First, it builds
+a directed graph from DEPENDENCY edges
+and rejects any cycle (NetworkX strongly-
+connected-component scan). Second, it
+parses CONSTRAINT content with the regex
+resource:(\S+)\s+time:(\d+)-(\d+) and
+14
+
+===== PAGE 15 =====
+
+Table 6: Qualitative case studies from replayed real repository trajectories. Each row shows the same progression:
+input sessions from real commits, the compact rendered memory produced by STATEMEMORY, and representative
+downstream outputs.
+Input sessions Rendered memory state Example output
+Case 1: permissions flow rollout
+e6b93841c: add built-in
+request_permissionstool and
+forward approvals through
+app-server v2
+340f9c9ec: add
+skillMetadatato exec approval
+requests
+06f82c123: TUI renders the
+approval overlay
+Current state
+permissions_flow.approvals= built-in
+request_permissionsvia
+requestApproval
+permissions_flow.ui_integration=
+TUI renders approval overlay
+exec_approval.approvals= exec requests
+includeskillMetadata
+Transitions
+tool introduced ine6b93841c; UI surface
+added later in06f82c123
+Query answer
+“Which commit introduced the
+built-in tool?”→e6b93841c
+Task output
+permissions-flow: running turns use
+request_permissionsand
+forward approval through
+app-server v2
+ui-surface: TUI renders the
+approval overlay
+Case 2: exec/app-server rollout
+a684a3609: app-server
+hot-reloads user config after batch
+write
+da3689f0e: non-interactive exec
+switches to an in-process app
+server
+340f9c9ec: exec approvals carry
+skillMetadata
+Current state
+exec_runtime.app_server= in-process
+app server
+exec_runtime.execution= non-interactive
+exec uses app server
+app_server.config_reload= hot-reload
+user config
+exec_approval.approvals= include
+skillMetadata
+Transitions
+config hot-reload appears before the exec
+runtime switch
+Query answer
+“What behavior was added before
+exec switched?”→hot-reload user
+config, commita684a3609
+Task output
+runtime: exec uses the in-process
+app server
+approvals: exec approval requests
+carryskillMetadata
+config: app-server hot-reloads
+user config
+reports an interval overlap whenever s1 <e 2 and
+s2 <e 1 for two intervals over the same resource
+(so adjacent boundaries do not collide). Each
+detected violation is emitted with the IDs of
+the two conflicting entries; the reconciler then
+decides whether to supersede or to retain both as a
+coordination signal.
+Evidence weight table.Table 7 lists the full
+evidence-type weights used in the software-
+state score s(z) =w(evidence-type) +40·
+1[git_commit̸=/ 0]. Strong code-backed signals
+outrank notes and especially explicitly stale
+observations. The git-backed bonus dominates
+ordinary type differences, which lets a freshly
+committed change supersede a stale note without
+further LLM judgment.
+ConflictBank agents and prompts.Each Con-
+flictBank example is processed by three agents,
+each reading exactly one of the three sources. All
+three agents share an identical extraction prompt
+asking for structured claims and evidence-type tags
+without choosing a final answer; per-agent identi-
+fiers used in the implementation are bookkeeping
+labels and are never exposed to the agent itself, to
+the reader, or to the reconciler. The reconciler uses
+the adaptive single-pass prompt that first classifies
+Table 7: Evidence-type weights used by the software-
+state resolver. Higher means stronger evidence.
+Evidence type Weight
+code-change 60
+incident-hotfix 60
+config-observation45
+runtime-observation 40
+branch-experiment25
+human-note 12
+stale-observation4
+Git-commit bonus1[git_commit̸=/ 0] +40
+a conflict as CREDIBILITYor COORDINATIONand
+supersedes losers only in the CREDIBILITYbranch.
+Crucially, neither the extractor nor the reconciler
+receives any role label or source-name hint indicat-
+ing which source is the authoritative, alternative,
+or recent one. Source order is preserved across ex-
+amples for replay determinism, but the reconciler’s
+policy is stateless and content-driven: it scores a
+claim from the evidence-type tags inferred from
+each source’s text (e.g., explicit citations, recency
+markers, or self-described source kind), not from
+per-example position. The label-blind diff in Ta-
+ble 8 also serves as an indirect robustness check:
+removing the role names from the reader prompt
+15
+
+===== PAGE 16 =====
+
+costs every baseline 8 to 15 accuracy points while
+costing LatticeMind only 2, which is the opposite
+of what would happen if LatticeMind relied on a
+positional or role prior.
+Same-pool baseline parity.All ConflictBank
+methods see the same three sources presented un-
+der the same neutral identifiers. SINGLE-AGENT
+reads all three in one prompt; NO-MERGE, MA-
+JORITYVOTE, DEBATE, and JUDGEall consume
+the same three per-source extractions and differ
+only in how answers are aggregated. The structural
+overhead added by LatticeMind is the symbolic
+checker (negligible cost) and the LLM reconciler,
+invoked an average of 1.29 times per example on
+the 75-sample run. The comparison is therefore not
+between richer prompting and weaker prompting
+but between explicit persistent conflict resolution
+and answer-only aggregation over the same evi-
+dence pool. The evidence-label question is isolated
+by Table 8 rather than by the ablation table: remov-
+ing role names from the reader prompt costs every
+answer-level baseline 8 to 15 points while costing
+LatticeMind 2, so the gain is not the evidence-tag
+heuristic itself but the act of resolving incompatible
+claims at write time. The final row of Table 1 is
+a repeat of the full configuration, not an evidence
+ablation; see Section 4.3.
+Reconciler invocation rate.On the 75-sample
+ConflictBank run, the symbolic checker reports
+an average of 1.29 violations per example after
+per-resource grouping (multiple overlapping con-
+straints on the same resource are summarized into
+one violation), and the reconciler is invoked once
+per remaining violation. On the 50-sample ablation,
+the full configuration, its repeat, and −reconciler
+each report 3.0 ungrouped pairwise violations per
+example (one per pair among three agents). The
+−checker ablation reports 0 violations and so trig-
+gers no reconciliation, while −reconciler surfaces
+violations but cannot resolve them, raising the post-
+hoc conflict rate to 0.08 or 0.10.
+A.10 Label-blind vs. Label-aware
+ConflictBank
+Table 8 reports the impact of the label-blind proto-
+col on every method. Renaming the three sources
+to neutral identifiers (Source A/B/C) and removing
+the trust hint from the reader prompt costs every
+baseline 8 to 15 accuracy points. LatticeMind loses
+only 2 points, which is consistent with our claim
+that LatticeMind reads the resolved memory status
+rather than the source name. The gap between Lat-
+ticeMind and the strongest answer-level baseline
+widens from 23 to 36 points under the label-blind
+protocol.
+Table 8: Effect of the label-blind protocol on Conflict-
+Bank accuracy (75 samples). Original = source names
+visible and trust hint present in reader prompt. Label-
+blind = neutral Source A/B/C names, no trust hint. Lat-
+ticeMind is robust to the change; every baseline drops
+substantially.
+Method Original Label-blind∆
+Single-Agent 0.72 0.63−0.09
+No-Merge 0.44 0.32 −0.12
+Majority V ote 0.76 0.61−0.15
+Debate 0.57 0.45 −0.12
+Judge 0.68 0.60−0.08
+LatticeMind 0.99 0.97 −0.02
+A.11 Statistical Analysis
+We complement the headline accuracies with boot-
+strap confidence intervals and paired McNemar
+tests on per-sample correctness. Bootstrap CIs use
+10,000 resamples with a fixed seed over the per-
+example correctness arrays written by the bench-
+mark runners; McNemar uses the exact two-sided
+binomial on the discordant pair counts (n01,n 10).
+Table 9 reports the main label-blind ConflictBank
+comparison and Table 10 reports the single-pass
+ablation.
+Table 9: ConflictBank bootstrap 95% CI and McNemar
+tests vs. LatticeMind. Discordant pairs (n01,n 10) count
+examples where the baseline is wrong/right when Lat-
+ticeMind is right/wrong.
+Method Acc. [95% CI] McNemarp(n 01/n10)
+Single-Agent 0.63 [0.52, 0.73] 2.2·10 −7 (27/1)
+No-Merge 0.32 [0.21, 0.43] 3.6·10−15 (49/0)
+Majority V ote 0.61 [0.51, 0.72] 1.1·10 −7 (28/1)
+Debate 0.45 [0.35, 0.57] 3.8·10−11 (40/1)
+Judge 0.60 [0.49, 0.71] 5.8·10 −8 (29/1)
+LatticeMind 0.97 [0.93, 1.00] reference
+Every aggregation baseline is rejected at p<
+10−6 (worst case 2.2·10 −7 for Single-Agent), with
+discordant counts that are highly asymmetric: e.g.
+NO-MERGEis wrong on 49 examples that Lattice-
+Mind gets right and never wins on cases Lattice-
+Mind misses. The narrow CI around 0.97 reflects
+73/75 correct rather than a small-sample artifact;
+even under the most adversarial bootstrap resam-
+ples the lower bound stays at 0.93.
+16
+
+===== PAGE 17 =====
+
+Table 10: Single-pass ablation, 50 samples. Bootstrap
+95% CI and McNemar tests vs.full.
+Configuration Acc. [95% CI] McNemarp(n 01/n10)
+Full 0.96 [0.90, 1.00] reference
+−checker 0.84 [0.74, 0.94] 0.07 (7/1)
+−reconciler 0.82 [0.70, 0.92] 0.04 (8/1)
+Full (repeat) 0.96 [0.90, 1.00] 1.00 (0/0)
+The reconciler ablation is significant at p<0.05
+and the checker ablation is borderline at p=0.07 .
+Both directions are consistent with the headline
+12 to 14 point drops, but the 50-sample size lim-
+its power on individual flips. The repeat of the
+full configuration produces zero discordant pairs,
+which bounds run-to-run variance on this evidence
+pool; it is a stability check, not an ablation.
+Caveats.The reported p-values are conditioned
+on a single decoding run with Qwen3-Max. Be-
+cause each runner records per-example outcomes,
+the McNemar and bootstrap tests in Tables 9 and 10
+recompute deterministically from a run rather than
+being reported as bare aggregates. The discordant-
+pair counts are highly asymmetric (e.g. 49/0 against
+NO-MERGE), so on this evidence pool the compar-
+ative conclusions are robust to per-example flips.
+Generalization across model families and decoding
+seeds is a deliberate next step rather than a contra-
+dicted claim; the released runners score any future
+model or baseline on the same sampled examples
+under a fixed seed.
+Models, infrastructure, and tooling.The
+prompt-based memory benchmarks reported in
+the main paper use Qwen3-Max for both
+memory operations and reader/task evaluation;
+calls go through OpenRouter with default tem-
+perature and a fixed system message per
+role. The learned-operator study uses local
+Qwen2.5-14B-Instruct QLoRA adapters (rank
+16, alpha 32, all attention and MLP projections,
+4-bit quantization). Statistical tests are recomputed
+from the per-sample JSONs a run produces, by a
+stand-alone script in the repository (no hidden ran-
+dom state beyond a fixed bootstrap seed). Unit
+and benchmark tests pass in the current repository
+snapshot.
+17

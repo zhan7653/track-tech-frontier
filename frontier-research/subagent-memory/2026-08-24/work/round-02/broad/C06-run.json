@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:07:31Z",
+  "from": "2025-08-25",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "crossref",
+  "query": "multi-agent memory benchmark security",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:28Z",
+      "page": 1,
+      "params": {
+        "filter": "from-pub-date:2025-08-25,until-pub-date:2026-08-24",
+        "offset": 0,
+        "query.bibliographic": "multi-agent memory benchmark security",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "multi-agent memory benchmark security",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\C06\\crossref-001-fcfef7e74bc9f1824c5686b1a1ad14a18c09eccf6c7b653a3106c45af3636502.raw",
+      "reported_total": 282695,
+      "response_sha256": "fcfef7e74bc9f1824c5686b1a1ad14a18c09eccf6c7b653a3106c45af3636502",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=multi-agent+memory+benchmark+security&rows=100&offset=0&filter=from-pub-date%3A2025-08-25%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:31Z",
+      "page": 2,
+      "params": {
+        "filter": "from-pub-date:2025-08-25,until-pub-date:2026-08-24",
+        "offset": 100,
+        "query.bibliographic": "multi-agent memory benchmark security",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "multi-agent memory benchmark security",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\C06\\crossref-002-4e52dc8de780d76cafa85011852b49c54533035ac7211f19992fd25fbf91e3d0.raw",
+      "reported_total": 282695,
+      "response_sha256": "4e52dc8de780d76cafa85011852b49c54533035ac7211f19992fd25fbf91e3d0",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=multi-agent+memory+benchmark+security&rows=100&offset=100&filter=from-pub-date%3A2025-08-25%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:07:28Z",
+  "to": "2026-08-24"
+}

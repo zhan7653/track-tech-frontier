@@ -1,0 +1,953 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/hn6feKqUOyMK1VTtGxfwpiQ6UDs</id>
+  <title>arXiv Query: search_query=( (all:"multi-agent" OR all:"multi agent") AND (all:"shared memory" OR all:"collective memory" OR all:"transactive memory" OR all:"collaborative memory") AND (all:LLM OR all:"language model") ) AND submittedDate:"202301010000 TO 202608242359"&amp;id_list=&amp;start=0&amp;max_results=100</title>
+  <updated>2026-08-23T17:05:49Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=((all:%22multi-agent%22+OR+all:%22multi+agent%22)+AND+((all:%22shared+memory%22+OR+(all:%22collective+memory%22+OR+(all:%22transactive+memory%22+OR+all:%22collaborative+memory%22)))+AND+(all:LLM+OR+all:%22language+model%22)))+AND+submittedDate:%22202301010000+TO+202608242359%22&amp;start=0&amp;max_results=100&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>100</opensearch:itemsPerPage>
+  <opensearch:totalResults>33</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2608.10509v1</id>
+    <title>MAP-Graph: Provenance-Aware Shared Memory for Multi-Agent Workflows</title>
+    <updated>2026-08-11T05:31:18Z</updated>
+    <link href="https://arxiv.org/abs/2608.10509v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2608.10509v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Shared memory helps language-model agents reuse information across long workflows, yet relevant evidence may not be admissible for a particular agent or action. Because restrictions propagate through derivations, summaries can conceal private, poisoned, untrusted, or revoked sources, enabling unauthorized reads or unsafe actions. Existing approaches provide semantic retrieval, scoped access, or lineage tracking, but do not clearly separate hard authorization from graded trust or adapt evidence requirements to action risk. We introduce MAP-Graph, a provenance-aware memory layer that represents agents, sources, memories, claims, and actions in a typed execution graph. It traces ancestry, excludes permission-ineligible records, reranks eligible memories by semantic similarity and multiplicative path trust, and applies a risk-sensitive gate before action execution while retaining affected lineage for audit. On a controlled benchmark of 2,700 synthetic tasks per method across three domains, MAP-Graph achieves 94.96\% overall task success, 72.70\% exact decision accuracy, and 90.22\% in the clean setting, where success requires a correct \textsc{Allow} rather than a safe intervention. Ablations isolate the roles of permission filtering, path trust, and action gating, while transfer tests with two additional backbones preserve the exact-decision and access-control advantages. These results support provenance as an operational control signal, rather than only post-hoc audit metadata, within the evaluated setting.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-08-11T05:31:18Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Yiqi Wang</name>
+    </author>
+    <author>
+      <name>Zihao Yan</name>
+    </author>
+    <author>
+      <name>Jiaqi Zhang</name>
+    </author>
+    <author>
+      <name>Zhangkai Wu</name>
+    </author>
+    <author>
+      <name>Mingkai Zheng</name>
+    </author>
+    <author>
+      <name>Zequn Sun</name>
+    </author>
+    <author>
+      <name>Yanming Zhu</name>
+    </author>
+    <author>
+      <name>Taotao Cai</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2608.00426v1</id>
+    <title>MAPLE-Guard: Memory-Aware Link Enforcement Against Memory-Link Poisoning in Multi-Agent Systems</title>
+    <updated>2026-08-01T03:55:13Z</updated>
+    <link href="https://arxiv.org/abs/2608.00426v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2608.00426v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>LLM-based multi-agent systems (MAS) increasingly rely on persistent private and shared memories for long-horizon coordination. This memory layer improves continuity, but it also gives attackers a durable channel: a poisoned memory can be written once, continuously retrieved in later tasks, promoted into shared memory, and reused by other agents. A single poisoned write can therefore steer many later decisions and contaminate agents that never saw the original attack, all while no malicious message crosses a visible communication edge at the moment of harm. Further, because existing safeguards mainly inspect prompts, actions, or communication edges, they can miss attacks whose content appears benign at write time but becomes harmful after retrieval. We introduce Memory-Aware Propagation and Link Enforcement Guard, MAPLE-Guard, a memory-link guard for memory-enabled MAS. MAPLE-Guard monitors the memory lifecycle and places gates at write, retrieval, promotion, and cross-agent reuse, so risky memories can be quarantined, unsafe retrievals filtered, and poisoned private memories blocked before they enter shared memory. In the main evaluation, MAPLE-Guard lowers attack success rate (ASR) from 38.2% to 0.9% on LongMemEval and from 34.7% to 0.2% on AppWorld; it also raises multi-agent defense success rate (MDSR) from 54.0% to 74.3% and from 42.5% to 99.8% on the same benchmarks. These results suggest that memory-aware link enforcement covers a gap left by prompt-level and topology-level defenses. Code is available at the link: https://github.com/xiong-wenjun/MAPLE-Guard.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-08-01T03:55:13Z</published>
+    <arxiv:comment>27 pages, 14 figures, 9 tables. Includes examples that may be misleading or harmful. Code: https://github.com/xiong-wenjun/MAPLE-Guard</arxiv:comment>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Wenjun Xiong</name>
+    </author>
+    <author>
+      <name>Yijin Zhou</name>
+    </author>
+    <author>
+      <name>Jiaqian Wang</name>
+    </author>
+    <author>
+      <name>Shangding Gu</name>
+    </author>
+    <author>
+      <name>Bo Tang</name>
+    </author>
+    <author>
+      <name>Zhiyu Li</name>
+    </author>
+    <author>
+      <name>Feiyu Xiong</name>
+    </author>
+    <author>
+      <name>Ying Wen</name>
+    </author>
+    <author>
+      <name>Muning Wen</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.24998v1</id>
+    <title>VPR-Evolve: Multi-Agent-Driven Algorithm Evolution for FPGA Place and Route</title>
+    <updated>2026-07-27T18:56:10Z</updated>
+    <link href="https://arxiv.org/abs/2607.24998v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.24998v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>CAD tools typically apply the same fixed, hand-designed algorithms across circuits with widely different structural and timing characteristics. A common way to specialize these one-size-fits-all flows to a target design is to tune the CAD tool's hyperparameters. However, hyperparameter tuning can only select among behaviors already implemented by the fixed algorithm, limiting the achievable quality of results while requiring many expensive place-and-route evaluations. We present VPR-Evolve, a multi-agent framework that specializes Versatile Place and Route (VPR), the open-source FPGA pack-place-and-route engine in the Verilog-to-Routing (VTR) flow, by evolving its source code for each design. VPR-Evolve uses LLM agents to propose, implement, and evaluate code-level modifications, while a shared memory records prior outcomes and guides subsequent evolution. Every candidate is evaluated through a complete VPR build and run, directly optimizing a composite score measured as a weighted function of critical-path delay (CPD), routed wirelength (WL), and tool runtime (RT). Across five VTR-9 benchmark circuits, VPR-Evolve improves the composite score by up to 2.7% over stock VPR in VTR-9. Relative to stock VPR, it reduces CPD by up to 9.8%, routed WL by up to 18.1%, and tool RT by up to 79.3%. VPR-Evolve reduces CPD by up to 6.0%, routed WL by up to 2.2%, and tool RT by up to 7.8% compared with a hyperparameter-tuning baseline.</summary>
+    <category term="cs.AR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-27T18:56:10Z</published>
+    <arxiv:primary_category term="cs.AR"/>
+    <author>
+      <name>Qihang Wu</name>
+    </author>
+    <author>
+      <name>Taizun Jafri</name>
+    </author>
+    <author>
+      <name>Aman Arora</name>
+    </author>
+    <author>
+      <name>Vidya A. Chhabria</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.24535v1</id>
+    <title>Governed Shared Memory for Multi-Agent LLM Systems</title>
+    <updated>2026-06-23T13:04:14Z</updated>
+    <link href="https://arxiv.org/abs/2606.24535v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.24535v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Multi-agent LLM environments require robust mechanisms for shared knowledge management. This paper formalizes the fleet-memory problem and identifies four foundational failure modes: unauthorized leakage, stale propagation, contradiction persistence, and provenance collapse. To address these, we define explicit systems-level primitives: scoped retrieval, temporal supersession, provenance tracking, and policy-governed memory propagation. These primitives are implemented in MemClaw, a production multi-tenant memory service, and evaluated via ArgusFleet, a reproducible harness testing four governance dimensions. Rather than a baseline comparison, this study measures a live production service, emphasizing real-world architectural insights and negative results. Key Evaluation Results Provenance: Successfully reconstructed 100% of depth-four derivation chains with correct writer identity at sub-second per-hop latency. Propagation: Demonstrated high intra-fleet visibility with zero cross-fleet leakage. Under strong write mode, write-to-visible latency was optimized to a single search round-trip. Production Architectural Issues Discovered Asymmetric Scope Enforcement: Tenant isolation held, but sub-tenant scope was initially bypassed on direct GET-by-id requests for agent-scoped credentials (disclosed and remediated during the study). Pipeline Ordering Conflict: While contradiction supersession works for admitted writes, a synchronous near-duplicate gate can prematurely reject contradictory writes before the asynchronous contradiction detector can evaluate them. Conclusion: Long-context retrieval alone is insufficient for production multi-agent memory. Governed shared memory demands explicit systems-level abstractions, and live evaluation is vital to expose enforcement and pipeline-ordering failures missed by design-only treatments.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-23T13:04:14Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Yanki Margalit</name>
+    </author>
+    <author>
+      <name>Nurit Cohen-Inger</name>
+    </author>
+    <author>
+      <name>Erni Avram</name>
+    </author>
+    <author>
+      <name>Ran Taig</name>
+    </author>
+    <author>
+      <name>Oded Margalit</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.19911v1</id>
+    <title>Multi-Agent Transactive Memory</title>
+    <updated>2026-06-18T08:04:59Z</updated>
+    <link href="https://arxiv.org/abs/2606.19911v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.19911v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The decentralized deployment of LLM agents with diverse capabilities across diverse tasks motivates infrastructure for knowledge sharing across heterogeneous agent populations. Just as search engines index human-generated artifacts to support human problem solving, retrieval systems can organize agent-generated artifacts for reuse across agent populations. We extend retrieval-augmented generation - which demonstrates the value of human-authored artifacts to individual agents - to retrieval of agent-generated artifacts supporting a population of agents. In particular, agent trajectories encode reusable procedural knowledge, yet these artifacts are typically discarded after a single use or retained only by the producing agent, forcing newly instantiated agents to repeatedly rediscover existing solutions. We propose Multi-Agent Transactive Memory (MATM), a framework for population-level storage and retrieval of agent-generated trajectories, where producer agents contribute trajectories to a shared repository and consumer agents retrieve them to improve task execution. We focus on interactive environments (ALFWorld and WebArena), where trajectories are long and encode especially rich procedural structure. Our experiments demonstrate that retrieving trajectories from MATM improves downstream task performance and reduces interaction steps without coordination or joint training. These results position MATM as a design pattern for population-level experience sharing in open agent ecosystems.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.IR" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-18T08:04:59Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>To Eun Kim</name>
+    </author>
+    <author>
+      <name>Xuhong He</name>
+    </author>
+    <author>
+      <name>Dishank Jain</name>
+    </author>
+    <author>
+      <name>Ambuj Agrawal</name>
+    </author>
+    <author>
+      <name>Negar Arabzadeh</name>
+    </author>
+    <author>
+      <name>Fernando Diaz</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.14445v1</id>
+    <title>tap: A File-Based Protocol for Heterogeneous LLM Agent Collaboration</title>
+    <updated>2026-06-12T13:28:34Z</updated>
+    <link href="https://arxiv.org/abs/2606.14445v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.14445v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Existing multi-agent software development systems have proposed many forms of agent collaboration, including role-based collaboration and automated code review. However, many systems assume a common runtime, a central conversation server, or the same API family. Under these assumptions, LLM agents from different vendors cannot easily exchange messages directly from their own execution environments while dividing development and review work on a shared codebase. This paper presents tap, a file-based collaboration protocol that allows Claude (Anthropic) and Codex (OpenAI) to collaborate on one codebase without shared memory or an identical runtime. The core of tap is a file-first design that preserves markdown files with metadata as original messages, combines a file inspection path (file communication, Tier 1) with real-time notification paths for Claude and Codex (real-time communication, Tier 2), and isolates work through separate git worktrees. Even if real-time notification fails or a receiver restarts, the message file remains available and the same content can be inspected again. In a 27-day, 37-generation self-applied operation where tap was used to develop and review itself, we collected 209 tap-related pull requests and 717 operational artifacts. An analysis of 375 review artifacts showed that the share of reviews recording at least one defect or requested change was 69.8% for heterogeneous model pairs and 53.1% for homogeneous model pairs. These results show that tap, which combines file-based message preservation with real-time notification, operates in a real production repository, and that combining heterogeneous models and execution environments can broaden review perspectives. tap is distributed as the open-source npm package @hua-labs/tap (v0.5.2).</summary>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-06-12T13:28:34Z</published>
+    <arxiv:comment>Accepted to KCC 2026. English archival translation. 3 pages, 1 figure, 3 tables</arxiv:comment>
+    <arxiv:primary_category term="cs.SE"/>
+    <author>
+      <name>Minseo Kim</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2606.00610v1</id>
+    <title>MemGraphRAG: Memory-based Multi-Agent System for Graph Retrieval-Augmented Generation</title>
+    <updated>2026-05-30T08:18:53Z</updated>
+    <link href="https://arxiv.org/abs/2606.00610v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2606.00610v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Retrieval-Augmented Generation (RAG) has become an essential method for mitigating hallucinations in Large Language Models (LLMs) by leveraging external knowledge. Although effective for simple queries, traditional RAG struggles with large-scale, unstructured corpora where information is highly fragmented. Graph-based RAG (GraphRAG) incorporates knowledge graphs to capture structural relationships, enabling more comprehensive retrieval for complex reasoning. However, existing GraphRAG methods rely on isolated, fragment-level extraction for graph construction, lacking a global perspective on the whole corpus. As a result, these methods frequently lead to thematically inconsistent, logically conflicting, and structurally fragmented graphs that degrade retrieval performance. In this paper, we propose MemGraphRAG, a novel framework that introduces a memory-based multi-agent system to ensure high-quality graph construction. Specifically, MemGraphRAG employs a collaborative society of agents supported by shared memory, which provides a unified global context throughout the extraction process. This mechanism allows agents to dynamically resolve logical conflicts and maintain structural connectivity throughout the corpus. Furthermore, we propose a memory-aware hierarchical retrieval algorithm tailored for the constructed graph. Extensive experiments on multiple benchmarks demonstrate that MemGraphRAG outperforms the state-of-the-art baseline models with comparable efficiency. Our code is available at https://github.com/XMUDeepLIT/MemGraphRAG.</summary>
+    <category term="cs.IR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-30T08:18:53Z</published>
+    <arxiv:comment>Accepted by KDD 2026</arxiv:comment>
+    <arxiv:primary_category term="cs.IR"/>
+    <author>
+      <name>Chuanjie Wu</name>
+    </author>
+    <author>
+      <name>Zhishang Xiang</name>
+    </author>
+    <author>
+      <name>Yunbo Tang</name>
+    </author>
+    <author>
+      <name>Zerui Chen</name>
+    </author>
+    <author>
+      <name>Qinggang Zhang</name>
+    </author>
+    <author>
+      <name>Jinsong Su</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.29313v1</id>
+    <title>PatchBoard: Schema-Grounded State Mutation for Reliable and Auditable LLM Multi-Agent Collaboration</title>
+    <updated>2026-05-28T03:43:22Z</updated>
+    <link href="https://arxiv.org/abs/2605.29313v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.29313v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>LLM multi-agent systems often coordinate through natural-language dialogue or loosely structured shared memory, making intermediate state difficult to validate, attribute, and audit. We introduce PatchBoard, a schema-grounded collaboration architecture that replaces inter-agent dialogue with validated JSON Patch mutations over a shared structured state. An Architect agent constructs a task-specific schema and workflow rules, while a deterministic kernel validates each proposed state mutation against schema constraints, role-specific write contracts, and runtime invariants before committing it transactionally. On 630 matched ALFWorld episodes, PatchBoard achieves an 84.6% success rate, compared with 30.8% for LangGraph and 61.6% for Flock, while reducing tokens per successful task to 45.5k, compared with 368.3k and 64.2k, respectively.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-28T03:43:22Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Shuyu Zhang</name>
+    </author>
+    <author>
+      <name>Yaqi Shi</name>
+    </author>
+    <author>
+      <name>Lu Wang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.27853v1</id>
+    <title>MolLingo: Molecule-Native Representations for LLM-Powered Scientific Agents</title>
+    <updated>2026-05-27T02:11:23Z</updated>
+    <link href="https://arxiv.org/abs/2605.27853v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.27853v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present MolLingo, a multi-agent system that emulates the reasoning process of a chemist to automate molecular design. Existing LLM-based approaches either operate as standalone generative models without access to external tools or lack the multi-agent coordination and shared memory needed for iterative, evidence-driven reasoning across the molecular design pipeline. MolLingo addresses this by coordinating a Literature Agent, a Chemist Agent, and an Orchestrator through a shared memory module, with each agent equipped with domain-specific tools. To enable effective molecular reasoning, we introduce BRICS-based Fragment Enumeration (BFE), a synthesis-aware molecular fragmentation method that decomposes molecules into chemically meaningful building blocks represented as block-based SMILES paired with common chemical names. This representation bridges molecular structure and LLM semantic space, enabling block-level reasoning and editing that is difficult with raw SMILES alone. As a case study in early-stage therapeutic design, MolLingo further grounds the Chemist Agent's reasoning in binding site geometry and residue-level protein context derived from molecular docking to optimize molecules for stronger target binding. Across four benchmarks, MolLingo consistently outperforms frontier LLMs and specialized baselines, including a fourfold docking score improvement over GPT-5.4 despite using the same underlying model, consistent drug property optimization gains across multiple LLM backbones, and state-of-the-art results on TOMG-Bench, surpassing both frontier LLMs and the RL-based optimization method RePO. Our results suggest that LLMs are already capable molecular design assistants when guided through chemically meaningful representations and biologically grounded structural context. Code is available at: https://anonymous.4open.science/status/MolLingo-7450.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-27T02:11:23Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Thao Nguyen</name>
+    </author>
+    <author>
+      <name>Heng Ji</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.24018v1</id>
+    <title>EvoSci: A Bio-Inspired Multi-Agent Framework for the Evolution of Scientific Discovery</title>
+    <updated>2026-05-20T04:58:49Z</updated>
+    <link href="https://arxiv.org/abs/2605.24018v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.24018v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large language models (LLMs), have shown strong potential in scientific discovery, yet existing methods still face substantial challenges in the design of research workflows and multi-role collaboration mechanisms. To mitigate these issues, we propose EvoSci, a multi-agent scientific collaboration framework, which integrates bio-inspired evolution with knowledge graph modeling. To iteratively generate, evaluate, and refine research ideas, EvoSci incorporates multiple role-based agents, including mentor, researcher, and reviewer. By combining collaborative reasoning, shared memory, and evolutionary feedback, EvoSci significantly enhances the coherence and creativity of scientific exploration. Experiments on real-world research topics demonstrate that EvoSci significantly outperforms strong baselines in LLM-based structured peer-review and comparative ranking evaluations, achieving the highest overall peer-review score (ICLR 4.90) and top ranking (Top-10 = 54). These results suggest its superiority in both scientific idea generation and continuous discovery.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-20T04:58:49Z</published>
+    <arxiv:comment>ACL 2026 Main Conference</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Xiaoyu Xiong</name>
+    </author>
+    <author>
+      <name>Yuqi Ren</name>
+    </author>
+    <author>
+      <name>Deyi Xiong</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.09573v1</id>
+    <title>ConCovUp: Effective Agent-Based Test Driver Generation for Concurrency Testing</title>
+    <updated>2026-05-10T14:37:20Z</updated>
+    <link href="https://arxiv.org/abs/2605.09573v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.09573v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Concurrency testing is essential to improve the reliability and security of multi-threaded programs. Dynamic analysis tools, such as TSan, depend on high-quality test drivers that reach critical shared-memory interactions at runtime. However, current testing practices predominantly focus on sequential logic, leaving a gap in automated concurrent test generation. Recently, large language models (LLMs) have shown promise in generating sequential tests, but they struggle to produce effective concurrent tests without a deep understanding of concurrency semantics. This paper presents ConCovUp, a multi-agent framework that combines LLMs with program analysis. ConCovUp grounds test generation in static analysis to extract shared memory accesses and their calling contexts. To trigger hard-to-reach accesses, it introduces an LLM-driven backward tracing approach, leveraging the model's semantic reasoning to deduce concrete inputs that satisfy complex path constraints, and iteratively refines the generated tests via dynamic execution feedback. Our evaluation on nine real-world C/C++ libraries shows that ConCovUp improves average Shared Memory Access Pair Coverage (SMAP Coverage) from 36.6% to 68.1% over the general Claude Code agent baseline.</summary>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-10T14:37:20Z</published>
+    <arxiv:primary_category term="cs.SE"/>
+    <author>
+      <name>Yuandao Cai</name>
+    </author>
+    <author>
+      <name>Shuhao Fu</name>
+    </author>
+    <author>
+      <name>Wensheng Tang</name>
+    </author>
+    <author>
+      <name>Cheng Wen</name>
+    </author>
+    <author>
+      <name>Shengchao Qin</name>
+    </author>
+    <author>
+      <name>Charles Zhang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.09278v1</id>
+    <title>EquiMem: Calibrating Shared Memory in Multi-Agent Debate via Game-Theoretic Equilibrium</title>
+    <updated>2026-05-10T03:04:12Z</updated>
+    <link href="https://arxiv.org/abs/2605.09278v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.09278v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Multi-agent debate (MAD) systems increasingly rely on shared memory to support long-horizon reasoning, but this convenience opens a critical vulnerability: a single corrupted entry can contaminate the downstream memory-augmented reasoning, and debate alone fails to filter such errors. Existing safeguards filter entries via heuristics or LLM-based validation, yet they rely on AI judgments that share the same failure modes and overlook the cross-agent dynamics of MAD. We address this gap by formulating memory updating in MAD as a zero-trust memory game, in which no agent is assumed honest and the game's equilibrium serves as an indicator of optimal memory trust. Guided by this equilibrium, we propose EquiMem, an inference-time calibration mechanism that quantifies each update algorithmically against the shared memory state, using agents' existing retrieval queries and traversal paths as evidence rather than soliciting any LLM judgment. EquiMem instantiates calibration for both embedding- and graph-based memory, and across diverse benchmarks, MAD frameworks, and memory architectures, it consistently outperforms existing safeguards, remains robust under adversarial agents, and incurs negligible inference overhead.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-10T03:04:12Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Yuqiao Meng</name>
+    </author>
+    <author>
+      <name>Sakshi Sunil Narvekar</name>
+    </author>
+    <author>
+      <name>Luoxi Tang</name>
+    </author>
+    <author>
+      <name>Rupali Rajendra Vaje</name>
+    </author>
+    <author>
+      <name>Yingxue Zhang</name>
+    </author>
+    <author>
+      <name>Muchao Ye</name>
+    </author>
+    <author>
+      <name>Zhaohan Xi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2605.04264v1</id>
+    <title>Governed Collaborative Memory as Artificial Selection in LLM-Based Multi-Agent Systems</title>
+    <updated>2026-05-05T19:58:10Z</updated>
+    <link href="https://arxiv.org/abs/2605.04264v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2605.04264v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Persistent memory is turning language-model-based agents from stateless participants in isolated interactions into state-bearing components of LLM-based multi-agent systems. As memory becomes durable, reloadable, and behavior-shaping across agents, sessions, or versions, a design question arises that is not captured by retrieval accuracy or access control alone: which candidate memories should become shared institutional state? This Viewpoint frames that problem as governed collaborative memory. We argue that memory governance functions as a selection regime, determining which memory variants persist, which remain private, and which are rejected, abstained from, or superseded. We distinguish ungoverned persistence, constitutional or hybrid selection, automatic metric-based selection, and human-ratified artificial selection, emphasizing that these regimes are not a ranking but a design choice over target properties. We then describe a layered architecture that separates agent-local memory, shared institutional memory, archive memory, and project-continuity memory, with provenance and version lineage making selection inspectable. Documented traces from one running LLM-based multi-agent ecosystem illustrate unmanaged false-memory persistence, ratified institutional memory, rejection and revision, identity-preserving expansion, and governance-as-learning. The contribution is a design agenda: persistent LLM-based multi-agent systems should evaluate memory not only for recall and performance, but also for provenance fidelity, selection traceability, epistemic quality, correction pathways, and role preservation.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-05-05T19:58:10Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Diego F. Cuadros</name>
+    </author>
+    <author>
+      <name>Abdoul-Aziz Maiga</name>
+    </author>
+    <author>
+      <name>Helen Meskhidze</name>
+    </author>
+    <author>
+      <name>Andre Curtis-Trudel</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2604.24971v1</id>
+    <title>PolyKV: A Shared Asymmetrically-Compressed KV Cache Pool for Multi-Agent LLM Inference</title>
+    <updated>2026-04-27T20:10:21Z</updated>
+    <link href="https://arxiv.org/abs/2604.24971v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.24971v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present PolyKV, a system in which multiple concurrent inference agents share a single, asymmetrically compressed KV cache pool. Rather than allocating a separate KV cache per agent -- the standard paradigm -- PolyKV writes a compressed cache once and injects it into N independent agent contexts via HuggingFace DynamicCache objects. Compression is asymmetric: Keys are quantized at int8 (q8_0) to preserve softmax stability, while Values are compressed using TurboQuant MSE -- a Fast Walsh-Hadamard Transform (FWHT) rotation followed by 3-bit Lloyd-Max quantization with centroids tuned to N(0,1). We evaluate across two model scales (SmolLM2-1.7B-Instruct and Llama-3-8B-Instruct), three context lengths (600-7,194 tokens), and up to 15 concurrent agents. PolyKV achieves a stable 2.91x compression ratio across all configurations. On Llama-3-8B with 15 agents sharing a 4K-token context, PolyKV reduces KV cache memory from 19.8 GB to 0.45 GB -- a 97.7% reduction -- while maintaining only +0.57% perplexity degradation and a mean BERTScore F1 of 0.928. PPL delta does not grow with agent count and improves as context length increases, inverting to -0.26% at 1,851 coherent tokens. To our knowledge, no prior work combines a single shared, lossy-compressed KV pool with multi-reader concurrent agent access.</summary>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.DC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-04-27T20:10:21Z</published>
+    <arxiv:comment>10 pages, 6 tables. Code: https://github.com/ishan1410/PolyKV Keywords: KV cache compression, multi-agent LLM inference, asymmetric quantization, FWHT, TurboQuant, shared memory</arxiv:comment>
+    <arxiv:primary_category term="cs.LG"/>
+    <author>
+      <name>Ishan Patel</name>
+    </author>
+    <author>
+      <name>Ishan Joshi</name>
+    </author>
+    <arxiv:doi>10.5281/zenodo.19686729</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.5281/zenodo.19686729" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2604.13120v1</id>
+    <title>AgentForge: Execution-Grounded Multi-Agent LLM Framework for Autonomous Software Engineering</title>
+    <updated>2026-04-13T13:51:13Z</updated>
+    <link href="https://arxiv.org/abs/2604.13120v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.13120v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large language models generate plausible code but cannot verify correctness. Existing multi-agent systems simulate execution or leave verification optional. We introduce execution-grounded verification as a first-class principle: every code change must survive sandboxed execution before propagation. We instantiate this principle in AGENTFORGE, a multi-agent framework where Planner, Coder, Tester, Debugger, and Critic agents coordinate through shared memory and a mandatory Docker sandbox. We formalize software engineering with LLMs as an iterative decision process over repository states, where execution feedback provides a stronger supervision signal than next-token likelihood. AGENTFORGE achieves 40.0\% resolution on SWE-BENCH Lite, outperforming single-agent baselines by 26--28 points. Ablations confirm that execution feedback and role decomposition each independently drive performance. The framework is open-source at https://github.com/raja21068/AutoCodeAI.</summary>
+    <category term="cs.SE" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-04-13T13:51:13Z</published>
+    <arxiv:primary_category term="cs.SE"/>
+    <author>
+      <name>Rajesh Kumar</name>
+    </author>
+    <author>
+      <name>Waqar Ali</name>
+    </author>
+    <author>
+      <name>Junaid Ahmed</name>
+    </author>
+    <author>
+      <name>Najma Imtiaz Ali</name>
+    </author>
+    <author>
+      <name>Shaban Usman</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.27150v2</id>
+    <title>MediHive: A Decentralized Agent Collective for Medical Reasoning</title>
+    <updated>2026-05-27T23:41:19Z</updated>
+    <link href="https://arxiv.org/abs/2603.27150v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.27150v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large language models (LLMs) have revolutionized medical reasoning tasks, yet single-agent systems often falter on complex, interdisciplinary problems requiring robust handling of uncertainty and conflicting evidence. Multi-agent systems (MAS) leveraging LLMs enable collaborative intelligence, but prevailing centralized architectures suffer from scalability bottlenecks, single points of failure, and role confusion in resource-constrained environments. Decentralized MAS (D-MAS) promise enhanced autonomy and resilience via peer-to-peer interactions, but their application to high-stakes healthcare domains remains underexplored. We introduce MediHive, a novel decentralized multi-agent framework for medical question answering that integrates a shared memory pool with iterative fusion mechanisms. MediHive deploys LLM-based agents that autonomously self-assign specialized roles, conduct initial analyses, detect divergences through conditional evidence-based debates, and locally fuse peer insights over multiple rounds to achieve consensus. Empirically, MediHive outperforms single-LLM and centralized baselines on MedQA and PubMedQA datasets, attaining accuracies of 84.3% and 78.4%, respectively. Our work advances scalable, fault-tolerant D-MAS for medical AI, addressing key limitations of centralized designs while demonstrating superior performance in reasoning-intensive tasks.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-28T05:57:58Z</published>
+    <arxiv:comment>Accepted by Journal of Healthcare Informatics Research</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Xiaoyang Wang</name>
+    </author>
+    <author>
+      <name>Christopher C. Yang</name>
+    </author>
+    <arxiv:doi>10.1007/s41666-026-00239-7</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1007/s41666-026-00239-7" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.18096v1</id>
+    <title>A Trace-Based Assurance Framework for Agentic AI Orchestration: Contracts, Testing, and Governance</title>
+    <updated>2026-03-18T10:23:48Z</updated>
+    <link href="https://arxiv.org/abs/2603.18096v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.18096v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>In Agentic AI, Large Language Models (LLMs) are increasingly used in the orchestration layer to coordinate multiple agents and to interact with external services, retrieval components, and shared memory. In this setting, failures are not limited to incorrect final outputs. They also arise from long-horizon interaction, stochastic decisions, and external side effects (such as API calls, database writes, and message sends). Common failures include non-termination, role drift, propagation of unsupported claims, and attacks via untrusted context or external channels.
+  This paper presents an assurance framework for such Agentic AI systems. Executions are instrumented as Message-Action Traces (MAT) with explicit step and trace contracts. Contracts provide machine-checkable verdicts, localize the first violating step, and support deterministic replay. The framework includes stress testing, formulated as a budgeted counterexample search over bounded perturbations. It also supports structured fault injection at service, retrieval, and memory boundaries to assess containment under realistic operational faults and degraded conditions. Finally, governance is treated as a runtime component, enforcing per-agent capability limits and action mediation (allow, rewrite, block) at the language-to-action boundary.
+  To support comparative evaluations across stochastic seeds, models, and orchestration configurations, the paper defines trace-based metrics for task success, termination reliability, contract compliance, factuality indicators, containment rate, and governance outcome distributions. More broadly, the framework is intended as a common abstraction to support testing and evaluation of multi-agent LLM systems, and to facilitate reproducible comparison across orchestration designs and configurations.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-18T10:23:48Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Ciprian Paduraru</name>
+    </author>
+    <author>
+      <name>Petru-Liviu Bouruc</name>
+    </author>
+    <author>
+      <name>Alin Stefanescu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.15183v1</id>
+    <title>Token Coherence: Adapting MESI Cache Protocols to Minimize Synchronization Overhead in Multi-Agent LLM Systems</title>
+    <updated>2026-03-16T12:20:06Z</updated>
+    <link href="https://arxiv.org/abs/2603.15183v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.15183v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Multi-agent LLM orchestration incurs synchronization costs scaling as O(n x S x |D|) in agents, steps, and artifact size under naive broadcast -- a regime I term broadcast-induced triply-multiplicative overhead. I argue this pathology is a structural residue of full-state rebroadcast, not an inherent property of multi-agent coordination.
+  The central claim: synchronization cost explosion in LLM multi-agent systems maps with formal precision onto the cache coherence problem in shared-memory multiprocessors, and MESI-protocol invalidation transfers to artifact synchronization under minimal structural modification.
+  I construct the Artifact Coherence System (ACS) and prove the Token Coherence Theorem: lazy invalidation attenuates cost by at least S/(n + W(d_i)) when S &gt; n + W(d_i), converting O(n x S x |D|) to O((n + W) x |D|). A TLA+-verified protocol enforces single-writer safety, monotonic versioning, and bounded staleness across ~2,400 explored states.
+  Simulation across four workload configurations yields token savings of 95.0% +/- 1.3% at V=0.05, 92.3% +/- 1.4% at V=0.10, 88.3% +/- 1.5% at V=0.25, and 84.2% +/- 1.3% at V=0.50 -- each exceeding the theorem's conservative lower bounds. Savings of ~81% persist at V=0.9, contrary to the predicted collapse threshold.
+  Contributions: (1) formal MESI-to-artifact state mapping; (2) Token Coherence Theorem as savings lower bound; (3) TLA+-verified protocol with three proven invariants; (4) characterization of conditional artifact access semantics resolving the always-read objection; (5) reference Python implementation integrating with LangGraph, CrewAI, and AutoGen via thin adapter layers.</summary>
+    <category term="cs.DC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-16T12:20:06Z</published>
+    <arxiv:comment>25 pages. Code and reproduction scripts at https://github.com/hipvlady/agent-coherence</arxiv:comment>
+    <arxiv:primary_category term="cs.DC"/>
+    <author>
+      <name>Vladyslav Parakhin</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.09835v1</id>
+    <title>Chow-Liu Ordering for Long-Context Reasoning in Chain-of-Agents</title>
+    <updated>2026-03-10T15:57:35Z</updated>
+    <link href="https://arxiv.org/abs/2603.09835v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.09835v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Sequential multi-agent reasoning frameworks such as Chain-of-Agents (CoA) handle long-context queries by decomposing inputs into chunks and processing them sequentially using LLM-based worker agents that read from and update a bounded shared memory. From a probabilistic perspective, CoA aims to approximate the conditional distribution corresponding to a model capable of jointly reasoning over the entire long context. CoA achieves this through a latent-state factorization in which only bounded summaries of previously processed evidence are passed between agents. The resulting bounded-memory approximation introduces a lossy information bottleneck, making the final evidence state inherently dependent on the order in which chunks are processed.
+  In this work, we study the problem of chunk ordering for long-context reasoning. We use the well-known Chow-Liu trees to learn a dependency structure that prioritizes strongly related chunks. Empirically, we show that a breadth-first traversal of the resulting tree yields chunk orderings that reduce information loss across agents and consistently outperform both default document-chunk ordering and semantic score-based ordering in answer relevance and exact-match accuracy across three long-context benchmarks.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-10T15:57:35Z</published>
+    <arxiv:comment>Published as a workshop paper at ICLR 2026 Workshop MemAgents</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Naman Gupta</name>
+    </author>
+    <author>
+      <name>Vaibhav Singh</name>
+    </author>
+    <author>
+      <name>Arun Iyer</name>
+    </author>
+    <author>
+      <name>Kirankumar Shiragur</name>
+    </author>
+    <author>
+      <name>Pratham Grover</name>
+    </author>
+    <author>
+      <name>Ramakrishna B. Bairi</name>
+    </author>
+    <author>
+      <name>Ritabrata Maiti</name>
+    </author>
+    <author>
+      <name>Sankarshan Damle</name>
+    </author>
+    <author>
+      <name>Shachee Mishra Gupta</name>
+    </author>
+    <author>
+      <name>Rishikesh Maurya</name>
+    </author>
+    <author>
+      <name>Vageesh D. C</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2602.11510v3</id>
+    <title>AgentLeak: A Benchmark for Internal-Channel Privacy Leakage in Multi-Agent LLM Systems</title>
+    <updated>2026-06-15T09:43:49Z</updated>
+    <link href="https://arxiv.org/abs/2602.11510v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2602.11510v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Multi-agent Large Language Model (LLM) systems create privacy risks that current output-only benchmarks cannot measure. When agents coordinate on tasks, sensitive data may pass through inter-agent messages, shared memory, and tool arguments, all pathways that final-output audits typically do not inspect. We introduce AgentLeak, a benchmark for evaluating internal-channel privacy leakage in multi-agent LLM systems. AgentLeak instruments seven privacy-relevant communication pathways and provides a large-scale empirical evaluation focused on final outputs, inter-agent messages, and shared memory. Across 1,000 scenarios spanning healthcare, finance, legal, and corporate domains, five production LLMs (GPT-4o, GPT-4o-mini, Claude 3.5 Sonnet, Mistral Large, and Llama 3.3 70B), and 4,979 validated execution traces, we find that multi-agent configurations reduce final-output leakage (C1: 27.2% vs 43.2% in single-agent mode) compared with single-agent baselines but introduce internal channels that raise total system exposure to 68.9% (aggregated across C1, C2, C5). Inter-agent messages (C2) leak at 68.8%, compared with 27.2% for final outputs (C1), meaning that output-only audits miss 41.7% of violations. Across all five models and four domains, the pattern C2 $\geq$ C1 holds consistently. These results suggest, within the evaluated coordinator-worker setting, that privacy risk in multi-agent systems is strongly shaped by architectural coordination channels rather than final-output behavior alone: it arises from internal channels that remain invisible to standard output-level defenses.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-02-12T03:10:44Z</published>
+    <arxiv:comment>19 pages, 9 figures, 16 tables. Code and dataset available at https://github.com/Privatris/AgentLeak</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Faouzi El Yagoubi</name>
+    </author>
+    <author>
+      <name>Godwin Badu-Marfo</name>
+    </author>
+    <author>
+      <name>Ranwa Al Mallah</name>
+    </author>
+    <arxiv:doi>10.1109/ACCESS.2026.3704541</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1109/ACCESS.2026.3704541" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2602.03026v1</id>
+    <title>Visual Reasoning over Time Series via Multi-Agent System</title>
+    <updated>2026-02-03T02:48:57Z</updated>
+    <link href="https://arxiv.org/abs/2602.03026v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2602.03026v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Time series analysis underpins many real-world applications, yet existing time-series-specific methods and pretrained large-model-based approaches remain limited in integrating intuitive visual reasoning and generalizing across tasks with adaptive tool usage. To address these limitations, we propose MAS4TS, a tool-driven multi-agent system for general time series tasks, built upon an Analyzer-Reasoner-Executor paradigm that integrates agent communication, visual reasoning, and latent reconstruction within a unified framework. MAS4TS first performs visual reasoning over time series plots with structured priors using a Vision-Language Model to extract temporal structures, and subsequently reconstructs predictive trajectories in latent space. Three specialized agents coordinate via shared memory and gated communication, while a router selects task-specific tool chains for execution. Extensive experiments on multiple benchmarks demonstrate that MAS4TS achieves state-of-the-art performance across a wide range of time series tasks, while exhibiting strong generalization and efficient inference.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-02-03T02:48:57Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Weilin Ruan</name>
+    </author>
+    <author>
+      <name>Yuxuan Liang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2601.19204v1</id>
+    <title>MATA: A Trainable Hierarchical Automaton System for Multi-Agent Visual Reasoning</title>
+    <updated>2026-01-27T05:06:54Z</updated>
+    <link href="https://arxiv.org/abs/2601.19204v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2601.19204v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Recent vision-language models have strong perceptual ability but their implicit reasoning is hard to explain and easily generates hallucinations on complex queries. Compositional methods improve interpretability, but most rely on a single agent or hand-crafted pipeline and cannot decide when to collaborate across complementary agents or compete among overlapping ones. We introduce MATA (Multi-Agent hierarchical Trainable Automaton), a multi-agent system presented as a hierarchical finite-state automaton for visual reasoning whose top-level transitions are chosen by a trainable hyper agent. Each agent corresponds to a state in the hyper automaton, and runs a small rule-based sub-automaton for reliable micro-control. All agents read and write a shared memory, yielding transparent execution history. To supervise the hyper agent's transition policy, we build transition-trajectory trees and transform to memory-to-next-state pairs, forming the MATA-SFT-90K dataset for supervised finetuning (SFT). The finetuned LLM as the transition policy understands the query and the capacity of agents, and it can efficiently choose the optimal agent to solve the task. Across multiple visual reasoning benchmarks, MATA achieves the state-of-the-art results compared with monolithic and compositional baselines. The code and dataset are available at https://github.com/ControlNet/MATA.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CV" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-01-27T05:06:54Z</published>
+    <arxiv:comment>ICLR 2026</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Zhixi Cai</name>
+    </author>
+    <author>
+      <name>Fucai Ke</name>
+    </author>
+    <author>
+      <name>Kevin Leo</name>
+    </author>
+    <author>
+      <name>Sukai Huang</name>
+    </author>
+    <author>
+      <name>Maria Garcia de la Banda</name>
+    </author>
+    <author>
+      <name>Peter J. Stuckey</name>
+    </author>
+    <author>
+      <name>Hamid Rezatofighi</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2512.24008v3</id>
+    <title>SPARK: Search Personalization via Agent-Driven Retrieval and Knowledge-sharing</title>
+    <updated>2026-05-23T13:38:07Z</updated>
+    <link href="https://arxiv.org/abs/2512.24008v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2512.24008v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Personalized search demands the ability to model users' evolving, multi-dimensional information needs; a challenge for systems constrained by static profiles or monolithic retrieval pipelines. We present SPARK (Search Personalization via Agent-Driven Retrieval and Knowledge-sharing), a framework in which coordinated persona-based large language model (LLM) agents deliver task-specific retrieval and emergent personalization. SPARK formalizes a persona space defined by role, expertise, task context, and domain, and introduces a Persona Coordinator that dynamically interprets incoming queries to activate the most relevant specialized agents. Each agent executes an independent retrieval-augmented generation process, supported by dedicated long- and short-term memory stores and context-aware reasoning modules. Inter-agent collaboration is facilitated through structured communication protocols, including shared memory repositories, iterative debate, and relay-style knowledge transfer. Drawing on principles from cognitive architectures, multi-agent coordination theory, and information retrieval, SPARK models how emergent personalization properties arise from distributed agent behaviors governed by minimal coordination rules. The framework yields testable predictions regarding coordination efficiency, personalization quality, and cognitive load distribution, while incorporating adaptive learning mechanisms for continuous persona refinement. By integrating fine-grained agent specialization with cooperative retrieval, SPARK provides insights for next-generation search systems capable of capturing the complexity, fluidity, and context sensitivity of human information-seeking behavior.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-12-30T06:09:12Z</published>
+    <arxiv:comment>This is the author's preprint. Accepted to WEB&amp;GRAPH 2026 (co-located with WSDM 2026), Boise, Idaho, USA, Feb 26, 2026. Final version will appear in WSDM 2026 Companion Proceedings. Conf: https://wsdm-conference.org/2026/ Workshop: https://aiimlab.org/events/WSDM_2026_WEB_and_GRAPH_2026_Workshop_on_Web_and_Graphs_Responsible_Intelligence_and_Social_Media.html</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Gaurab Chhetri</name>
+    </author>
+    <author>
+      <name>Subasish Das</name>
+    </author>
+    <author>
+      <name>Tausif Islam Chowdhury</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2512.05765v2</id>
+    <title>AGI Requires a Coordination Layer on Top of Pattern Repositories</title>
+    <updated>2026-05-24T04:17:09Z</updated>
+    <link href="https://arxiv.org/abs/2512.05765v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2512.05765v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>In this paper we argue that influential critiques dismissing Large Language Models (LLMs) as a dead end for AGI misidentify the bottleneck: they confuse the ocean with the net. Pattern repositories are the necessary System-1 substrate; the missing component is a System-2 coordination layer that recruits relevant patterns, verifies their use, preserves state, and governs convergence. We separate two uses of control that are often conflated. Semantic anchoring, formalized by UCCT (Unified Contextual Control Theory), binds labels and task intent to learned pattern regions through a phase transition governed by effective support (rho_d), representational mismatch (d_r), and an adaptive anchoring budget (gamma log k). Trace-answer verification, implemented by Recursive Causal Audit (RCA), tests whether a final causal judgment is warranted by its own reasoning trace under pressure. We translate these ideas into MACI, a multi-agent coordination stack that integrates diversity and control via baiting (PID-modulated debate), filtering (Socratic and causal audit), and persistence (transactional memory). Empirical validation on causal judgment and the sycophancy-paranoia trade-off demonstrates that static prompting fails where adaptive control succeeds. By reframing common objections as testable coordination failures, we argue that the path to AGI runs through LLMs, not around them. Capability is not coordination.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-12-05T14:51:17Z</published>
+    <arxiv:comment>15 pages, 5 figures, 7 tables</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Edward Y. Chang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2511.14780v1</id>
+    <title>Ask WhAI:Probing Belief Formation in Role-Primed LLM Agents</title>
+    <updated>2025-11-06T20:31:19Z</updated>
+    <link href="https://arxiv.org/abs/2511.14780v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2511.14780v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We present Ask WhAI, a systems-level framework for inspecting and perturbing belief states in multi-agent interactions. The framework records and replays agent interactions, supports out-of-band queries into each agent's beliefs and rationale, and enables counterfactual evidence injection to test how belief structures respond to new information. We apply the framework to a medical case simulator notable for its multi-agent shared memory (a time-stamped electronic medical record, or EMR) and an oracle agent (the LabAgent) that holds ground truth lab results revealed only when explicitly queried. We stress-test the system on a multi-specialty diagnostic journey for a child with an abrupt-onset neuropsychiatric presentation. Large language model agents, each primed with strong role-specific priors ("act like a neurologist", "act like an infectious disease specialist"), write to a shared medical record and interact with a moderator across sequential or parallel encounters. Breakpoints at key diagnostic moments enable pre- and post-event belief queries, allowing us to distinguish entrenched priors from reasoning or evidence-integration effects. The simulation reveals that agent beliefs often mirror real-world disciplinary stances, including overreliance on canonical studies and resistance to counterevidence, and that these beliefs can be traced and interrogated in ways not possible with human experts. By making such dynamics visible and testable, Ask WhAI offers a reproducible way to study belief formation and epistemic silos in multi-agent scientific reasoning.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-11-06T20:31:19Z</published>
+    <arxiv:comment>Preprint. Accepted for publication at AIAS 2025</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Keith Moore</name>
+    </author>
+    <author>
+      <name>Jun W. Kim</name>
+    </author>
+    <author>
+      <name>David Lyu</name>
+    </author>
+    <author>
+      <name>Jeffrey Heo</name>
+    </author>
+    <author>
+      <name>Ehsan Adeli</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2509.21074v4</id>
+    <title>RepLLM: Toward Automatically Reproducing Network Research Results</title>
+    <updated>2026-07-09T08:38:10Z</updated>
+    <link href="https://arxiv.org/abs/2509.21074v4" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2509.21074v4" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Result reproduction of computer networking research is challenging as the scarcity of open-source implementations and the complexity of heterogeneous system architectures. Even though Large Language Models have demonstrated potential in code generation, existing code generation frameworks often fail to address the long-context constraints and intricate logical dependencies, which are vital in reproducing network systems from academic papers. Thus, we introduce RepLLM, an end-to-end multi-agent framework designed to automate code reproduction from paper content. RepLLM features a collaborative architecture comprising four specialized agents -- Content Parsing, Architecture Design, Code Generation, and Audit&amp;Repair, which are coordinated through Shared Memory mechanism to ensure global context consistency. With the enhancement of Structured Chain-of-Thought LLM reasoning and a sandbox-isolated static-dynamic debugging methodology, our framework effectively resolves semantic discrepancies and runtime errors, thereby improving reliable reproductions. Extensive evaluations on representative papers in top conferences demonstrate that RepLLM outperforms state-of-the-art system-level LLM frameworks in generating compile-ready and logically correct systems. Our results show that, with the aid of RepLLM, we can reproduce 95% of the original benchmarks within approximately two hours while reducing token consumption by up to 10% compared with state-of-the-art baselines.</summary>
+    <category term="cs.NI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-09-25T12:24:32Z</published>
+    <arxiv:comment>SIGCOMM'26(19 pages, 6 figures, 6 tables)</arxiv:comment>
+    <arxiv:primary_category term="cs.NI"/>
+    <author>
+      <name>Yining Jiang</name>
+    </author>
+    <author>
+      <name>Yunxin Xu</name>
+    </author>
+    <author>
+      <name>Wenyun Xu</name>
+    </author>
+    <author>
+      <name>Yufan Zhu</name>
+    </author>
+    <author>
+      <name>Rui Liu</name>
+    </author>
+    <author>
+      <name>Tangtang He</name>
+    </author>
+    <author>
+      <name>Haiying Huang</name>
+    </author>
+    <author>
+      <name>Letian Zhu</name>
+    </author>
+    <author>
+      <name>Qingyu Song</name>
+    </author>
+    <author>
+      <name>Qiang Su</name>
+    </author>
+    <author>
+      <name>Lizhao You</name>
+    </author>
+    <author>
+      <name>Lu Tang</name>
+    </author>
+    <author>
+      <name>Wanjian Feng</name>
+    </author>
+    <author>
+      <name>Yuchao Zhang</name>
+    </author>
+    <author>
+      <name>Linghe Kong</name>
+    </author>
+    <author>
+      <name>Qiao Xiang</name>
+    </author>
+    <author>
+      <name>Jiwu Shu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2508.04903v3</id>
+    <title>RCR-Router: Efficient Role-Aware Context Routing for Multi-Agent LLM Systems with Structured Memory</title>
+    <updated>2025-08-12T16:29:05Z</updated>
+    <link href="https://arxiv.org/abs/2508.04903v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.04903v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Multi-agent large language model (LLM) systems have shown strong potential in complex reasoning and collaborative decision-making tasks. However, most existing coordination schemes rely on static or full-context routing strategies, which lead to excessive token consumption, redundant memory exposure, and limited adaptability across interaction rounds. We introduce RCR-Router, a modular and role-aware context routing framework designed to enable efficient, adaptive collaboration in multi-agent LLMs. To our knowledge, this is the first routing approach that dynamically selects semantically relevant memory subsets for each agent based on its role and task stage, while adhering to a strict token budget. A lightweight scoring policy guides memory selection, and agent outputs are iteratively integrated into a shared memory store to facilitate progressive context refinement. To better evaluate model behavior, we further propose an Answer Quality Score metric that captures LLM-generated explanations beyond standard QA accuracy. Experiments on three multi-hop QA benchmarks -- HotPotQA, MuSiQue, and 2WikiMultihop -- demonstrate that RCR-Router reduces token usage (up to 30%) while improving or maintaining answer quality. These results highlight the importance of structured memory routing and output-aware evaluation in advancing scalable multi-agent LLM systems.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-06T21:59:34Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Jun Liu</name>
+    </author>
+    <author>
+      <name>Zhenglun Kong</name>
+    </author>
+    <author>
+      <name>Changdi Yang</name>
+    </author>
+    <author>
+      <name>Fan Yang</name>
+    </author>
+    <author>
+      <name>Tianqi Li</name>
+    </author>
+    <author>
+      <name>Peiyan Dong</name>
+    </author>
+    <author>
+      <name>Joannah Nanjekye</name>
+    </author>
+    <author>
+      <name>Hao Tang</name>
+    </author>
+    <author>
+      <name>Geng Yuan</name>
+    </author>
+    <author>
+      <name>Wei Niu</name>
+    </author>
+    <author>
+      <name>Wenbin Zhang</name>
+    </author>
+    <author>
+      <name>Pu Zhao</name>
+    </author>
+    <author>
+      <name>Xue Lin</name>
+    </author>
+    <author>
+      <name>Dong Huang</name>
+    </author>
+    <author>
+      <name>Yanzhi Wang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2506.02049v1</id>
+    <title>EvoGit: Decentralized Code Evolution via Git-Based Multi-Agent Collaboration</title>
+    <updated>2025-06-01T05:20:42Z</updated>
+    <link href="https://arxiv.org/abs/2506.02049v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2506.02049v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We introduce EvoGit, a decentralized multi-agent framework for collaborative software development driven by autonomous code evolution. EvoGit deploys a population of independent coding agents, each proposing edits to a shared codebase without centralized coordination, explicit message passing, or shared memory. Instead, all coordination emerges through a Git-based phylogenetic graph that tracks the full version lineage and enables agents to asynchronously read from and write to the evolving code repository. This graph-based structure supports fine-grained branching, implicit concurrency, and scalable agent interaction while preserving a consistent historical record. Human involvement is minimal but strategic: users define high-level goals, periodically review the graph, and provide lightweight feedback to promote promising directions or prune unproductive ones. Experiments demonstrate EvoGit's ability to autonomously produce functional and modular software artifacts across two real-world tasks: (1) building a web application from scratch using modern frameworks, and (2) constructing a meta-level system that evolves its own language-model-guided solver for the bin-packing optimization problem. Our results underscore EvoGit's potential to establish a new paradigm for decentralized, automated, and continual software development. EvoGit is open-sourced at https://github.com/BillHuang2001/evogit.</summary>
+    <category term="cs.DC" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.NE" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-06-01T05:20:42Z</published>
+    <arxiv:primary_category term="cs.DC"/>
+    <author>
+      <name>Beichen Huang</name>
+    </author>
+    <author>
+      <name>Ran Cheng</name>
+    </author>
+    <author>
+      <name>Kay Chen Tan</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2505.20625v3</id>
+    <title>Long Context Scaling: Divide and Conquer via Multi-Agent Question-driven Collaboration</title>
+    <updated>2025-09-28T04:52:21Z</updated>
+    <link href="https://arxiv.org/abs/2505.20625v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2505.20625v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Processing long contexts has become a critical capability for modern large language models (LLMs). Existing works leverage agent-based divide-and-conquer methods for processing long contexts. But these methods face crucial limitations, including prohibitive accumulated latency and amplified information loss from excessive agent invocations, and the disruption of inherent textual dependencies by immoderate partitioning. In this paper, we propose a novel multi-agent framework XpandA (Expand-Agent) coupled with question-driven workflow and dynamic partitioning for robust long-context processing. XpandA overcomes these limitations through: 1) dynamic partitioning of long texts, which adaptively modulates the filling rate of context windows for input sequences of vastly varying lengths; 2) question-guided protocol to update flat information ensembles within centralized shared memory, constructing consistent inter-agent knowledge across partitions; and 3) selectively replaying specific partitions based on the state-tracking of question-information couples to promote the resolution of inverted-order structures across partitions (e.g., flashbacks). We perform a comprehensive evaluation of XpandA on multiple long-context benchmarks with length varying from 1k to 1M, demonstrating XpandA's feasibility for processing ultra-long sequences and its significant effectiveness in enhancing the long-context capabilities of various LLMs by achieving 20\% improvements and 1.5x inference speedup over baselines of full-context, RAG and previous agent-based methods.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-05-27T02:05:42Z</published>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Sibo Xiao</name>
+    </author>
+    <author>
+      <name>Zixin Lin</name>
+    </author>
+    <author>
+      <name>Wenyang Gao</name>
+    </author>
+    <author>
+      <name>Hui Chen</name>
+    </author>
+    <author>
+      <name>Yue Zhang</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2505.18279v1</id>
+    <title>Collaborative Memory: Multi-User Memory Sharing in LLM Agents with Dynamic Access Control</title>
+    <updated>2025-05-23T18:14:57Z</updated>
+    <link href="https://arxiv.org/abs/2505.18279v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2505.18279v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Complex tasks are increasingly delegated to ensembles of specialized LLM-based agents that reason, communicate, and coordinate actions-both among themselves and through interactions with external tools, APIs, and databases. While persistent memory has been shown to enhance single-agent performance, most approaches assume a monolithic, single-user context-overlooking the benefits and challenges of knowledge transfer across users under dynamic, asymmetric permissions. We introduce Collaborative Memory, a framework for multi-user, multi-agent environments with asymmetric, time-evolving access controls encoded as bipartite graphs linking users, agents, and resources. Our system maintains two memory tiers: (1) private memory-private fragments visible only to their originating user; and (2) shared memory-selectively shared fragments. Each fragment carries immutable provenance attributes (contributing agents, accessed resources, and timestamps) to support retrospective permission checks. Granular read policies enforce current user-agent-resource constraints and project existing memory fragments into filtered transformed views. Write policies determine fragment retention and sharing, applying context-aware transformations to update the memory. Both policies may be designed conditioned on system, agent, and user-level information. Our framework enables safe, efficient, and interpretable cross-user knowledge sharing, with provable adherence to asymmetric, time-varying policies and full auditability of memory operations.</summary>
+    <category term="cs.MA" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-05-23T18:14:57Z</published>
+    <arxiv:primary_category term="cs.MA"/>
+    <author>
+      <name>Alireza Rezazadeh</name>
+    </author>
+    <author>
+      <name>Zichao Li</name>
+    </author>
+    <author>
+      <name>Ange Lou</name>
+    </author>
+    <author>
+      <name>Yuying Zhao</name>
+    </author>
+    <author>
+      <name>Wei Wei</name>
+    </author>
+    <author>
+      <name>Yujia Bao</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2504.17967v1</id>
+    <title>LLM Agent Swarm for Hypothesis-Driven Drug Discovery</title>
+    <updated>2025-04-24T22:27:50Z</updated>
+    <link href="https://arxiv.org/abs/2504.17967v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2504.17967v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Drug discovery remains a formidable challenge: more than 90 percent of candidate molecules fail in clinical evaluation, and development costs often exceed one billion dollars per approved therapy. Disparate data streams, from genomics and transcriptomics to chemical libraries and clinical records, hinder coherent mechanistic insight and slow progress. Meanwhile, large language models excel at reasoning and tool integration but lack the modular specialization and iterative memory required for regulated, hypothesis-driven workflows. We introduce PharmaSwarm, a unified multi-agent framework that orchestrates specialized LLM "agents" to propose, validate, and refine hypotheses for novel drug targets and lead compounds. Each agent accesses dedicated functionality--automated genomic and expression analysis; a curated biomedical knowledge graph; pathway enrichment and network simulation; interpretable binding affinity prediction--while a central Evaluator LLM continuously ranks proposals by biological plausibility, novelty, in silico efficacy, and safety. A shared memory layer captures validated insights and fine-tunes underlying submodels over time, yielding a self-improving system. Deployable on low-code platforms or Kubernetes-based microservices, PharmaSwarm supports literature-driven discovery, omics-guided target identification, and market-informed repurposing. We also describe a rigorous four-tier validation pipeline spanning retrospective benchmarking, independent computational assays, experimental testing, and expert user studies to ensure transparency, reproducibility, and real-world impact. By acting as an AI copilot, PharmaSwarm can accelerate translational research and deliver high-confidence hypotheses more efficiently than traditional pipelines.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-04-24T22:27:50Z</published>
+    <arxiv:comment>15 pages, 3 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Kevin Song</name>
+    </author>
+    <author>
+      <name>Andrew Trotter</name>
+    </author>
+    <author>
+      <name>Jake Y. Chen</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2410.16155v2</id>
+    <title>A Troublemaker with Contagious Jailbreak Makes Chaos in Honest Towns</title>
+    <updated>2025-06-26T13:45:10Z</updated>
+    <link href="https://arxiv.org/abs/2410.16155v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2410.16155v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>With the development of large language models, they are widely used as agents in various fields. A key component of agents is memory, which stores vital information but is susceptible to jailbreak attacks. Existing research mainly focuses on single-agent attacks and shared memory attacks. However, real-world scenarios often involve independent memory. In this paper, we propose the Troublemaker Makes Chaos in Honest Town (TMCHT) task, a large-scale, multi-agent, multi-topology text-based attack evaluation framework. TMCHT involves one attacker agent attempting to mislead an entire society of agents. We identify two major challenges in multi-agent attacks: (1) Non-complete graph structure, (2) Large-scale systems. We attribute these challenges to a phenomenon we term toxicity disappearing. To address these issues, we propose an Adversarial Replication Contagious Jailbreak (ARCJ) method, which optimizes the retrieval suffix to make poisoned samples more easily retrieved and optimizes the replication suffix to make poisoned samples have contagious ability. We demonstrate the superiority of our approach in TMCHT, with 23.51%, 18.95%, and 52.93% improvements in line topology, star topology, and 100-agent settings. Encourage community attention to the security of multi-agent systems.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-10-21T16:21:24Z</published>
+    <arxiv:comment>ACL 2025 Main</arxiv:comment>
+    <arxiv:primary_category term="cs.CL"/>
+    <author>
+      <name>Tianyi Men</name>
+    </author>
+    <author>
+      <name>Pengfei Cao</name>
+    </author>
+    <author>
+      <name>Zhuoran Jin</name>
+    </author>
+    <author>
+      <name>Yubo Chen</name>
+    </author>
+    <author>
+      <name>Kang Liu</name>
+    </author>
+    <author>
+      <name>Jun Zhao</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2407.14239v1</id>
+    <title>KoMA: Knowledge-driven Multi-agent Framework for Autonomous Driving with Large Language Models</title>
+    <updated>2024-07-19T12:13:08Z</updated>
+    <link href="https://arxiv.org/abs/2407.14239v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2407.14239v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large language models (LLMs) as autonomous agents offer a novel avenue for tackling real-world challenges through a knowledge-driven manner. These LLM-enhanced methodologies excel in generalization and interpretability. However, the complexity of driving tasks often necessitates the collaboration of multiple, heterogeneous agents, underscoring the need for such LLM-driven agents to engage in cooperative knowledge sharing and cognitive synergy. Despite the promise of LLMs, current applications predominantly center around single agent scenarios. To broaden the horizons of knowledge-driven strategies and bolster the generalization capabilities of autonomous agents, we propose the KoMA framework consisting of multi-agent interaction, multi-step planning, shared-memory, and ranking-based reflection modules to enhance multi-agents' decision-making in complex driving scenarios. Based on the framework's generated text descriptions of driving scenarios, the multi-agent interaction module enables LLM agents to analyze and infer the intentions of surrounding vehicles, akin to human cognition. The multi-step planning module enables LLM agents to analyze and obtain final action decisions layer by layer to ensure consistent goals for short-term action decisions. The shared memory module can accumulate collective experience to make superior decisions, and the ranking-based reflection module can evaluate and improve agent behavior with the aim of enhancing driving safety and efficiency. The KoMA framework not only enhances the robustness and adaptability of autonomous driving agents but also significantly elevates their generalization capabilities across diverse scenarios. Empirical results demonstrate the superiority of our approach over traditional methods, particularly in its ability to handle complex, unpredictable driving environments without extensive retraining.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2024-07-19T12:13:08Z</published>
+    <arxiv:comment>13 pages, 18 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Kemou Jiang</name>
+    </author>
+    <author>
+      <name>Xuan Cai</name>
+    </author>
+    <author>
+      <name>Zhiyong Cui</name>
+    </author>
+    <author>
+      <name>Aoyong Li</name>
+    </author>
+    <author>
+      <name>Yilong Ren</name>
+    </author>
+    <author>
+      <name>Haiyang Yu</name>
+    </author>
+    <author>
+      <name>Hao Yang</name>
+    </author>
+    <author>
+      <name>Daocheng Fu</name>
+    </author>
+    <author>
+      <name>Licheng Wen</name>
+    </author>
+    <author>
+      <name>Pinlong Cai</name>
+    </author>
+  </entry>
+</feed>

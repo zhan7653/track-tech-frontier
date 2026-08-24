@@ -1,0 +1,41 @@
+{
+  "as_of": "2026-08-23",
+  "important_cluster_policy": "saturated",
+  "lanes": [
+    "github",
+    "product",
+    "paper",
+    "negative"
+  ],
+  "required_deliverable_kinds": [
+    "project-deep-dive",
+    "method",
+    "source-index"
+  ],
+  "schema_version": "2.0",
+  "targets": {
+    "claims": 20,
+    "clusters": 1,
+    "deep_papers": 1,
+    "deep_repositories": 1,
+    "deep_verified_entities": 3,
+    "deliverables": 3,
+    "discovered_entities": 3,
+    "evidence": 24,
+    "mapped_entities": 3,
+    "papers_discovered": 1,
+    "papers_mapped": 1,
+    "queries": 7,
+    "recent_discovered": 1,
+    "recent_mapped": 1,
+    "repositories_discovered": 1,
+    "repositories_mapped": 1,
+    "sources": 16
+  },
+  "time_windows": [
+    "W_FOUNDATION",
+    "W_RECENT_12M",
+    "W_RECENT_90D"
+  ],
+  "topic": "OpenAI Codex local memory system"
+}

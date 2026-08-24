@@ -25,3 +25,4 @@ v10 是基于 v09 冻结研究底稿的读者版重编，没有复制一套新�
 - [2026-08-13 六分支输入吸收复核](2026-08-13-branch-absorption-review.md)
 - [2026-08-13 机制专题读者复述抽查](2026-08-13-reader-reconstruction-review.md)
 - [v09 内部分类到 v10 读者结构的映射](old-to-new-map.md)
+- [2026-08-23 Codex 本地 Memory 定向调研](codex-memory-2026-08-23/README.md)

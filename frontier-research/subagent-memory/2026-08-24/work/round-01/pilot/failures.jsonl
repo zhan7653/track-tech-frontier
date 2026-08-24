@@ -1,0 +1,2 @@
+{"job_id":"P03","provider":"semantic-scholar","query":"multi-agent shared memory LLM agents","failed_at":"2026-08-23T16:38:03.7836205Z","exit_code":2,"note":"Provider request failed after configured retries; preserved as a coverage limitation."}
+{"job_id":"P04","provider":"semantic-scholar","query":"hierarchical agent memory handoff subagent","failed_at":"2026-08-23T16:38:42.6841878Z","exit_code":2,"note":"Provider request failed after configured retries; preserved as a coverage limitation."}

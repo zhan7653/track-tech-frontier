@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:06:41Z",
+  "from": "2023-01-01",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "arxiv",
+  "query": "\"multi-agent\" AND memory AND (benchmark OR evaluation OR dataset)",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:06:38Z",
+      "page": 1,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:(\"multi-agent\" AND memory AND (benchmark OR evaluation OR dataset)) AND submittedDate:[202301010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 0
+      },
+      "provider": "arxiv",
+      "query": "\"multi-agent\" AND memory AND (benchmark OR evaluation OR dataset)",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\A08\\arxiv-001-55207f6be485946c1c531474c155bf82ebafc8a20f2eeaf2e2ddb21324d371ef.raw",
+      "reported_total": 504,
+      "response_sha256": "55207f6be485946c1c531474c155bf82ebafc8a20f2eeaf2e2ddb21324d371ef",
+      "result_count": 100,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%22multi-agent%22+AND+memory+AND+%28benchmark+OR+evaluation+OR+dataset%29%29+AND+submittedDate%3A%5B202301010000+TO+202608242359%5D&start=0&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:06:41Z",
+      "page": 2,
+      "params": {
+        "max_results": 100,
+        "search_query": "all:(\"multi-agent\" AND memory AND (benchmark OR evaluation OR dataset)) AND submittedDate:[202301010000 TO 202608242359]",
+        "sortBy": "submittedDate",
+        "sortOrder": "descending",
+        "start": 100
+      },
+      "provider": "arxiv",
+      "query": "\"multi-agent\" AND memory AND (benchmark OR evaluation OR dataset)",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\A08\\arxiv-002-48bca68cd6d168f60bafa19cc678a27af5edd35c9fcc4bccc3f24a1ffe0b0743.raw",
+      "reported_total": 504,
+      "response_sha256": "48bca68cd6d168f60bafa19cc678a27af5edd35c9fcc4bccc3f24a1ffe0b0743",
+      "result_count": 100,
+      "url": "https://export.arxiv.org/api/query?search_query=all%3A%28%22multi-agent%22+AND+memory+AND+%28benchmark+OR+evaluation+OR+dataset%29%29+AND+submittedDate%3A%5B202301010000+TO+202608242359%5D&start=100&max_results=100&sortBy=submittedDate&sortOrder=descending"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:06:38Z",
+  "to": "2026-08-24"
+}

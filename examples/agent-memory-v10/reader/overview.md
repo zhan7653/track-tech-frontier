@@ -1,6 +1,6 @@
 # Agent Memory 2026：一张面向读者的领域地图
 
-**主要证据截止：2026-08-10｜窄幅机制补查：2026-08-12｜深潜重编：2026-08-13**
+**主要证据截止：2026-08-10｜机制补查：2026-08-12｜深潜重编：2026-08-13｜Codex 定向工程补查：2026-08-23**
 
 Agent Memory 研究的不是“如何把聊天记录塞进向量数据库”这么单一的问题。它研究的是：一个 Agent 怎样把过去的对话、观察、工具结果、用户偏好、项目状态和行动经验，转化为可长期保存、可更新、可检索，并且能够在未来任务中安全发挥作用的状态。
 
@@ -120,6 +120,8 @@ Memory 的成本不仅是一次向量查询。写入抽取、模型调用、图�
 | Coding Agent | 代码结构、决策、任务状态、错误、构建与工具结果 | 仓库/分支/提交作用域、快速变化、秘密和跨会话交接 | [Coding Agent](scenarios/02-coding-agents.md) |
 | 多 Agent 与共享记忆 | 任务、消息、经验、共享工件和组织规则 | 权限、来源、冲突、污染传播、撤销与可移植性 | [多 Agent](scenarios/03-multi-agent-shared-memory.md) |
 | 世界状态、具身与多模态 | 时空观察、对象、地图、动作结果和多模态事件 | 部分可观测、状态漂移、模态对齐和行动闭环 | [世界状态与具身](scenarios/04-world-state-embodied-multimodal.md) |
+
+Codex 定向补查为 Coding Agent 场景增加了一个现役开源 runtime：它采用两阶段 LLM 形成、独立 SQLite candidate/job store、Git-baselined Markdown 工件与词法渐进读取，而不是把项目历史直接交给向量检索。该结论只更新 Codex 这一实例，详见 [Codex 本地 Memory 系统](projects/openai--codex.md)。
 
 长上下文、普通 RAG、模型参数记忆、持续学习和 checkpoint 与这些问题相邻，但不都属于本文主体。它们在承担跨会话持久状态、显式写入管理或未来行动依赖时才与 Agent Memory 重叠。详见[相邻技术边界](adjacent-boundaries.md)。
 

@@ -1,0 +1,56 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:07:24Z",
+  "from": "2023-01-01",
+  "github_date_field": null,
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "crossref",
+  "query": "multi-agent experience sharing language models",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:21Z",
+      "page": 1,
+      "params": {
+        "filter": "from-pub-date:2023-01-01,until-pub-date:2026-08-24",
+        "offset": 0,
+        "query.bibliographic": "multi-agent experience sharing language models",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "multi-agent experience sharing language models",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\C05\\crossref-001-42a775dd3f309855b2a2f2b736acfcd1a7e8c73de8781176fae9150c242dbc74.raw",
+      "reported_total": 1354261,
+      "response_sha256": "42a775dd3f309855b2a2f2b736acfcd1a7e8c73de8781176fae9150c242dbc74",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=multi-agent+experience+sharing+language+models&rows=100&offset=0&filter=from-pub-date%3A2023-01-01%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:07:24Z",
+      "page": 2,
+      "params": {
+        "filter": "from-pub-date:2023-01-01,until-pub-date:2026-08-24",
+        "offset": 100,
+        "query.bibliographic": "multi-agent experience sharing language models",
+        "rows": 100,
+        "select": "DOI,title,author,URL,published-print,published-online,issued,abstract,container-title"
+      },
+      "provider": "crossref",
+      "query": "multi-agent experience sharing language models",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\C05\\crossref-002-df46115df72abd13c8fd2d9e08915d217ccad6c257f0e5d1d1c7fd372929c4b0.raw",
+      "reported_total": 1354261,
+      "response_sha256": "df46115df72abd13c8fd2d9e08915d217ccad6c257f0e5d1d1c7fd372929c4b0",
+      "result_count": 100,
+      "url": "https://api.crossref.org/works?query.bibliographic=multi-agent+experience+sharing+language+models&rows=100&offset=100&filter=from-pub-date%3A2023-01-01%2Cuntil-pub-date%3A2026-08-24&select=DOI%2Ctitle%2Cauthor%2CURL%2Cpublished-print%2Cpublished-online%2Cissued%2Cabstract%2Ccontainer-title"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:07:21Z",
+  "to": "2026-08-24"
+}

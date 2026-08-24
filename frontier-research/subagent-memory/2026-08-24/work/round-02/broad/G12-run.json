@@ -1,0 +1,52 @@
+{
+  "commit_enrichment": false,
+  "finished_at": "2026-08-23T17:09:05Z",
+  "from": null,
+  "github_date_field": "created",
+  "limit": 100,
+  "limitations": "Metadata discovery only; stars are retained as discovery signals and are not quality, adoption, or trend evidence. Growth/acceleration requires two dated observations.",
+  "occurrence_count": 200,
+  "pages": 2,
+  "provider": "github-search",
+  "query": "mcp shared memory agents",
+  "record_type": "discovery-run",
+  "requests": [
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:00Z",
+      "page": 1,
+      "params": {
+        "page": 1,
+        "per_page": 100,
+        "q": "mcp shared memory agents"
+      },
+      "provider": "github-search",
+      "query": "mcp shared memory agents",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G12\\github-search-001-d902e272435967b63b188b3825e8d09e7f8aeab45ae7031072d91fd5f2b4b2c5.raw",
+      "reported_total": 405,
+      "response_sha256": "d902e272435967b63b188b3825e8d09e7f8aeab45ae7031072d91fd5f2b4b2c5",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=mcp+shared+memory+agents&per_page=100&page=1"
+    },
+    {
+      "cursor": null,
+      "observed_at": "2026-08-23T17:09:05Z",
+      "page": 2,
+      "params": {
+        "page": 2,
+        "per_page": 100,
+        "q": "mcp shared memory agents"
+      },
+      "provider": "github-search",
+      "query": "mcp shared memory agents",
+      "raw_snapshot_path": "D:\\Code\\track-tech-frontier\\frontier-research\\subagent-memory\\2026-08-24\\work\\round-02\\broad\\raw\\G12\\github-search-002-50d46ff995cf9ace507bcedeced6b7732747eaf8f466c322f75c3bb6d22f7e59.raw",
+      "reported_total": 405,
+      "response_sha256": "50d46ff995cf9ace507bcedeced6b7732747eaf8f466c322f75c3bb6d22f7e59",
+      "result_count": 100,
+      "url": "https://api.github.com/search/repositories?q=mcp+shared+memory+agents&per_page=100&page=2"
+    }
+  ],
+  "schema_version": "1.0",
+  "started_at": "2026-08-23T17:09:00Z",
+  "to": null
+}
