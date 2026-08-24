@@ -1,4 +1,4 @@
 interface:
   display_name: "Track Tech Frontier"
   short_description: "Reader-first frontier maps, trends, and engineering deep dives"
-  default_prompt: "Use $track-tech-frontier to explain a technology frontier for technical readers: map its mechanisms, recent paper and GitHub signals, scenario views, and a few real engineering deep dives."
+  default_prompt: "Use $track-tech-frontier to explain a technology frontier for technical readers: map its mechanisms, recent paper and GitHub signals, scenario views, and real engineering deep dives, then build and verify the static HTML reader site."

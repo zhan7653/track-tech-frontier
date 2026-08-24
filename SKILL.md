@@ -24,6 +24,7 @@ Read these references before acting:
 - [synthesis-and-deliverables.md](references/synthesis-and-deliverables.md) before clustering and drafting;
 - [evaluation-gates.md](references/evaluation-gates.md) before declaring completion;
 - [reference-research-behaviors.md](references/reference-research-behaviors.md) for behavioral comparison;
+- [html-presentation.md](references/html-presentation.md) before generating or reviewing the reader-facing HTML site;
 - [update-mode.md](references/update-mode.md) for an update.
 
 ## Initialize research state before discovery
@@ -90,6 +91,8 @@ Apply strict direct evidence and precise locators to core conclusions, critical 
 
 Draft the reader suite only after mapping and deep packets exist. Lead with the field answer, not corpus counts or internal taxonomy. Use the report contract to make the main report independently readable, present a descriptive **general architecture model** rather than a recommended architecture, and give each important mechanism branch a clear solution-family comparison. Describe applicability conditions, maturity, tradeoffs, failure modes, consensus, disputes, and uncertainty without telling the reader what to choose or deploy.
 
+After the Markdown reader suite is complete, generate the static HTML presentation with `scripts/render_reader_html.py`. Treat HTML as a rebuildable understanding layer: preserve Markdown as the authority; validate rewritten links and UTF-8; keep diagrams searchable and readable without interaction; and inspect the entry, a long mechanism page, a project page, search, mobile layout, dark mode, and print structure in a real browser. Do not hand-edit generated HTML.
+
 Before reader editing is complete, perform an input-absorption review for every important branch. A selected paper, repository, benchmark, or negative result counts as absorbed only when it changes a state/algorithm explanation, a concrete engineering data flow, an experimental boundary, a qualified judgment, or the research agenda. A name in a table or bibliography does not count. Leave broad long-tail coverage in the audit/radar rather than turning it into reader inventory.
 
 Complete the first reader-ready suite before creating an optional human-review list. Reserve that list for high-impact uncertainty, conflicting evidence, or genuinely subjective representative choices; never leave a branch as a placeholder awaiting approval.
@@ -101,12 +104,14 @@ Run the outcome gates in [evaluation-gates.md](references/evaluation-gates.md) a
 ```text
 python <skill-dir>/scripts/research_bundle.py validate --root <bundle-dir>
 python <skill-dir>/scripts/research_bundle.py validate --root <bundle-dir> --strict
+python <skill-dir>/scripts/render_reader_html.py --root <bundle-dir> --output <bundle-dir>/site
+python <skill-dir>/scripts/render_reader_html.py --root <bundle-dir> --output <bundle-dir>/site --check
 ```
 
 Fix real errors and preserve honest advisories. A schema pass, source count, claim count, file count, or green validator alone cannot establish completion. The decisive test is whether a new technical reader can understand the field from the default entry, independently understand each important mechanism branch, and trace key claims without audit machinery interrupting the narrative.
 
 ## Deliver
 
-Save the suite under `frontier-research/<topic-slug>/<as-of-date>/` unless the user requests another location. Return links to the reader entry, general architecture model, mechanism landscape, scenario views, current-trend radar, evidence/limitations material, branch reports, and selected project reports. Summarize recent-window coverage, verification status, important unresolved gaps, and any optional human-review questions.
+Save the suite under `frontier-research/<topic-slug>/<as-of-date>/` unless the user requests another location. Return links to the HTML entry, Markdown reader entry, general architecture model, mechanism landscape, scenario views, current-trend radar, evidence/limitations material, branch reports, and selected project reports. Summarize recent-window coverage, verification status, important unresolved gaps, and any optional human-review questions.
 
 Return in the user's language while preserving original technical and project names. Do not modify product source code or remote systems while researching.

@@ -1,0 +1,55 @@
+{
+  "as_of": "2026-08-24",
+  "important_cluster_policy": "saturated",
+  "lanes": [
+    "github",
+    "paper",
+    "benchmark",
+    "negative",
+    "official-documentation",
+    "codex-skills",
+    "accessibility-standards",
+    "implementation"
+  ],
+  "required_deliverable_kinds": [
+    "readme",
+    "executive",
+    "field-tree",
+    "landscape",
+    "timeline",
+    "consensus",
+    "repository-radar",
+    "benchmark-map",
+    "method",
+    "source-index",
+    "cluster-deep-dive",
+    "project-deep-dive"
+  ],
+  "schema_version": "2.0",
+  "targets": {
+    "claims": 16,
+    "clusters": 6,
+    "deep_papers": 2,
+    "deep_repositories": 6,
+    "deep_verified_entities": 12,
+    "deliverables": 20,
+    "discovered_entities": 20,
+    "evidence": 20,
+    "mapped_entities": 17,
+    "papers_discovered": 2,
+    "papers_mapped": 2,
+    "queries": 14,
+    "recent_discovered": 4,
+    "recent_mapped": 3,
+    "repositories_discovered": 15,
+    "repositories_mapped": 12,
+    "sources": 18
+  },
+  "time_windows": [
+    "TW90D",
+    "TW12M",
+    "TWCURRENT",
+    "TWFUTURE"
+  ],
+  "topic": "HTML presentation patterns for technical frontier research reports"
+}

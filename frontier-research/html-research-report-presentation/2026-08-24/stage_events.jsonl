@@ -1,0 +1,33 @@
+{"event_id":"EV001A","entity_id":"E001","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:30Z","rationale":"Canonical identity and presentation role confirmed."}
+{"event_id":"EV001B","entity_id":"E001","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-23T16:34:30Z","rationale":"Fixed commit and official diagram/navigation documentation opened."}
+{"event_id":"EV002A","entity_id":"E002","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:31Z","rationale":"Canonical identity and structured authoring role confirmed."}
+{"event_id":"EV002B","entity_id":"E002","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-23T16:34:31Z","rationale":"Fixed UI component and navigation documents opened."}
+{"event_id":"EV003A","entity_id":"E003","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:32Z","rationale":"Canonical identity and data-report role confirmed."}
+{"event_id":"EV003B","entity_id":"E003","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-23T16:34:32Z","rationale":"Fixed repository and official search/data-loader documentation opened."}
+{"event_id":"EV004A","entity_id":"E004","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:33Z","rationale":"Canonical identity and documentation role confirmed."}
+{"event_id":"EV004B","entity_id":"E004","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-23T16:34:33Z","rationale":"Fixed search, navigation template, diagram docs, and issue evidence opened."}
+{"event_id":"EV005A","entity_id":"E005","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:34Z","rationale":"Canonical identity and research-agent frontend role confirmed."}
+{"event_id":"EV005B","entity_id":"E005","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-23T16:34:34Z","rationale":"Fixed report, sources, Markdown helper, styles, and layout code opened."}
+{"event_id":"EV006A","entity_id":"E006","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:35Z","rationale":"Canonical identity and long-report role confirmed."}
+{"event_id":"EV007A","entity_id":"E007","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:36Z","rationale":"Canonical diagram component and current repository state confirmed."}
+{"event_id":"EV008A","entity_id":"E008","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:37Z","rationale":"Canonical identity and structured diagram role confirmed."}
+{"event_id":"EV008B","entity_id":"E008","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-23T16:34:37Z","rationale":"Fixed skill, schema, renderer, layout guidance, and HTML example opened."}
+{"event_id":"EV009A","entity_id":"E009","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:38Z","rationale":"Canonical conversion-layer identity confirmed."}
+{"event_id":"EV010A","entity_id":"E010","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:39Z","rationale":"Canonical documentation-site alternative confirmed."}
+{"event_id":"EV011A","entity_id":"E011","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:40Z","rationale":"Canonical identity and recent semantic article role confirmed."}
+{"event_id":"EV011B","entity_id":"E011","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-23T16:34:40Z","rationale":"Fixed README, component vocabulary, build boundary, and metadata opened."}
+{"event_id":"EV012A","entity_id":"E012","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:41Z","rationale":"Canonical identity and companion skill relation confirmed."}
+{"event_id":"EV012B","entity_id":"E012","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-23T16:34:41Z","rationale":"Fixed beautiful-article skill workflow and component policy opened."}
+{"event_id":"EV013A","entity_id":"E013","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:42Z","rationale":"Canonical paper-linked interactive article implementation confirmed."}
+{"event_id":"EV014A","entity_id":"E014","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:43Z","rationale":"Canonical historical interactive article framework confirmed."}
+{"event_id":"EV015A","entity_id":"E015","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:44Z","rationale":"Canonical heading-tree visualization implementation confirmed."}
+{"event_id":"EV016A","entity_id":"E016","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:45Z","rationale":"DOI, venue, authors, and relevance confirmed."}
+{"event_id":"EV016B","entity_id":"E016","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-23T16:34:45Z","rationale":"Original paper and author materials opened."}
+{"event_id":"EV017A","entity_id":"E017","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:46Z","rationale":"DOI, venue, authors, and relevance confirmed."}
+{"event_id":"EV017B","entity_id":"E017","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-23T16:34:46Z","rationale":"Original paper PDF opened and interaction boundary inspected."}
+{"event_id":"EV018A","entity_id":"E018","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:35:21Z","rationale":"Official W3C WAI identity and scope confirmed."}
+{"event_id":"EV018B","entity_id":"E018","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-23T16:35:22Z","rationale":"Page structure tutorial opened at relevant sections."}
+{"event_id":"EV019A","entity_id":"E019","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:47Z","rationale":"Official Distill guide identity and article-protocol scope confirmed."}
+{"event_id":"EV019B","entity_id":"E019","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-23T16:34:47Z","rationale":"Citation, footnote, diagram, and layout sections opened."}
+{"event_id":"EV020A","entity_id":"E020","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:48Z","rationale":"Canonical recent auditable-research workspace signal confirmed."}
+{"event_id":"EV021A","entity_id":"E021","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-23T16:33:49Z","rationale":"Canonical recent interactive article template signal confirmed."}

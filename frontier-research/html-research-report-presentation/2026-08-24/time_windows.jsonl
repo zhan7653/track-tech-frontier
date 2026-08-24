@@ -1,0 +1,4 @@
+{"window_id":"TW90D","label":"Rolling ninety-day weak-signal window","start":"2026-05-26","end":"2026-08-24","kind":"recent-90d"}
+{"window_id":"TW12M","label":"Rolling twelve-month frontier window","start":"2025-08-25","end":"2026-08-24","kind":"recent-12m"}
+{"window_id":"TWCURRENT","label":"Foundational and established practice needed to explain current mechanisms","start":"2017-01-01","end":"2025-08-24","kind":"foundational"}
+{"window_id":"TWFUTURE","label":"Future-dated or invalid provider metadata after the cutoff","start":"2026-08-25","end":"2100-12-31","kind":"custom"}
