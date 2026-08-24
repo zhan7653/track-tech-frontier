@@ -1,0 +1,585 @@
+{
+  "asset_count": 4,
+  "assets": {
+    "assets/favicon.svg": "705e9cd4a070a24bd67554e401e9d08d95d68810212d5aa4f8e1fc37a3abd9d8",
+    "assets/search-index.js": "85de4539940b1ccbd72c4d4aaf985fbc38d8ef86fc79fd0b6fcfb90ea6d5019b",
+    "assets/site.css": "a73874a1511d8a8340cbdd456fb37048e9966a41a2edc10efc321466c5e534ee",
+    "assets/site.js": "493594439525b60ea3e3b32dd4f7176f5c99b750b1800c630710cc5c89ec5a8c"
+  },
+  "copied_assets": [],
+  "entry": "index.html",
+  "generated_at": "2026-08-24T14:43:36Z",
+  "generated_by": "track-tech-frontier/render_reader_html.py",
+  "page_count": 54,
+  "pages": [
+    {
+      "headings": 0,
+      "output": "about.html",
+      "output_sha256": "d258d2875ba4472aa5ca27726c6805667910e800cb0e3b2d7067dcb4dce35f9b",
+      "page_type": "about",
+      "source": "README.md",
+      "source_sha256": "a37ff85a1492696fc4feb22c74be93db08936ebf50985aa5762dc423f8b58f75",
+      "warnings": [],
+      "workspace_links": [
+        "../../../examples/agent-memory-v10/README.md"
+      ]
+    },
+    {
+      "headings": 17,
+      "output": "architecture.html",
+      "output_sha256": "40eee99a31f67aea90de185a363d291bc4b73e05ef3b2234bb6d29b09a971fb1",
+      "page_type": "architecture",
+      "source": "reader/architecture.md",
+      "source_sha256": "86d924b8a307313b970fc4706a385c7975bb1e64ad1331333a1dc3285a55b6c5",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 5,
+      "output": "consensus-and-open-questions.html",
+      "output_sha256": "480817c40e783bd3be0153060cb7cf35901e3d2e88a77785aa0f499510706ef2",
+      "page_type": "consensus",
+      "source": "reader/consensus-and-open-questions.md",
+      "source_sha256": "e001f2a1ed11a9babeeb80f68e71f0c6b506910d2d0b1c50806586fce5d46e1d",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 5,
+      "output": "cross-cutting/01-evaluation.html",
+      "output_sha256": "a838e745674df5441a5acc76c1d4c50d027de40d8c2c70490213cb5a8e90e2c3",
+      "page_type": "cross-cutting",
+      "source": "reader/cross-cutting/01-evaluation.md",
+      "source_sha256": "14a19ca37ed31605bdfe4f36b2a5dede9ec7288b4eb2010a8084d0e702e05ff3",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 9,
+      "output": "cross-cutting/02-security-governance.html",
+      "output_sha256": "e433dabf6f735e1cf32fbc4e979cace8843161d1b47cc79ef30dde60999a1ad4",
+      "page_type": "cross-cutting",
+      "source": "reader/cross-cutting/02-security-governance.md",
+      "source_sha256": "cc50b059357609777eebe32f0fddb64e7c9d7569755a8f2165679c41d9b99dd2",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 8,
+      "output": "cross-cutting/03-cost-reliability.html",
+      "output_sha256": "0d1d4168d579e3aceaa14e567f7b0155656fbe3df5472c2923add95e04b9f81e",
+      "page_type": "cross-cutting",
+      "source": "reader/cross-cutting/03-cost-reliability.md",
+      "source_sha256": "1c5170a593bc1d720e5e03e6aeed6116edb2995d84c02e60a824bfe4d8ad53c4",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 6,
+      "output": "cross-cutting/04-interoperability.html",
+      "output_sha256": "2b3ade03a8ad6453b5bae6698a4a54d3728a9c3c71e79c609fc54901fa599545",
+      "page_type": "cross-cutting",
+      "source": "reader/cross-cutting/04-interoperability.md",
+      "source_sha256": "6490e9c51867aa63a643c7551828b0f85f003b44c438bf35611d37563118d6a7",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 6,
+      "output": "cross-cutting/benchmark-protocols.html",
+      "output_sha256": "243eab49a8f0d2e135d365f89b877d15f3e74c63da43dcc87fb4369978c942c5",
+      "page_type": "cross-cutting",
+      "source": "reader/cross-cutting/benchmark-protocols.md",
+      "source_sha256": "ed515095edd47c4cb02ceaa5b8f92580c6e44dcbcb2c8d5d264b0df1b6ca1e37",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 0,
+      "output": "cross-cutting/index.html",
+      "output_sha256": "ea450c21e07e0981f8e0e77ce3db839e2bcd85442a2e9c7b9790af994d3f97ef",
+      "page_type": "cross-cutting",
+      "source": "reader/cross-cutting/README.md",
+      "source_sha256": "f4e789d914485d0e2ab08450ffa4c56ee97803965180b234dca66a89e4db6381",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 5,
+      "output": "github-radar.html",
+      "output_sha256": "e98276531dfe9dc7e0263408d453dee0bc323470a18c89e9ae5e436f9a7cfe0b",
+      "page_type": "radar",
+      "source": "reader/github-radar.md",
+      "source_sha256": "074f80c0809d7a5e4c480bda523e2718162b0f470edb38c61bd8e6bfa8ecd618",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 4,
+      "output": "human-review.html",
+      "output_sha256": "0e96e8ed006feef6c95468cfdd34d556b706dcd7af52ea42e24ec67b9503b706",
+      "page_type": "review",
+      "source": "reader/human-review.md",
+      "source_sha256": "db2bf54bb5dedc24e0c275064123f7304a4b54b65d5f510fe9b6a5c00daba1a8",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 8,
+      "output": "mechanisms/01-context-inheritance.html",
+      "output_sha256": "229241cb50e40c622feef7289ac30bc06e984097e5a4747c7ee771f661085e4b",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/01-context-inheritance.md",
+      "source_sha256": "928b218241ad804b962d2c49465563a5fa4050cc3c39dff80e4c877169efc98a",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 8,
+      "output": "mechanisms/02-ownership-and-visibility.html",
+      "output_sha256": "da76ff7fcea52763391926ef1d10f56816869f6b868c1c4e34956e82a413418d",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/02-ownership-and-visibility.md",
+      "source_sha256": "69f13061aa333fde8aadd0a1db245aeabc9b82dc58c7159f9d4e4afd70338bb0",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 8,
+      "output": "mechanisms/03-shared-substrates.html",
+      "output_sha256": "81ba2dccd541b8003f31b44ba6c088f7b18ae33135b09eda87398310e2183631",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/03-shared-substrates.md",
+      "source_sha256": "6803aa52ffaa2604de192652f8e95812f2a5df8faf37a5548e8245eb1a83871f",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 8,
+      "output": "mechanisms/04-synchronization-and-commit.html",
+      "output_sha256": "45be80c28683165c700d33ea5e4b8cc2da68b38b6779b49eb2413b866cb5c45b",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/04-synchronization-and-commit.md",
+      "source_sha256": "30acf9132866386ff03ab97e0a73423b1f50a6d586ae92434614348cb97213ad",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 8,
+      "output": "mechanisms/05-return-and-consolidation.html",
+      "output_sha256": "306f22e13175522fbb5e4ced1a1c607bef57e6ad1574ce44511b9785c889fc5b",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/05-return-and-consolidation.md",
+      "source_sha256": "fda034fbf32e0f66921880e1669048d0a13016cdde45948fe0c8d90ebb3a9d84",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 8,
+      "output": "mechanisms/06-experience-and-skill-transfer.html",
+      "output_sha256": "8bc26e2a4a6e375d9904b2f07c247b51af2eb8e553f503d6fd9086b19111328a",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/06-experience-and-skill-transfer.md",
+      "source_sha256": "8554e3b21324b31d6a7104391286ea56311b4baeffa411b8a887701e31036c16",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 8,
+      "output": "mechanisms/07-retrieval-and-action.html",
+      "output_sha256": "c37a28fcefce484ae24f8267ec78bdca163f8281c14d6e955cbdfe7814e65270",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/07-retrieval-and-action.md",
+      "source_sha256": "808bc8674df89407ca1dd69a9d21dd2632ac2f8143219e17703137eeb1e069f8",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 9,
+      "output": "mechanisms/08-local-persistence-and-identity.html",
+      "output_sha256": "8a3b921e36fc70241025e7937ba0b08ddc0789de9ddafbc326f5c92c011e48be",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/08-local-persistence-and-identity.md",
+      "source_sha256": "c0f155f8966ae9c07c5cd8659ad10bec91f7d1696e3a9df6615438c37699b8a2",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 10,
+      "output": "mechanisms/context-inheritance/01-mechanisms-and-security.html",
+      "output_sha256": "abdae59e8754f6446aa159fbae0fe29ce9191cf315579b6b77ca1c7ebd567802",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/context-inheritance/01-mechanisms-and-security.md",
+      "source_sha256": "177a74ee6d2971d5994fb0df05246039a9e86721564d0891c8b7e683aa2b65a3",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 12,
+      "output": "mechanisms/experience-transfer/01-trajectories-cards-and-skills.html",
+      "output_sha256": "f1379bf04dbafbc330768645d79cdaa7038bccdb4474b86dadef7ab67a085899",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/experience-transfer/01-trajectories-cards-and-skills.md",
+      "source_sha256": "14eda3193f62ef440849c816fbe9d99c3d256b37f2d31a5084c72480611bacf4",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 10,
+      "output": "mechanisms/local-persistence/01-runtime-lifetimes.html",
+      "output_sha256": "b28761fff81ca1ffc302785720058f02ddcd0733fa492973e842502bb04bc860",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/local-persistence/01-runtime-lifetimes.md",
+      "source_sha256": "268af12c8f28eeba02c98a0b8a2f0bf9c3f3fbd5e1a8aed9a68e684e759fa431",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 10,
+      "output": "mechanisms/ownership-visibility/01-policy-and-provenance.html",
+      "output_sha256": "347af990c3b052a3188c1ae3dc24cbf1c0de9fbd085d8b7421cbc6bfb139f65e",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/ownership-visibility/01-policy-and-provenance.md",
+      "source_sha256": "0f9dbebbcd271339ba5498ad0d134be48f95633aec726fbfeab294aba923dcc6",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 0,
+      "output": "mechanisms/index.html",
+      "output_sha256": "4aab3724616837d6c0bc4c55ea7ee5292e6d27daf0f80402d5ff80f61535b426",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/README.md",
+      "source_sha256": "b3244faa31c4894e34ec217b50476a822425c4f94eb7af1a874e007b21628586",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 13,
+      "output": "mechanisms/retrieval-action/01-routing-navigation-and-gates.html",
+      "output_sha256": "bcd551ee25041d442179824265af176bc03b42dab3e816e8a21e9a59fd0df22b",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/retrieval-action/01-routing-navigation-and-gates.md",
+      "source_sha256": "d5f23ca979d14549b44538a5e30261881e09df87e2fb11fb55cc83405e7f7e32",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 11,
+      "output": "mechanisms/return-consolidation/01-compilation-and-lineage.html",
+      "output_sha256": "9e1b1d8f02e55cc174f34436f54b17d83b9d7bc172f7032c5ff1bf7fad73577d",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/return-consolidation/01-compilation-and-lineage.md",
+      "source_sha256": "2f5bc86fe530dc8e9b8d123885cf719586f6288c115e68e359c47717d033980e",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 10,
+      "output": "mechanisms/shared-substrates/01-state-surfaces.html",
+      "output_sha256": "80961f45558eccb8854f0ea4dcd46fc95a497bc2e3e799da6818b076ad6b4325",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/shared-substrates/01-state-surfaces.md",
+      "source_sha256": "32cf1d6810c4478041d83807f10fb2a750e41a189f47873fb8dd639e6f4af537",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 11,
+      "output": "mechanisms/synchronization/01-conflict-and-commit.html",
+      "output_sha256": "8dec32a5a2384b8aea9f16bdb5b6251387fd0f0b4f461e55a50eb7c4318a40e1",
+      "page_type": "mechanism",
+      "source": "reader/mechanisms/synchronization/01-conflict-and-commit.md",
+      "source_sha256": "a1cdad120cb78047aad5e0c322d8755be494b032a916ab885f06692ac214f403",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 6,
+      "output": "method-and-scope.html",
+      "output_sha256": "7e7645d34b969e6cab318b65f63bf534257a45bd530ceea163e858744b0e0d64",
+      "page_type": "method",
+      "source": "reader/method-and-scope.md",
+      "source_sha256": "c836b24f48402eec9cb0bde1a5fc9490d86112b4106166b89cc49addae6c7f29",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 13,
+      "output": "overview.html",
+      "output_sha256": "708e3fd28d08919c306931e766708b17b402760811dec38f0eb27746611c4811",
+      "page_type": "overview",
+      "source": "reader/overview.md",
+      "source_sha256": "6941dd50a2221901393c28b67cec479bf4738a4b4e8ffb7f78a972c62ff5b6ae",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 10,
+      "output": "projects/caura-ai--caura.html",
+      "output_sha256": "635c025e3e1083b4bd78692357b7d3f0ce5ca2f59cd326144d800bc1b90eeaf9",
+      "page_type": "project",
+      "source": "reader/projects/caura-ai--caura.md",
+      "source_sha256": "84d9af8220c7693cdad155b5496f4bfc34d66296df3b3801942fdb2d1b226bb9",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 6,
+      "output": "projects/kimdanny--matm.html",
+      "output_sha256": "e2e14c23ccbd68005cecd03517cac87859a6bbc77ce20f32ce83bdaf67eafb08",
+      "page_type": "project",
+      "source": "reader/projects/kimdanny--matm.md",
+      "source_sha256": "7fe5001a7d3d0399858429708586d4864b2e10c8b2c93888db5db3918cb77ba4",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 6,
+      "output": "projects/langchain-ai--deepagents.html",
+      "output_sha256": "da3e9990aa583216fef298a7b2b8b714d06f5fba44d3d30f6922895b87860744",
+      "page_type": "project",
+      "source": "reader/projects/langchain-ai--deepagents.md",
+      "source_sha256": "c343bf173b64e3af1124b39bdf7ee902434988e254c85a6c45921db5d6e64a12",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 6,
+      "output": "projects/langchain-ai--langgraph.html",
+      "output_sha256": "95e3d449da6ebbc26b6b303f2c82f18390b3dec0000e19c8b24038d7a44d3c54",
+      "page_type": "project",
+      "source": "reader/projects/langchain-ai--langgraph.md",
+      "source_sha256": "8cff81950c50a12e77df2515a575663e4162ab52c38fc32588fac7bb3eaa9ed7",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 6,
+      "output": "projects/MehulG--memX.html",
+      "output_sha256": "e7d72f717fcd413afb689d8043922f6b2365c437c7b8e94f0c309635e04df3c9",
+      "page_type": "project",
+      "source": "reader/projects/MehulG--memX.md",
+      "source_sha256": "4163597a6657f4a3e93a5cc7f64eb2138220c93ae56b794e705a120bb3e95c2e",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 6,
+      "output": "projects/microsoft--autogen.html",
+      "output_sha256": "413d1af3ba5a7cef9bb6ff75528a2479c1866bf6eccdb048b50de93b1b1b6afc",
+      "page_type": "project",
+      "source": "reader/projects/microsoft--autogen.md",
+      "source_sha256": "b3f8282936af870243386bf085ea518eebff90f32b14a69d18c6b7d12686e9fb",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 6,
+      "output": "projects/microsoft--UFO.html",
+      "output_sha256": "87b72b0f49b2fbde6eb733d07a22896ee1884962aba4677a3f9e435172d913b9",
+      "page_type": "project",
+      "source": "reader/projects/microsoft--UFO.md",
+      "source_sha256": "c8a1eb39db9fd4f213af24e65c3af2b01dcd7d23db721ce5842e7129c8354512",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 8,
+      "output": "projects/openai--codex.html",
+      "output_sha256": "04e1f02c94e931aa1c80708317f65461fa6b2f10df515ee3b336c822ba0b4565",
+      "page_type": "project",
+      "source": "reader/projects/openai--codex.md",
+      "source_sha256": "3a15cd3ed04c57eeeca676378fe97e05524291d0fbd543afc2ef8dda00d81dbc",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 9,
+      "output": "projects/openai--openai-agents-python.html",
+      "output_sha256": "432ca32bd3f36604fb7166bc5d1d47fc954a31ffe87985b6f4a3d0dbbbd82640",
+      "page_type": "project",
+      "source": "reader/projects/openai--openai-agents-python.md",
+      "source_sha256": "af36e8c35426e9b4999a0e71c7d4cfd11ee28ff064510069ad3ed1af9997041e",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 0,
+      "output": "projects/index.html",
+      "output_sha256": "f8176c176e96b07bf2369fb40b1432b260524440fb3f6483ffc111e26df85d5f",
+      "page_type": "project",
+      "source": "reader/projects/README.md",
+      "source_sha256": "84b5c7375f6d601fae4e27da6bb4d7d3b3ab073f21292dd80875df8f7b1a2f4b",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 5,
+      "output": "projects/smaramwbc--statewave-multi-agent-memory.html",
+      "output_sha256": "da14c9873033509c746d112f466647a572045753155e61d20653b7e404abd647",
+      "page_type": "project",
+      "source": "reader/projects/smaramwbc--statewave-multi-agent-memory.md",
+      "source_sha256": "5d6f9416ae0cdc84840c77f5669bc82f01ab95f86062bf6abe6c0d02c8ed43fc",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 0,
+      "output": "index.html",
+      "output_sha256": "96d5ea83c4991ea5fbf785ffccfdbc8c7092f3601fea8444ceb972716541a387",
+      "page_type": "landing",
+      "source": "reader/README.md",
+      "source_sha256": "0891872ce25078fd97588a17bf698ba44c2f8a1d23eb45de0d5c5d476ac41eec",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 0,
+      "output": "scenarios/01-manager-specialist.html",
+      "output_sha256": "6e0612b137b52590dcc043ea15eac936dc7ed34eed56eb74731371f461d28212",
+      "page_type": "scenario",
+      "source": "reader/scenarios/01-manager-specialist.md",
+      "source_sha256": "ecb59f700ab80d85c1d08885df4fcb19df3be7876b696e7aa58dbda9013ac1b9",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 0,
+      "output": "scenarios/02-parallel-coding-research.html",
+      "output_sha256": "e6311a817ceb58261c1549429a2b13ce4fbfc56d1625418ffac272f82b0ee6b6",
+      "page_type": "scenario",
+      "source": "reader/scenarios/02-parallel-coding-research.md",
+      "source_sha256": "987d8fbfaf21782ff5eb67a3a477e1edd5ffb354a7742e12219da48b9c0b59a1",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 0,
+      "output": "scenarios/03-persistent-fleets.html",
+      "output_sha256": "7fc8bc807ab3d8e9b77c1ce1d663ec07e1eed01938300b4f56f0aad955ce7ca2",
+      "page_type": "scenario",
+      "source": "reader/scenarios/03-persistent-fleets.md",
+      "source_sha256": "bf273b183577c268d13886e2dcdbb913383ab63166b780631f7bda4e6b69106d",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 0,
+      "output": "scenarios/04-cross-runtime.html",
+      "output_sha256": "9e534deaa68061169ee342fbc6ef52b7bddf3cf642c7039bf3d2d6c0071591f6",
+      "page_type": "scenario",
+      "source": "reader/scenarios/04-cross-runtime.md",
+      "source_sha256": "120d8b0a9936491df910f9a16d3290c48db6298bfb24892e6b48cb7ae3382941",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 0,
+      "output": "scenarios/index.html",
+      "output_sha256": "7faa158c0cc5e140ef95b6fbc12f80a633e121c8360163d9b9fde188e877a6f6",
+      "page_type": "scenario",
+      "source": "reader/scenarios/README.md",
+      "source_sha256": "12d3b2ef135900633628c16587cfc4905d4321c48a7cacefe1b8fc758b33f27f",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 0,
+      "output": "scenarios.html",
+      "output_sha256": "8b9e01f209fda802a1b107f6c670420c7c8d5187cb803707316d8f10bc68bc7d",
+      "page_type": "scenario",
+      "source": "reader/scenarios.md",
+      "source_sha256": "53e08c5a42a0c06ce3130c3d1efcbee93f932de5fa990d9f9736bd7523eebfb9",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 4,
+      "output": "solution-landscape.html",
+      "output_sha256": "21566b0db7dfb9a0aadd9665c854a5f6fdfc85473dd56ff2a1eba7694933dfe2",
+      "page_type": "landscape",
+      "source": "reader/solution-landscape.md",
+      "source_sha256": "4567a469dc44f1eff4424ea0385e70794d0d992f3d178799833d3b1b6a99697c",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 3,
+      "output": "source-index.html",
+      "output_sha256": "fecd07cad999fcf34daa9f870139cc5bfb6c59deec60b858f298f01d60d5cf41",
+      "page_type": "report",
+      "source": "reader/source-index.md",
+      "source_sha256": "4f0ae34cf75e4c403331970364a782d7174765cdd9025ad706a081c4a15b2b6c",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 7,
+      "output": "trends.html",
+      "output_sha256": "4743ea8ebbcc03b855f1ad02e9e54ef3e924bf3269dadf6dd9c8d507af78aa42",
+      "page_type": "trends",
+      "source": "reader/trends.md",
+      "source_sha256": "f6469c088bf64372d6694ddbbe5f73248ab91d6fd42b9151bd68cf933b8b2b64",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 5,
+      "output": "audit/baseline-comparison.html",
+      "output_sha256": "627d52968195c33eb22454edf06f105f4064b29da1443785a2598e5b52a0a4a6",
+      "page_type": "audit",
+      "source": "audit/baseline-comparison.md",
+      "source_sha256": "f0c062b47a296d11f12bca779462f07b0f2acf4b8f8a2501b7ebd36b2f914e5c",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 3,
+      "output": "audit/final-verification.html",
+      "output_sha256": "dda31e16642aa20995c35eb572c7b83014d17e3ff4d7d1aeafd9481065260741",
+      "page_type": "audit",
+      "source": "audit/final-verification.md",
+      "source_sha256": "4a9dc733292a508a768cf1f399b565c91495f35b011f3c147712b5d99a12eb48",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 0,
+      "output": "audit/index.html",
+      "output_sha256": "7056482e1e2fe275f3ccc72846f4dae4b03fc768c6726a27a82019917cf57f81",
+      "page_type": "audit",
+      "source": "audit/README.md",
+      "source_sha256": "2d5f5233b569a58f960333248e7af355d9cf49df885f5cf284fcde158cda378c",
+      "warnings": [],
+      "workspace_links": [
+        "../work/round-01/pilot-map.md",
+        "../work/round-01/pilot-queries.ps1",
+        "../work/round-01/pilot/web-search-pilot.md",
+        "../work/round-01/pilot-candidate-summary.json",
+        "../iterations/README.md",
+        "../work/round-02/map-delta.md",
+        "../work/round-02/product-doc-search.md",
+        "../work/round-02/negative-and-adoption-search.md",
+        "../work/round-03/coverage-diagnostic.json",
+        "../work/round-03/deep-selection.md",
+        "../work/round-03/negative-transfer-gap.md",
+        "../work/round-04/extraction.jsonl",
+        "../work/round-04/paper-packet-index.jsonl",
+        "../claims.jsonl",
+        "../evidence.jsonl",
+        "../work/round-05/clone-manifest.jsonl",
+        "../work/round-05/observations/",
+        "../repository_engineering_profiles.jsonl",
+        "../syntheses.jsonl",
+        "../deliverables.jsonl"
+      ]
+    }
+  ],
+  "schema_version": "1.1",
+  "search_record_count": 355,
+  "source_root": ".",
+  "source_root_name": "2026-08-24",
+  "warnings": [],
+  "workspace_only_link_count": 21
+}

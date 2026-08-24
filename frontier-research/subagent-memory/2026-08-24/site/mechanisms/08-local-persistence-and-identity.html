@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Subagent 结束一次任务后可能被销毁，也可能作为命名角色再次调用。系统需要决定它的 model context、scratch files、checkpoint、长期 memory 和技能分别保留多久。若所有调用都干净启动，Agent 会重复探索；若命名 Agent 无限积累，旧任务、其他用户和错误经验会跨边界污染。">
+  <title>Subagent 局部持久化与身份 · Frontier Atlas</title>
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script src="../assets/search-index.js" defer></script>
+  <script src="../assets/site.js" defer></script>
+</head>
+<body data-page-type="mechanism">
+  <a class="skip-link" href="#main-content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <header class="topbar">
+    <button class="icon-button nav-toggle" type="button" aria-controls="suite-nav" aria-expanded="false"><span aria-hidden="true">☰</span><span class="sr-only">打开套件导航</span></button>
+    <a class="brand" href="../index.html"><span class="brand-mark">F</span><span><strong>Frontier Atlas</strong><small>技术调研 · 理解优先</small></span></a>
+    <div class="top-actions">
+      <button class="search-trigger" type="button" aria-haspopup="dialog"><span aria-hidden="true">⌕</span><span>搜索整套报告</span><kbd>Ctrl K</kbd></button>
+      <button class="icon-button focus-toggle" type="button" aria-pressed="false" title="专注阅读"><span aria-hidden="true">◫</span><span class="sr-only">切换专注阅读</span></button>
+      <button class="icon-button theme-toggle" type="button" title="切换主题"><span aria-hidden="true">◐</span><span class="sr-only">切换明暗主题</span></button>
+    </div>
+  </header>
+  <noscript><div class="noscript-note">JavaScript 已关闭：正文、图表、链接和打印仍可使用；全文搜索、主题切换与当前章节高亮不可用。</div></noscript>
+  <aside class="suite-nav" id="suite-nav"><nav class="suite-nav-inner" aria-label="研究套件"><section class="nav-group"><h2>开始</h2><ul><li><a href="../index.html"><span>从这里开始读 Subagent Memory</span><small>1 分钟</small></a></li></ul></section><section class="nav-group"><h2>领域地图</h2><ul><li><a href="../overview.html"><span>Subagent Memory：从委派上下文到团队可依赖状态</span><small>8 分钟</small></a></li><li><a href="../architecture.html"><span>Subagent Memory 一般架构：继承、局部工作与可信提交</span><small>7 分钟</small></a></li><li><a href="../solution-landscape.html"><span>Subagent Memory 方案空间</span><small>3 分钟</small></a></li><li><a href="../trends.html"><span>当前主流、12 个月变化与 90 天前沿</span><small>4 分钟</small></a></li><li><a href="../github-radar.html"><span>GitHub 雷达：广度候选与固定版本深潜</span><small>3 分钟</small></a></li><li><a href="../consensus-and-open-questions.html"><span>当前共识、分歧与未解决问题</span><small>3 分钟</small></a></li></ul></section><section class="nav-group"><h2>技术机制</h2><ul><li><a href="01-context-inheritance.html"><span>上下文继承与委派边界</span><small>2 分钟</small></a></li><li><a href="02-ownership-and-visibility.html"><span>所有权、命名空间与可见性</span><small>2 分钟</small></a></li><li><a href="03-shared-substrates.html"><span>共享协作底座</span><small>2 分钟</small></a></li><li><a href="04-synchronization-and-commit.html"><span>同步、冲突与 Belief Commit</span><small>2 分钟</small></a></li><li><a href="05-return-and-consolidation.html"><span>回流、巩固与来源</span><small>2 分钟</small></a></li><li><a href="06-experience-and-skill-transfer.html"><span>群体经验与技能迁移</span><small>2 分钟</small></a></li><li><a href="07-retrieval-and-action.html"><span>发现、检索与行动耦合</span><small>2 分钟</small></a></li><li><a class="active" aria-current="page" href="08-local-persistence-and-identity.html"><span>Subagent 局部持久化与身份</span><small>3 分钟</small></a></li><li><a href="index.html"><span>机制分支</span><small>1 分钟</small></a></li><li><a href="context-inheritance/01-mechanisms-and-security.html"><span>上下文继承：从“复制历史”到显式委派契约</span><small>4 分钟</small></a></li><li><a href="experience-transfer/01-trajectories-cards-and-skills.html"><span>群体经验迁移：Trajectory、Card、Constraint 与 Skill</span><small>4 分钟</small></a></li><li><a href="local-persistence/01-runtime-lifetimes.html"><span>Subagent 局部持久化：Invocation、Thread 与命名身份</span><small>3 分钟</small></a></li><li><a href="ownership-visibility/01-policy-and-provenance.html"><span>所有权与可见性：从 Namespace 到派生权限</span><small>3 分钟</small></a></li><li><a href="retrieval-action/01-routing-navigation-and-gates.html"><span>发现、检索与行动：共享知识怎样到达正确 Subagent</span><small>3 分钟</small></a></li><li><a href="return-consolidation/01-compilation-and-lineage.html"><span>回流与巩固：Child 输出怎样变成可复用状态</span><small>3 分钟</small></a></li><li><a href="shared-substrates/01-state-surfaces.html"><span>共享协作底座：黑板、结构化状态、日志与服务</span><small>3 分钟</small></a></li><li><a href="synchronization/01-conflict-and-commit.html"><span>同步、冲突与 Commit：共享写入何时成为团队信念</span><small>4 分钟</small></a></li></ul></section><section class="nav-group"><h2>场景视图</h2><ul><li><a href="../scenarios.html"><span>场景视图</span><small>1 分钟</small></a></li><li><a href="../scenarios/01-manager-specialist.html"><span>Manager–Specialist 委派</span><small>1 分钟</small></a></li><li><a href="../scenarios/02-parallel-coding-research.html"><span>并行 Coding 与 Research Subagents</span><small>1 分钟</small></a></li><li><a href="../scenarios/03-persistent-fleets.html"><span>长期运行 Agent Fleet</span><small>1 分钟</small></a></li><li><a href="../scenarios/04-cross-runtime.html"><span>跨工具与跨 Runtime 协作</span><small>1 分钟</small></a></li><li><a href="../scenarios/index.html"><span>场景视图</span><small>1 分钟</small></a></li></ul></section><section class="nav-group"><h2>横切问题</h2><ul><li><a href="../cross-cutting/01-evaluation.html"><span>评价与 Benchmark：不能再用一个“Memory 分数”概括</span><small>3 分钟</small></a></li><li><a href="../cross-cutting/02-security-governance.html"><span>安全、权限与治理：风险沿状态链传播</span><small>3 分钟</small></a></li><li><a href="../cross-cutting/03-cost-reliability.html"><span>成本、可靠性与可观测性：多一层 Memory 就多一组状态机</span><small>3 分钟</small></a></li><li><a href="../cross-cutting/04-interoperability.html"><span>互操作与集成：Transport 兼容不等于 Memory 语义兼容</span><small>3 分钟</small></a></li><li><a href="../cross-cutting/index.html"><span>横切问题</span><small>1 分钟</small></a></li><li><a href="../cross-cutting/benchmark-protocols.html"><span>Subagent Memory Benchmark 协议地图</span><small>3 分钟</small></a></li></ul></section><section class="nav-group"><h2>工程案例</h2><ul><li><a href="../projects/MehulG--memX.html"><span>memX：Redis LWW + JSON Schema + 进程内 WebSocket Pub/Sub</span><small>2 分钟</small></a></li><li><a href="../projects/index.html"><span>固定版本项目报告</span><small>1 分钟</small></a></li><li><a href="../projects/caura-ai--caura.html"><span>Caura：多租户 Fleet Memory Control Plane 的 Write/Search/Contradiction Pipeline</span><small>3 分钟</small></a></li><li><a href="../projects/kimdanny--matm.html"><span>MATM：Population Trajectory Index 与 Consumer-specific LTR</span><small>2 分钟</small></a></li><li><a href="../projects/langchain-ai--deepagents.html"><span>Deep Agents：临时模型上下文、共享 Backend 与显式 State 过滤</span><small>2 分钟</small></a></li><li><a href="../projects/langchain-ai--langgraph.html"><span>LangGraph：Checkpointer、Subgraph Namespace 与跨 Thread Store</span><small>2 分钟</small></a></li><li><a href="../projects/microsoft--UFO.html"><span>Microsoft UFO：Host/App Agent 共享 Blackboard 的真实代码边界</span><small>2 分钟</small></a></li><li><a href="../projects/microsoft--autogen.html"><span>AutoGen：Agent Model Context、外部 Memory 与 Team Snapshot 的分离</span><small>2 分钟</small></a></li><li><a href="../projects/openai--codex.html"><span>OpenAI Codex：Thread Fork、共享 Workspace 与 Root-only Memory Formation</span><small>3 分钟</small></a></li><li><a href="../projects/openai--openai-agents-python.html"><span>OpenAI Agents SDK：Handoff、Agent-as-Tool 与 Sandbox Memory 的三种状态边界</span><small>3 分钟</small></a></li><li><a href="../projects/smaramwbc--statewave-multi-agent-memory.html"><span>Statewave Multi-Agent Memory Demo：外部 Runtime 的 Episode→Compile→Context 集成</span><small>2 分钟</small></a></li></ul></section><section class="nav-group"><h2>方法与证据</h2><ul><li><a href="../audit/index.html"><span>审计入口</span><small>1 分钟</small></a></li><li><a href="../audit/baseline-comparison.html"><span>相对 Agent Memory v10 的基准比较</span><small>4 分钟</small></a></li><li><a href="../audit/final-verification.html"><span>最终验证记录</span><small>2 分钟</small></a></li><li><a href="../method-and-scope.html"><span>方法、范围与当前证据边界</span><small>4 分钟</small></a></li><li><a href="../human-review.html"><span>人工评审清单：完整报告之后该判断什么</span><small>2 分钟</small></a></li></ul></section><section class="nav-group"><h2>补充材料</h2><ul><li><a href="../source-index.html"><span>深核验来源索引</span><small>4 分钟</small></a></li><li><a href="../about.html"><span>Subagent Memory 技术前沿调研</span><small>1 分钟</small></a></li></ul></section></nav></aside>
+  <button class="nav-backdrop" type="button" tabindex="-1" aria-label="关闭导航"></button>
+  <main class="reader-main" id="main-content">
+    <article class="reader-article">
+      <nav class="breadcrumb" aria-label="面包屑"><a href="../index.html">调研入口</a><span>/</span><span>技术机制</span></nav>
+      <header class="article-hero">
+        <div class="article-meta"><span>技术机制</span><span>3 分钟</span><span>5 节</span><span>reader/mechanisms/08-local-persistence-and-identity.md</span></div>
+        <h1>Subagent 局部持久化与身份</h1>
+        <p>Subagent 结束一次任务后可能被销毁，也可能作为命名角色再次调用。系统需要决定它的 model context、scratch files、checkpoint、长期 memory 和技能分别保留多久。若所有调用都干净启动，Agent 会重复探索；若命名 Agent 无限积累，旧任务、其他用户和错误经验会跨边界污染。</p>
+      </header>
+      <nav class="section-map" aria-label="本页理解地图"><span class="section-map-label">本页理解地图</span><div><a href="#问题"><span>01</span><strong>问题</strong></a><a href="#主要方案"><span>02</span><strong>主要方案</strong></a><a href="#数据流与实现"><span>03</span><strong>数据流与实现</strong></a><a href="#成本与失败模式"><span>04</span><strong>成本与失败模式</strong></a><a href="#最新研究议程"><span>05</span><strong>最新研究议程</strong></a></div></nav>
+      <div class="article-body"><h2 id="问题"><a class="heading-anchor" href="#问题" aria-label="链接到本节">#</a>问题</h2>
+<p>Subagent 结束一次任务后可能被销毁，也可能作为命名角色再次调用。系统需要决定它的 model context、scratch files、checkpoint、长期 memory 和技能分别保留多久。若所有调用都干净启动，Agent 会重复探索；若命名 Agent 无限积累，旧任务、其他用户和错误经验会跨边界污染。</p>
+<h2 id="主要方案"><a class="heading-anchor" href="#主要方案" aria-label="链接到本节">#</a>主要方案</h2>
+<h3 id="方案族一stateless-tool-subagent"><a class="heading-anchor" href="#方案族一stateless-tool-subagent" aria-label="链接到本节">#</a>方案族一：Stateless tool Subagent</h3>
+<p>每次调用创建全新上下文，只接收 Parent 的输入并返回结果。LangChain 的 supervisor-style subagents 明确采用这一形状，由 main agent 持有 conversation memory。它避免跨调用污染，适合独立短任务；代价是每次都需重新建立背景，无法形成角色经验。</p>
+<h3 id="方案族二per-invocation-durable-state"><a class="heading-anchor" href="#方案族二per-invocation-durable-state" aria-label="链接到本节">#</a>方案族二：Per-invocation durable state</h3>
+<p>Subagent 在一次调用内部拥有 checkpoint、interrupt 和恢复能力，但调用结束后不保留对下一次调用可见的状态。LangGraph subgraph 的默认 per-invocation 模式属于这一形状：它可以继承 Parent checkpointer 支持 durable execution，却保持不同调用隔离。</p>
+<h3 id="方案族三per-thread-named-state"><a class="heading-anchor" href="#方案族三per-thread-named-state" aria-label="链接到本节">#</a>方案族三：Per-thread named state</h3>
+<p>同一 thread 中的命名 Subagent 跨多次调用继续 model context 或 graph state。它适合持续研究和多轮 specialist，但同一 subgraph 的并行调用可能写入同一 checkpoint namespace；thread identity 也不一定等于用户、任务或项目 identity。</p>
+<h3 id="方案族四cross-session-agent-memory"><a class="heading-anchor" href="#方案族四cross-session-agent-memory" aria-label="链接到本节">#</a>方案族四：Cross-session agent memory</h3>
+<p>记忆绑定到命名 Agent、project、user 或自定义 layout，跨 conversation 和 runtime 重启存在。Claude Code 为 Subagent 提供 <code>user</code>、<code>project</code>、<code>local</code> 三种目录作用域；OpenAI Sandbox Memory 以 <code>MemoryLayoutConfig</code> 和 conversation identifier 组织文件化 memory，并允许 <code>Memory(generate=None)</code> 让内部 Agent 读取但不产生新记忆；Deep Agents 可把 <code>/memories/</code> 路由到 LangGraph Store，并按 assistant、user 或 organization namespace 持久化。</p>
+<h2 id="数据流与实现"><a class="heading-anchor" href="#数据流与实现" aria-label="链接到本节">#</a>数据流与实现</h2>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">agent definition / role id
+→ invocation and thread identity
+→ local context + checkpoint namespace
+→ optional persistent memory layout
+→ read policy / write policy / consolidation
+→ next invocation resolves identity and loads state
+→ deletion, reset or project/user boundary cleanup</code></pre></figure>
+<p>身份解析是关键。如果 agent name 被当作唯一 key，两个用户或项目可能共享不应共享的状态；如果每个 invocation 都生成新 key，又无法复用。实现需要明确 tuple key，例如 tenant/project/agent/thread，并区分 checkpoint、memory artifact 和 team-committed state。</p>
+<h2 id="成本与失败模式"><a class="heading-anchor" href="#成本与失败模式" aria-label="链接到本节">#</a>成本与失败模式</h2>
+<ul><li>长期局部 memory 减少重复探索，却增加启动注入、搜索、巩固和清理成本；</li><li>Per-thread state 能支持多轮，却可能在同名并行调用中冲突；</li><li>Project memory 便于团队共享，但若进入版本控制，秘密和错误经验会变成仓库资产；</li><li>User/global scope 复用最大，也最容易跨项目泄漏；</li><li>只读模式降低污染，却需要另一个明确 writer/curator；</li><li>删除 Agent 定义不一定删除 checkpoint、memory directory、summary、skill 和索引。</li></ul>
+<h2 id="最新研究议程"><a class="heading-anchor" href="#最新研究议程" aria-label="链接到本节">#</a>最新研究议程</h2>
+<p>公开产品已给出多种 retention knob，但缺少跨 runtime 的统一生命周期模型和实验。需要比较的不是“有无 memory”，而是同一任务在 stateless、per-invocation、per-thread 和 cross-session 条件下的重复探索、污染、并发、恢复与删除。还需固定版本代码检查这些文档语义怎样映射到实际 key、目录、checkpointer 和写入权限。</p>
+<p>深入机制见<a href="local-persistence/01-runtime-lifetimes.html" data-link-kind="internal">Invocation、Thread 与命名身份</a>。</p></div>
+      <nav class="page-pager" aria-label="同组页面导航"><a class="pager-card previous" href="07-retrieval-and-action.html"><small>← 上一篇 · 技术机制</small><strong>发现、检索与行动耦合</strong></a><a class="pager-card next" href="index.html"><small>→ 下一篇 · 技术机制</small><strong>机制分支</strong></a></nav>
+      <footer class="article-footer"><span>Markdown 是权威内容源</span><a href="../about.html">关于本套件</a><button type="button" onclick="window.print()">打印 / 导出 PDF</button></footer>
+    </article>
+  </main>
+  <aside class="page-outline" aria-label="本页目录"><div><span class="outline-kicker">On this page</span><h2>本页目录</h2><ol><li class="level-2"><a href="#问题">问题</a></li><li class="level-2"><a href="#主要方案">主要方案</a></li><li class="level-3"><a href="#方案族一stateless-tool-subagent">方案族一：Stateless tool Subagent</a></li><li class="level-3"><a href="#方案族二per-invocation-durable-state">方案族二：Per-invocation durable state</a></li><li class="level-3"><a href="#方案族三per-thread-named-state">方案族三：Per-thread named state</a></li><li class="level-3"><a href="#方案族四cross-session-agent-memory">方案族四：Cross-session agent memory</a></li><li class="level-2"><a href="#数据流与实现">数据流与实现</a></li><li class="level-2"><a href="#成本与失败模式">成本与失败模式</a></li><li class="level-2"><a href="#最新研究议程">最新研究议程</a></li></ol></div></aside>
+  <dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title">
+    <form method="dialog" class="search-shell">
+      <header><div><span>Search the research suite</span><h2 id="search-title">搜索整套报告</h2></div><button value="close" aria-label="关闭搜索">×</button></header>
+      <label class="search-field"><span class="sr-only">输入技术概念</span><input id="search-input" type="search" autocomplete="off" placeholder="输入机制、项目、风险或术语…"></label>
+      <p class="search-hint">标题和章节优先；支持中文子串。↑ ↓ 选择，Enter 打开，Esc 关闭。</p>
+      <div class="search-results" id="search-results" role="listbox" aria-label="搜索结果"></div>
+    </form>
+  </dialog>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="这份清单不是要求人重新检查所有方向。主报告、八个分支、42 篇论文深读和 10 个工程深潜已经先给出完整地图与默认判断；人工评审只负责决定哪些判断影响实际采用，或哪些专题值得继续深挖。">
+  <title>人工评审清单：完整报告之后该判断什么 · Frontier Atlas</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/search-index.js" defer></script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body data-page-type="review">
+  <a class="skip-link" href="#main-content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <header class="topbar">
+    <button class="icon-button nav-toggle" type="button" aria-controls="suite-nav" aria-expanded="false"><span aria-hidden="true">☰</span><span class="sr-only">打开套件导航</span></button>
+    <a class="brand" href="index.html"><span class="brand-mark">F</span><span><strong>Frontier Atlas</strong><small>技术调研 · 理解优先</small></span></a>
+    <div class="top-actions">
+      <button class="search-trigger" type="button" aria-haspopup="dialog"><span aria-hidden="true">⌕</span><span>搜索整套报告</span><kbd>Ctrl K</kbd></button>
+      <button class="icon-button focus-toggle" type="button" aria-pressed="false" title="专注阅读"><span aria-hidden="true">◫</span><span class="sr-only">切换专注阅读</span></button>
+      <button class="icon-button theme-toggle" type="button" title="切换主题"><span aria-hidden="true">◐</span><span class="sr-only">切换明暗主题</span></button>
+    </div>
+  </header>
+  <noscript><div class="noscript-note">JavaScript 已关闭：正文、图表、链接和打印仍可使用；全文搜索、主题切换与当前章节高亮不可用。</div></noscript>
+  <aside class="suite-nav" id="suite-nav"><nav class="suite-nav-inner" aria-label="研究套件"><section class="nav-group"><h2>开始</h2><ul><li><a href="index.html"><span>从这里开始读 Subagent Memory</span><small>1 分钟</small></a></li></ul></section><section class="nav-group"><h2>领域地图</h2><ul><li><a href="overview.html"><span>Subagent Memory：从委派上下文到团队可依赖状态</span><small>8 分钟</small></a></li><li><a href="architecture.html"><span>Subagent Memory 一般架构：继承、局部工作与可信提交</span><small>7 分钟</small></a></li><li><a href="solution-landscape.html"><span>Subagent Memory 方案空间</span><small>3 分钟</small></a></li><li><a href="trends.html"><span>当前主流、12 个月变化与 90 天前沿</span><small>4 分钟</small></a></li><li><a href="github-radar.html"><span>GitHub 雷达：广度候选与固定版本深潜</span><small>3 分钟</small></a></li><li><a href="consensus-and-open-questions.html"><span>当前共识、分歧与未解决问题</span><small>3 分钟</small></a></li></ul></section><section class="nav-group"><h2>技术机制</h2><ul><li><a href="mechanisms/01-context-inheritance.html"><span>上下文继承与委派边界</span><small>2 分钟</small></a></li><li><a href="mechanisms/02-ownership-and-visibility.html"><span>所有权、命名空间与可见性</span><small>2 分钟</small></a></li><li><a href="mechanisms/03-shared-substrates.html"><span>共享协作底座</span><small>2 分钟</small></a></li><li><a href="mechanisms/04-synchronization-and-commit.html"><span>同步、冲突与 Belief Commit</span><small>2 分钟</small></a></li><li><a href="mechanisms/05-return-and-consolidation.html"><span>回流、巩固与来源</span><small>2 分钟</small></a></li><li><a href="mechanisms/06-experience-and-skill-transfer.html"><span>群体经验与技能迁移</span><small>2 分钟</small></a></li><li><a href="mechanisms/07-retrieval-and-action.html"><span>发现、检索与行动耦合</span><small>2 分钟</small></a></li><li><a href="mechanisms/08-local-persistence-and-identity.html"><span>Subagent 局部持久化与身份</span><small>3 分钟</small></a></li><li><a href="mechanisms/index.html"><span>机制分支</span><small>1 分钟</small></a></li><li><a href="mechanisms/context-inheritance/01-mechanisms-and-security.html"><span>上下文继承：从“复制历史”到显式委派契约</span><small>4 分钟</small></a></li><li><a href="mechanisms/experience-transfer/01-trajectories-cards-and-skills.html"><span>群体经验迁移：Trajectory、Card、Constraint 与 Skill</span><small>4 分钟</small></a></li><li><a href="mechanisms/local-persistence/01-runtime-lifetimes.html"><span>Subagent 局部持久化：Invocation、Thread 与命名身份</span><small>3 分钟</small></a></li><li><a href="mechanisms/ownership-visibility/01-policy-and-provenance.html"><span>所有权与可见性：从 Namespace 到派生权限</span><small>3 分钟</small></a></li><li><a href="mechanisms/retrieval-action/01-routing-navigation-and-gates.html"><span>发现、检索与行动：共享知识怎样到达正确 Subagent</span><small>3 分钟</small></a></li><li><a href="mechanisms/return-consolidation/01-compilation-and-lineage.html"><span>回流与巩固：Child 输出怎样变成可复用状态</span><small>3 分钟</small></a></li><li><a href="mechanisms/shared-substrates/01-state-surfaces.html"><span>共享协作底座：黑板、结构化状态、日志与服务</span><small>3 分钟</small></a></li><li><a href="mechanisms/synchronization/01-conflict-and-commit.html"><span>同步、冲突与 Commit：共享写入何时成为团队信念</span><small>4 分钟</small></a></li></ul></section><section class="nav-group"><h2>场景视图</h2><ul><li><a href="scenarios.html"><span>场景视图</span><small>1 分钟</small></a></li><li><a href="scenarios/01-manager-specialist.html"><span>Manager–Specialist 委派</span><small>1 分钟</small></a></li><li><a href="scenarios/02-parallel-coding-research.html"><span>并行 Coding 与 Research Subagents</span><small>1 分钟</small></a></li><li><a href="scenarios/03-persistent-fleets.html"><span>长期运行 Agent Fleet</span><small>1 分钟</small></a></li><li><a href="scenarios/04-cross-runtime.html"><span>跨工具与跨 Runtime 协作</span><small>1 分钟</small></a></li><li><a href="scenarios/index.html"><span>场景视图</span><small>1 分钟</small></a></li></ul></section><section class="nav-group"><h2>横切问题</h2><ul><li><a href="cross-cutting/01-evaluation.html"><span>评价与 Benchmark：不能再用一个“Memory 分数”概括</span><small>3 分钟</small></a></li><li><a href="cross-cutting/02-security-governance.html"><span>安全、权限与治理：风险沿状态链传播</span><small>3 分钟</small></a></li><li><a href="cross-cutting/03-cost-reliability.html"><span>成本、可靠性与可观测性：多一层 Memory 就多一组状态机</span><small>3 分钟</small></a></li><li><a href="cross-cutting/04-interoperability.html"><span>互操作与集成：Transport 兼容不等于 Memory 语义兼容</span><small>3 分钟</small></a></li><li><a href="cross-cutting/index.html"><span>横切问题</span><small>1 分钟</small></a></li><li><a href="cross-cutting/benchmark-protocols.html"><span>Subagent Memory Benchmark 协议地图</span><small>3 分钟</small></a></li></ul></section><section class="nav-group"><h2>工程案例</h2><ul><li><a href="projects/MehulG--memX.html"><span>memX：Redis LWW + JSON Schema + 进程内 WebSocket Pub/Sub</span><small>2 分钟</small></a></li><li><a href="projects/index.html"><span>固定版本项目报告</span><small>1 分钟</small></a></li><li><a href="projects/caura-ai--caura.html"><span>Caura：多租户 Fleet Memory Control Plane 的 Write/Search/Contradiction Pipeline</span><small>3 分钟</small></a></li><li><a href="projects/kimdanny--matm.html"><span>MATM：Population Trajectory Index 与 Consumer-specific LTR</span><small>2 分钟</small></a></li><li><a href="projects/langchain-ai--deepagents.html"><span>Deep Agents：临时模型上下文、共享 Backend 与显式 State 过滤</span><small>2 分钟</small></a></li><li><a href="projects/langchain-ai--langgraph.html"><span>LangGraph：Checkpointer、Subgraph Namespace 与跨 Thread Store</span><small>2 分钟</small></a></li><li><a href="projects/microsoft--UFO.html"><span>Microsoft UFO：Host/App Agent 共享 Blackboard 的真实代码边界</span><small>2 分钟</small></a></li><li><a href="projects/microsoft--autogen.html"><span>AutoGen：Agent Model Context、外部 Memory 与 Team Snapshot 的分离</span><small>2 分钟</small></a></li><li><a href="projects/openai--codex.html"><span>OpenAI Codex：Thread Fork、共享 Workspace 与 Root-only Memory Formation</span><small>3 分钟</small></a></li><li><a href="projects/openai--openai-agents-python.html"><span>OpenAI Agents SDK：Handoff、Agent-as-Tool 与 Sandbox Memory 的三种状态边界</span><small>3 分钟</small></a></li><li><a href="projects/smaramwbc--statewave-multi-agent-memory.html"><span>Statewave Multi-Agent Memory Demo：外部 Runtime 的 Episode→Compile→Context 集成</span><small>2 分钟</small></a></li></ul></section><section class="nav-group"><h2>方法与证据</h2><ul><li><a href="audit/index.html"><span>审计入口</span><small>1 分钟</small></a></li><li><a href="audit/baseline-comparison.html"><span>相对 Agent Memory v10 的基准比较</span><small>4 分钟</small></a></li><li><a href="audit/final-verification.html"><span>最终验证记录</span><small>2 分钟</small></a></li><li><a href="method-and-scope.html"><span>方法、范围与当前证据边界</span><small>4 分钟</small></a></li><li><a class="active" aria-current="page" href="human-review.html"><span>人工评审清单：完整报告之后该判断什么</span><small>2 分钟</small></a></li></ul></section><section class="nav-group"><h2>补充材料</h2><ul><li><a href="source-index.html"><span>深核验来源索引</span><small>4 分钟</small></a></li><li><a href="about.html"><span>Subagent Memory 技术前沿调研</span><small>1 分钟</small></a></li></ul></section></nav></aside>
+  <button class="nav-backdrop" type="button" tabindex="-1" aria-label="关闭导航"></button>
+  <main class="reader-main" id="main-content">
+    <article class="reader-article">
+      <nav class="breadcrumb" aria-label="面包屑"><a href="index.html">调研入口</a><span>/</span><span>方法与证据</span></nav>
+      <header class="article-hero">
+        <div class="article-meta"><span>人工评审</span><span>2 分钟</span><span>4 节 · 1 表</span><span>reader/human-review.md</span></div>
+        <h1>人工评审清单：完整报告之后该判断什么</h1>
+        <p>这份清单不是要求人重新检查所有方向。主报告、八个分支、42 篇论文深读和 10 个工程深潜已经先给出完整地图与默认判断；人工评审只负责决定哪些判断影响实际采用，或哪些专题值得继续深挖。</p>
+      </header>
+      <nav class="section-map" aria-label="本页理解地图"><span class="section-map-label">本页理解地图</span><div><a href="#第一层范围是否贴近实际问题"><span>01</span><strong>第一层：范围是否贴近实际问题</strong></a><a href="#第二层确认报告中的关键判断"><span>02</span><strong>第二层：确认报告中的关键判断</strong></a><a href="#第三层选择后续深挖"><span>03</span><strong>第三层：选择后续深挖</strong></a><a href="#评审记录模板"><span>04</span><strong>评审记录模板</strong></a></div></nav>
+      <div class="article-body"><p>这份清单不是要求人重新检查所有方向。主报告、八个分支、42 篇论文深读和 10 个工程深潜已经先给出完整地图与默认判断；人工评审只负责决定哪些判断影响实际采用，或哪些专题值得继续深挖。</p>
+<h2 id="第一层范围是否贴近实际问题"><a class="heading-anchor" href="#第一层范围是否贴近实际问题" aria-label="链接到本节">#</a>第一层：范围是否贴近实际问题</h2>
+<ul><li>实际 Subagent 是一次性 tool worker、同 thread specialist、长期命名角色，还是跨机器 fleet？</li><li>需要共享的是代码/文档工件、当前任务状态、可争议事实，还是可复用 trajectory/skill？</li><li>是否存在多用户、租户、秘密、外部 side effect 或动态权限？</li><li>出错后只需重新回答，还是必须撤销/补偿已经执行的动作？</li></ul>
+<p>若只是低风险单 run 分解，structured task/result + Parent merge 可能已足够；并发主体、长期 retention、高风险行动或多租户才会让 conflict/provenance/control plane 成为优先事项。</p>
+<h2 id="第二层确认报告中的关键判断"><a class="heading-anchor" href="#第二层确认报告中的关键判断" aria-label="链接到本节">#</a>第二层：确认报告中的关键判断</h2>
+<div class="table-frame"><div class="table-toolbar"><span>Comparison · 3 列</span><small>横向滚动 · 点击一行聚焦</small></div><div class="table-wrap" tabindex="0" role="region" aria-label="可横向滚动的比较表"><table><thead><tr><th scope="col">判断</th><th scope="col">默认结论</th><th scope="col">人工评审要看什么</th></tr></thead><tbody><tr><td>Child 是否应 full-history</td><td>不应作为无条件默认</td><td>任务充分性、秘密与陈旧状态的真实比例</td></tr><tr><td>Child 是否应长期记忆</td><td>按 thread/layout/project 明确绑定</td><td>跨任务复用收益与污染/清理责任</td></tr><tr><td>是否直接共享 store</td><td>共享 primitive 不等于团队信念</td><td>权威对象、writer、history、conflict、scope</td></tr><tr><td>是否需要 transaction</td><td>只对高风险/并发 belief 有明显价值</td><td>错误 commit 的代价与可接受 latency</td></tr><tr><td>是否共享 trajectory/skill</td><td>需要 consumer/condition/negative transfer</td><td>模型/工具版本差异和 producer trust</td></tr><tr><td>是否需要 action gate</td><td>召回内容不能自动授权</td><td>具体 side effect、当前主体与补偿路径</td></tr></tbody></table></div></div>
+<h2 id="第三层选择后续深挖"><a class="heading-anchor" href="#第三层选择后续深挖" aria-label="链接到本节">#</a>第三层：选择后续深挖</h2>
+<p>只有出现以下情况才继续研究某个分支：</p>
+<ul><li>报告中的默认结论与实际 runtime/config 明显不同；</li><li>需要比较两个候选项目的部署、API、fault behavior 或许可证；</li><li>某个 preprint 机制会直接改变架构决策，值得独立复现；</li><li>业务有报告未覆盖的 identity、scope、deletion 或 side-effect 约束；</li><li>90 天弱信号中出现与当前技术栈直接相关的新版本/仓库。</li></ul>
+<h2 id="评审记录模板"><a class="heading-anchor" href="#评审记录模板" aria-label="链接到本节">#</a>评审记录模板</h2>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">decision/question:
+affected mechanism or project:
+current report judgment:
+business/runtime condition that changes it:
+extra evidence or experiment needed:
+owner and deadline:
+reversal condition:</code></pre></figure>
+<p>建议把评审结论写成明确的“采用/不采用/继续验证”决定，而不是给所有分支再做一次主观打分。</p></div>
+      <nav class="page-pager" aria-label="同组页面导航"><a class="pager-card previous" href="method-and-scope.html"><small>← 上一篇 · 方法与范围</small><strong>方法、范围与当前证据边界</strong></a><span class="pager-empty" aria-hidden="true"></span></nav>
+      <footer class="article-footer"><span>Markdown 是权威内容源</span><a href="about.html">关于本套件</a><button type="button" onclick="window.print()">打印 / 导出 PDF</button></footer>
+    </article>
+  </main>
+  <aside class="page-outline" aria-label="本页目录"><div><span class="outline-kicker">On this page</span><h2>本页目录</h2><ol><li class="level-2"><a href="#第一层范围是否贴近实际问题">第一层：范围是否贴近实际问题</a></li><li class="level-2"><a href="#第二层确认报告中的关键判断">第二层：确认报告中的关键判断</a></li><li class="level-2"><a href="#第三层选择后续深挖">第三层：选择后续深挖</a></li><li class="level-2"><a href="#评审记录模板">评审记录模板</a></li></ol></div></aside>
+  <dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title">
+    <form method="dialog" class="search-shell">
+      <header><div><span>Search the research suite</span><h2 id="search-title">搜索整套报告</h2></div><button value="close" aria-label="关闭搜索">×</button></header>
+      <label class="search-field"><span class="sr-only">输入技术概念</span><input id="search-input" type="search" autocomplete="off" placeholder="输入机制、项目、风险或术语…"></label>
+      <p class="search-hint">标题和章节优先；支持中文子串。↑ ↓ 选择，Enter 打开，Esc 关闭。</p>
+      <div class="search-results" id="search-results" role="listbox" aria-label="搜索结果"></div>
+    </form>
+  </dialog>
+</body>
+</html>

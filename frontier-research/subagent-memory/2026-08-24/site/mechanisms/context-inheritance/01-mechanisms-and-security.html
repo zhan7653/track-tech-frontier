@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="委派不是把一段 prompt 交给另一个模型这么简单。Parent 持有用户指令、计划、工具结果、秘密、工作区和权限；Child 只需要其中与局部任务有关的部分。继承设计需要同时定义内容视图、资源能力、更新时序和回传接口。本页只研究一次 spawn/handoff 的边界；Child 自己跨多次调用保留多久见局部持久化。">
+  <title>上下文继承：从“复制历史”到显式委派契约 · Frontier Atlas</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/site.css">
+  <script src="../../assets/search-index.js" defer></script>
+  <script src="../../assets/site.js" defer></script>
+</head>
+<body data-page-type="mechanism">
+  <a class="skip-link" href="#main-content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <header class="topbar">
+    <button class="icon-button nav-toggle" type="button" aria-controls="suite-nav" aria-expanded="false"><span aria-hidden="true">☰</span><span class="sr-only">打开套件导航</span></button>
+    <a class="brand" href="../../index.html"><span class="brand-mark">F</span><span><strong>Frontier Atlas</strong><small>技术调研 · 理解优先</small></span></a>
+    <div class="top-actions">
+      <button class="search-trigger" type="button" aria-haspopup="dialog"><span aria-hidden="true">⌕</span><span>搜索整套报告</span><kbd>Ctrl K</kbd></button>
+      <button class="icon-button focus-toggle" type="button" aria-pressed="false" title="专注阅读"><span aria-hidden="true">◫</span><span class="sr-only">切换专注阅读</span></button>
+      <button class="icon-button theme-toggle" type="button" title="切换主题"><span aria-hidden="true">◐</span><span class="sr-only">切换明暗主题</span></button>
+    </div>
+  </header>
+  <noscript><div class="noscript-note">JavaScript 已关闭：正文、图表、链接和打印仍可使用；全文搜索、主题切换与当前章节高亮不可用。</div></noscript>
+  <aside class="suite-nav" id="suite-nav"><nav class="suite-nav-inner" aria-label="研究套件"><section class="nav-group"><h2>开始</h2><ul><li><a href="../../index.html"><span>从这里开始读 Subagent Memory</span><small>1 分钟</small></a></li></ul></section><section class="nav-group"><h2>领域地图</h2><ul><li><a href="../../overview.html"><span>Subagent Memory：从委派上下文到团队可依赖状态</span><small>8 分钟</small></a></li><li><a href="../../architecture.html"><span>Subagent Memory 一般架构：继承、局部工作与可信提交</span><small>7 分钟</small></a></li><li><a href="../../solution-landscape.html"><span>Subagent Memory 方案空间</span><small>3 分钟</small></a></li><li><a href="../../trends.html"><span>当前主流、12 个月变化与 90 天前沿</span><small>4 分钟</small></a></li><li><a href="../../github-radar.html"><span>GitHub 雷达：广度候选与固定版本深潜</span><small>3 分钟</small></a></li><li><a href="../../consensus-and-open-questions.html"><span>当前共识、分歧与未解决问题</span><small>3 分钟</small></a></li></ul></section><section class="nav-group"><h2>技术机制</h2><ul><li><a href="../01-context-inheritance.html"><span>上下文继承与委派边界</span><small>2 分钟</small></a></li><li><a href="../02-ownership-and-visibility.html"><span>所有权、命名空间与可见性</span><small>2 分钟</small></a></li><li><a href="../03-shared-substrates.html"><span>共享协作底座</span><small>2 分钟</small></a></li><li><a href="../04-synchronization-and-commit.html"><span>同步、冲突与 Belief Commit</span><small>2 分钟</small></a></li><li><a href="../05-return-and-consolidation.html"><span>回流、巩固与来源</span><small>2 分钟</small></a></li><li><a href="../06-experience-and-skill-transfer.html"><span>群体经验与技能迁移</span><small>2 分钟</small></a></li><li><a href="../07-retrieval-and-action.html"><span>发现、检索与行动耦合</span><small>2 分钟</small></a></li><li><a href="../08-local-persistence-and-identity.html"><span>Subagent 局部持久化与身份</span><small>3 分钟</small></a></li><li><a href="../index.html"><span>机制分支</span><small>1 分钟</small></a></li><li><a class="active" aria-current="page" href="01-mechanisms-and-security.html"><span>上下文继承：从“复制历史”到显式委派契约</span><small>4 分钟</small></a></li><li><a href="../experience-transfer/01-trajectories-cards-and-skills.html"><span>群体经验迁移：Trajectory、Card、Constraint 与 Skill</span><small>4 分钟</small></a></li><li><a href="../local-persistence/01-runtime-lifetimes.html"><span>Subagent 局部持久化：Invocation、Thread 与命名身份</span><small>3 分钟</small></a></li><li><a href="../ownership-visibility/01-policy-and-provenance.html"><span>所有权与可见性：从 Namespace 到派生权限</span><small>3 分钟</small></a></li><li><a href="../retrieval-action/01-routing-navigation-and-gates.html"><span>发现、检索与行动：共享知识怎样到达正确 Subagent</span><small>3 分钟</small></a></li><li><a href="../return-consolidation/01-compilation-and-lineage.html"><span>回流与巩固：Child 输出怎样变成可复用状态</span><small>3 分钟</small></a></li><li><a href="../shared-substrates/01-state-surfaces.html"><span>共享协作底座：黑板、结构化状态、日志与服务</span><small>3 分钟</small></a></li><li><a href="../synchronization/01-conflict-and-commit.html"><span>同步、冲突与 Commit：共享写入何时成为团队信念</span><small>4 分钟</small></a></li></ul></section><section class="nav-group"><h2>场景视图</h2><ul><li><a href="../../scenarios.html"><span>场景视图</span><small>1 分钟</small></a></li><li><a href="../../scenarios/01-manager-specialist.html"><span>Manager–Specialist 委派</span><small>1 分钟</small></a></li><li><a href="../../scenarios/02-parallel-coding-research.html"><span>并行 Coding 与 Research Subagents</span><small>1 分钟</small></a></li><li><a href="../../scenarios/03-persistent-fleets.html"><span>长期运行 Agent Fleet</span><small>1 分钟</small></a></li><li><a href="../../scenarios/04-cross-runtime.html"><span>跨工具与跨 Runtime 协作</span><small>1 分钟</small></a></li><li><a href="../../scenarios/index.html"><span>场景视图</span><small>1 分钟</small></a></li></ul></section><section class="nav-group"><h2>横切问题</h2><ul><li><a href="../../cross-cutting/01-evaluation.html"><span>评价与 Benchmark：不能再用一个“Memory 分数”概括</span><small>3 分钟</small></a></li><li><a href="../../cross-cutting/02-security-governance.html"><span>安全、权限与治理：风险沿状态链传播</span><small>3 分钟</small></a></li><li><a href="../../cross-cutting/03-cost-reliability.html"><span>成本、可靠性与可观测性：多一层 Memory 就多一组状态机</span><small>3 分钟</small></a></li><li><a href="../../cross-cutting/04-interoperability.html"><span>互操作与集成：Transport 兼容不等于 Memory 语义兼容</span><small>3 分钟</small></a></li><li><a href="../../cross-cutting/index.html"><span>横切问题</span><small>1 分钟</small></a></li><li><a href="../../cross-cutting/benchmark-protocols.html"><span>Subagent Memory Benchmark 协议地图</span><small>3 分钟</small></a></li></ul></section><section class="nav-group"><h2>工程案例</h2><ul><li><a href="../../projects/MehulG--memX.html"><span>memX：Redis LWW + JSON Schema + 进程内 WebSocket Pub/Sub</span><small>2 分钟</small></a></li><li><a href="../../projects/index.html"><span>固定版本项目报告</span><small>1 分钟</small></a></li><li><a href="../../projects/caura-ai--caura.html"><span>Caura：多租户 Fleet Memory Control Plane 的 Write/Search/Contradiction Pipeline</span><small>3 分钟</small></a></li><li><a href="../../projects/kimdanny--matm.html"><span>MATM：Population Trajectory Index 与 Consumer-specific LTR</span><small>2 分钟</small></a></li><li><a href="../../projects/langchain-ai--deepagents.html"><span>Deep Agents：临时模型上下文、共享 Backend 与显式 State 过滤</span><small>2 分钟</small></a></li><li><a href="../../projects/langchain-ai--langgraph.html"><span>LangGraph：Checkpointer、Subgraph Namespace 与跨 Thread Store</span><small>2 分钟</small></a></li><li><a href="../../projects/microsoft--UFO.html"><span>Microsoft UFO：Host/App Agent 共享 Blackboard 的真实代码边界</span><small>2 分钟</small></a></li><li><a href="../../projects/microsoft--autogen.html"><span>AutoGen：Agent Model Context、外部 Memory 与 Team Snapshot 的分离</span><small>2 分钟</small></a></li><li><a href="../../projects/openai--codex.html"><span>OpenAI Codex：Thread Fork、共享 Workspace 与 Root-only Memory Formation</span><small>3 分钟</small></a></li><li><a href="../../projects/openai--openai-agents-python.html"><span>OpenAI Agents SDK：Handoff、Agent-as-Tool 与 Sandbox Memory 的三种状态边界</span><small>3 分钟</small></a></li><li><a href="../../projects/smaramwbc--statewave-multi-agent-memory.html"><span>Statewave Multi-Agent Memory Demo：外部 Runtime 的 Episode→Compile→Context 集成</span><small>2 分钟</small></a></li></ul></section><section class="nav-group"><h2>方法与证据</h2><ul><li><a href="../../audit/index.html"><span>审计入口</span><small>1 分钟</small></a></li><li><a href="../../audit/baseline-comparison.html"><span>相对 Agent Memory v10 的基准比较</span><small>4 分钟</small></a></li><li><a href="../../audit/final-verification.html"><span>最终验证记录</span><small>2 分钟</small></a></li><li><a href="../../method-and-scope.html"><span>方法、范围与当前证据边界</span><small>4 分钟</small></a></li><li><a href="../../human-review.html"><span>人工评审清单：完整报告之后该判断什么</span><small>2 分钟</small></a></li></ul></section><section class="nav-group"><h2>补充材料</h2><ul><li><a href="../../source-index.html"><span>深核验来源索引</span><small>4 分钟</small></a></li><li><a href="../../about.html"><span>Subagent Memory 技术前沿调研</span><small>1 分钟</small></a></li></ul></section></nav></aside>
+  <button class="nav-backdrop" type="button" tabindex="-1" aria-label="关闭导航"></button>
+  <main class="reader-main" id="main-content">
+    <article class="reader-article">
+      <nav class="breadcrumb" aria-label="面包屑"><a href="../../index.html">调研入口</a><span>/</span><span>技术机制</span></nav>
+      <header class="article-hero">
+        <div class="article-meta"><span>技术机制</span><span>4 分钟</span><span>5 节 · 1 表</span><span>reader/mechanisms/context-inheritance/01-mechanisms-and-security.md</span></div>
+        <h1>上下文继承：从“复制历史”到显式委派契约</h1>
+        <p>委派不是把一段 prompt 交给另一个模型这么简单。Parent 持有用户指令、计划、工具结果、秘密、工作区和权限；Child 只需要其中与局部任务有关的部分。继承设计需要同时定义内容视图、资源能力、更新时序和回传接口。本页只研究一次 spawn/handoff 的边界；Child 自己跨多次调用保留多久见局部持久化。</p>
+      </header>
+      <nav class="section-map" aria-label="本页理解地图"><span class="section-map-label">本页理解地图</span><div><a href="#问题与边界"><span>01</span><strong>问题与边界</strong></a><a href="#方案族及内部流程"><span>02</span><strong>方案族及内部流程</strong></a><a href="#方案比较"><span>03</span><strong>方案比较</strong></a><a href="#成本与失败模式"><span>04</span><strong>成本与失败模式</strong></a><a href="#当前研究在改变什么"><span>05</span><strong>当前研究在改变什么</strong></a></div></nav>
+      <div class="article-body"><h2 id="问题与边界"><a class="heading-anchor" href="#问题与边界" aria-label="链接到本节">#</a>问题与边界</h2>
+<p>委派不是把一段 prompt 交给另一个模型这么简单。Parent 持有用户指令、计划、工具结果、秘密、工作区和权限；Child 只需要其中与局部任务有关的部分。继承设计需要同时定义<strong>内容视图</strong>、<strong>资源能力</strong>、<strong>更新时序</strong>和<strong>回传接口</strong>。本页只研究一次 spawn/handoff 的边界；Child 自己跨多次调用保留多久见<a href="../local-persistence/01-runtime-lifetimes.html" data-link-kind="internal">局部持久化</a>。</p>
+<h2 id="方案族及内部流程"><a class="heading-anchor" href="#方案族及内部流程" aria-label="链接到本节">#</a>方案族及内部流程</h2>
+<h3 id="全历史-同一运行继承"><a class="heading-anchor" href="#全历史-同一运行继承" aria-label="链接到本节">#</a>全历史/同一运行继承</h3>
+<p>Handoff runtime 可以让新 Agent 接管当前 run，并继续读取原消息序列。数据流最短：</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">parent messages + tool items
+→ switch active instructions/Agent
+→ child continues the same history
+→ child output remains in the same run/session</code></pre></figure>
+<p>优点是没有额外摘要器，也较少丢失背景。问题是 Parent 推断、用户秘密、无关日志和旧工具结果都可能进入 Child；历史本身没有说明哪些字段是权威状态、哪些只是讨论。即使 runtime 支持 input filter，过滤器仍要承担完整性与泄漏的双重责任。</p>
+<h3 id="结构化-delegation-packet"><a class="heading-anchor" href="#结构化-delegation-packet" aria-label="链接到本节">#</a>结构化 delegation packet</h3>
+<p>Parent 先构造一个显式对象，例如：</p>
+<figure class="code-block"><figcaption><span>json</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-json">{
+  &quot;objective&quot;: &quot;核验支付重试逻辑&quot;,
+  &quot;acceptance&quot;: [&quot;定位调用点&quot;, &quot;给出失败证据&quot;],
+  &quot;facts&quot;: [{&quot;value&quot;: &quot;base=abc123&quot;, &quot;source&quot;: &quot;git&quot;}],
+  &quot;artifacts&quot;: [&quot;src/retry.ts&quot;],
+  &quot;permissions&quot;: {&quot;read&quot;: [&quot;repo&quot;], &quot;write&quot;: []},
+  &quot;unknowns&quot;: [&quot;生产配置是否相同&quot;]
+}</code></pre></figure>
+<p>packet 将“任务描述”和“已有状态”分开，并能保留来源、未知项与完成标准。生成可以由规则、模型或二者组合：规则适合字段和权限，模型适合从长历史提炼开放问题。主要失败是压缩时把推断写成事实、删掉反方、或只传完成目标却不传验证条件。</p>
+<h3 id="预声明返回契约与下行隔离"><a class="heading-anchor" href="#预声明返回契约与下行隔离" aria-label="链接到本节">#</a>预声明返回契约与下行隔离</h3>
+<p><a href="https://arxiv.org/abs/2602.07398" data-link-kind="external" target="_blank" rel="noopener noreferrer">AGENTSYS</a>把每次不可信工具调用放入短命 worker。Parent 在看到工具输出前声明 typed intent；raw output 只进入 worker，worker 返回 JSON，Parent 只接纳符合接口的结构化值。worker 可以递归调用工具，但新的调用再产生 Child；validator 只看用户目标和精简调用 trace，不接触 raw output。</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">parent chooses tool + typed intent
+→ raw output enters isolated worker
+→ worker extracts declared fields
+→ syntax/schema/validator gate
+→ accepted value enters parent context
+→ worker context discarded</code></pre></figure>
+<p>这条路线把“不必要信息不进入 Parent”作为安全机制，而不是等污染进入长历史后再检测。它仍有边界：字符串字段可以携带攻击文本，schema 只能限制形状，validator/重试自身也会增加模型调用与拒绝风险。</p>
+<h3 id="capability-scoped-spawn"><a class="heading-anchor" href="#capability-scoped-spawn" aria-label="链接到本节">#</a>Capability-scoped spawn</h3>
+<p><a href="https://arxiv.org/abs/2605.08460" data-link-kind="external" target="_blank" rel="noopener noreferrer">When Child Inherits</a>把 spawn 描述为能力传播：Child 可能继承 memory、filesystem、credentials、tools、termination authority 和资源配额。其四类问题是无限制记忆继承、缺少资源访问控制、spawn 后异步状态分叉，以及越权终止其他 Agent。</p>
+<p>因此资源边界要独立于文本 packet：Parent 可以给 Child 只读仓库、单独 worktree、有限网络、临时 credential、只读 memory view 和不能终止 sibling 的 capability。仅提示“不要访问秘密”不是能力控制。</p>
+<h3 id="snapshot-与-revision-aware-同步"><a class="heading-anchor" href="#snapshot-与-revision-aware-同步" aria-label="链接到本节">#</a>Snapshot 与 revision-aware 同步</h3>
+<p>Child 可以拿静态 snapshot，也可以订阅 Parent/Team 状态。静态 snapshot 可重放、易调试，但长任务会读取旧状态；实时共享减少陈旧，却引入 race 和非确定性。revision-aware 路线让 delegation packet 携带 base revision，回流时比较 current revision：若 Parent 状态已经改变，则 rebase、重算或标记冲突，而不是静默覆盖。</p>
+<h2 id="方案比较"><a class="heading-anchor" href="#方案比较" aria-label="链接到本节">#</a>方案比较</h2>
+<div class="table-frame"><div class="table-toolbar"><span>Comparison · 5 列</span><small>横向滚动 · 点击一行聚焦</small></div><div class="table-wrap" tabindex="0" role="region" aria-label="可横向滚动的比较表"><table><thead><tr><th scope="col">方案</th><th scope="col">状态充分性</th><th scope="col">隔离</th><th scope="col">并发</th><th scope="col">主要成本</th></tr></thead><tbody><tr><td>全历史</td><td>高但过宽</td><td>弱</td><td>顺序 run 较简单</td><td>token 与泄漏</td></tr><tr><td>结构化 packet</td><td>可控</td><td>中</td><td>需版本字段</td><td>提炼与遗漏</td></tr><tr><td>隔离 worker + typed return</td><td>返回面最窄</td><td>强</td><td>worker tree 复杂</td><td>validator/重试</td></tr><tr><td>Capability-scoped spawn</td><td>文本与资源同时隔离</td><td>强</td><td>需 registry/PDP/PEP</td><td>控制面</td></tr><tr><td>Revision-aware snapshot</td><td>可重放且检测陈旧</td><td>中到强</td><td>显式 rebase/conflict</td><td>版本管理</td></tr></tbody></table></div></div>
+<h2 id="成本与失败模式"><a class="heading-anchor" href="#成本与失败模式" aria-label="链接到本节">#</a>成本与失败模式</h2>
+<ul><li>过窄 packet 会让 Child 重新探索或给出表面答案；</li><li>过宽继承会重复处理攻击文本，并让 Child 混淆 Parent 的假设与事实；</li><li>schema-valid 不代表语义正确；</li><li>Parent 的权限模式可能覆盖 Child 的较严格设置；</li><li>snapshot 的安全性不能证明 spawn 后仍然新鲜；</li><li>delegation summary 若没有来源，后续无法执行撤销与权限传播。</li></ul>
+<h2 id="当前研究在改变什么"><a class="heading-anchor" href="#当前研究在改变什么" aria-label="链接到本节">#</a>当前研究在改变什么</h2>
+<p>前沿从“怎样写一个好的 Subagent prompt”转向四个可验证对象：最小充分 packet、能力继承图、base revision 与 typed return。尚缺统一实验同时测量 Child 完成率、额外探索、秘密泄漏、攻击继承和状态陈旧；不同 runtime 的 handoff、agent-as-tool、sandbox 与 worktree 也还没有可比协议。</p></div>
+      <nav class="page-pager" aria-label="同组页面导航"><a class="pager-card previous" href="../index.html"><small>← 上一篇 · 技术机制</small><strong>机制分支</strong></a><a class="pager-card next" href="../experience-transfer/01-trajectories-cards-and-skills.html"><small>→ 下一篇 · 技术机制</small><strong>群体经验迁移：Trajectory、Card、Constraint 与 Skill</strong></a></nav>
+      <footer class="article-footer"><span>Markdown 是权威内容源</span><a href="../../about.html">关于本套件</a><button type="button" onclick="window.print()">打印 / 导出 PDF</button></footer>
+    </article>
+  </main>
+  <aside class="page-outline" aria-label="本页目录"><div><span class="outline-kicker">On this page</span><h2>本页目录</h2><ol><li class="level-2"><a href="#问题与边界">问题与边界</a></li><li class="level-2"><a href="#方案族及内部流程">方案族及内部流程</a></li><li class="level-3"><a href="#全历史-同一运行继承">全历史/同一运行继承</a></li><li class="level-3"><a href="#结构化-delegation-packet">结构化 delegation packet</a></li><li class="level-3"><a href="#预声明返回契约与下行隔离">预声明返回契约与下行隔离</a></li><li class="level-3"><a href="#capability-scoped-spawn">Capability-scoped spawn</a></li><li class="level-3"><a href="#snapshot-与-revision-aware-同步">Snapshot 与 revision-aware 同步</a></li><li class="level-2"><a href="#方案比较">方案比较</a></li><li class="level-2"><a href="#成本与失败模式">成本与失败模式</a></li><li class="level-2"><a href="#当前研究在改变什么">当前研究在改变什么</a></li></ol></div></aside>
+  <dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title">
+    <form method="dialog" class="search-shell">
+      <header><div><span>Search the research suite</span><h2 id="search-title">搜索整套报告</h2></div><button value="close" aria-label="关闭搜索">×</button></header>
+      <label class="search-field"><span class="sr-only">输入技术概念</span><input id="search-input" type="search" autocomplete="off" placeholder="输入机制、项目、风险或术语…"></label>
+      <p class="search-hint">标题和章节优先；支持中文子串。↑ ↓ 选择，Enter 打开，Esc 关闭。</p>
+      <div class="search-results" id="search-results" role="listbox" aria-label="搜索结果"></div>
+    </form>
+  </dialog>
+</body>
+</html>

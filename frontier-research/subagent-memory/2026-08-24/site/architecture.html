@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="当前版本：Round 01 Pilot。此模型是描述性解剖图，不是推荐组合。">
+  <title>Subagent Memory 一般架构：继承、局部工作与可信提交 · Frontier Atlas</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/search-index.js" defer></script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body data-page-type="architecture">
+  <a class="skip-link" href="#main-content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <header class="topbar">
+    <button class="icon-button nav-toggle" type="button" aria-controls="suite-nav" aria-expanded="false"><span aria-hidden="true">☰</span><span class="sr-only">打开套件导航</span></button>
+    <a class="brand" href="index.html"><span class="brand-mark">F</span><span><strong>Frontier Atlas</strong><small>技术调研 · 理解优先</small></span></a>
+    <div class="top-actions">
+      <button class="search-trigger" type="button" aria-haspopup="dialog"><span aria-hidden="true">⌕</span><span>搜索整套报告</span><kbd>Ctrl K</kbd></button>
+      <button class="icon-button focus-toggle" type="button" aria-pressed="false" title="专注阅读"><span aria-hidden="true">◫</span><span class="sr-only">切换专注阅读</span></button>
+      <button class="icon-button theme-toggle" type="button" title="切换主题"><span aria-hidden="true">◐</span><span class="sr-only">切换明暗主题</span></button>
+    </div>
+  </header>
+  <noscript><div class="noscript-note">JavaScript 已关闭：正文、图表、链接和打印仍可使用；全文搜索、主题切换与当前章节高亮不可用。</div></noscript>
+  <aside class="suite-nav" id="suite-nav"><nav class="suite-nav-inner" aria-label="研究套件"><section class="nav-group"><h2>开始</h2><ul><li><a href="index.html"><span>从这里开始读 Subagent Memory</span><small>1 分钟</small></a></li></ul></section><section class="nav-group"><h2>领域地图</h2><ul><li><a href="overview.html"><span>Subagent Memory：从委派上下文到团队可依赖状态</span><small>8 分钟</small></a></li><li><a class="active" aria-current="page" href="architecture.html"><span>Subagent Memory 一般架构：继承、局部工作与可信提交</span><small>7 分钟</small></a></li><li><a href="solution-landscape.html"><span>Subagent Memory 方案空间</span><small>3 分钟</small></a></li><li><a href="trends.html"><span>当前主流、12 个月变化与 90 天前沿</span><small>4 分钟</small></a></li><li><a href="github-radar.html"><span>GitHub 雷达：广度候选与固定版本深潜</span><small>3 分钟</small></a></li><li><a href="consensus-and-open-questions.html"><span>当前共识、分歧与未解决问题</span><small>3 分钟</small></a></li></ul></section><section class="nav-group"><h2>技术机制</h2><ul><li><a href="mechanisms/01-context-inheritance.html"><span>上下文继承与委派边界</span><small>2 分钟</small></a></li><li><a href="mechanisms/02-ownership-and-visibility.html"><span>所有权、命名空间与可见性</span><small>2 分钟</small></a></li><li><a href="mechanisms/03-shared-substrates.html"><span>共享协作底座</span><small>2 分钟</small></a></li><li><a href="mechanisms/04-synchronization-and-commit.html"><span>同步、冲突与 Belief Commit</span><small>2 分钟</small></a></li><li><a href="mechanisms/05-return-and-consolidation.html"><span>回流、巩固与来源</span><small>2 分钟</small></a></li><li><a href="mechanisms/06-experience-and-skill-transfer.html"><span>群体经验与技能迁移</span><small>2 分钟</small></a></li><li><a href="mechanisms/07-retrieval-and-action.html"><span>发现、检索与行动耦合</span><small>2 分钟</small></a></li><li><a href="mechanisms/08-local-persistence-and-identity.html"><span>Subagent 局部持久化与身份</span><small>3 分钟</small></a></li><li><a href="mechanisms/index.html"><span>机制分支</span><small>1 分钟</small></a></li><li><a href="mechanisms/context-inheritance/01-mechanisms-and-security.html"><span>上下文继承：从“复制历史”到显式委派契约</span><small>4 分钟</small></a></li><li><a href="mechanisms/experience-transfer/01-trajectories-cards-and-skills.html"><span>群体经验迁移：Trajectory、Card、Constraint 与 Skill</span><small>4 分钟</small></a></li><li><a href="mechanisms/local-persistence/01-runtime-lifetimes.html"><span>Subagent 局部持久化：Invocation、Thread 与命名身份</span><small>3 分钟</small></a></li><li><a href="mechanisms/ownership-visibility/01-policy-and-provenance.html"><span>所有权与可见性：从 Namespace 到派生权限</span><small>3 分钟</small></a></li><li><a href="mechanisms/retrieval-action/01-routing-navigation-and-gates.html"><span>发现、检索与行动：共享知识怎样到达正确 Subagent</span><small>3 分钟</small></a></li><li><a href="mechanisms/return-consolidation/01-compilation-and-lineage.html"><span>回流与巩固：Child 输出怎样变成可复用状态</span><small>3 分钟</small></a></li><li><a href="mechanisms/shared-substrates/01-state-surfaces.html"><span>共享协作底座：黑板、结构化状态、日志与服务</span><small>3 分钟</small></a></li><li><a href="mechanisms/synchronization/01-conflict-and-commit.html"><span>同步、冲突与 Commit：共享写入何时成为团队信念</span><small>4 分钟</small></a></li></ul></section><section class="nav-group"><h2>场景视图</h2><ul><li><a href="scenarios.html"><span>场景视图</span><small>1 分钟</small></a></li><li><a href="scenarios/01-manager-specialist.html"><span>Manager–Specialist 委派</span><small>1 分钟</small></a></li><li><a href="scenarios/02-parallel-coding-research.html"><span>并行 Coding 与 Research Subagents</span><small>1 分钟</small></a></li><li><a href="scenarios/03-persistent-fleets.html"><span>长期运行 Agent Fleet</span><small>1 分钟</small></a></li><li><a href="scenarios/04-cross-runtime.html"><span>跨工具与跨 Runtime 协作</span><small>1 分钟</small></a></li><li><a href="scenarios/index.html"><span>场景视图</span><small>1 分钟</small></a></li></ul></section><section class="nav-group"><h2>横切问题</h2><ul><li><a href="cross-cutting/01-evaluation.html"><span>评价与 Benchmark：不能再用一个“Memory 分数”概括</span><small>3 分钟</small></a></li><li><a href="cross-cutting/02-security-governance.html"><span>安全、权限与治理：风险沿状态链传播</span><small>3 分钟</small></a></li><li><a href="cross-cutting/03-cost-reliability.html"><span>成本、可靠性与可观测性：多一层 Memory 就多一组状态机</span><small>3 分钟</small></a></li><li><a href="cross-cutting/04-interoperability.html"><span>互操作与集成：Transport 兼容不等于 Memory 语义兼容</span><small>3 分钟</small></a></li><li><a href="cross-cutting/index.html"><span>横切问题</span><small>1 分钟</small></a></li><li><a href="cross-cutting/benchmark-protocols.html"><span>Subagent Memory Benchmark 协议地图</span><small>3 分钟</small></a></li></ul></section><section class="nav-group"><h2>工程案例</h2><ul><li><a href="projects/MehulG--memX.html"><span>memX：Redis LWW + JSON Schema + 进程内 WebSocket Pub/Sub</span><small>2 分钟</small></a></li><li><a href="projects/index.html"><span>固定版本项目报告</span><small>1 分钟</small></a></li><li><a href="projects/caura-ai--caura.html"><span>Caura：多租户 Fleet Memory Control Plane 的 Write/Search/Contradiction Pipeline</span><small>3 分钟</small></a></li><li><a href="projects/kimdanny--matm.html"><span>MATM：Population Trajectory Index 与 Consumer-specific LTR</span><small>2 分钟</small></a></li><li><a href="projects/langchain-ai--deepagents.html"><span>Deep Agents：临时模型上下文、共享 Backend 与显式 State 过滤</span><small>2 分钟</small></a></li><li><a href="projects/langchain-ai--langgraph.html"><span>LangGraph：Checkpointer、Subgraph Namespace 与跨 Thread Store</span><small>2 分钟</small></a></li><li><a href="projects/microsoft--UFO.html"><span>Microsoft UFO：Host/App Agent 共享 Blackboard 的真实代码边界</span><small>2 分钟</small></a></li><li><a href="projects/microsoft--autogen.html"><span>AutoGen：Agent Model Context、外部 Memory 与 Team Snapshot 的分离</span><small>2 分钟</small></a></li><li><a href="projects/openai--codex.html"><span>OpenAI Codex：Thread Fork、共享 Workspace 与 Root-only Memory Formation</span><small>3 分钟</small></a></li><li><a href="projects/openai--openai-agents-python.html"><span>OpenAI Agents SDK：Handoff、Agent-as-Tool 与 Sandbox Memory 的三种状态边界</span><small>3 分钟</small></a></li><li><a href="projects/smaramwbc--statewave-multi-agent-memory.html"><span>Statewave Multi-Agent Memory Demo：外部 Runtime 的 Episode→Compile→Context 集成</span><small>2 分钟</small></a></li></ul></section><section class="nav-group"><h2>方法与证据</h2><ul><li><a href="audit/index.html"><span>审计入口</span><small>1 分钟</small></a></li><li><a href="audit/baseline-comparison.html"><span>相对 Agent Memory v10 的基准比较</span><small>4 分钟</small></a></li><li><a href="audit/final-verification.html"><span>最终验证记录</span><small>2 分钟</small></a></li><li><a href="method-and-scope.html"><span>方法、范围与当前证据边界</span><small>4 分钟</small></a></li><li><a href="human-review.html"><span>人工评审清单：完整报告之后该判断什么</span><small>2 分钟</small></a></li></ul></section><section class="nav-group"><h2>补充材料</h2><ul><li><a href="source-index.html"><span>深核验来源索引</span><small>4 分钟</small></a></li><li><a href="about.html"><span>Subagent Memory 技术前沿调研</span><small>1 分钟</small></a></li></ul></section></nav></aside>
+  <button class="nav-backdrop" type="button" tabindex="-1" aria-label="关闭导航"></button>
+  <main class="reader-main" id="main-content">
+    <article class="reader-article">
+      <nav class="breadcrumb" aria-label="面包屑"><a href="index.html">调研入口</a><span>/</span><span>领域地图</span></nav>
+      <header class="article-hero">
+        <div class="article-meta"><span>架构模型</span><span>7 分钟</span><span>13 节 · 1 图 · 2 表</span><span>reader/architecture.md</span></div>
+        <h1>Subagent Memory 一般架构：继承、局部工作与可信提交</h1>
+        <p>当前版本：Round 01 Pilot。此模型是描述性解剖图，不是推荐组合。</p>
+      </header>
+      <nav class="section-map" aria-label="本页理解地图"><span class="section-map-label">本页理解地图</span><div><a href="#总体结构"><span>01</span><strong>总体结构</strong></a><a href="#2-完整数据流"><span>02</span><strong>2. 完整数据流</strong></a><a href="#读取层"><span>03</span><strong>读取层</strong></a><a href="#3-spawn-边界的四个决定"><span>04</span><strong>3. Spawn 边界的四个决定</strong></a><a href="#4-child-局部状态"><span>05</span><strong>4. Child 局部状态</strong></a><a href="#写入层"><span>06</span><strong>写入层</strong></a><a href="#5-publish-与-return-边界"><span>07</span><strong>5. Publish 与 Return 边界</strong></a><a href="#6-shared-state-的五种架构形状"><span>08</span><strong>6. Shared state 的五种架构形状</strong></a></div></nav>
+      <div class="article-body"><p><strong>当前版本：Round 01 Pilot。此模型是描述性解剖图，不是推荐组合。</strong></p>
+<h2 id="总体结构"><a class="heading-anchor" href="#总体结构" aria-label="链接到本节">#</a>总体结构</h2>
+<p>状态不是一个池，而是 Parent/Orchestrator、Child-local 和 Team-authoritative 三个逻辑权威层；它们即使物理共用数据库或文件系统，也不能视为同一可信度。</p>
+<p>一个可解释的 Subagent 系统通常至少涉及三种状态：</p>
+<ol><li><strong>Parent/Orchestrator state</strong>：任务目标、计划、预算、工具、权限、已有证据与团队视图；</li><li><strong>Child-local state</strong>：某个 Subagent 在一次调用或持续实例中的观察、scratchpad、临时记忆、workspace 和未验证结论；</li><li><strong>Team authoritative state</strong>：已经通过范围、来源、冲突与提交规则，允许 Parent、Sibling 或未来 Agent 依赖的状态。</li></ol>
+<p>三者可能物理上共用数据库或文件系统，但逻辑语义不同。Child 能写入一个共享表，不表示该行已经成为团队真相；Parent 能看到完整历史，也不表示每个 Subagent 都有权继承。</p>
+<h2 id="2-完整数据流"><a class="heading-anchor" href="#2-完整数据流" aria-label="链接到本节">#</a>2. 完整数据流</h2>
+<figure class="flow-figure" id="diagram-1"><div class="diagram-canvas"><svg class="flow-svg" width="420" height="942" viewBox="0 0 420 942" role="img" aria-labelledby="diagram-1-title diagram-1-desc"><title id="diagram-1-title">技术流程图</title><desc id="diagram-1-desc">6 个对象，7 条连接。图后提供文本列表。</desc><defs><marker id="arrow-diagram-1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" /></marker></defs><path class="flow-edge" d="M 150.0 112.0 C 150.0 149.8, 150.0 160.2, 150.0 198.0" marker-end="url(#arrow-diagram-1)" /><path class="flow-edge" d="M 150.0 270.0 C 150.0 307.8, 150.0 318.2, 150.0 356.0" marker-end="url(#arrow-diagram-1)" /><path class="flow-edge" d="M 150.0 428.0 C 150.0 465.8, 150.0 476.2, 150.0 514.0" marker-end="url(#arrow-diagram-1)" /><path class="flow-edge" d="M 150.0 586.0 C 150.0 623.8, 150.0 634.2, 150.0 672.0" marker-end="url(#arrow-diagram-1)" /><path class="flow-edge" d="M 150.0 744.0 C 150.0 781.8, 150.0 792.2, 150.0 830.0" marker-end="url(#arrow-diagram-1)" /><path class="flow-edge" d="M 150.0 902.0 C 150.0 1211.8, 150.0 -111.8, 150.0 198.0" marker-end="url(#arrow-diagram-1)" /><path class="flow-edge" d="M 150.0 902.0 C 150.0 1142.2, 150.0 115.8, 150.0 356.0" marker-end="url(#arrow-diagram-1)" stroke-dasharray="7 6" /><text class="flow-edge-label" x="150.0" y="623.0" text-anchor="middle">&quot;任务中 pull/push&quot;</text><g class="flow-node" tabindex="0" role="button" data-label="Parent / Orchestrator" data-detail="目标、计划、历史与预算 · 主体、任务、项目、租户与权限 · 已有工件、事实、冲突与来源" transform="translate(40.0 40.0)"><rect width="220" height="72" rx="16" /><circle class="flow-node-dot" cx="18" cy="18" r="4" /><text x="110.0" y="36.0" text-anchor="middle"><tspan x="110.0" dy="0">Parent / Orchestrator</tspan></text></g><g class="flow-node" tabindex="0" role="button" data-label="Spawn / Handoff Boundary" data-detail="选择任务相关状态 · 过滤秘密、攻击载荷与越权历史 · 压缩为消息、结构化包、文件或 snapshot · 绑定 read/write capability 与有效期" transform="translate(40.0 198.0)"><rect width="220" height="72" rx="16" /><circle class="flow-node-dot" cx="18" cy="18" r="4" /><text x="110.0" y="27.0" text-anchor="middle"><tspan x="110.0" dy="0">Spawn / Handoff</tspan><tspan x="110.0" dy="18">Boundary</tspan></text></g><g class="flow-node" tabindex="0" role="button" data-label="Subagent Local Execution" data-detail="局部上下文与临时记忆 · 工具、sandbox、worktree 或 workspace · 观察、计划、失败和候选结论" transform="translate(40.0 356.0)"><rect width="220" height="72" rx="16" /><circle class="flow-node-dot" cx="18" cy="18" r="4" /><text x="110.0" y="27.0" text-anchor="middle"><tspan x="110.0" dy="0">Subagent Local</tspan><tspan x="110.0" dy="18">Execution</tspan></text></g><g class="flow-node" tabindex="0" role="button" data-label="Publish / Return Boundary" data-detail="结构化结果与证据包 · 来源、时间、Agent、任务和适用条件 · 候选事实、工件、trajectory 与 skill" transform="translate(40.0 514.0)"><rect width="220" height="72" rx="16" /><circle class="flow-node-dot" cx="18" cy="18" r="4" /><text x="110.0" y="27.0" text-anchor="middle"><tspan x="110.0" dy="0">Publish / Return</tspan><tspan x="110.0" dy="18">Boundary</tspan></text></g><g class="flow-node" tabindex="0" role="button" data-label="Validation and Commit" data-detail="schema、角色与权限检查 · 重复、冲突、版本和因果检查 · 风险、证据和 action gate · commit、supersede、quarantine 或 reject" transform="translate(40.0 672.0)"><rect width="220" height="72" rx="16" /><circle class="flow-node-dot" cx="18" cy="18" r="4" /><text x="110.0" y="36.0" text-anchor="middle"><tspan x="110.0" dy="0">Validation and Commit</tspan></text></g><g class="flow-node" tabindex="0" role="button" data-label="Team Memory and Access" data-detail="权威事件、事实、决策、工件与技能 · private / task / project / team / tenant scopes · 搜索、目录、图、通知与 inbox · audit、rollback、delete 与 repair" transform="translate(40.0 830.0)"><rect width="220" height="72" rx="16" /><circle class="flow-node-dot" cx="18" cy="18" r="4" /><text x="110.0" y="36.0" text-anchor="middle"><tspan x="110.0" dy="0">Team Memory and Access</tspan></text></g></svg></div><figcaption><span class="diagram-live" aria-live="polite">选择图中对象可查看它在流程中的含义。</span></figcaption><details class="diagram-details"><summary>用文字检查图中对象与连接</summary><div class="diagram-detail-grid"><section><h4>对象</h4><dl><dt>Parent / Orchestrator</dt><dd>目标、计划、历史与预算 · 主体、任务、项目、租户与权限 · 已有工件、事实、冲突与来源</dd><dt>Spawn / Handoff Boundary</dt><dd>选择任务相关状态 · 过滤秘密、攻击载荷与越权历史 · 压缩为消息、结构化包、文件或 snapshot · 绑定 read/write capability 与有效期</dd><dt>Subagent Local Execution</dt><dd>局部上下文与临时记忆 · 工具、sandbox、worktree 或 workspace · 观察、计划、失败和候选结论</dd><dt>Publish / Return Boundary</dt><dd>结构化结果与证据包 · 来源、时间、Agent、任务和适用条件 · 候选事实、工件、trajectory 与 skill</dd><dt>Validation and Commit</dt><dd>schema、角色与权限检查 · 重复、冲突、版本和因果检查 · 风险、证据和 action gate · commit、supersede、quarantine 或 reject</dd><dt>Team Memory and Access</dt><dd>权威事件、事实、决策、工件与技能 · private / task / project / team / tenant scopes · 搜索、目录、图、通知与 inbox · audit、rollback、delete 与 repair</dd></dl></section><section><h4>连接</h4><ol><li>Parent / Orchestrator → Spawn / Handoff Boundary</li><li>Spawn / Handoff Boundary → Subagent Local Execution</li><li>Subagent Local Execution → Publish / Return Boundary</li><li>Publish / Return Boundary → Validation and Commit</li><li>Validation and Commit → Team Memory and Access</li><li>Team Memory and Access → Spawn / Handoff Boundary</li><li>Team Memory and Access → Subagent Local Execution（&quot;任务中 pull/push&quot;）</li></ol></section></div><details class="diagram-source"><summary>查看 Mermaid 源码</summary><pre><code>flowchart TB
+    subgraph Parent[&quot;Parent / Orchestrator&quot;]
+      P1[&quot;目标、计划、历史与预算&quot;]
+      P2[&quot;主体、任务、项目、租户与权限&quot;]
+      P3[&quot;已有工件、事实、冲突与来源&quot;]
+    end
+
+    subgraph Spawn[&quot;Spawn / Handoff Boundary&quot;]
+      S1[&quot;选择任务相关状态&quot;]
+      S2[&quot;过滤秘密、攻击载荷与越权历史&quot;]
+      S3[&quot;压缩为消息、结构化包、文件或 snapshot&quot;]
+      S4[&quot;绑定 read/write capability 与有效期&quot;]
+    end
+
+    subgraph Child[&quot;Subagent Local Execution&quot;]
+      C1[&quot;局部上下文与临时记忆&quot;]
+      C2[&quot;工具、sandbox、worktree 或 workspace&quot;]
+      C3[&quot;观察、计划、失败和候选结论&quot;]
+    end
+
+    subgraph Publish[&quot;Publish / Return Boundary&quot;]
+      R1[&quot;结构化结果与证据包&quot;]
+      R2[&quot;来源、时间、Agent、任务和适用条件&quot;]
+      R3[&quot;候选事实、工件、trajectory 与 skill&quot;]
+    end
+
+    subgraph Commit[&quot;Validation and Commit&quot;]
+      V1[&quot;schema、角色与权限检查&quot;]
+      V2[&quot;重复、冲突、版本和因果检查&quot;]
+      V3[&quot;风险、证据和 action gate&quot;]
+      V4[&quot;commit、supersede、quarantine 或 reject&quot;]
+    end
+
+    subgraph Team[&quot;Team Memory and Access&quot;]
+      T1[&quot;权威事件、事实、决策、工件与技能&quot;]
+      T2[&quot;private / task / project / team / tenant scopes&quot;]
+      T3[&quot;搜索、目录、图、通知与 inbox&quot;]
+      T4[&quot;audit、rollback、delete 与 repair&quot;]
+    end
+
+    Parent --&gt; Spawn --&gt; Child --&gt; Publish --&gt; Commit --&gt; Team
+    Team --&gt; Spawn
+    Team -.&quot;任务中 pull/push&quot;.-&gt; Child
+    Child -.&quot;未提交局部状态&quot;.-&gt; Child</code></pre></details></details></figure>
+<h2 id="读取层"><a class="heading-anchor" href="#读取层" aria-label="链接到本节">#</a>读取层</h2>
+<p>读取层先解析主体、任务、项目、时间、权限与预算，再决定从 Parent 历史、shared state、workspace 或长期 memory 构造什么视图。Spawn 边界正是第一次读取/投影；任务中 pull、push 和 subscription 是后续读取。</p>
+<h2 id="3-spawn-边界的四个决定"><a class="heading-anchor" href="#3-spawn-边界的四个决定" aria-label="链接到本节">#</a>3. Spawn 边界的四个决定</h2>
+<h3 id="31-调用语义"><a class="heading-anchor" href="#31-调用语义" aria-label="链接到本节">#</a>3.1 调用语义</h3>
+<p>Handoff、agent-as-tool、并行 worker 和持续 Agent 并不等价。Handoff 可能切换 active agent 并延续一次 run；agent-as-tool 通常让 manager 保持最终控制；并行 worker 需要结果 join；持续 Agent 还拥有独立的跨任务状态。调用语义决定谁拥有 session history、谁负责最终提交，以及 Child 是否能继续看到 Parent 的后续变化。</p>
+<h3 id="32-状态选择"><a class="heading-anchor" href="#32-状态选择" aria-label="链接到本节">#</a>3.2 状态选择</h3>
+<p>最简单的系统复制整段 transcript。更受控的系统生成 task packet：目标、完成标准、允许工具、输入工件、已知事实、冲突和禁止项。选择器可以是规则、模型或二者组合。规则可预测但难处理开放任务；模型能压缩，却可能把推断写成事实或漏掉决定性细节。</p>
+<h3 id="33-隔离方式"><a class="heading-anchor" href="#33-隔离方式" aria-label="链接到本节">#</a>3.3 隔离方式</h3>
+<p>隔离既包括文本，也包括 workspace、credentials、network、tools 和 memory writer。Child 可以共享只读仓库但使用独立 worktree，可以读取团队记忆却没有写权限，也可以在 sandbox 内产生候选文件，由 Parent 在外部审查。文本过滤无法替代资源与能力隔离。</p>
+<h3 id="34-同步模式"><a class="heading-anchor" href="#34-同步模式" aria-label="链接到本节">#</a>3.4 同步模式</h3>
+<p>Spawn 后，Child 可以拿到静态 snapshot，也可以订阅 Parent/Team 更新。静态视图可重放但会陈旧；实时共享能反映变化，却会引入 race、非确定性和额外上下文噪声。</p>
+<h2 id="4-child-局部状态"><a class="heading-anchor" href="#4-child-局部状态" aria-label="链接到本节">#</a>4. Child 局部状态</h2>
+<p>Child-local memory 适合保存尚未稳定的假设、中间检索、工具结果、候选 patch 和失败路径。它的价值是允许专门 Agent 深入探索，而不会让每一步都污染团队状态。</p>
+<p>局部状态至少需要能回答：由哪个 Agent 在什么任务和代码/环境版本下产生；它是观察、推断、计划还是行动结果；是否已经被 Parent 或其他 Agent验证；何时应该随实例销毁。若这些字段缺失，后续系统只能把文本相关性误当作可信度。</p>
+<p>局部状态还存在四种不同保留期：只存在于一次模型调用、一次 Subagent invocation、同一 thread 的多次调用，或绑定 Agent/project/user 跨 session 持久化。Checkpoint 解决调用恢复，memory file 解决跨任务学习，team state 解决跨 Agent 共享；三者不能仅因都“持久化”而混为一层。</p>
+<div class="table-frame"><div class="table-toolbar"><span>Comparison · 4 列</span><small>横向滚动 · 点击一行聚焦</small></div><div class="table-wrap" tabindex="0" role="region" aria-label="可横向滚动的比较表"><table><thead><tr><th scope="col">保留模式</th><th scope="col">下一次调用是否可见</th><th scope="col">主要收益</th><th scope="col">主要失败</th></tr></thead><tbody><tr><td>Stateless</td><td>否</td><td>干净隔离</td><td>重复探索</td></tr><tr><td>Per-invocation durable</td><td>仅本次恢复</td><td>interrupt、fault tolerance</td><td>结束后经验消失</td></tr><tr><td>Per-thread</td><td>同 thread 可见</td><td>持续 specialist</td><td>namespace 冲突、thread 误绑定</td></tr><tr><td>Cross-session named memory</td><td>按 Agent/project/user 可见</td><td>长期角色学习</td><td>跨边界污染与清理困难</td></tr></tbody></table></div></div>
+<h2 id="写入层"><a class="heading-anchor" href="#写入层" aria-label="链接到本节">#</a>写入层</h2>
+<p>写入层把 observation、claim、artifact、patch、trajectory 和 skill 分开，并区分 Child-local、candidate 与 committed。直接写 shared file/current value、追加 event、提交 patch 和晋升 belief 的验证成本不同。</p>
+<h2 id="5-publish-与-return-边界"><a class="heading-anchor" href="#5-publish-与-return-边界" aria-label="链接到本节">#</a>5. Publish 与 Return 边界</h2>
+<p>Child 回流可以有四种粒度：</p>
+<ul><li><strong>final answer</strong>：成本低，但来源和失败细节容易丢失；</li><li><strong>structured result envelope</strong>：包含结论、证据、未决项、变更与验证状态；</li><li><strong>artifact/patch</strong>：代码、文档、数据或状态差异成为主要返回物；</li><li><strong>trajectory/skill candidate</strong>：保留行动序列、适用条件和结果，供未来复用。</li></ul>
+<p>回流不是自动 commit。Parent、critic、validator 或 deterministic kernel 可以把输出标为 committed、contested、quarantined、superseded 或 rejected。关键分界是：未来 Agent 能否区分“某个 Child 说过”与“团队已经接受”。</p>
+<h2 id="6-shared-state-的五种架构形状"><a class="heading-anchor" href="#6-shared-state-的五种架构形状" aria-label="链接到本节">#</a>6. Shared state 的五种架构形状</h2>
+<div class="table-frame"><div class="table-toolbar"><span>Comparison · 4 列</span><small>横向滚动 · 点击一行聚焦</small></div><div class="table-wrap" tabindex="0" role="region" aria-label="可横向滚动的比较表"><table><thead><tr><th scope="col">形状</th><th scope="col">权威状态</th><th scope="col">交换方式</th><th scope="col">主要边界</th></tr></thead><tbody><tr><td>Handoff packet</td><td>Parent 状态与结果文件</td><td>显式任务包/结果包</td><td>跨任务检索与并发共享较弱</td></tr><tr><td>Parent-owned memory</td><td>Parent 控制的计划、事实和工件</td><td>Child 只读或提交候选</td><td>Parent 可能成为瓶颈和单点判断者</td></tr><tr><td>Shared blackboard</td><td>所有 Agent 可见的对象或文件</td><td>读写、patch、订阅</td><td>权限、冲突和污染需要额外控制</td></tr><tr><td>Decentralized/transactive</td><td>各 Agent 私有状态 + 目录/检索层</td><td>查询谁知道什么、拉取轨迹</td><td>发现、过期与跨 Agent 信任复杂</td></tr><tr><td>Governed memory service</td><td>多作用域版本化记录和策略</td><td>API、MCP、pub/sub、policy gate</td><td>控制面和运维成本更高</td></tr></tbody></table></div></div>
+<p>现实系统常组合这些形状。例如 Parent 用 handoff packet 创建只读 sandbox，Child 把 patch 和 evidence envelope 返回，团队控制面提交后再建立搜索索引。</p>
+<h2 id="使用层"><a class="heading-anchor" href="#使用层" aria-label="链接到本节">#</a>使用层</h2>
+<p>使用层决定召回内容只是回答参考、计划前提，还是可以驱动有 side effect 的工具。权限、来源、冲突与当前风险需要在使用时重新检查，不能由写入时的相关性分数代替。</p>
+<h2 id="7-检索与行动"><a class="heading-anchor" href="#7-检索与行动" aria-label="链接到本节">#</a>7. 检索与行动</h2>
+<p>访问共享状态通常先解析 Agent、任务、项目、时间和权限，再产生关键词、语义、图或目录候选。排序还需要来源、版本、冲突、可信度和成本。最终 evidence packet 应告诉 Child 内容来自哪里、适用到何时、是否存在反方和能否驱动高风险工具。</p>
+<p>相关不等于可行动。一个过去 Agent 的 shell 命令可能与当前任务高度相关，却来自不同权限、旧工具版本或受污染来源。因而新的研究把 retrieval 与 action gate 连接，而不是把安全留给最终模型自行判断。</p>
+<h2 id="8-更新撤销与恢复"><a class="heading-anchor" href="#8-更新撤销与恢复" aria-label="链接到本节">#</a>8. 更新、撤销与恢复</h2>
+<p>共享状态至少要区分：追加观察、更新当前值、替代旧信念、标记冲突、撤销、停止召回、物理删除、索引重建和级联修复。并行 Agent 还会遇到 stale read、lost update、write skew 和重复 side effect。</p>
+<p>Pilot 中的 transaction、validated patch 和 conflict lattice 都是对此的不同回答。它们尚未形成统一协议，但共同改变了问题定义：Memory write 是候选状态转移，而不是无条件事实写入。</p>
+<h2 id="横切面"><a class="heading-anchor" href="#横切面" aria-label="链接到本节">#</a>横切面</h2>
+<p>横切面覆盖安全、评价、成本、可靠性、可观测性与互操作，它们同时约束读取、写入和使用，而不是一个最终过滤器。</p>
+<h2 id="9-横切约束"><a class="heading-anchor" href="#9-横切约束" aria-label="链接到本节">#</a>9. 横切约束</h2>
+<ul><li><strong>安全与权限：</strong> spawn 继承、共享读取、回流提交和工具行动都要重新授权；</li><li><strong>评价：</strong> 应分别测 delegation completeness、共享收益、冲突正确性、隔离、删除、成本和最终行动；</li><li><strong>可靠性：</strong> 需要可观测的 Agent/任务/版本 lineage、幂等写入、恢复和重放；</li><li><strong>互操作：</strong> A2A、MCP、runtime context、session、workspace 与 memory service 覆盖不同层次，不能因都传输 JSON 就视为统一 Memory 协议。</li></ul>
+<p>后续轮次会把这张通用解剖图与固定版本 runtime 逐一对照，确认哪些模块在真实代码中存在、被省略或由应用层承担。</p></div>
+      <nav class="page-pager" aria-label="同组页面导航"><a class="pager-card previous" href="overview.html"><small>← 上一篇 · 领域总览</small><strong>Subagent Memory：从委派上下文到团队可依赖状态</strong></a><a class="pager-card next" href="solution-landscape.html"><small>→ 下一篇 · 方案全景</small><strong>Subagent Memory 方案空间</strong></a></nav>
+      <footer class="article-footer"><span>Markdown 是权威内容源</span><a href="about.html">关于本套件</a><button type="button" onclick="window.print()">打印 / 导出 PDF</button></footer>
+    </article>
+  </main>
+  <aside class="page-outline" aria-label="本页目录"><div><span class="outline-kicker">On this page</span><h2>本页目录</h2><ol><li class="level-2"><a href="#总体结构">总体结构</a></li><li class="level-2"><a href="#2-完整数据流">2. 完整数据流</a></li><li class="level-2"><a href="#读取层">读取层</a></li><li class="level-2"><a href="#3-spawn-边界的四个决定">3. Spawn 边界的四个决定</a></li><li class="level-3"><a href="#31-调用语义">3.1 调用语义</a></li><li class="level-3"><a href="#32-状态选择">3.2 状态选择</a></li><li class="level-3"><a href="#33-隔离方式">3.3 隔离方式</a></li><li class="level-3"><a href="#34-同步模式">3.4 同步模式</a></li><li class="level-2"><a href="#4-child-局部状态">4. Child 局部状态</a></li><li class="level-2"><a href="#写入层">写入层</a></li><li class="level-2"><a href="#5-publish-与-return-边界">5. Publish 与 Return 边界</a></li><li class="level-2"><a href="#6-shared-state-的五种架构形状">6. Shared state 的五种架构形状</a></li><li class="level-2"><a href="#使用层">使用层</a></li><li class="level-2"><a href="#7-检索与行动">7. 检索与行动</a></li><li class="level-2"><a href="#8-更新撤销与恢复">8. 更新、撤销与恢复</a></li><li class="level-2"><a href="#横切面">横切面</a></li><li class="level-2"><a href="#9-横切约束">9. 横切约束</a></li></ol></div></aside>
+  <dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title">
+    <form method="dialog" class="search-shell">
+      <header><div><span>Search the research suite</span><h2 id="search-title">搜索整套报告</h2></div><button value="close" aria-label="关闭搜索">×</button></header>
+      <label class="search-field"><span class="sr-only">输入技术概念</span><input id="search-input" type="search" autocomplete="off" placeholder="输入机制、项目、风险或术语…"></label>
+      <p class="search-hint">标题和章节优先；支持中文子串。↑ ↓ 选择，Enter 打开，Esc 关闭。</p>
+      <div class="search-results" id="search-results" role="listbox" aria-label="搜索结果"></div>
+    </form>
+  </dialog>
+</body>
+</html>
