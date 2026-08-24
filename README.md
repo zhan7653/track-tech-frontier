@@ -71,6 +71,38 @@ python scripts/validate_reader_suite.py --root examples/agent-memory-v10
 
 该检查只验证读者交付的基本完整性；内容是否真正讲清领域，仍需按 `references/evaluation-gates.md` 做抽样阅读或独立读者复核，不能由绿色检查替代。
 
+## 生成可展示的 HTML
+
+读者套件完成并通过结构验证后，可以把现有 Markdown 直接生成一个多页、可离线打开的静态站点：
+
+```powershell
+python scripts/render_reader_html.py `
+  --root examples/agent-memory-v10 `
+  --output examples/agent-memory-v10/site
+```
+
+入口是 `site/index.html`。生成器保持 Markdown 为权威内容源，不执行原始 HTML，使用构建时静态搜索索引，并提供：
+
+- 套件导航、章节地图、同组上/下一篇与专注阅读模式；
+- 中文子串搜索，结果直接落到具体章节；
+- 当前 `flowchart` Mermaid 子集的构建时 SVG、可点击节点、文本后备与原始源码；
+- 比较表横向滚动与行聚焦、代码复制、深浅主题、移动端抽屉和打印样式；
+- 隔离、类型受限的被动资源复制，带旧 manifest 保护的原子重建；
+- `build-manifest.json` 输入/输出哈希，以及 UTF-8、危险 URL、本地断链、章节锚点、陈旧页面和额外文件验证。
+
+套件根目录之外的本地证据不会被写成可逃出站点根的链接；它们显示为“源工作区”文本，并计入 manifest。这样独立部署不会产生指向构建机目录的伪链接。
+
+再次验证已生成站点：
+
+```powershell
+python scripts/render_reader_html.py `
+  --root examples/agent-memory-v10 `
+  --output examples/agent-memory-v10/site `
+  --check
+```
+
+支持范围和退化规则见 [`references/html-presentation.md`](references/html-presentation.md)。生成器只承诺仓库当前使用的 Markdown 子集；不支持的 Mermaid 或未来语法必须保留为可读文本并给出构建告警，不能静默丢失。
+
 v09 快照还附带独立评审、完成度审计和最终完整性清单：
 
 - [独立评审](examples/agent-memory-v09/review.md)

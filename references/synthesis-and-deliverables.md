@@ -21,6 +21,7 @@ A comprehensive run produces a navigable suite under `reader/`, important mechan
 13. `reader/mechanisms/<slug>.md` — a standalone reader report for every important mechanism branch.
 14. `reader/projects/<owner>--<repo>.md` — a small number of real engineering analyses for selected repositories.
 15. `audit/README.md` — navigation to evidence authority, ledgers, and any dated update deltas; no new technical conclusions.
+16. `site/` — a rebuildable static HTML presentation generated from the completed Markdown suite. `site/index.html` is the visual entry; Markdown remains authoritative.
 
 The suite may add topic-specific reader files. `report.md`, numbered `reports/`, or legacy `clusters/` paths may remain as compatibility surfaces for older bundles, but current reader navigation must point to the semantic `reader/` structure above.
 
@@ -91,3 +92,5 @@ Assign a protocol fingerprint and comparability group before comparing results. 
 Write the complete reader suite before preparing an optional human-review list. Reserve it for a small set of high-impact conflicts, low-confidence emerging signals, or subjective representative choices. Lack of review must not leave an empty section, suspended conclusion, or incomplete branch report.
 
 Completion is a reader outcome, not a ledger total: a new technical reader should understand the default entry without the audit files, each important mechanism report should stand on its own, selected project reports should describe actual engineering rather than README claims, and key facts should remain traceable. File, source, project, claim, or validation counts alone cannot prove this outcome.
+
+When HTML is generated, validate local links and inspect the entry, long mechanism pages, diagrams, wide tables, search, mobile, dark, keyboard, and print states in a real browser. A successful Markdown-to-HTML conversion alone does not establish that the presentation helps understanding.
