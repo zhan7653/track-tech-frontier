@@ -170,6 +170,22 @@ flowchart LR
         self.assertEqual(manifest["workspace_only_link_count"], 1)
         self.assertFalse(any("escapes the standalone site" in error for error in target.validate_site(output)))
 
+    def test_unpublished_bundle_file_becomes_non_clickable_workspace_link(self) -> None:
+        temporary, root, output = self._suite()
+        self.addCleanup(temporary.cleanup)
+        work = root / "work" / "notes.md"
+        work.parent.mkdir(parents=True)
+        work.write_text("# Research notes\n", encoding="utf-8")
+        overview = root / "reader" / "overview.md"
+        overview.write_text(overview.read_text(encoding="utf-8") + "\n[notes](../work/notes.md)\n", encoding="utf-8")
+
+        manifest = target.build_site(root, output)
+        rendered = (output / "overview.html").read_text(encoding="utf-8")
+
+        self.assertIn('class="workspace-link"', rendered)
+        self.assertNotIn('href="../work/notes.md"', rendered)
+        self.assertEqual(manifest["workspace_only_link_count"], 1)
+
     def test_rebuild_removes_stale_page(self) -> None:
         temporary, root, output = self._suite()
         self.addCleanup(temporary.cleanup)

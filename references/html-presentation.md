@@ -39,7 +39,7 @@ This is not a claim of full CommonMark, GFM, or Mermaid compatibility. An unsupp
 - Escape raw HTML from Markdown. Do not execute script, event-handler, iframe, or style input.
 - Allow only `http`, `https`, `mailto`, page anchors, and resolved relative links.
 - Resolve Markdown links against source files before rewriting them to output HTML.
-- Copy only passive, allowlisted assets into `site/assets/source/`; never let source-linked files overwrite pages or renderer assets. Local paths outside the suite root become explicit non-clickable “source workspace” references and are counted in the manifest, so a standalone site never contains links that escape its root.
+- Copy only passive, allowlisted assets into `site/assets/source/`; never let source-linked files overwrite pages or renderer assets. Existing source files outside the published `reader/` and `audit/` Markdown set—including process material elsewhere in the suite and paths outside the suite root—become explicit non-clickable “source workspace” references and are counted in the manifest, so a standalone site never links to unpublished or escaping content.
 - Fail the build on broken generated local links, invalid UTF-8, replacement characters, missing entry pages, output collisions, or dangerous generated URL schemes.
 - Keep search result rendering escaped even though the search index was generated locally.
 - Do not infer evidence relations, confidence, or freshness in the presentation layer.
