@@ -1,0 +1,1687 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="TencentDB Agent Memory 自进化机制：L0-L3、Skill、Wiki、CodeGraph 以及它们如何回到 Agent。">
+  <title>TencentDB Agent Memory：Agent 如何沉淀并复用经验</title>
+  <style>
+    :root {
+      --bg: #07111d;
+      --bg-deep: #040a12;
+      --surface: #0d1d2d;
+      --surface-2: #11263a;
+      --surface-3: #0a1725;
+      --text: #edf5f8;
+      --muted: #a7bac7;
+      --faint: #728999;
+      --line: rgba(163, 194, 210, .17);
+      --mint: #70e3bd;
+      --cyan: #79ccff;
+      --amber: #f4c66d;
+      --rose: #ff95a4;
+      --violet: #b9a6ff;
+      --radius: 18px;
+      --shadow: 0 22px 64px rgba(0, 0, 0, .28);
+      --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 28px; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(112, 227, 189, .12), transparent 29rem),
+        radial-gradient(circle at 95% 8%, rgba(121, 204, 255, .10), transparent 34rem),
+        linear-gradient(180deg, var(--bg), var(--bg-deep));
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.78;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: .18;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(to bottom, #000 0%, transparent 78%);
+    }
+
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { color: #c5ebff; }
+    strong { color: #f8fcff; }
+    code, pre { font-family: var(--mono); }
+    :focus-visible { outline: 2px solid var(--mint); outline-offset: 3px; }
+
+    .progress {
+      position: fixed;
+      inset: 0 auto auto 0;
+      width: 0;
+      height: 3px;
+      z-index: 30;
+      background: linear-gradient(90deg, var(--mint), var(--cyan));
+      box-shadow: 0 0 15px rgba(112, 227, 189, .55);
+    }
+
+    .shell {
+      width: min(1390px, calc(100% - 34px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: clamp(56px, 9vw, 116px) 0 64px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow, .part-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 19px;
+      color: var(--mint);
+      font: 700 12px/1.2 var(--mono);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before, .part-label::before {
+      content: "";
+      width: 25px;
+      height: 1px;
+      background: currentColor;
+    }
+
+    h1 {
+      max-width: 1050px;
+      margin: 0;
+      font-size: clamp(42px, 7vw, 86px);
+      line-height: 1.04;
+      letter-spacing: -.055em;
+      font-weight: 780;
+    }
+
+    h1 span {
+      display: block;
+      color: transparent;
+      background: linear-gradient(105deg, var(--mint), var(--cyan) 58%, #d7cbff);
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+
+    .hero-lead {
+      max-width: 900px;
+      margin: 28px 0 0;
+      color: #c6d7e1;
+      font-size: clamp(18px, 2vw, 23px);
+      line-height: 1.68;
+    }
+
+    .hero-path {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 32px;
+    }
+
+    .hero-path span {
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255,255,255,.025);
+      font-size: 13px;
+    }
+
+    .hero-path i {
+      align-self: center;
+      color: var(--faint);
+      font-style: normal;
+      font-family: var(--mono);
+    }
+
+    .hero-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 28px;
+      padding: 10px 15px;
+      border: 1px solid rgba(112, 227, 189, .33);
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(112, 227, 189, .07);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 238px minmax(0, 1fr);
+      gap: clamp(32px, 5vw, 72px);
+      padding: 44px 0 96px;
+    }
+
+    .toc {
+      position: sticky;
+      top: 22px;
+      align-self: start;
+      max-height: calc(100vh - 44px);
+      overflow: auto;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: rgba(7, 17, 29, .80);
+      backdrop-filter: blur(14px);
+    }
+
+    .toc p {
+      margin: 0 0 10px;
+      color: var(--faint);
+      font: 700 11px/1.2 var(--mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .toc a {
+      display: block;
+      margin: 2px 0;
+      padding: 7px 9px;
+      border-left: 2px solid transparent;
+      border-radius: 0 8px 8px 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      transition: .16s ease;
+    }
+
+    .toc a.sub { padding-left: 22px; color: var(--faint); }
+    .toc a:hover, .toc a.active {
+      color: var(--text);
+      border-left-color: var(--mint);
+      background: rgba(112, 227, 189, .07);
+    }
+
+    main { min-width: 0; }
+    section { margin: 0 0 102px; }
+    section:last-child { margin-bottom: 0; }
+
+    .part-head {
+      max-width: 950px;
+      margin-bottom: 38px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(32px, 4.5vw, 56px);
+      line-height: 1.09;
+      letter-spacing: -.043em;
+    }
+
+    .part-intro {
+      max-width: 850px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    h3 {
+      margin: 0 0 13px;
+      font-size: clamp(23px, 2.5vw, 31px);
+      line-height: 1.25;
+      letter-spacing: -.027em;
+    }
+
+    h4 {
+      margin: 0 0 8px;
+      color: var(--mint);
+      font: 700 12px/1.3 var(--mono);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    p { margin: 0 0 16px; }
+    p:last-child { margin-bottom: 0; }
+
+    .opening {
+      padding: clamp(24px, 4vw, 38px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(130deg, rgba(112,227,189,.08), transparent 38%),
+        var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .opening .quote {
+      max-width: 850px;
+      margin: 0;
+      color: #f4f9fb;
+      font-size: clamp(21px, 2.7vw, 31px);
+      line-height: 1.55;
+      font-weight: 650;
+    }
+
+    .conversation {
+      display: grid;
+      gap: 13px;
+      margin-top: 26px;
+    }
+
+    .bubble {
+      max-width: 82%;
+      padding: 14px 17px;
+      border: 1px solid var(--line);
+      border-radius: 15px 15px 15px 4px;
+      color: #dbe7ed;
+      background: rgba(255,255,255,.028);
+    }
+
+    .bubble.assistant {
+      justify-self: end;
+      border-radius: 15px 15px 4px 15px;
+      border-color: rgba(112,227,189,.23);
+      background: rgba(112,227,189,.06);
+    }
+
+    .bubble b {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--mint);
+      font: 700 11px/1.3 var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .layer {
+      position: relative;
+      margin-top: 25px;
+      padding: clamp(24px, 4vw, 38px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(13, 29, 45, .84);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .layer::before {
+      content: attr(data-layer);
+      position: absolute;
+      right: 18px;
+      top: -13px;
+      color: rgba(255,255,255,.038);
+      font: 800 clamp(74px, 10vw, 126px)/1 var(--mono);
+      pointer-events: none;
+    }
+
+    .layer > * { position: relative; }
+    .answer {
+      max-width: 890px;
+      margin: 0 0 24px;
+      color: #f4f9fb;
+      font-size: clamp(18px, 2vw, 22px);
+      font-weight: 640;
+      line-height: 1.65;
+    }
+
+    .grid-2, .grid-3 {
+      display: grid;
+      gap: 16px;
+    }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      padding: 21px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.022);
+    }
+
+    .card p, .card li { color: var(--muted); }
+    .card h3 { font-size: 21px; }
+
+    .mechanism-label {
+      display: inline-flex;
+      margin-bottom: 10px;
+      padding: 4px 8px;
+      border: 1px solid rgba(121,204,255,.22);
+      border-radius: 999px;
+      color: var(--cyan);
+      font: 700 10px/1.2 var(--mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    pre {
+      margin: 14px 0 0;
+      padding: 17px;
+      overflow: auto;
+      border: 1px solid rgba(121,204,255,.15);
+      border-radius: 12px;
+      color: #d5eaf5;
+      background: #06101b;
+      font-size: 12.5px;
+      line-height: 1.65;
+      tab-size: 2;
+    }
+
+    p code, li code {
+      padding: .13em .39em;
+      border: 1px solid rgba(121,204,255,.12);
+      border-radius: 5px;
+      color: #c4e9ff;
+      background: rgba(121,204,255,.06);
+      font-size: .9em;
+    }
+
+    .rail {
+      display: grid;
+      gap: 0;
+      margin: 24px 0;
+    }
+
+    .rail-step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 15px;
+      padding-bottom: 20px;
+    }
+
+    .rail-step:last-child { padding-bottom: 0; }
+    .rail-step::after {
+      content: "";
+      position: absolute;
+      left: 21px;
+      top: 39px;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(var(--line), rgba(112,227,189,.22));
+    }
+    .rail-step:last-child::after { display: none; }
+
+    .rail-num {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(112,227,189,.34);
+      border-radius: 50%;
+      color: var(--mint);
+      background: var(--surface-3);
+      font: 700 12px/1 var(--mono);
+    }
+
+    .rail-body {
+      padding: 8px 0 2px;
+    }
+    .rail-body b { display: block; margin-bottom: 4px; }
+    .rail-body p { color: var(--muted); font-size: 14px; }
+
+    .prompt {
+      margin-top: 22px;
+      border: 1px solid rgba(185,166,255,.20);
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(185,166,255,.035);
+    }
+
+    .prompt-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 13px 17px;
+      border-bottom: 1px solid var(--line);
+      color: #e9e3ff;
+      background: rgba(185,166,255,.045);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .prompt-head span {
+      color: var(--faint);
+      font: 11px/1.3 var(--mono);
+    }
+
+    .prompt-body { padding: 18px; }
+    .prompt-body ul, .prompt-body ol { margin: 0; padding-left: 21px; color: var(--muted); }
+    .prompt-body li + li { margin-top: 7px; }
+
+    .note {
+      margin-top: 20px;
+      padding: 19px 21px;
+      border-left: 3px solid var(--mint);
+      border-radius: 0 13px 13px 0;
+      color: #c7d6df;
+      background: linear-gradient(90deg, rgba(112,227,189,.085), rgba(13,29,45,.46));
+    }
+    .note.amber {
+      border-left-color: var(--amber);
+      background: linear-gradient(90deg, rgba(244,198,109,.08), rgba(13,29,45,.46));
+    }
+    .note.rose {
+      border-left-color: var(--rose);
+      background: linear-gradient(90deg, rgba(255,149,164,.075), rgba(13,29,45,.46));
+    }
+
+    .example-arrow {
+      display: flex;
+      justify-content: center;
+      padding: 11px 0;
+      color: var(--faint);
+      font: 700 19px/1 var(--mono);
+    }
+
+    .story-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    .story-node {
+      position: relative;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: rgba(255,255,255,.022);
+    }
+    .story-node:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      right: -12px;
+      top: 50%;
+      z-index: 2;
+      transform: translateY(-50%);
+      color: var(--faint);
+      font-family: var(--mono);
+    }
+    .story-node b { display: block; margin-bottom: 5px; color: var(--mint); }
+    .story-node span { color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+    .chapter {
+      padding: clamp(25px, 4vw, 40px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .chapter + .chapter { margin-top: 22px; }
+    .chapter-lead {
+      max-width: 900px;
+      color: #d4e1e8;
+      font-size: 18px;
+    }
+
+    .two-voices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .voice {
+      padding: 21px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.022);
+    }
+    .voice .title { color: var(--mint); font-weight: 720; }
+    .voice p { color: var(--muted); }
+
+    .tool-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+      margin-top: 19px;
+    }
+
+    .tool {
+      padding: 15px 17px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.02);
+    }
+    .tool code { color: var(--cyan); font-weight: 700; }
+    .tool span { display: block; margin-top: 5px; color: var(--muted); font-size: 13px; }
+
+    .summary-loop {
+      display: grid;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    .summary-step {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: rgba(255,255,255,.022);
+    }
+    .summary-step b { color: var(--mint); font-family: var(--mono); }
+    .summary-step p { color: var(--muted); }
+
+    .status-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .status {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: rgba(255,255,255,.022);
+    }
+    .status.done { border-color: rgba(112,227,189,.25); }
+    .status.missing { border-color: rgba(255,149,164,.22); }
+    .status h3 { display: flex; align-items: center; gap: 10px; font-size: 21px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 12px currentColor; }
+    .missing .dot { background: var(--rose); }
+    .status ul { margin: 0; padding-left: 20px; color: var(--muted); }
+    .status li + li { margin-top: 7px; }
+
+    .final {
+      padding: clamp(28px, 5vw, 48px);
+      border: 1px solid rgba(112,227,189,.27);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(121,204,255,.10), transparent 25rem),
+        linear-gradient(135deg, rgba(112,227,189,.09), rgba(13,29,45,.85));
+      box-shadow: var(--shadow);
+    }
+
+    .final p.big {
+      max-width: 940px;
+      margin: 0;
+      color: #f5fafc;
+      font-size: clamp(21px, 2.8vw, 31px);
+      line-height: 1.55;
+      font-weight: 680;
+    }
+
+    .muted { color: var(--muted); }
+    .small { color: var(--faint); font-size: 13px; }
+    .accent { color: var(--mint); }
+    .amber-text { color: var(--amber); }
+    .rose-text { color: var(--rose); }
+
+    footer {
+      padding: 35px 0 50px;
+      border-top: 1px solid var(--line);
+      color: var(--faint);
+      font-size: 13px;
+    }
+    footer .shell { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+
+    @media (max-width: 1050px) {
+      .layout { grid-template-columns: 1fr; }
+      .toc { position: relative; top: 0; max-height: none; display: flex; flex-wrap: wrap; gap: 3px; }
+      .toc p { width: 100%; }
+      .toc a, .toc a.sub { padding: 6px 8px; border-left: 0; border-bottom: 2px solid transparent; border-radius: 8px; }
+      .toc a:hover, .toc a.active { border-left-color: transparent; border-bottom-color: var(--mint); }
+    }
+
+    @media (max-width: 780px) {
+      .shell { width: min(100% - 22px, 1390px); }
+      .hero { padding-top: 50px; }
+      .grid-2, .grid-3, .two-voices, .tool-list, .status-pair { grid-template-columns: 1fr; }
+      .story-flow { grid-template-columns: 1fr; }
+      .story-node:not(:last-child)::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -15px; transform: translateX(-50%); }
+      .summary-step { grid-template-columns: 1fr; gap: 5px; }
+      .bubble { max-width: 94%; }
+      section { margin-bottom: 78px; }
+    }
+
+    @media print {
+      :root { --bg: #fff; --bg-deep: #fff; --surface: #fff; --surface-2: #f6f8fa; --surface-3: #fff; --text: #17222c; --muted: #465a69; --faint: #6a7b87; --line: #d8e0e5; }
+      body { color: var(--text); background: #fff; font-size: 12px; }
+      body::before, .progress, .toc, .hero-link { display: none; }
+      .hero { padding: 30px 0; }
+      h1 { font-size: 43px; }
+      h1 span { color: #176c58; background: none; }
+      .layout { display: block; padding-top: 26px; }
+      section { margin-bottom: 44px; }
+      .opening, .layer, .chapter, .final { box-shadow: none; break-inside: avoid; }
+      pre { color: #233747; background: #f6f8fa; white-space: pre-wrap; }
+      a { color: #176c58; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <header class="hero">
+    <div class="shell">
+      <p class="eyebrow">TencentDB Agent Memory</p>
+      <h1>Agent 如何从一次次任务里<span>沉淀并复用经验</span></h1>
+      <p class="hero-lead">
+        会话留下长期记忆，真实执行沉淀成 Skill，外部文档变成 Wiki，代码仓库被解析成 CodeGraph。它们在后续会话里重新被取回，Agent 的行为也就随这些外部资产持续变化。
+      </p>
+      <div class="hero-path" aria-label="内容顺序">
+        <span>会话历史 L0–L3</span><i>→</i>
+        <span>Skill</span><i>→</i>
+        <span>Wiki</span><i>→</i>
+        <span>CodeGraph</span><i>→</i>
+        <span>整体闭环</span>
+      </div>
+      <a class="hero-link" href="#conversation">从一轮真实对话开始 <span aria-hidden="true">↓</span></a>
+    </div>
+  </header>
+
+  <div class="shell layout">
+    <nav class="toc" aria-label="页面目录">
+      <p>内容</p>
+      <a href="#conversation">从一轮对话开始</a>
+      <a href="#history">会话历史 L0–L3</a>
+      <a class="sub" href="#l0">L0 · 原始消息</a>
+      <a class="sub" href="#l1">L1 · 原子记忆</a>
+      <a class="sub" href="#l2">L2 · 场景方法</a>
+      <a class="sub" href="#l3">L3 · 长期准则</a>
+      <a href="#skill">Skill · 可执行能力</a>
+      <a href="#wiki">Wiki · 外部知识</a>
+      <a href="#codegraph">CodeGraph · 代码关系</a>
+      <a href="#runtime">如何回到 Agent</a>
+      <a href="#evolution">整体自进化闭环</a>
+    </nav>
+
+    <main>
+      <section id="conversation">
+        <div class="part-head">
+          <p class="part-label">起点</p>
+          <h2>先看一轮最普通的对话</h2>
+          <p class="part-intro">后面的所有层次，都可以从这两条真实消息往上理解。</p>
+        </div>
+
+        <div class="opening">
+          <p class="quote">“以后修 bug 必须先写一个能稳定失败的复现测试，再开始修改。把它作为团队约定。”</p>
+          <div class="conversation">
+            <div class="bubble">
+              <b>User</b>
+              以后修 bug 必须先写一个能稳定失败的复现测试，再开始修改。把它作为团队约定。
+            </div>
+            <div class="bubble assistant">
+              <b>Assistant</b>
+              收到。后续修复缺陷时，我会先建立失败测试，再修改实现。
+            </div>
+          </div>
+
+          <div class="story-flow">
+            <div class="story-node"><b>L0</b><span>保存这两条真正发生的消息</span></div>
+            <div class="story-node"><b>L1</b><span>抽出“修 bug 前先建立失败测试”</span></div>
+            <div class="story-node"><b>L2</b><span>整理成“缺陷修复与回归验证”方法</span></div>
+            <div class="story-node"><b>L3</b><span>提炼成跨场景都遵守的团队原则</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="history">
+        <div class="part-head">
+          <p class="part-label">第一部分 · Conversation memory</p>
+          <h2>会话历史怎样从 L0 演化到 L3</h2>
+          <p class="part-intro">这里的四层不是四次重复摘要。它们分别保存原话、原子信息、场景方法和长期准则，粒度越来越高，使用方式也不同。</p>
+        </div>
+
+        <article class="layer" id="l0" data-layer="L0">
+          <h4>L0 · 原始对话消息</h4>
+          <h3>L0 到底是什么？</h3>
+          <p class="answer">就是一条一条的 user 输入和 assistant 最终回复。只看这一轮真正新增了什么，不做“经验总结”。</p>
+
+          <div class="grid-2">
+            <div class="card">
+              <span class="mechanism-label">输入</span>
+              <p>Proxy 或调用方提交本轮真实消息，同时带上 team、user、agent、session，必要时再带 task。</p>
+              <pre>{
+  "team_id": "team-alpha",
+  "user_id": "user-alan",
+  "agent_id": "coding-agent",
+  "session_id": "session-001",
+  "messages": [
+    {"role":"user", "content":"修 bug 前先写失败测试"},
+    {"role":"assistant", "content":"收到，我会先复现再修改"}
+  ]
+}</pre>
+            </div>
+            <div class="card">
+              <span class="mechanism-label">输出</span>
+              <p>一条消息一条记录，每条都有自己的 ID、role、content 和 timestamp。接口返回 accepted_ids，只表示 L0 接收成功，不是 L1 结果。</p>
+              <pre>[
+  {
+    "id": "msg-a1",
+    "role": "user",
+    "content": "修 bug 前先写失败测试",
+    "timestamp": 1785924000000
+  },
+  {
+    "id": "msg-a2",
+    "role": "assistant",
+    "content": "收到，我会先复现再修改",
+    "timestamp": 1785924005000
+  }
+]</pre>
+            </div>
+          </div>
+
+          <div class="note">
+            标准 Chat Memory L0 只接受 <code>user</code> 和 <code>assistant</code>。system、tool_call、tool_result 不在这条链里；完整工具轨迹由 Skill 采集链路处理。上游还会移除已经注入过的 memory/persona/scene 块，避免旧记忆原样回灌。
+          </div>
+        </article>
+
+        <article class="layer" id="l1" data-layer="L1">
+          <h4>L1 · 原子长期记忆</h4>
+          <h3>L1 做的不是摘要，而是挑出值得长期保存的独立信息</h3>
+          <p class="answer">它会从若干 L0 消息中抽取事实、任务、方法或资产线索；每一条都要能够独立检索和独立更新。</p>
+
+          <div class="rail">
+            <div class="rail-step">
+              <div class="rail-num">01</div>
+              <div class="rail-body"><b>达到触发条件</b><p>当前配置通常累计若干轮对话后运行；新 Session 还有 1→2→4→5 的 warm-up 阈值，也可以被空闲时间触发。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">02</div>
+              <div class="rail-body"><b>LLM 抽取候选</b><p>固定 System Prompt 定义哪些类型值得保留、证据边界和 JSON 格式；动态 Prompt 放背景消息与本轮新增消息。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">03</div>
+              <div class="rail-body"><b>为每条新记忆找相似旧记忆</b><p>用新 content 做向量召回；没有向量能力时用 FTS5/BM25。只取 Top-K 相似候选，不扫描整个记忆库。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">04</div>
+              <div class="rail-body"><b>LLM 判断冲突与重复</b><p>把“新记忆 + 相似旧候选”交给去重 Prompt，选择 store、update、merge 或 skip。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">05</div>
+              <div class="rail-body"><b>写入原子记忆库</b><p>保留 team/user/agent/session/task、类型、优先级、来源消息和版本信息，供后续搜索与 L2 整理。</p></div>
+            </div>
+          </div>
+
+          <div class="prompt">
+            <div class="prompt-head">L1 抽取 Prompt 在判断什么？<span>System + dynamic messages</span></div>
+            <div class="prompt-body">
+              <ul>
+                <li>只保存未来仍有价值、能够独立理解的内容。</li>
+                <li>code 模式偏团队事实、任务、工作方法和资产；chat 模式偏用户事实、偏好和个人经历。</li>
+                <li>用户明确采纳的约定可以保留；Assistant 单方面提出、用户尚未接受的建议不能自动变成团队事实。</li>
+                <li>输出必须是结构化候选，不把整段对话原封不动复制成记忆。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:16px">
+            <div class="card">
+              <span class="mechanism-label">新候选</span>
+              <pre>{
+  "type": "work_method",
+  "content": "修复缺陷前先建立稳定失败的复现测试",
+  "priority": 0.90
+}</pre>
+            </div>
+            <div class="card">
+              <span class="mechanism-label">相似旧记忆</span>
+              <pre>{
+  "id": "mem-old-17",
+  "content": "处理 bug 时先写复现用例，再修改代码",
+  "similarity": 0.91
+}</pre>
+            </div>
+          </div>
+          <div class="example-arrow">↓</div>
+          <div class="card">
+            <span class="mechanism-label">去重结果</span>
+            <p>两条表达的是同一方法，新版本更具体，因此常见结果是 <code>merge</code>：保留旧记忆身份，把内容更新为更完整的表述，而不是再新增一条。</p>
+          </div>
+
+          <div class="note amber">
+            新 L1 并不是“自己知道”要和哪条旧 L1 比较。它先依赖检索系统找候选，再由 LLM 做语义判断。标准去重路径通常还受 session/task 约束；主动记忆召回则可以跨 session，所以“写入去重范围”和“以后搜索范围”并不完全相同。
+          </div>
+        </article>
+
+        <article class="layer" id="l2" data-layer="L2">
+          <h4>L2 · 场景方法文档</h4>
+          <h3>L2 把零散记忆整理成“以后遇到这类事怎么做”</h3>
+          <p class="answer">它不再是一条事实，而是一份可以不断改写的工作场景文档，里面有适用条件、步骤、判断逻辑、反模式和证据。</p>
+
+          <div class="grid-2">
+            <div class="card">
+              <span class="mechanism-label">输入</span>
+              <p>本次新产生的 L1 内容，加上 team + agent 已有的场景索引。LLM 看到的是记忆正文和现有场景摘要，不会直接拿到 L1 的所有 metadata。</p>
+              <pre>New memories:
+- 修 bug 前先建立稳定失败的复现测试
+- 修完后要运行相关回归测试
+
+Existing scenes:
+- scene_blocks/testing-strategy.md
+- scene_blocks/release-validation.md</pre>
+            </div>
+            <div class="card">
+              <span class="mechanism-label">整理动作</span>
+              <p>Scene Agent 根据固定 Prompt 判断：</p>
+              <ul>
+                <li><strong>UPDATE：</strong>补强已有场景。</li>
+                <li><strong>MERGE：</strong>合并高度重叠的场景。</li>
+                <li><strong>CREATE：</strong>确实没有合适场景时新建。</li>
+                <li><strong>保持克制：</strong>避免每条 L1 都变成一个文件。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="prompt">
+            <div class="prompt-head">L2 是固定提示词吗？<span>fixed policy + dynamic data</span></div>
+            <div class="prompt-body">
+              <p>是。固定 System Prompt 定义场景的 Markdown 骨架、UPDATE/MERGE/CREATE、热度、容量和允许的文件操作；动态部分才放新 L1、旧场景索引、当前时间和容量警告。</p>
+              <pre>## 工作场景
+## 适用条件
+## 核心 SOP
+## 判断逻辑
+## 禁忌与反模式
+## 关键事实依据
+## 相关任务与资产
+## 演化记录
+## 待确认问题</pre>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <span class="mechanism-label">输出示例</span>
+            <pre>## 工作场景
+缺陷修复与回归验证
+
+## 适用条件
+- 已有行为与预期不一致，需要修改实现。
+
+## 核心 SOP
+1. 先写一个能够稳定失败的复现测试。
+2. 确认失败原因与目标缺陷一致。
+3. 修改最小范围实现。
+4. 复现测试转绿后运行相关回归测试。
+
+## 禁忌与反模式
+- 没有失败证据就直接改代码。
+- 只运行新测试，不验证相关回归。
+
+## 演化记录
+- 2026-08-05：加入“相关回归测试”验收条件。</pre>
+          </div>
+
+          <div class="two-voices">
+            <div class="voice">
+              <div class="title">整理完怎么用？</div>
+              <p>新 Session 不会把所有 L2 正文塞进 Prompt，只注入 <code>path + summary</code> 导航。Agent 判断当前任务相关时，再读取那一个 Markdown 文件。</p>
+            </div>
+            <div class="voice">
+              <div class="title">怎么验证真的有用？</div>
+              <p>先确认新 Session 出现索引，再看 Agent 是否实际读取正文；最后在固定模型、任务和工具的条件下做有/无 L2 的 A/B，并加入无关场景负对照。</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="layer" id="l3" data-layer="L3">
+          <h4>L3 · 跨场景长期准则</h4>
+          <h3>L3 从多个场景里提炼“长期都应该怎样工作”</h3>
+          <p class="answer">如果 L2 是一本本场景手册，L3 就是这支 Agent 的团队工作准则。它不保存项目进度，而是把多个 L2 中能够跨任务复用的原则、SOP、判断标准和禁忌写进同一份 <code>persona.md</code>。</p>
+
+          <div class="grid-2">
+            <div class="card">
+              <span class="mechanism-label">什么时候触发</span>
+              <p><strong>首次生成：</strong>第一次 L2 场景整理完成、已经存在场景文件，但还没有 L3 正文时立即生成。</p>
+              <p><strong>常规更新：</strong>上次 L3 成功后，又累计保存了 <strong>50 条新 L1</strong>。这里数的是新写入的 L1，不是 50 轮对话，也不是 50 个 L2 场景。</p>
+              <p><strong>提前更新：</strong>L2 发现跨场景的重要规则时，可以写入 <code>PERSONA_UPDATE_REQUEST</code> 主动请求更新，不必等到 50 条。</p>
+              <p><strong>恢复生成：</strong>系统记录显示以前生成过 L3，但 <code>persona.md</code> 正文丢失或为空时重新生成。</p>
+            </div>
+            <div class="card">
+              <span class="mechanism-label">阈值怎样计数</span>
+              <p>每次 L1 抽取完成后，实际成功写入的 L1 数量会累加到 <code>memories_since_last_persona</code>。</p>
+              <pre>上次 L3 生成后：0
+Session A 新写入 L1：12  → 12
+Session B 新写入 L1：21  → 33
+Session C 新写入 L1：17  → 50
+                         ↓
+                   触发 L3 更新</pre>
+              <p>L3 成功写入后，该计数归零，同时记录本次生成时间；下一轮从 0 重新累计。当前仓库配置和库级默认阈值都是 50。</p>
+            </div>
+          </div>
+
+          <div class="rail">
+            <div class="rail-step">
+              <div class="rail-num">01</div>
+              <div class="rail-body"><b>确定本次输入</b><p>首次生成时，所有现有 L2 都算“变化场景”；增量更新时，只选择 <code>updated</code> 晚于上次 L3 生成时间的 L2，并读取这些场景的完整 Markdown。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">02</div>
+              <div class="rail-body"><b>组装 LLM Prompt</b><p>动态输入包含变化 L2 的完整正文、旧 L3 全文、触发原因、当前时间、累计处理消息数、L2 总数和变化 L2 数量。L3 不直接读取原始 L0，也不直接读取整批 L1 metadata。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">03</div>
+              <div class="rail-body"><b>比较旧规则与变化场景，重写同一份 L3</b><p>如果新场景只是再次证明旧规则，保留原句或把证据压进原句；出现新的通用方法时补充；旧规则过于绝对时改写适用条件；规则重复或过长时合并删除；只有项目状态时不更新。它不会为每批新内容机械追加一条规则。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">04</div>
+              <div class="rail-body"><b>写入并注入</b><p>首次生成或大改时用 write 整体写入 <code>persona.md</code>，小改时用 edit 精确替换。工程侧清理模型误写的导航，再追加最新 L2 场景导航；新 Session 把 L3 正文直接放进 System Prompt。</p></div>
+            </div>
+          </div>
+
+          <div class="prompt">
+            <div class="prompt-head">L3 的完整输入<span>incremental generation input</span></div>
+            <div class="prompt-body">
+              <pre>触发原因：达到阈值 50 / L2 主动请求 / 首次生成 / 恢复
+当前时间：2026-08-06T10:00:00Z
+累计处理消息数：186
+L2 场景总数：8
+本次变化场景：2
+
+变化 L2 完整正文：
+- 缺陷修复与回归验证.md
+- 重构与行为保护.md
+
+旧 persona.md 完整正文：
+- 现有 Core Principles
+- 现有 Reusable SOPs
+- 现有 Decision Logic
+- 现有 Boundaries 与 Agent Rules</pre>
+              <p class="small">增量模式不会把所有 L2 全文重复交给模型，只预加载上次 L3 之后新增或修改的场景；旧 L3 全文始终提供，作为本次改写的基线。</p>
+            </div>
+          </div>
+
+          <div class="prompt">
+            <div class="prompt-head">“修改旧规则”具体是什么意思？<span>replace, not append-only</span></div>
+            <div class="prompt-body">
+              <p>假设旧 L3 写的是：</p>
+              <pre>- 所有代码修改前都必须先写失败测试。</pre>
+              <p>新的“重构与行为保护”L2 说明：纯重构不一定存在待修复的失败行为，但必须先建立行为基线和回归保护。L3 不会再追加一条相互矛盾的规则，而是把旧规则改成：</p>
+              <pre>- 修复行为缺陷时，先建立稳定失败的复现测试；
+  纯重构时，先建立现有行为基线和回归保护，再修改实现。</pre>
+              <p>如果 L3 中同时还有“修 bug 前先复现”“没有失败证据不要修改”等重复表述，则合并进上面这一条并删除重复项。这就是修正和压缩：直接改写同一份准则，使规则更准确、更短，而不是只在末尾追加。</p>
+            </div>
+          </div>
+
+          <div class="prompt">
+            <div class="prompt-head">L3 的输出<span>persona.md · code mode</span></div>
+            <div class="prompt-body">
+              <pre># Team Operating Doctrine
+
+&gt; Operating Thesis: 先建立可验证证据，再做最小且可回归的改变。
+
+## Core Principles
+- 修复行为缺陷时，先建立稳定失败的复现证据。
+
+## Reusable SOPs
+- 缺陷修复以失败测试开始，以相关回归通过结束；
+  纯重构则先建立行为基线，再验证行为保持不变。
+
+## Decision Logic
+- 如果无法稳定复现，先继续定位，不宣称已经修复。
+
+## Boundaries &amp; Anti-patterns
+- 不把未经用户采纳的建议写成团队事实。
+
+## Agent Rules
+- 对完成状态的判断必须附带可验证证据。</pre>
+              <p>code 模式最终正文必须控制在 <strong>1200 字以内</strong>，只保留跨工作场景可复用的内容。文件保存于 team + agent 的 Profile Scope；工程侧会在正文后追加 L2 场景导航。</p>
+            </div>
+          </div>
+
+          <div class="note">
+            <strong>输出怎样使用：</strong>新 Session 初始化时，Memory Injector 读取 <code>persona.md</code>，把 L3 正文直接放进 System Prompt。它不是通过向量搜索按需召回，因此每一轮都会影响 Agent 的默认判断和行为。已有 Session 通常使用 session_init 缓存，要验证刚更新的 L3，应开启新 Session。
+          </div>
+
+          <div class="note amber">
+            code 模式下，L2/L3 表达团队场景和工作准则；chat 模式下，它们更接近用户生活场景和长期画像。L0 格式没有变化，但 Prompt 的保留标准和输出语义不同。当前 v3 Profile Scope 仍是 team + agent，多用户 chat 部署不能只切换 Prompt 而忽略画像隔离。
+          </div>
+        </article>
+      </section>
+
+      <section id="skill">
+        <div class="part-head">
+          <p class="part-label">第二部分 · Skill</p>
+          <h2>从“记得这件事”到“会执行这类任务”</h2>
+          <p class="part-intro">L0–L3 主要从对话里沉淀事实、场景和原则。Skill 看的是一次真实任务怎样被执行：调用了什么工具、遇到什么失败、怎样判断、怎样验证。</p>
+        </div>
+
+        <article class="chapter">
+          <h3>Skill 不是 L4，它是一条平行的能力沉淀链</h3>
+          <p class="chapter-lead">一条记忆可以说“修 bug 前要先写测试”；一个 Skill 则要写清楚什么时候使用、需要什么输入、具体怎么做、遇到分支怎样判断、最后如何验证。</p>
+
+          <div class="story-flow">
+            <div class="story-node"><b>真实轨迹</b><span>user、assistant、tool_call、tool_result</span></div>
+            <div class="story-node"><b>Session Buffer</b><span>按完整 Session Key 独立累计</span></div>
+            <div class="story-node"><b>Review Agent</b><span>分类、评分、查重、创建或更新</span></div>
+            <div class="story-node"><b>版本化 Skill</b><span>SKILL.md、supporting files、active head</span></div>
+          </div>
+
+          <div class="grid-2" style="margin-top:22px">
+            <div class="card">
+              <span class="mechanism-label">采集输入</span>
+              <p>Proxy 等到一次真人轮次真正结束，再提交该轮完整规范化轨迹。标准采集路径实际形成四种 role：<code>user</code>、<code>assistant</code>、<code>tool_call</code>、<code>tool_result</code>。它比只收 user/assistant 的 L0 多保留了执行过程。</p>
+              <pre>user: 修复登出后 refresh token 仍有效的问题
+assistant: 我先定位认证链路
+tool_call: 运行 auth 测试
+tool_result: refresh token test failed
+tool_call: 修改 token revocation store
+tool_result: patch applied
+tool_call: 运行测试与回归
+tool_result: all passed
+assistant: 已修复并验证</pre>
+            </div>
+            <div class="card">
+              <span class="mechanism-label">什么时候整理</span>
+              <p>Buffer 按 <code>space + user + team + agent + session</code> 隔离。当前默认达到任一条件就归档并异步 Review：</p>
+              <ul>
+                <li>累计 10 次 tool_call；或</li>
+                <li>累计约 40KB 内容。</li>
+              </ul>
+              <p>这些计数不跨 Session 相加。一次 Archive 只消费当前 Session 的一段轨迹。</p>
+            </div>
+          </div>
+
+          <div class="note amber">
+            <strong>为什么接口定义里还能看到第五种 <code>system</code>？</strong>
+            <code>/v3/skill/conversation/add</code> 的 Schema 和 Core Handler 为兼容调用方接受五种 role，但标准 Proxy 在 Anthropic、OpenAI 两条规范化路径中都会过滤 <code>system</code>，Review Extractor 也只识别上面的四种标记。若绕过 Proxy 直接把 <code>system</code> 交给当前 Core，转给 Review 时还会被降级成 <code>user</code>。所以“五种”是接口兼容范围，不是标准 Skill 证据的五种实际角色；正常调用不应主动提交 <code>system</code>。
+          </div>
+        </article>
+
+        <article class="chapter">
+          <h3>Review Prompt 怎样决定“这次经历值不值得变成 Skill”</h3>
+          <p class="chapter-lead">后台 Review Agent 不应该见到工具轨迹就机械生成 Skill。它的固定 System Prompt 把“不生成”视为正常结果，并要求先查看已有 Skill。</p>
+
+          <div class="rail">
+            <div class="rail-step">
+              <div class="rail-num">01</div>
+              <div class="rail-body"><b>识别可复用能力</b><p>一次性修补、只对当前文件有效的信息、没有稳定判断逻辑的过程，不应创建 Skill。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">02</div>
+              <div class="rail-body"><b>分类并评分</b><p>先在 Skill、Memory、Wiki、CodeGraph、Temporary Context 五种归属中分类；只有归入 Skill 且达到 72 分接受门槛才继续。这里的“五种”是知识归属，不是输入 role。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">03</div>
+              <div class="rail-body"><b>先 list / view</b><p>Extractor 先给出同一 team + owner-agent 最近更新的最多 5 个名称和摘要作为提示；Review Agent 仍须通过 <code>skill_list</code> 和 <code>skill_view</code> 工具检查完整 Skill 库。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">04</div>
+              <div class="rail-body"><b>选择写动作</b><p>可以 create、update、patch 或 files_write；后台 Review 没有删除工具。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">05</div>
+              <div class="rail-body"><b>形成新版本</b><p>更新不会覆盖历史快照；owner 校验和 expected_version 乐观锁避免并发任务互相覆盖。</p></div>
+            </div>
+          </div>
+
+          <div class="prompt">
+            <div class="prompt-head">已有 Skill 到底怎样查<span>recent hints → list → view → decide</span></div>
+            <div class="prompt-body">
+              <p>不是把所有 SKILL.md 一次塞进 Prompt，也不是只靠向量相似度自动决定。查询分成四步：</p>
+              <div class="summary-loop">
+                <div class="summary-step"><b>① 最近 5 个提示</b><p>Extractor 在调用 LLM 前直接读取最近更新的最多 5 个 Skill，只把 <code>name + description</code> 放进动态 Prompt。它提供时间线索，不代表全集。</p></div>
+                <div class="summary-step"><b>② skill_list</b><p>Review Agent 必须先调用读工具。不带 query 时列出现有项；带 query 时按名称和描述缩小候选，得到 ID、摘要和版本。</p></div>
+                <div class="summary-step"><b>③ skill_view</b><p>只要某个候选可能相关，就再用读工具加载它的完整 SKILL.md 和 supporting files manifest，判断能力边界是否真的重叠。</p></div>
+                <div class="summary-step"><b>④ 决定动作</b><p>没有相关项才 create；已经完整覆盖就 <code>Nothing to save.</code>；相似项缺少小块内容就 patch，需要整体改写才 update。</p></div>
+              </div>
+
+              <div class="grid-2" style="margin-top:16px">
+                <div class="card">
+                  <span class="mechanism-label">先找候选：skill_list</span>
+                  <pre>调用
+{"query":"bug fix","top_k":10}
+
+返回
+[{"skill_id":"skill-17",
+  "name":"bug-fix-workflow",
+  "description":"以复现测试驱动缺陷修复",
+  "version":2,"score":0.86}]</pre>
+                  <p>不传 query 时返回当前可见 Skill 列表；搜索结果的 <code>score</code> 只用于找候选，不直接决定更新。</p>
+                </div>
+                <div class="card">
+                  <span class="mechanism-label">再读正文：skill_view</span>
+                  <pre>调用
+{"skill_id":"skill-17"}
+
+返回
+{"skill_id":"skill-17","version":2,
+ "name":"bug-fix-workflow",
+ "description":"...",
+ "content":"完整 SKILL.md...",
+ "manifest":[...]}</pre>
+                  <p>Review LLM 读完正文后，才判断新轨迹是重复证据、局部增量，还是一种全新能力。</p>
+                </div>
+              </div>
+
+              <div class="note amber">
+                <strong>“先读后写”主要是 Prompt 约束，不是完整的代码状态机。</strong>
+                六个读写工具会同时暴露给 Review Agent，工具层不会硬性禁止它跳过 list 直接 create。代码能兜住同名冲突；update、patch、files_write 还必须带刚读到的 <code>expected_version</code>。但语义相近、名称不同的重复 Skill，仍主要依赖 LLM 遵守 list/view 流程来避免。
+              </div>
+            </div>
+          </div>
+
+          <div class="prompt">
+            <div class="prompt-head">Prompt 强制的 SKILL.md 骨架<span>stable skill contract</span></div>
+            <div class="prompt-body">
+              <pre>## When to use
+## When not to use
+## Required inputs
+## Workflow
+## Decision rules
+## Output format
+## Validation
+## Pitfalls
+## Supporting files</pre>
+              <p class="small">动态 User Prompt 放可选 reason、最近 5 个 Skill 提示，以及带 <code>&lt;&lt;past-*&gt;&gt;</code> 边界标记的 Archive Transcript。</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="chapter">
+          <h3>一个 Skill 怎样跨 Session 继续演化</h3>
+          <p class="chapter-lead">Buffer 不跨 Session，但 Skill 身份和版本跨 Session。新任务的 Archive 会读取已有 Skill，用新证据修正 Workflow、Decision rules、Validation 或 Pitfalls，然后创建新版本。</p>
+
+          <div class="summary-loop">
+            <div class="summary-step"><b>Session A</b><p>第一次完成 token 撤销修复，生成 <code>auth-token-revocation@v1</code>。</p></div>
+            <div class="summary-step"><b>Session B</b><p>发现多实例部署下本地撤销表不可靠，Review 读取 v1，把共享存储要求补进 Decision rules，生成 v2。</p></div>
+            <div class="summary-step"><b>Session C</b><p>又发现回归测试必须覆盖旧 token 与并发刷新，Review 补强 Validation，生成 v3。</p></div>
+            <div class="summary-step"><b>新会话</b><p>System Prompt 只注入 owned active Skill 目录；任务匹配时再读取 v3 的完整 SKILL.md 和 supporting files。</p></div>
+          </div>
+
+          <div class="note">
+            Skill 目录通常按 session_init 缓存，所以另一个任务刚生成的新版本不会稳定出现在已经运行中的 Session。要验证新 Skill 是否被 Agent 看见，应开启新 Session，并检查目录、读取轨迹和最终执行结果。
+          </div>
+        </article>
+      </section>
+
+      <section id="wiki">
+        <div class="part-head">
+          <p class="part-label">第三部分 · Wiki</p>
+          <h2>外部文档怎样变成可搜索的知识库</h2>
+          <p class="part-intro">Wiki 不是只保存一张关联图。真正的知识在 Markdown 页面里，Wikilink 把页面连接起来，FTS5/BM25 让 Agent 能先找到相关页。</p>
+        </div>
+
+        <article class="chapter">
+          <h3>生成从上传文档和一次显式 ingest 开始</h3>
+          <p class="chapter-lead">上传 .md 或 .txt 只是保存 raw 文件。调用 ingest 后，MemoryKnowledge 才异步分析原文、生成页面并重建索引。</p>
+
+          <div class="rail">
+            <div class="rail-step">
+              <div class="rail-num">01</div>
+              <div class="rail-body"><b>登记 source 与 SHA</b><p>先比较内容哈希；只有新增、发生变化或上次未成功的 source 才进入本轮 LLM 加工。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">02</div>
+              <div class="rail-body"><b>分析 Prompt 制定抽取计划</b><p>输入 Wiki purpose、extraction schema、已有页面清单和本段原文，判断应该创建或更新哪些页面。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">03</div>
+              <div class="rail-body"><b>生成 Prompt 输出 FILE 块</b><p>模型输出文件路径和完整 Markdown；页面应有独立含义、sources、摘要和必要的 Wikilink。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">04</div>
+              <div class="rail-body"><b>工程层规范化与合并</b><p>校验 canonical path、保护 locked 页面、合并 sources、限制结构文件，避免模型随意写目录。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">05</div>
+              <div class="rail-body"><b>重建全文索引与关系边</b><p>最终 Markdown 写入 FTS5/page_meta；从 <code>[[Wikilink]]</code> 提取 graph_edge。</p></div>
+            </div>
+          </div>
+
+          <div class="prompt">
+            <div class="prompt-head">Wiki 的两阶段 Prompt<span>analyze → generate</span></div>
+            <div class="prompt-body">
+              <p><strong>分析阶段</strong>让模型先理解 purpose/schema、原文和已有页面，给出抽取计划；<strong>生成阶段</strong>再按 FILE 协议输出页面。这样可以先判断页面边界，再写正文，而不是把每个 chunk 直接变成一页。</p>
+              <pre>## Wiki Purpose
+这个知识库要服务什么问题
+
+## Extraction Schema
+应抽取哪些实体、概念、决策和关系
+
+## Existing wiki pages
+当前已有页面及摘要
+
+## Source Document
+本轮原始文档内容
+
+---FILE: wiki/concepts/jwt-authentication.md---
+# JWT Authentication
+...
+---END FILE---</pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="chapter">
+          <h3>生成后，页面、全文索引和关系图同时存在</h3>
+          <div class="grid-2">
+            <div class="card">
+              <span class="mechanism-label">页面正文</span>
+              <pre>wiki/
+├── entities/api-gateway.md
+├── concepts/jwt-authentication.md
+├── decisions/token-revocation.md
+└── overview.md</pre>
+              <p>每一页有完整 Markdown 内容，Agent 最终回答所需的设计细节来自这里。</p>
+            </div>
+            <div class="card">
+              <span class="mechanism-label">索引与关系</span>
+              <pre>title + body → FTS5 / BM25
+
+[[api-gateway]]
+      │ uses
+      ▼
+[[jwt-authentication]]
+      │ constrained by
+      ▼
+[[token-revocation]]</pre>
+              <p>全文索引解决“先找到哪一页”，图解决“页面之间怎样关联”。</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="chapter">
+          <h3>Agent 搜索 Wiki，明确是通过工具完成的</h3>
+          <p class="chapter-lead">新 Session 不会获得所有 Wiki 正文。Knowledge Injector 只放入已绑定 Wiki 的名称、ID、摘要、服务地址和统一工具说明。</p>
+
+          <div class="summary-loop">
+            <div class="summary-step"><b>看到资源</b><p>System Prompt 中出现一个 <code>&lt;knowledge type="wiki" ... /&gt;</code> 目录项。</p></div>
+            <div class="summary-step"><b>发现工具</b><p>Agent 调用 <code>POST /v3/tools/list</code>，取得 search、read_page、get_graph 等真实工具名和参数。</p></div>
+            <div class="summary-step"><b>搜索页面</b><p>调用 <code>/v3/tools/call</code> 的 search，用关键词召回 title、snippet、related 和 links。</p></div>
+            <div class="summary-step"><b>读取正文</b><p>根据命中结果调用 read_page，只取当前问题所需的少数页面。</p></div>
+          </div>
+
+          <div class="grid-2" style="margin-top:20px">
+            <div class="card">
+              <span class="mechanism-label">search</span>
+              <pre>{
+  "knowledge_id": "wiki-auth-001",
+  "tool_name": "search",
+  "params": {
+    "query": "JWT 登录架构",
+    "limit": 5
+  }
+}</pre>
+            </div>
+            <div class="card">
+              <span class="mechanism-label">read_page</span>
+              <pre>{
+  "knowledge_id": "wiki-auth-001",
+  "tool_name": "read_page",
+  "params": {
+    "refs": [
+      "wiki/concepts/jwt-authentication.md"
+    ]
+  }
+}</pre>
+            </div>
+          </div>
+
+          <div class="note amber">
+            标准 Agent Wiki <code>search</code> 默认是 hop=0 的 FTS5/BM25，不会自动沿图扩展召回。它会把命中页面的 related 和本批 links 一起返回；只有直接调用支持 hop 参数的数据 API，才会先找 BM25 种子，再沿 Wikilink 做多跳扩展。因此“Wiki 有图”不等于“Agent 平时默认用图搜索”。
+          </div>
+        </article>
+      </section>
+
+      <section id="codegraph">
+        <div class="part-head">
+          <p class="part-label">第四部分 · CodeGraph</p>
+          <h2>代码仓库怎样变成可查询的结构地图</h2>
+          <p class="part-intro">Wiki 的页面由 LLM 整理；CodeGraph 不一样。它克隆真实仓库，解析文件、符号和调用关系，再把这些结果做成预建索引。</p>
+        </div>
+
+        <article class="chapter">
+          <h3>CodeGraph 的生成不使用 LLM</h3>
+          <p class="chapter-lead">创建资源时提供 repo_url、branch 和租户/团队身份，后台经历 pending、cloning、indexing，最后进入 ready 或 failed。</p>
+
+          <div class="story-flow">
+            <div class="story-node"><b>Create</b><span>仓库地址、分支、名称、team/service</span></div>
+            <div class="story-node"><b>Clone</b><span>拉取指定分支并记录 commit</span></div>
+            <div class="story-node"><b>Index</b><span>解析文件、符号、定义和调用边</span></div>
+            <div class="story-node"><b>Ready</b><span>保存 files、nodes、edges 与同步状态</span></div>
+          </div>
+
+          <div class="grid-2" style="margin-top:22px">
+            <div class="card">
+              <span class="mechanism-label">输入</span>
+              <pre>{
+  "team_id": "team-alpha",
+  "repo_url": "https://example.com/acme/payments.git",
+  "branch": "main",
+  "repo_name": "payments"
+}</pre>
+            </div>
+            <div class="card">
+              <span class="mechanism-label">结果</span>
+              <pre>{
+  "code_graph_id": "cg-payments-main",
+  "status": "ready",
+  "commit_hash": "8c4a1d9",
+  "stats": {
+    "files": 312,
+    "nodes": 4860,
+    "edges": 9174
+  }
+}</pre>
+            </div>
+          </div>
+
+          <div class="note">
+            首次创建使用 CodeGraph init 并全量索引；已有索引可以 open + indexAll；后续 sync 只处理变化文件。手工同步和 Auto Sync Scheduler 都能让索引追随仓库。启用构建完成回调时，资源摘要按仓库名、分支和统计模板生成，也不调用 LLM。
+          </div>
+        </article>
+
+        <article class="chapter">
+          <h3>它没有“生成 Prompt”，但有“怎样使用工具”的运行时 Prompt</h3>
+          <p class="chapter-lead">Knowledge Injector 会告诉 Agent：先把 CodeGraph 当作地图，按问题选择工具；整张图和全部源码不会直接塞进 System Prompt。</p>
+
+          <div class="tool-list">
+            <div class="tool"><code>explore</code><span>理解某个功能怎样工作，按文件返回相关符号的完整源码；通常是首选。</span></div>
+            <div class="tool"><code>search</code><span>按名称或类型找符号位置，不返回完整源码。</span></div>
+            <div class="tool"><code>callers</code><span>沿调用边查谁调用了某个符号。</span></div>
+            <div class="tool"><code>callees</code><span>沿调用边查某个符号又调用了谁。</span></div>
+            <div class="tool"><code>impact</code><span>按 depth 查修改一个符号可能影响哪些依赖方。</span></div>
+            <div class="tool"><code>node</code><span>读取单个符号的定义、关系和可选完整源码。</span></div>
+            <div class="tool"><code>files</code><span>一次性查看项目目录与语言/符号统计。</span></div>
+            <div class="tool"><code>status</code><span>查看索引文件、节点和边的健康状态。</span></div>
+          </div>
+
+          <div class="prompt">
+            <div class="prompt-head">运行时工具选择 Prompt 的核心意思<span>knowledge tools</span></div>
+            <div class="prompt-body">
+              <ul>
+                <li>理解功能或调用流程，先用 explore。</li>
+                <li>只找定义位置，用 search；只看一个符号，用 node。</li>
+                <li>查上下游，用 callers/callees；重构前评估影响，用 impact。</li>
+                <li>先调用 tools/list 取得真实工具 schema，再通过 tools/call 执行。</li>
+                <li>索引明显落后，或即将实际修改代码时，再以工作区最新源码作最终确认。</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="chapter">
+          <h3>“CodeGraph 是图搜索吗”要看具体调用</h3>
+          <p class="chapter-lead">底层确实保存文件、符号和关系边，但每个工具的查询语义不同。</p>
+          <div class="two-voices">
+            <div class="voice">
+              <div class="title">不是图遍历的部分</div>
+              <p><code>search</code> 主要做符号名与类型匹配，用来找到节点；不能把它直接说成多跳图搜索。</p>
+            </div>
+            <div class="voice">
+              <div class="title">明确查询关系图的部分</div>
+              <p><code>callers</code>、<code>callees</code> 沿调用边查询，<code>impact</code> 按深度遍历依赖关系。</p>
+            </div>
+          </div>
+          <div class="note amber">
+            和 Wiki 一样，Agent 先在 System Prompt 中看到已绑定 CodeGraph 资源，再通过 <code>tools/list → tools/call</code> 主动查询。CodeGraph 的“演化”来自仓库 commit 变化与索引同步，不是从一次对话反馈中自动改写代码关系。
+          </div>
+        </article>
+      </section>
+
+      <section id="runtime">
+        <div class="part-head">
+          <p class="part-label">把四条链交回 Agent</p>
+          <h2>内容生成以后，怎样真正进入下一次任务</h2>
+          <p class="part-intro">资产存在不代表 Agent 已经能用。中间还要经过登记、权限、绑定和不同的注入方式。</p>
+        </div>
+
+        <article class="chapter">
+          <h3>Asset 是登记卡，Loadout 是当前 Session 的实际装配结果</h3>
+          <p class="chapter-lead">Chat Memory、Skill、Wiki 和 CodeGraph 的真实内容仍保存在各自系统里。Asset 只统一登记 ID、类型、所有者、版本、可见性、状态和 content_ref。</p>
+
+          <div class="summary-loop">
+            <div class="summary-step"><b>登记</b><p><code>meta_assets</code> 记录资产是什么、属于谁、状态如何、真实内容在哪里。</p></div>
+            <div class="summary-step"><b>授权</b><p>private、team、restricted 与 ACL 决定哪些用户或 Agent 有权使用。</p></div>
+            <div class="summary-step"><b>绑定</b><p><code>meta_agent_fixed_assets</code> 记录哪个 Agent 固定携带哪些资产。</p></div>
+            <div class="summary-step"><b>过滤</b><p>Session 初始化时结合身份、能力开关和状态，跳过不可见或 archived/deprecated/failed 的资产。</p></div>
+            <div class="summary-step"><b>装配</b><p>Memory、Skill、Knowledge 各自的 Injector 把内容编译成全文、目录或工具说明。</p></div>
+          </div>
+
+          <div class="grid-3" style="margin-top:22px">
+            <div class="card">
+              <h3>Memory</h3>
+              <p>L3 全文直接注入；L2 只放索引；L0/L1 通过记忆工具按需查。</p>
+            </div>
+            <div class="card">
+              <h3>Skill</h3>
+              <p>Session 初始化时先依据 Agent/Task 描述预筛 owned active Skill 目录；当前任务命中后，主 Agent 再读取 SKILL.md 和 supporting files。</p>
+            </div>
+            <div class="card">
+              <h3>Wiki / CodeGraph</h3>
+              <p>只注入资源目录和 tools/list、tools/call 说明，正文或关系由工具按需返回。</p>
+            </div>
+          </div>
+
+          <div class="note rose">
+            仓库目前没有独立的 LoadoutEntity 或统一 token-budget 编译器。<code>injection_mode</code> 和 <code>priority</code> 已经存储，但运行时仍主要按资产类型走各自 Injector；Skill 还有自身 owner_agent_id 路径。多数目录按 session_init 缓存，因此绑定、状态或版本变化后，应开新 Session 验证。
+          </div>
+        </article>
+
+        <article class="chapter">
+          <h3>不是同一套查询路由，也不是只有一层判断</h3>
+          <p class="chapter-lead">代码先决定当前 Agent 有权看见什么、哪些内容直接放进 Prompt；同一个主 Agent 再根据当前问题选择零个、一个或多个资产；最后才进入各自不同的查询通道。仓库里没有一个统一的 <code>asset_router</code> 替模型做四选一。</p>
+
+          <div class="rail">
+            <div class="rail-step">
+              <div class="rail-num">01</div>
+              <div class="rail-body"><b>控制面先筛资产</b><p>固定绑定（Skill 另有 owner-agent 目录路径）、ACL、状态、能力开关和当前身份，先决定哪些 Memory、Skill、Wiki、CodeGraph 可以进入本 Session。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">02</div>
+              <div class="rail-body"><b>各自 Injector 分别装配</b><p>Memory、Skill、Knowledge 并不先汇入一个通用检索器，而是分别生成全文、索引、目录和工具说明。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">03</div>
+              <div class="rail-body"><b>一部分内容直接生效</b><p>L3 全文已经在 System Prompt 中，无需查询；L2 场景索引、Skill 目录、Wiki/CodeGraph 资源目录只提供下一步导航。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">04</div>
+              <div class="rail-body"><b>主 Agent 做跨资产判断</b><p>它根据“历史、流程、设计、代码实现”等意图决定是否读取；这不是互斥选择，同一任务可以组合多种资产。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">05</div>
+              <div class="rail-body"><b>进入不同后端</b><p>Memory 走 memory-bridge，Skill 走 skill-bridge，只有 Wiki 与 CodeGraph 共用 Knowledge 的 tools/list → tools/call 外层协议。</p></div>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top:22px">
+            <div class="card">
+              <span class="mechanism-label">Chat Memory</span>
+              <p><strong>L3 不查：</strong>全文在新 Session 直接影响推理。<strong>L2 先看索引：</strong>匹配场景时用 <code>tdai_read_scene</code> 读取正文。<strong>L0/L1 主动查：</strong>当前生产注册已下线逐轮自动 L1 召回，涉及历史原文、偏好或约定时，由 Agent 调 <code>tdai_conversation_search</code> 或 <code>tdai_memory_search</code>。</p>
+              <pre>/memory-bridge/v3/atomic/search
+/memory-bridge/v3/conversation/search
+/memory-bridge/v3/scenario/read</pre>
+            </div>
+            <div class="card">
+              <span class="mechanism-label">Skill</span>
+              <p><strong>代码先预筛：</strong>Session 初始化用 Agent 描述、Prompt、Task 描述和目标形成查询，生成当前 Agent 的 <code>&lt;available_skills&gt;</code>。<strong>Agent 再选：</strong>当前任务匹配 name/description 时调用 <code>skill_view</code>；目录不足时才用 <code>skill_search</code> 查团队可见 Skill。</p>
+              <pre>/skill-bridge/v3/skill/search
+/skill-bridge/v3/skill/get
+/skill-bridge/v3/skill/files/read</pre>
+            </div>
+            <div class="card">
+              <span class="mechanism-label">Wiki</span>
+              <p>代码只注入已绑定 Wiki 的名称、摘要、ID 和服务地址，不会按本轮问题自动搜正文。Agent 遇到设计背景、概念、约束或历史决策时，通过统一 Knowledge 工具先 <code>search</code>，命中后再 <code>read_page</code>。</p>
+              <pre>/v3/tools/list
+→ /v3/tools/call: search
+→ /v3/tools/call: read_page</pre>
+            </div>
+            <div class="card">
+              <span class="mechanism-label">CodeGraph</span>
+              <p>它与 Wiki 共用资源目录和 tools/list、tools/call 外层协议，但查询引擎不同。Agent 遇到符号位置、实现流程、调用上下游或改动影响时，选择 <code>explore</code>、<code>search</code>、<code>callers/callees</code> 或 <code>impact</code>。</p>
+              <pre>/v3/tools/list
+→ /v3/tools/call: explore
+→ callers / callees / impact</pre>
+            </div>
+          </div>
+
+          <div class="prompt">
+            <div class="prompt-head">同一个任务可以组合四种资产<span>not a four-way switch</span></div>
+            <div class="prompt-body">
+              <p>例如用户说：“按我们上次的约定修复 refresh token 撤销问题，先解释设计原因，再确认改动影响。”主 Agent 可以把一句话拆成四种信息需要：</p>
+              <div class="summary-loop">
+                <div class="summary-step"><b>上次约定</b><p>查 Chat Memory 的 L0/L1；如果已经写在 L3，则直接使用。</p></div>
+                <div class="summary-step"><b>怎样修复与验证</b><p>从 Skill 目录匹配缺陷修复或 Token 撤销流程，并读取正文。</p></div>
+                <div class="summary-step"><b>为什么这样设计</b><p>搜索 Wiki，再读取命中的设计页面。</p></div>
+                <div class="summary-step"><b>代码在哪里、影响谁</b><p>用 CodeGraph explore 定位实现，再用 impact 查看关系范围。</p></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note rose">
+            当前的“跨资产路由”本质上是分散在多个 Prompt 块中的使用规则，最终由同一个主 LLM 综合执行；代码没有独立分类模型、统一状态机或全局优先级算法来保证它一定选对、避免重复查询。各资产也不是竞争一个唯一答案，而是可以在同一轮互相补充。
+          </div>
+        </article>
+
+      </section>
+
+      <section id="evolution">
+        <div class="part-head">
+          <p class="part-label">整体总结</p>
+          <h2>这套系统怎样形成自进化</h2>
+          <p class="part-intro">模型权重没有改变。改变的是外部资产的内容、版本、索引和下一次调用时可见的上下文。</p>
+        </div>
+
+        <article class="chapter">
+          <h3>四种输入，各自形成一条更新链</h3>
+          <div class="summary-loop">
+            <div class="summary-step"><b>会话</b><p>L0 记录真实消息，L1 去重并保留原子记忆，L2 改写场景，L3 提炼长期准则。</p></div>
+            <div class="summary-step"><b>执行</b><p>Skill Review 从真实任务轨迹中提炼能力，并用新 Session 证据持续创建版本。</p></div>
+            <div class="summary-step"><b>文档</b><p>Wiki 用 source SHA 找变化，LLM 生成或合并页面，再重建全文索引和关系图。</p></div>
+            <div class="summary-step"><b>代码</b><p>CodeGraph 随仓库变化重新解析文件、符号和调用边，让查询结果追随真实代码。</p></div>
+            <div class="summary-step"><b>复用</b><p>Asset、ACL 和 fixed binding 选中资产；Injector 在新 Session 中注入全文、目录或工具协议。</p></div>
+            <div class="summary-step"><b>新证据</b><p>Agent 按这些经验完成下一次任务，新的对话、轨迹、文档和 commit 再进入各自更新链。</p></div>
+          </div>
+        </article>
+
+        <article class="chapter">
+          <h3>效果反馈和人工选择做到哪里了</h3>
+          <p class="chapter-lead">仓库已有一些反馈与治理基础，但“使用后自动判断资产好坏”还没有形成完整闭环。</p>
+
+          <div class="grid-2">
+            <div class="card">
+              <span class="mechanism-label">Asset Reflection</span>
+              <p>默认关闭。开启 opt-in 且请求路径包含 <code>/analyse</code> 时，Prompt 会让 Agent 在最终回答末尾写：</p>
+              <pre>【资产反思】
+- &lt;tag&gt;::&lt;tool_name&gt;：
+  这次是否有用，得到什么，或为何没命中</pre>
+              <p>当前没有自动解析这段文字，也不会据此回写 Asset、调整排名或改写内容。</p>
+            </div>
+            <div class="card">
+              <span class="mechanism-label">人工选择</span>
+              <p>人可以用 visibility/ACL、bind/unbind、状态和版本控制哪些经验能够存活和传播。</p>
+              <ul>
+                <li>Skill 更新保留不可变版本。</li>
+                <li>Fork 会复制内容，之后两份独立演化。</li>
+                <li>runtime 会过滤 archived/deprecated/failed。</li>
+                <li>draft/candidate/approved 目前更像治理标签，并非完整强制发布闸门。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="status-pair">
+            <div class="status done">
+              <h3><span class="dot"></span> 已经闭合的部分</h3>
+              <ul>
+                <li>新证据可以生成或更新 Memory、Skill、Wiki、CodeGraph。</li>
+                <li>重复内容有去重、合并、版本或增量同步机制。</li>
+                <li>被选择的资产能够在新 Session 中重新交给 Agent。</li>
+                <li>人能够控制共享、绑定、Fork、废弃和权限。</li>
+              </ul>
+            </div>
+            <div class="status missing">
+              <h3><span class="dot"></span> 还缺少的部分</h3>
+              <ul>
+                <li>稳定记录资产是否真的被调用和命中。</li>
+                <li>把一次资产使用归因到最终任务质量。</li>
+                <li>根据效果自动评分并调整检索或 Loadout 排名。</li>
+                <li>受治理约束地自动强化、改写、降级或淘汰资产。</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="chapter">
+          <h3>怎样证明一次“进化”真的产生了效果</h3>
+          <div class="rail">
+            <div class="rail-step">
+              <div class="rail-num">01</div>
+              <div class="rail-body"><b>先看资产是否变化</b><p>检查 L1/L2/L3 内容、Skill version、Wiki 页面/索引或 CodeGraph commit/stats。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">02</div>
+              <div class="rail-body"><b>再看是否进入新 Session</b><p>核对 Asset、ACL、binding 和最终 System Prompt，避免把“已经生成”误当成“已经装配”。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">03</div>
+              <div class="rail-body"><b>确认是否真的使用</b><p>查看 L2/Skill 读取轨迹，或 Wiki/CodeGraph 的真实工具调用，而不是只看目录出现。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">04</div>
+              <div class="rail-body"><b>最后比较任务结果</b><p>固定模型、温度、任务、代码和工具权限，比较有/无资产时的成功率、步骤数、token、错误和返工。</p></div>
+            </div>
+            <div class="rail-step">
+              <div class="rail-num">05</div>
+              <div class="rail-body"><b>加入无关资产负对照</b><p>确认 Agent 不会因为目录里有内容就盲目读取或套用，才能证明检索和选择是有效的。</p></div>
+            </div>
+          </div>
+        </article>
+
+        <div class="final">
+          <p class="big">这套仓库已经实现了“新证据 → 外部资产持续更新 → 被选择的资产回到下一次 Agent”这条主干。它当前最准确的定位，是自动沉淀与复用经验、由人控制传播；下一步真正需要补齐的，是以任务结果为依据的自动归因、评分和资产优化。</p>
+          <p class="small" style="margin-top:20px">更完整的数据格式、阈值、Prompt 细节、隔离范围和源码依据见 <a href="./l0-l3-memory-architecture.zh-CN.md">配套 Markdown 文档</a>。</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="shell">
+      <span>TencentDB Agent Memory · feat/server_team @ 0aff21a</span>
+      <span>整理日期：2026-08-06 · 示例内容为说明性数据</span>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const progress = document.getElementById('progress');
+      const links = [...document.querySelectorAll('.toc a')];
+      const targets = links
+        .map(link => document.querySelector(link.getAttribute('href')))
+        .filter(Boolean);
+
+      const updateProgress = () => {
+        const root = document.documentElement;
+        const max = root.scrollHeight - root.clientHeight;
+        const value = max > 0 ? root.scrollTop / max * 100 : 0;
+        progress.style.width = `${Math.min(100, Math.max(0, value))}%`;
+      };
+
+      const observer = new IntersectionObserver(entries => {
+        const visible = entries
+          .filter(entry => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+        links.forEach(link => {
+          const active = link.getAttribute('href') === `#${visible.target.id}`;
+          link.classList.toggle('active', active);
+          if (active) link.setAttribute('aria-current', 'true');
+          else link.removeAttribute('aria-current');
+        });
+      }, { rootMargin: '-16% 0px -70% 0px', threshold: [0, .1, .3] });
+
+      targets.forEach(target => observer.observe(target));
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress();
+    })();
+  </script>
+</body>
+</html>

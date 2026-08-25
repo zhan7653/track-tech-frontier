@@ -1,0 +1,1200 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Codex 本地 Memory 如何从历史任务中抽取经验、巩固为文件化手册，并在后续任务中按需读取。">
+  <title>Codex Local Memory：任务如何沉淀为可复用的工作经验</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #081018;
+      --bg-deep: #050a10;
+      --surface: #101b25;
+      --surface-2: #142330;
+      --surface-3: #0c151e;
+      --text: #edf5f7;
+      --muted: #a8bac3;
+      --faint: #718792;
+      --line: rgba(171, 205, 214, .17);
+      --mint: #76e6c2;
+      --mint-2: #2fbf9b;
+      --cyan: #6fd8f2;
+      --amber: #f3c875;
+      --rose: #f292aa;
+      --violet: #b8a5ff;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .28);
+      --radius: 24px;
+      --radius-sm: 15px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% -6%, rgba(47,191,155,.17), transparent 28rem),
+        radial-gradient(circle at 92% 18%, rgba(111,216,242,.10), transparent 30rem),
+        linear-gradient(180deg, var(--bg-deep), var(--bg) 28rem, #09131c);
+      font: 16px/1.72 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      letter-spacing: .01em;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .23;
+      background-image:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, black, transparent 75%);
+    }
+
+    a { color: inherit; }
+    code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+    code {
+      color: #c8fff0;
+      background: rgba(118,230,194,.09);
+      border: 1px solid rgba(118,230,194,.12);
+      border-radius: 6px;
+      padding: .08em .36em;
+      font-size: .9em;
+    }
+    pre {
+      margin: 13px 0 0;
+      padding: 18px 20px;
+      overflow: auto;
+      color: #d8edf0;
+      background: #09131b;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      font-size: 13px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+    pre code { padding: 0; border: 0; background: none; color: inherit; }
+    h1, h2, h3, h4, p { margin-top: 0; }
+    h2 { font-size: clamp(30px, 4.6vw, 52px); line-height: 1.12; letter-spacing: -.035em; }
+    h3 { font-size: 22px; line-height: 1.35; letter-spacing: -.018em; }
+    ul { padding-left: 1.2em; }
+    li + li { margin-top: 6px; }
+
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    .progress {
+      position: fixed;
+      z-index: 20;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--mint-2), var(--cyan));
+      box-shadow: 0 0 18px rgba(118,230,194,.7);
+    }
+
+    .hero {
+      min-height: 720px;
+      display: grid;
+      align-items: center;
+      padding: 90px 0 72px;
+      border-bottom: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 580px;
+      height: 580px;
+      right: -180px;
+      top: 70px;
+      border: 1px solid rgba(118,230,194,.14);
+      border-radius: 50%;
+      box-shadow: 0 0 0 80px rgba(118,230,194,.025), 0 0 0 170px rgba(111,216,242,.018);
+    }
+    .hero .shell { position: relative; z-index: 1; }
+    .eyebrow, .part-label {
+      color: var(--mint);
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    h1 {
+      max-width: 980px;
+      margin: 18px 0 24px;
+      font-size: clamp(52px, 8.6vw, 104px);
+      line-height: .98;
+      letter-spacing: -.065em;
+    }
+    h1 span {
+      display: block;
+      color: transparent;
+      background: linear-gradient(90deg, var(--mint), var(--cyan));
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+    .hero-lead { max-width: 830px; color: var(--muted); font-size: clamp(19px, 2.5vw, 26px); line-height: 1.58; }
+    .hero-path { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 34px 0; }
+    .hero-path span {
+      padding: 8px 12px;
+      color: #dff8f3;
+      border: 1px solid rgba(118,230,194,.2);
+      border-radius: 999px;
+      background: rgba(118,230,194,.055);
+      font-size: 13px;
+    }
+    .hero-path i { color: var(--faint); font-style: normal; }
+    .hero-link { display: inline-flex; gap: 10px; align-items: center; color: var(--mint); text-decoration: none; font-weight: 700; }
+
+    .layout { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 58px; padding-top: 70px; }
+    .toc {
+      position: sticky;
+      top: 34px;
+      align-self: start;
+      max-height: calc(100vh - 68px);
+      overflow: auto;
+      padding: 18px 0;
+    }
+    .toc p { color: var(--faint); font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+    .toc a {
+      display: block;
+      margin: 3px 0;
+      padding: 7px 12px;
+      color: var(--faint);
+      border-left: 2px solid transparent;
+      text-decoration: none;
+      font-size: 13px;
+      transition: .2s ease;
+    }
+    .toc a:hover, .toc a.active { color: var(--text); border-color: var(--mint); background: linear-gradient(90deg, rgba(118,230,194,.09), transparent); }
+    .toc a.sub { padding-left: 24px; font-size: 12px; }
+    main { min-width: 0; }
+    section { scroll-margin-top: 24px; margin-bottom: 110px; }
+    .part-head { max-width: 880px; margin-bottom: 34px; }
+    .part-head h2 { margin: 8px 0 16px; }
+    .part-intro, .chapter-lead { color: var(--muted); font-size: 18px; }
+
+    .opening, .chapter, .layer, .final {
+      position: relative;
+      margin-top: 20px;
+      padding: clamp(24px, 4vw, 42px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(145deg, rgba(20,35,48,.94), rgba(11,20,29,.94));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .opening::before, .final::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--mint), var(--cyan), transparent 75%);
+    }
+    .quote { max-width: 900px; font-size: clamp(24px, 3.7vw, 42px); line-height: 1.35; letter-spacing: -.025em; }
+    .conversation { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 28px; }
+    .bubble { padding: 18px 20px; border: 1px solid rgba(118,230,194,.18); border-radius: 18px 18px 18px 4px; background: rgba(118,230,194,.065); }
+    .bubble.assistant { border-color: rgba(111,216,242,.18); border-radius: 18px 18px 4px 18px; background: rgba(111,216,242,.06); }
+    .bubble b { display: block; margin-bottom: 7px; color: var(--mint); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+    .bubble.assistant b { color: var(--cyan); }
+
+    .story-flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; margin-top: 28px; }
+    .story-node { position: relative; min-height: 108px; padding: 16px; border: 1px solid var(--line); border-radius: 15px; background: rgba(4,10,15,.35); }
+    .story-node:not(:last-child)::after { content: "→"; position: absolute; right: -11px; top: 38px; z-index: 2; color: var(--mint); }
+    .story-node b { display: block; color: var(--mint); font-size: 13px; margin-bottom: 8px; }
+    .story-node span { color: var(--muted); font-size: 13px; line-height: 1.45; }
+
+    .grid-2, .grid-3, .grid-4 { display: grid; gap: 16px; margin-top: 20px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .card, .voice, .tool {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: rgba(5,12,18,.42);
+    }
+    .card p:last-child, .voice p:last-child { margin-bottom: 0; }
+    .card h3 { margin-bottom: 8px; }
+    .mechanism-label {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--mint);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .metric { display: block; color: var(--text); font-size: 28px; font-weight: 800; line-height: 1.15; }
+    .metric-note { color: var(--muted); font-size: 13px; }
+
+    .rail { position: relative; margin-top: 22px; }
+    .rail::before { content: ""; position: absolute; left: 20px; top: 22px; bottom: 22px; width: 1px; background: linear-gradient(var(--mint), rgba(118,230,194,.06)); }
+    .rail-step { position: relative; display: grid; grid-template-columns: 42px 1fr; gap: 16px; padding: 10px 0; }
+    .rail-num { position: relative; z-index: 1; display: grid; place-items: center; width: 42px; height: 42px; color: #062119; background: var(--mint); border-radius: 50%; font-size: 12px; font-weight: 900; }
+    .rail-body { padding: 5px 0 12px; }
+    .rail-body b { display: block; margin-bottom: 4px; font-size: 18px; }
+    .rail-body p { color: var(--muted); margin-bottom: 0; }
+
+    .note { margin-top: 18px; padding: 16px 18px; color: #dff8f1; border-left: 3px solid var(--mint); border-radius: 4px 12px 12px 4px; background: rgba(118,230,194,.07); }
+    .note.amber { color: #fae9c8; border-color: var(--amber); background: rgba(243,200,117,.075); }
+    .note.rose { color: #f8dce4; border-color: var(--rose); background: rgba(242,146,170,.075); }
+    .note.violet { color: #e8e1ff; border-color: var(--violet); background: rgba(184,165,255,.075); }
+
+    .prompt { margin-top: 20px; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
+    .prompt-head { display: flex; justify-content: space-between; gap: 14px; padding: 13px 18px; color: var(--mint); background: rgba(118,230,194,.075); font-weight: 800; }
+    .prompt-head span { color: var(--faint); font-size: 12px; font-weight: 600; }
+    .prompt-body { padding: 20px; background: rgba(5,12,18,.44); }
+    .prompt-body > :last-child { margin-bottom: 0; }
+
+    .summary-loop { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-top: 18px; }
+    .summary-step { padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: rgba(5,12,18,.38); }
+    .summary-step b { display: block; color: var(--mint); margin-bottom: 7px; }
+    .summary-step p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .io-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
+    .io-box {
+      position: relative;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: rgba(5,12,18,.46);
+    }
+    .io-box:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      z-index: 2;
+      right: -13px;
+      top: 50%;
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      color: #062119;
+      background: var(--mint);
+      border-radius: 50%;
+      transform: translateY(-50%);
+      font-weight: 900;
+    }
+    .io-box .io-label {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 4px 9px;
+      color: var(--mint);
+      border: 1px solid rgba(118,230,194,.2);
+      border-radius: 999px;
+      background: rgba(118,230,194,.07);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .14em;
+    }
+    .io-box.process .io-label { color: var(--amber); border-color: rgba(243,200,117,.2); background: rgba(243,200,117,.07); }
+    .io-box.output .io-label { color: var(--cyan); border-color: rgba(111,216,242,.2); background: rgba(111,216,242,.07); }
+    .io-box h3 { margin-bottom: 8px; }
+    .io-box p:last-child, .io-box ul:last-child { margin-bottom: 0; }
+    .io-box p, .io-box li { color: var(--muted); font-size: 14px; }
+    .example-block { margin-top: 20px; border: 1px solid rgba(111,216,242,.18); border-radius: var(--radius-sm); overflow: hidden; }
+    .example-title { padding: 12px 18px; color: var(--cyan); background: rgba(111,216,242,.065); font-size: 13px; font-weight: 800; }
+    .example-body { padding: 20px; background: rgba(5,12,18,.44); }
+    .example-body > :last-child { margin-bottom: 0; }
+    .contract-line { margin-top: 14px; padding: 13px 16px; color: #dff8f1; border-left: 3px solid var(--cyan); background: rgba(111,216,242,.055); }
+
+    .status-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+    .status { padding: 22px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+    .status.done { background: rgba(118,230,194,.055); }
+    .status.missing { background: rgba(242,146,170,.055); }
+    .status h3 { display: flex; align-items: center; gap: 9px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 14px rgba(118,230,194,.8); }
+    .missing .dot { background: var(--rose); box-shadow: 0 0 14px rgba(242,146,170,.8); }
+
+    .tool-list { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-top: 18px; }
+    .tool { display: grid; grid-template-columns: 145px 1fr; gap: 12px; align-items: start; }
+    .tool code { justify-self: start; }
+    .tool span { color: var(--muted); font-size: 14px; }
+    .two-voices { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+    .voice .title { color: var(--mint); font-weight: 800; margin-bottom: 8px; }
+
+    .final { padding: clamp(30px, 5vw, 58px); }
+    .final .big { font-size: clamp(25px, 3.5vw, 40px); line-height: 1.42; letter-spacing: -.025em; }
+    .small { color: var(--faint); font-size: 13px; }
+    footer { margin-top: 80px; padding: 28px 0 44px; color: var(--faint); border-top: 1px solid var(--line); font-size: 12px; }
+    footer .shell { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .toc { display: none; }
+      .story-flow { grid-template-columns: 1fr 1fr; }
+      .story-node:not(:last-child)::after { display: none; }
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .summary-loop { grid-template-columns: 1fr 1fr; }
+      .io-grid { grid-template-columns: 1fr; }
+      .io-box:not(:last-child)::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -19px; transform: translateX(-50%); }
+    }
+    @media (max-width: 680px) {
+      .shell { width: min(100% - 24px, 1180px); }
+      .hero { min-height: auto; padding-top: 82px; }
+      h1 { font-size: clamp(44px, 16vw, 72px); }
+      .conversation, .grid-2, .grid-3, .grid-4, .story-flow, .summary-loop, .status-pair, .two-voices, .tool-list, .io-grid { grid-template-columns: 1fr; }
+      .tool { grid-template-columns: 1fr; }
+      .opening, .chapter, .layer, .final { border-radius: 18px; }
+      section { margin-bottom: 76px; }
+    }
+    @media print {
+      :root { --bg: #fff; --bg-deep: #fff; --surface: #fff; --surface-2: #f5f8f9; --surface-3: #fff; --text: #17232c; --muted: #435966; --faint: #657983; --line: #d9e2e6; }
+      body { color: var(--text); background: #fff; font-size: 12px; }
+      body::before, .progress, .toc, .hero-link { display: none; }
+      .hero { min-height: auto; padding: 28px 0; }
+      h1 { font-size: 42px; }
+      h1 span { color: #176c58; background: none; }
+      .layout { display: block; padding-top: 26px; }
+      section { margin-bottom: 42px; }
+      .opening, .chapter, .layer, .final { box-shadow: none; break-inside: avoid; }
+      pre { color: #233747; background: #f5f8f9; white-space: pre-wrap; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <header class="hero">
+    <div class="shell">
+      <p class="eyebrow">OpenAI Codex · Local Memory</p>
+      <h1>Codex 怎样从一次次对话里<span>形成跨任务长期记忆</span></h1>
+      <p class="hero-lead">
+        用户与 Codex 一问一答，期间产生消息、工具调用和执行结果。它们先维持当前任务，再被保存成历史记录；其中少量高价值经验会在之后经过两阶段提炼，进入一份可跨新任务读取的本地手册。
+      </p>
+      <div class="hero-path" aria-label="内容顺序">
+        <span>对话与工具轨迹</span><i>→</i>
+        <span>当前上下文</span><i>→</i>
+        <span>Rollout 历史</span><i>→</i>
+        <span>长期提炼</span><i>→</i>
+        <span>管理与复用</span>
+      </div>
+      <a class="hero-link" href="#conversation">从平时的一问一答开始 <span aria-hidden="true">↓</span></a>
+    </div>
+  </header>
+
+  <div class="shell layout">
+    <nav class="toc" aria-label="页面目录">
+      <p>内容</p>
+      <a href="#conversation">一问一答与工具调用</a>
+      <a href="#context">当前 Thread 上下文</a>
+      <a href="#history">Thread 与 Rollout 历史</a>
+      <a href="#startup">长期 Memory 何时开始</a>
+      <a href="#phase1">Phase 1 · 逐线程抽取</a>
+      <a href="#state">候选怎样管理</a>
+      <a href="#phase2">Phase 2 · 全局巩固</a>
+      <a href="#runtime">长期记忆怎样读取</a>
+      <a href="#feedback">引用与使用反馈</a>
+      <a href="#scope">作用域与 Agent 边界</a>
+      <a href="#forget">更新、忘记与清除</a>
+      <a href="#evolution">整体闭环</a>
+    </nav>
+
+    <main>
+      <section id="conversation">
+        <div class="part-head">
+          <p class="part-label">起点</p>
+          <h2>平时使用 Codex，就是一问一答加上中间执行</h2>
+          <p class="part-intro">长期 Memory 的输入并不是一个抽象的“rollout”。读者真正熟悉的起点，是用户消息、Codex 回复，以及完成任务过程中发生的工具调用和结果。</p>
+        </div>
+
+        <div class="opening">
+          <p class="quote">“修复刷新令牌撤销失效的问题。先复现，再修改，并确认并发刷新不会绕过撤销状态。”</p>
+          <div class="io-grid">
+            <div class="io-box input">
+              <span class="io-label">输入</span>
+              <h3>用户消息 + 已有 Thread 状态</h3>
+              <p>本轮问题、约束、附件，以及同一 thread 前面已经发生的消息和工具结果。</p>
+            </div>
+            <div class="io-box process">
+              <span class="io-label">处理</span>
+              <h3>Agent 对话—执行循环</h3>
+              <p>Codex 回复、选择工具、读取结果、调整判断，可能重复多次，直到任务结束或需要用户继续输入。</p>
+            </div>
+            <div class="io-box output">
+              <span class="io-label">输出</span>
+              <h3>新增事件 + 最终回复</h3>
+              <p>本轮新增的 user/assistant message、tool call/result，以及呈现给用户的最终答复。</p>
+            </div>
+          </div>
+
+          <div class="prompt">
+            <div class="prompt-head">一次 turn 中真正发生的内容<span>conversation + execution trace</span></div>
+            <div class="prompt-body">
+              <pre>user        修复 refresh token 撤销问题
+assistant   我先定位认证链路并建立失败测试
+tool_call  搜索 revoke / refresh token 的实现
+tool_result 找到本地 revocation store
+tool_call  运行认证测试
+tool_result 并发刷新用例失败
+tool_call  修改实现并再次运行测试
+tool_result 新测试和相关回归通过
+assistant   已修复；多实例必须使用共享撤销状态</pre>
+            </div>
+          </div>
+
+          <div class="contract-line">
+            <strong>输出去向：</strong>这些新增事件一方面进入当前 Thread，供下一轮继续；另一方面被追加进持久化历史，之后才可能成为长期 Memory 的输入。
+          </div>
+        </div>
+      </section>
+
+      <section id="context">
+        <div class="part-head">
+          <p class="part-label">第一层 · 当前任务</p>
+          <h2>消息和工具结果先成为当前 Thread 的工作记忆</h2>
+          <p class="part-intro">当用户继续追问“刚才那个测试为什么失败”时，Codex 不需要去长期 Memory 搜索。当前上下文已经保存了这轮对话和执行结果。</p>
+        </div>
+
+        <article class="chapter">
+          <div class="io-grid">
+            <div class="io-box input">
+              <span class="io-label">输入</span>
+              <h3>当前 Thread 的可用历史</h3>
+              <p>系统/开发者指令、本轮用户输入、前序消息、必要工具结果、项目环境，以及已注入的辅助内容。</p>
+            </div>
+            <div class="io-box process">
+              <span class="io-label">处理</span>
+              <h3>组装下一次模型上下文</h3>
+              <p>Codex host 把当前仍需提供给模型的状态整理成下一次请求；模型据此继续当前任务。</p>
+            </div>
+            <div class="io-box output">
+              <span class="io-label">输出</span>
+              <h3>下一步回复或工具调用</h3>
+              <p>例如解释刚才的测试失败、继续修改代码，或发起下一次工具调用。</p>
+            </div>
+          </div>
+
+          <div class="example-block">
+            <div class="example-title">例子：同一 Thread 的第二轮</div>
+            <div class="example-body">
+              <pre>新输入
+user: 刚才为什么只有并发刷新测试失败？
+
+当前上下文里已有
+- 搜到的 revocation store 实现
+- 第一次测试命令和失败输出
+- Codex 对单实例/多实例差异的判断
+
+输出
+assistant: 单实例路径共享同一进程内状态；并发刷新经过不同实例，
+           因而没有看到撤销记录。下一步应把撤销状态移到共享存储。</pre>
+            </div>
+          </div>
+
+          <div class="contract-line"><strong>输出去向：</strong>新的回复和工具事件继续追加到同一 Thread。这里解决的是当前任务连续性，不会直接写入 <code>MEMORY.md</code>。</div>
+        </article>
+      </section>
+
+      <section id="history">
+        <div class="part-head">
+          <p class="part-label">第二层 · 持久经历</p>
+          <h2>Thread 结束以后，对话和执行过程仍保存为历史</h2>
+          <p class="part-intro">Codex 内部把一条 thread 的持久化事件日志称为 rollout。这个词描述的是存储容器，不是另一种 Memory 内容。</p>
+        </div>
+
+        <article class="chapter">
+          <div class="io-grid">
+            <div class="io-box input">
+              <span class="io-label">输入</span>
+              <h3>Thread 中持续产生的事件</h3>
+              <p>每轮 user/assistant message、tool call/result，以及 cwd、branch、commit、时间和线程身份。</p>
+            </div>
+            <div class="io-box process">
+              <span class="io-label">处理</span>
+              <h3>按发生顺序持久化</h3>
+              <p>Host 把事件追加到 rollout JSONL，并在 Thread DB 保存定位这条会话所需的索引和状态。</p>
+            </div>
+            <div class="io-box output">
+              <span class="io-label">输出</span>
+              <h3>Rollout 文件 + Thread 记录</h3>
+              <p>前者是可回放的事件日志；后者让后台按 thread ID、来源、更新时间和路径找到它。</p>
+            </div>
+          </div>
+
+          <div class="example-block">
+            <div class="example-title">例子：这次认证修复在 Rollout 中大致怎样保存</div>
+            <div class="example-body">
+              <pre>{"type":"session_meta", "thread_id":"th-42", "cwd":"/repo/auth-service"}
+{"type":"turn_context", "git_branch":"fix/token-revoke", "git_sha":"8c4a1d9"}
+{"type":"message", "role":"user", "text":"修复 refresh token 撤销问题"}
+{"type":"message", "role":"assistant", "text":"我先建立失败测试"}
+{"type":"tool_call", "name":"exec", "args":"pytest tests/test_refresh.py"}
+{"type":"tool_result", "call_id":"call-17", "text":"1 failed, 8 passed"}
+{"type":"tool_call", "name":"apply_patch", "args":"..."}
+{"type":"tool_result", "call_id":"call-18", "text":"patch applied"}
+{"type":"message", "role":"assistant", "text":"修复并验证完成"}</pre>
+              <p class="small">字段和值为说明性示例；关键是看清它保存的是事件序列，不是一篇已经整理好的记忆文章。</p>
+            </div>
+          </div>
+
+          <div class="contract-line">
+            <strong>输出去向：</strong>恢复旧 Thread 时，它用于重建历史；生成长期 Memory 时，后台先从 Thread DB 选中这条记录，再打开对应 rollout。整份 JSONL 不会原样交给 Phase 1。
+          </div>
+        </article>
+      </section>
+
+      <section id="startup">
+        <div class="part-head">
+          <p class="part-label">第三层 · 长期 Memory 形成入口</p>
+          <h2>历史任务不会在结束一刻立刻变成长期记忆</h2>
+          <p class="part-intro">旧 thread 先成为持久历史；当之后有一个合格的根 Agent turn 启动时，它只负责唤醒后台流水线，真正被处理的来源仍是之前已经空闲的 thread。</p>
+        </div>
+
+        <article class="chapter">
+          <div class="note rose">
+            本页描述的是 Local Memory 功能启用后的路径。固定版本中 <code>MemoryTool</code> 虽标为 Stable，但默认关闭；只有相应生成与读取开关生效，后台提炼和新 thread 注入才会发生。
+          </div>
+
+          <div class="io-grid">
+            <div class="io-box input">
+              <span class="io-label">输入</span>
+              <h3>启动信号 + Thread 候选表</h3>
+              <p>一个新的根 Agent turn 唤醒后台；Thread DB 提供历史 chat 的 ID、来源、更新时间、归档状态、memory mode 和 rollout 路径。</p>
+            </div>
+            <div class="io-box process">
+              <span class="io-label">处理</span>
+              <h3>Eligibility 筛选与认领</h3>
+              <p>检查功能开关、额度、chat 来源、年龄、空闲时间、是否当前线程、是否归档，以及 source watermark 是否已经处理。</p>
+            </div>
+            <div class="io-box output">
+              <span class="io-label">输出</span>
+              <h3>待执行的 Phase 1 Jobs</h3>
+              <p>本次最多认领两个历史 thread，为每个 thread 建立或更新 job、ownership token 和 lease；也可能一个都不选。</p>
+            </div>
+          </div>
+
+          <div class="grid-4">
+            <div class="card"><span class="metric">10 天</span><span class="metric-note">默认只扫描近期更新的 rollout</span></div>
+            <div class="card"><span class="metric">6 小时</span><span class="metric-note">默认空闲门槛</span></div>
+            <div class="card"><span class="metric">2 个</span><span class="metric-note">每次 startup 最多认领的 rollout</span></div>
+            <div class="card"><span class="metric">25%</span><span class="metric-note">默认剩余额度保护阈值</span></div>
+          </div>
+
+          <div class="example-block">
+            <div class="example-title">例子：四条历史 Thread，哪条会进入本轮 Phase 1</div>
+            <div class="example-body">
+              <pre>th-42  auth fix          8 小时前更新   enabled   根线程  → 认领
+th-43  ongoing refactor  20 分钟前更新  enabled   根线程  → 跳过：仍活跃
+th-44  quick question     2 天前更新     disabled  根线程  → 跳过：不允许生成
+th-45  subagent trace     1 天前更新     enabled   子线程  → 跳过：非根 Agent
+
+本轮输出：
+job { kind: "phase1", thread_id: "th-42", status: "running",
+      ownership_token: "owner-a7", lease_expires_at: "..." }</pre>
+            </div>
+          </div>
+
+          <div class="contract-line">
+            <strong>输出去向：</strong>被认领的 thread ID、rollout 路径和 job ownership 交给 Phase 1 Worker；刚刚唤醒后台的新 turn 本身不是这次抽取的内容。
+          </div>
+        </article>
+      </section>
+
+      <section id="phase1">
+        <div class="part-head">
+          <p class="part-label">长期 Memory · 单任务提炼</p>
+          <h2>Phase 1 从一条历史 Thread 中提炼单任务经验</h2>
+          <p class="part-intro">它先从 rollout 日志恢复这次任务的消息和执行轨迹，再过滤、脱敏和截断，最后回答三个问题：任务发生了什么、结果怎样、其中什么值得未来复用。</p>
+        </div>
+
+        <article class="chapter">
+          <div class="io-grid">
+            <div class="io-box input">
+              <span class="io-label">输入</span>
+              <h3>一条被认领的历史 Thread</h3>
+              <p>thread ID、rollout 文件、cwd/branch/commit、source watermark，以及本次抽取模型和上下文预算。</p>
+            </div>
+            <div class="io-box process">
+              <span class="io-label">处理</span>
+              <h3>过滤后进行一次 LLM 抽取</h3>
+              <p>保留 user/assistant message、tool call/result 和主线程中的 Agent 通信；排除控制记录、developer、完整 AGENTS/Skill 注入，脱敏并按预算截断。</p>
+            </div>
+            <div class="io-box output">
+              <span class="io-label">输出</span>
+              <h3>三个单任务派生字段</h3>
+              <p><code>rollout_summary</code>、<code>rollout_slug</code>、<code>raw_memory</code>，随后写入 <code>stage1_outputs</code>。</p>
+            </div>
+          </div>
+
+          <div class="example-block">
+            <div class="example-title">例子：认证修复 Thread 进入 Phase 1 前后</div>
+            <div class="example-body">
+              <pre>送给抽取模型的主要输入
+────────────────────
+scope: cwd=/repo/auth-service, branch=fix/token-revoke, sha=8c4a1d9
+
+[user] 修复 refresh token 撤销失效；先复现并覆盖并发刷新。
+[assistant] 我先定位认证链路并建立失败测试。
+[tool] pytest tests/test_refresh.py → 1 failed, 8 passed
+[assistant] 单实例内存撤销表无法覆盖跨实例并发刷新。
+[tool] apply_patch → patch applied
+[tool] pytest tests/test_refresh.py tests/test_auth.py → 19 passed
+[assistant] 修复完成；撤销状态已移到共享 store。
+
+Phase 1 输出
+──────────────
+{
+  "rollout_slug": "auth-token-revocation-shared-store",
+  "rollout_summary": "在 auth-service 中复现并修复 refresh token
+    跨实例撤销失效；新增并发刷新测试，19 项认证测试通过。",
+  "raw_memory": "项目：/repo/auth-service。Refresh token 撤销必须使用
+    多实例共享 store；进程内 Map 只适合单实例测试。修改前先运行
+    tests/test_refresh.py 复现，修改后同时运行 refresh 与 auth 回归。
+    来源：thread th-42，branch fix/token-revoke，commit 8c4a1d9。"
+}</pre>
+              <p class="small">示例内容用于展示字段语义，不是仓库内置模板。三个字段的结构固定，具体文字由抽取模型生成。</p>
+            </div>
+          </div>
+
+          <div class="note amber">
+            名字里的 <code>raw_memory</code> 并不是原始对话。它已经是模型派生文本；真正的原始证据仍是 rollout JSONL。理解这一区别，才能在出错时回到来源，而不是把派生摘要当成原话。
+          </div>
+
+          <div class="note">
+            被认领不等于一定“记住”。Phase 1 的形成规则允许不产出有价值内容：一次性的修补、没有稳定结论的探索或不值得未来复用的任务，可以不进入后续长期手册。
+          </div>
+
+          <div class="contract-line">
+            <strong>输出去向：</strong>这三个字段还不是最终长期 Memory。它们作为一条 Stage 1 候选进入 <code>memories_1.sqlite</code>，等待后续选择与跨任务巩固。
+          </div>
+        </article>
+      </section>
+
+      <section id="state">
+        <div class="part-head">
+          <p class="part-label">长期 Memory · 候选管理</p>
+          <h2>Phase 1 的输出先成为候选，不会立刻进入长期手册</h2>
+          <p class="part-intro">Codex 把“原始历史”“单任务候选”“后台任务状态”和“最终可读知识”拆开管理。这样既能重试和增量处理，也不会把一次模型抽取直接当成全局真相。</p>
+        </div>
+
+        <article class="chapter">
+          <div class="io-grid">
+            <div class="io-box input">
+              <span class="io-label">输入</span>
+              <h3>Phase 1 结果 + 来源状态</h3>
+              <p>三个派生字段、thread ID、rollout path、source updated_at/watermark、cwd/branch 等元数据，以及当前 job ownership。</p>
+            </div>
+            <div class="io-box process">
+              <span class="io-label">处理</span>
+              <h3>Upsert 候选并完成 Job</h3>
+              <p>把单任务结果写入 <code>stage1_outputs</code>，记录它对应的来源版本；更新 Phase 1 job 的成功状态、retry 和错误信息。</p>
+            </div>
+            <div class="io-box output">
+              <span class="io-label">输出</span>
+              <h3>可选择的 Stage 1 Row</h3>
+              <p>它拥有内容、来源、生成时间、usage_count、last_usage 和 selected_for_phase2 等管理字段。</p>
+            </div>
+          </div>
+
+          <div class="example-block">
+            <div class="example-title">例子：th-42 写入候选库后的记录</div>
+            <div class="example-body">
+              <pre>stage1_outputs
+{
+  thread_id: "th-42",
+  source_updated_at: "2026-08-23T08:10:00Z",
+  rollout_slug: "auth-token-revocation-shared-store",
+  rollout_summary: "在 auth-service 中复现并修复跨实例撤销失效...",
+  raw_memory: "Refresh token 撤销必须使用多实例共享 store...",
+  generated_at: "2026-08-23T14:20:00Z",
+  usage_count: 0,
+  last_usage: null,
+  selected_for_phase2: false
+}
+
+jobs
+{ kind: "phase1", thread_id: "th-42", status: "succeeded",
+  input_watermark: "2026-08-23T08:10:00Z", retry_count: 0 }</pre>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card"><span class="mechanism-label">Watermark</span><h3>判断来源有没有变化</h3><p>同一 thread 后来继续发生新 turn 时，新的 source watermark 会使它重新具备抽取资格。</p></div>
+            <div class="card"><span class="mechanism-label">Usage fields</span><h3>判断候选以后是否常用</h3><p>初始 usage 为零；未来回答真正引用它后，计数和最近使用时间才会改变。</p></div>
+          </div>
+
+          <div class="contract-line">
+            <strong>输出去向：</strong>Phase 2 不扫描所有 rollout；它从这些 Stage 1 rows 中按使用与新近性选候选。原始 rollout 仍留在原处，作为可回溯证据。
+          </div>
+        </article>
+      </section>
+
+      <section id="phase2">
+        <div class="part-head">
+          <p class="part-label">长期 Memory · 跨任务巩固</p>
+          <h2>Phase 2 把多条单任务候选整理成一份全局手册</h2>
+          <p class="part-intro">它不是简单拼接摘要，而是从候选池选一批仍值得保留的经历，比较新旧差异，再让一个受限内部 Agent 对长期工件做去重、合并、修正和压缩。</p>
+        </div>
+
+        <article class="chapter">
+          <div class="io-grid">
+            <div class="io-box input">
+              <span class="io-label">输入</span>
+              <h3>候选池 + 旧 Memory 工作区</h3>
+              <p>最多 256 条 Stage 1 rows、已有 <code>MEMORY.md</code>/<code>memory_summary.md</code>/skills、用户 ad-hoc notes，以及上次成功 Git baseline。</p>
+            </div>
+            <div class="io-box process">
+              <span class="io-label">处理</span>
+              <h3>选择、物化、对比、巩固</h3>
+              <p>先按 usage 与新近性选择；再写 raw/rollout summaries、生成相对旧基线的 diff；最后由受限 Agent 去重、合并、修正和压缩。</p>
+            </div>
+            <div class="io-box output">
+              <span class="io-label">输出</span>
+              <h3>长期文件 + 提交状态</h3>
+              <p>更新短索引、长期手册、任务摘要和可选 skills；验证后重置 Git baseline，并原子更新 Phase 2 job watermark 与 selected flags。</p>
+            </div>
+          </div>
+
+          <div class="example-block">
+            <div class="example-title">例子：两个单任务候选怎样改变长期手册</div>
+            <div class="example-body">
+              <pre>Phase 2 输入
+─────────────
+旧 MEMORY.md：
+  ## /repo/auth-service
+  - Token 撤销使用本地 Map。
+
+候选 th-42：
+  - 跨实例并发刷新证明本地 Map 不可靠；应使用共享 store。
+  - refresh + auth 共 19 项测试通过。
+
+候选 th-51：
+  - 认证改动后应运行 tests/test_refresh.py 和 tests/test_auth.py。
+
+用户 note：
+  - “忘记本地 Map 是可接受生产方案；它只允许用于单实例测试。”
+
+Phase 2 输出
+─────────────
+MEMORY.md：
+  ## /repo/auth-service
+  ### Token revocation
+  - 生产与多实例环境必须使用共享 revocation store。
+  - 进程内 Map 仅适用于单实例测试。
+  - 修改撤销逻辑后运行：
+    `pytest tests/test_refresh.py tests/test_auth.py`
+  - 证据：th-42、th-51。
+
+memory_summary.md：
+  - auth-service：Token 撤销、共享 store 与认证回归流程，见 MEMORY.md。
+
+rollout_summaries/auth-token-revocation-shared-store.md：
+  - th-42 的任务摘要、cwd/branch 与原始 rollout_path。</pre>
+              <p class="small">示例展示数据流：旧结论被修正，两条经历被合并，短索引只保留导航。具体文件措辞由 Consolidation Agent 生成。</p>
+            </div>
+          </div>
+
+          <div class="prompt">
+            <div class="prompt-head">Phase 2 最终管理的文件<span>reader-facing memory workspace</span></div>
+            <div class="prompt-body">
+              <pre>~/.codex/memories/
+├── memory_summary.md        # 新 Thread 常驻的短索引
+├── MEMORY.md                # 跨任务长期手册
+├── raw_memories.md          # 本轮选中 Stage 1 派生内容的物化输入
+├── rollout_summaries/       # 每条选中经历的摘要和 rollout 指针
+├── skills/                  # 适合独立复用的流程工件
+└── extensions/ad_hoc/       # 用户 remember/update/forget notes</pre>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="card"><span class="mechanism-label">没有</span><h3>网络和外部服务</h3><p>内部 Agent 在受控环境中不能访问网络，也没有 MCP、Apps 或 Plugins。</p></div>
+            <div class="card"><span class="mechanism-label">没有</span><h3>递归 Memory 与协作</h3><p>它自身是 ephemeral，不读取当前 Memory，也不能再调用 Subagent，避免形成递归巩固。</p></div>
+            <div class="card"><span class="mechanism-label">只有</span><h3>Memory root 写权限</h3><p>cwd 被限制到本地 Memory 工作区；ownership 丢失后不能把结果提交成新基线。</p></div>
+          </div>
+
+          <div class="two-voices">
+            <div class="voice"><div class="title">操作可靠性较强</div><p>lease、heartbeat、watermark、sandbox、symlink 拒绝和 Git baseline 都由确定性代码执行。</p></div>
+            <div class="voice"><div class="title">语义可靠性仍生成式</div><p>合并什么、怎样处理冲突、何时删除旧结论仍由模型判断；最终检查不会验证每句话是否仍有当前证据。</p></div>
+          </div>
+
+          <div class="contract-line">
+            <strong>输出去向：</strong><code>memory_summary.md</code> 会在未来新 Thread 中作为入口注入；其余文件留在本地 Memory root，等待 Agent 按需搜索和读取。
+          </div>
+        </article>
+      </section>
+
+      <section id="runtime">
+        <div class="part-head">
+          <p class="part-label">长期 Memory · 重新读取</p>
+          <h2>全新的 Thread 不继承全部旧对话，只获得长期记忆入口</h2>
+          <p class="part-intro">Codex 不会把所有 rollout 和整本手册塞进新上下文。它先注入一份短索引，当前 Agent 再按项目和问题逐层搜索长期手册、任务摘要和原始证据。</p>
+        </div>
+
+        <article class="chapter">
+          <div class="io-grid">
+            <div class="io-box input">
+              <span class="io-label">输入</span>
+              <h3>新任务 + 常驻短索引</h3>
+              <p>当前 user message、cwd/项目状态，以及最多 2500 tokens 的 <code>memory_summary.md</code>；整本 MEMORY 和旧 rollout 不会自动注入。</p>
+            </div>
+            <div class="io-box process">
+              <span class="io-label">处理</span>
+              <h3>Agent 主动逐层读取</h3>
+              <p>先根据短索引判断是否相关，再用关键词搜索 <code>MEMORY.md</code>；需要精确步骤或证据时继续打开 skill、rollout summary 或原始 rollout。</p>
+            </div>
+            <div class="io-box output">
+              <span class="io-label">输出</span>
+              <h3>Memory 上下文 + Citation</h3>
+              <p>读取到的相关文件片段进入当前推理；最终回答附带实际文件行和 rollout IDs，供系统解析使用反馈。</p>
+            </div>
+          </div>
+
+          <div class="example-block">
+            <div class="example-title">例子：新 Thread 怎样找回认证经验</div>
+            <div class="example-body">
+              <pre>新输入
+──────
+cwd: /repo/auth-service
+user: 按我们之前验证过的方式修改 refresh token 撤销逻辑。
+
+已经注入的 memory_summary.md
+────────────────────────────
+- auth-service：Token 撤销、共享 store 与认证回归流程，见 MEMORY.md。
+
+Agent 读取过程
+──────────────
+1. search("auth-service token revocation shared store")
+2. 命中 MEMORY.md 中 Token revocation 段落
+3. read(MEMORY.md, 对应行范围)
+4. 若需确认旧测试证据，再读：
+   rollout_summaries/auth-token-revocation-shared-store.md
+
+读取得到
+────────
+- 生产/多实例使用共享 revocation store
+- 本地 Map 仅限单实例测试
+- 回归命令：pytest tests/test_refresh.py tests/test_auth.py
+- 来源 thread：th-42、th-51
+
+输出
+────
+assistant: 我会沿用共享 revocation store，并先运行 refresh 失败用例；
+           修改后执行 refresh 与 auth 两组回归。
+citation data: MEMORY.md 对应行；rollout_ids=["th-42","th-51"]</pre>
+            </div>
+          </div>
+
+          <div class="tool-list">
+            <div class="tool"><code>list</code><span>查看 Memory 根下允许访问的文本工件。</span></div>
+            <div class="tool"><code>read</code><span>按路径和行范围读取需要的具体内容。</span></div>
+            <div class="tool"><code>search</code><span>用关键词在文件中定位任务族、错误文本和项目经验。</span></div>
+            <div class="tool"><code>add_ad_hoc_note</code><span>记录用户明确提出的 remember、update 或 forget 请求。</span></div>
+          </div>
+
+          <div class="note amber">
+            检索是否成功，很依赖 Phase 2 怎样命名标题和保留关键词。若巩固 Agent 把用户原词改写成过度抽象的概念，即使事实仍在文件里，substring search 也可能找不到。
+          </div>
+
+          <div class="note violet">
+            Dedicated Memory tools 不是唯一读取路径。工具关闭时，主 Agent 仍可以按照只读指令，用普通文件搜索打开 Memory root；无论哪条路径，都不能越过路径、隐藏文件和 symlink 边界。
+          </div>
+
+          <div class="contract-line">
+            <strong>输出去向：</strong>相关 Memory 片段只进入当前 Thread 的本轮上下文；citation 中的 rollout IDs 会进入下一步 usage 反馈，不会把当前回答自动写回长期手册。
+          </div>
+        </article>
+      </section>
+
+      <section id="feedback">
+        <div class="part-head">
+          <p class="part-label">长期 Memory · 使用管理</p>
+          <h2>Citation 不只是展示，它会改变以后保留什么</h2>
+          <p class="part-intro">Codex 已经有一条很轻量的反馈环：某条历史经验被新任务真正引用后，对应候选会得到使用信号。</p>
+        </div>
+
+        <article class="chapter">
+          <div class="io-grid">
+            <div class="io-box input">
+              <span class="io-label">输入</span>
+              <h3>最终回答中的 Citation Data</h3>
+              <p>实际读取的 Memory 文件行，以及这段内容指向的 rollout/thread IDs。</p>
+            </div>
+            <div class="io-box process">
+              <span class="io-label">处理</span>
+              <h3>解析并回查 Stage 1 Rows</h3>
+              <p>把可见回答与引用数据分开，验证 ID，再对被引用的候选增加 usage 并刷新 last_usage。</p>
+            </div>
+            <div class="io-box output">
+              <span class="io-label">输出</span>
+              <h3>新的候选使用状态</h3>
+              <p>更新后的 <code>usage_count</code>/<code>last_usage</code> 会参与后续 Phase 2 排序，使被引用候选更可能继续保留。</p>
+            </div>
+          </div>
+
+          <div class="example-block">
+            <div class="example-title">例子：th-42 被新任务引用以后</div>
+            <div class="example-body">
+              <pre>输入 citation data
+{ files: [{ path: "MEMORY.md", lines: "18-27" }],
+  rollout_ids: ["th-42", "th-51"] }
+
+更新前
+th-42  usage_count=0  last_usage=null
+th-51  usage_count=2  last_usage=2026-08-20
+
+更新后
+th-42  usage_count=1  last_usage=2026-08-25
+th-51  usage_count=3  last_usage=2026-08-25
+
+以后 Phase 2 排序时：
+usage_count DESC → last_usage/source recency DESC → source recency DESC</pre>
+            </div>
+          </div>
+
+          <div class="status-pair">
+            <div class="status done">
+              <h3><span class="dot"></span> 已经闭合的部分</h3>
+              <ul>
+                <li>引用能够回到 rollout 候选；</li>
+                <li>使用次数和最近使用时间被持久化；</li>
+                <li>这些字段真实参与下一轮 selection；</li>
+                <li>整个环路可观察、可解释。</li>
+              </ul>
+            </div>
+            <div class="status missing">
+              <h3><span class="dot"></span> 仍然缺少的部分</h3>
+              <ul>
+                <li>没有记录“被展示但未采用”的曝光；</li>
+                <li>没有把引用归因到最终任务质量；</li>
+                <li>遗漏 citation 就没有使用信号；</li>
+                <li>常被找到的内容可能进一步获得曝光优势。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="note rose">
+            这不是 learned retriever，也不能证明“被引用的 Memory 让任务变好”。它只实现了 citation-driven retention：使用过的内容更容易继续进入巩固。
+          </div>
+
+          <div class="contract-line">
+            <strong>输出去向：</strong>usage 更新回到候选库，而不是直接改写 <code>MEMORY.md</code>。下一次 Phase 2 才会根据新的候选排序重新生成文件。
+          </div>
+        </article>
+      </section>
+
+      <section id="scope">
+        <div class="part-head">
+          <p class="part-label">长期 Memory · 作用域管理</p>
+          <h2>一个全局物理库，主要靠文档组织做项目路由</h2>
+          <p class="part-intro">不同项目没有独立 Memory 根。cwd、branch、commit 和文档中的 task groups 负责表达逻辑作用域，最终仍由主 Agent 判断当前该读哪一块。</p>
+        </div>
+
+        <article class="chapter">
+          <div class="io-grid">
+            <div class="io-box input">
+              <span class="io-label">输入</span>
+              <h3>当前项目条件 + 全局 Memory</h3>
+              <p>新 thread 的 cwd/branch/commit 和任务文本，以及同一个 CODEX_HOME 下的全局 summary 与长期手册。</p>
+            </div>
+            <div class="io-box process">
+              <span class="io-label">处理</span>
+              <h3>按文档标签做逻辑路由</h3>
+              <p>Agent 根据 summary 中的项目/任务族标题选择读取区域；文件系统没有按当前 cwd 强制隔离出独立 Memory root。</p>
+            </div>
+            <div class="io-box output">
+              <span class="io-label">输出</span>
+              <h3>被选中的项目片段</h3>
+              <p>理想情况下只读取当前项目相关内容；若文档丢失 scope 条件，其他项目或旧 worktree 经验也可能被误用。</p>
+            </div>
+          </div>
+
+          <div class="example-block">
+            <div class="example-title">例子：同一全局手册里有两个项目</div>
+            <div class="example-body">
+              <pre>当前输入
+cwd=/repo/auth-service
+branch=fix/token-revoke
+user=修改 refresh token 撤销流程
+
+全局 memory_summary.md
+- /repo/auth-service：Token 撤销与认证回归
+- /repo/billing-service：退款幂等键与账务回滚
+
+处理
+→ 当前 cwd 与任务命中 auth-service
+→ 只读取 MEMORY.md 的 Token revocation 段
+
+输出
+→ 共享 revocation store + refresh/auth 回归流程
+→ 不应读取 billing-service 的退款流程</pre>
+            </div>
+          </div>
+
+          <div class="two-voices">
+            <div class="voice"><div class="title">Subagent</div><p>非根 Agent 不会独立触发 Memory Writer；但它回传到主 rollout 的 inter-agent communication 可能随主任务被记住。</p></div>
+            <div class="voice"><div class="title">Guardian</div><p>复核 session 明确关闭 Memory 使用和专用工具，使审批判断不直接受个人历史经验影响。</p></div>
+          </div>
+
+          <div class="note amber">
+            这套 scope 更接近“全局操作手册中的项目章节”，不是数据库层面的 tenant/project 隔离。若巩固时丢掉 branch 或 commit 条件，旧分支经验可能被另一个 worktree 误用。
+          </div>
+
+          <div class="contract-line">
+            <strong>输出去向：</strong>作用域判断只影响当前 Agent 读取哪些内容，不会移动或复制 Memory 文件。所有项目仍共享同一个本地 Memory root。
+          </div>
+        </article>
+      </section>
+
+      <section id="forget">
+        <div class="part-head">
+          <p class="part-label">长期 Memory · 更新与清除</p>
+          <h2>关闭、忘记和 Reset 是三件不同的事</h2>
+          <p class="part-intro">Codex 的更新与删除不是稳定 entry ID 上的同步 CRUD，而是通过资格控制、追加说明和全局重写来完成。</p>
+        </div>
+
+        <article class="chapter">
+          <div class="io-grid">
+            <div class="io-box input">
+              <span class="io-label">输入</span>
+              <h3>用户或产品控制动作</h3>
+              <p>对某条 chat 设置是否贡献 Memory；明确提出 remember/update/forget；或者请求 full reset。</p>
+            </div>
+            <div class="io-box process">
+              <span class="io-label">处理</span>
+              <h3>走三条不同路径</h3>
+              <p>Chat mode 更新 Thread 资格；显式语义更新追加 ad-hoc note；reset 先清 Memory DB，再清本地生成文件。</p>
+            </div>
+            <div class="io-box output">
+              <span class="io-label">输出</span>
+              <h3>资格、Note 或清空状态</h3>
+              <p>它们分别影响未来抽取、下一次 Phase 2 的输入，或当前生成式 Memory；没有一个等于删除原始 rollout。</p>
+            </div>
+          </div>
+
+          <div class="example-block">
+            <div class="example-title">例子：三个看似都叫“不要记”的动作，输出完全不同</div>
+            <div class="example-body">
+              <pre>A. 当前 Chat 不贡献未来 Memory
+输入：set thread th-42 memory_mode=disabled
+输出：th-42 以后不再成为新的 Phase 1 输入
+不影响：已经写入 MEMORY.md 的 Token revocation 段
+
+B. 忘记一个已经形成的结论
+输入：user 明确说“忘记本地 Map 可用于生产；它只允许单实例测试”
+输出：extensions/ad_hoc/notes/2026-08-25-....md
+      内容记录这条 forget/update 请求
+下一步：Phase 2 读取 note + 旧 MEMORY.md，由模型改写手册和短索引
+
+C. Full reset
+输入：reset local memories
+输出：清空 memories_1.sqlite 中的 Stage 1 rows/jobs，随后清 Memory 文件
+仍保留：原始 thread/rollout 与它们的 memory_mode
+结果：仍在资格窗口内的旧 thread，之后可能再次被 Phase 1 抽取</pre>
+              <p>所以 Thread disable、语义 forget 和 full reset 的输入、输出、影响范围都不同。</p>
+            </div>
+          </div>
+
+          <div class="note rose">
+            Reset 的数据库删除和文件清理也不是跨介质原子事务。如果第二步失败，可能出现候选已经清空而旧文件仍在的中间状态。
+          </div>
+
+          <div class="contract-line">
+            <strong>输出去向：</strong>ad-hoc note 会成为下一轮 Phase 2 的强制输入；thread mode 只回到 eligibility；reset 只清当前生成状态。这里尚没有带稳定 entry ID 的同步删除结果。
+          </div>
+        </article>
+      </section>
+
+      <section id="evolution">
+        <div class="part-head">
+          <p class="part-label">整体总结</p>
+          <h2>Codex 怎样形成一条本地经验演化闭环</h2>
+          <p class="part-intro">它不是“把聊天存进向量库”，而是把历史任务转换成一份由后台 Agent 维护、由新任务按需阅读的个人工作手册。</p>
+        </div>
+
+        <article class="chapter">
+          <div class="summary-loop">
+            <div class="summary-step"><b>对话与执行</b><p>用户消息、Codex 回复、工具调用和结果首先服务于当前 turn。</p></div>
+            <div class="summary-step"><b>当前任务连续</b><p>多个 turn 组成 thread；前序消息和工具结果继续支持后续一问一答。</p></div>
+            <div class="summary-step"><b>历史持久化</b><p>Thread 的事件过程保存为 rollout，并带有 cwd、branch、commit 等条件。</p></div>
+            <div class="summary-step"><b>进入长期形成</b><p>历史 thread 满足年龄、空闲和 Memory mode 条件，等待后续 root turn 唤醒。</p></div>
+            <div class="summary-step"><b>逐线程抽取</b><p>Phase 1 过滤与脱敏后，生成任务摘要和派生经验。</p></div>
+            <div class="summary-step"><b>全局巩固</b><p>Phase 2 选择候选，用受限 Agent 更新手册、索引与技能。</p></div>
+            <div class="summary-step"><b>渐进读取</b><p>新线程先见 2500-token 短摘要，再词法搜索和打开证据。</p></div>
+            <div class="summary-step"><b>使用反馈</b><p>Citation 回写 usage，影响候选是否继续进入未来巩固。</p></div>
+          </div>
+        </article>
+
+        <article class="chapter">
+          <h3>这套系统当前做到哪里</h3>
+          <div class="status-pair">
+            <div class="status done">
+              <h3><span class="dot"></span> 已经较完整的工程主干</h3>
+              <ul>
+                <li>线程筛选、watermark、lease、retry 与后台 job；</li>
+                <li>两阶段形成与增量文件巩固；</li>
+                <li>受限写入、只读访问和路径安全；</li>
+                <li>短摘要、词法搜索、渐进披露和行级 citation；</li>
+                <li>citation 驱动的使用保留反馈。</li>
+              </ul>
+            </div>
+            <div class="status missing">
+              <h3><span class="dot"></span> 仍然没有闭合的语义问题</h3>
+              <ul>
+                <li>生成内容的事实正确性、冲突与时间更新；</li>
+                <li>项目/worktree 的硬作用域；</li>
+                <li>逐项 inspect/update/delete 与可验证派生删除；</li>
+                <li>DB selection 与文件读取的一致快照；</li>
+                <li>使用反馈到最终任务质量的可靠归因。</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+
+        <article class="chapter">
+          <h3>怎样判断一次 Memory 更新真正进入了后续任务</h3>
+          <div class="rail">
+            <div class="rail-step"><div class="rail-num">01</div><div class="rail-body"><b>确认来源被认领</b><p>检查目标 thread 是否满足 eligibility，以及 Stage 1 job 是否处理到正确 source watermark。</p></div></div>
+            <div class="rail-step"><div class="rail-num">02</div><div class="rail-body"><b>确认候选与手册发生变化</b><p>区分 memories DB 中的 Stage 1 输出、rollout summary、MEMORY.md 和短索引分别更新到哪里。</p></div></div>
+            <div class="rail-step"><div class="rail-num">03</div><div class="rail-body"><b>确认新线程真的获得索引</b><p>功能开关和 use_memories 必须生效，短摘要才会作为上下文进入新线程。</p></div></div>
+            <div class="rail-step"><div class="rail-num">04</div><div class="rail-body"><b>确认 Agent 实际读取</b><p>查看 search/read 路径与最终 citation，不能把“内容存在”当成“内容被使用”。</p></div></div>
+            <div class="rail-step"><div class="rail-num">05</div><div class="rail-body"><b>最后才讨论任务效果</b><p>Usage 只证明引用发生；任务是否更快、更正确或更少返工，是另一层尚未由当前闭环自动回答的问题。</p></div></div>
+          </div>
+        </article>
+
+        <div class="final">
+          <p class="big">Codex 先用对话上下文维持当前任务，用 rollout 保存原始经历，再从其中提炼和管理跨任务长期记忆。新的 thread 不继承全部旧对话，而是先获得短索引，需要时再逐层回到长期手册、任务摘要和原始证据。</p>
+          <p class="small">本页解释固定版本中可见的本地 CLI/App/IDE host 机制，不包含模型权重、隐藏云端调度、真实用户 Memory 内容，也不把代码路径存在表述为实际任务收益。</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="shell">
+      <span>OpenAI Codex · local Memory · c9b19deb</span>
+      <span>代码快照：2026-08-23 · 单文件读者版</span>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const progress = document.getElementById('progress');
+      const links = [...document.querySelectorAll('.toc a')];
+      const targets = links.map(link => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+
+      const update = () => {
+        const root = document.documentElement;
+        const max = root.scrollHeight - root.clientHeight;
+        progress.style.width = `${max > 0 ? Math.min(100, Math.max(0, root.scrollTop / max * 100)) : 0}%`;
+
+        let current = targets[0];
+        for (const target of targets) {
+          if (target.getBoundingClientRect().top <= 150) current = target;
+        }
+        links.forEach(link => link.classList.toggle('active', current && link.getAttribute('href') === `#${current.id}`));
+      };
+
+      document.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      update();
+    })();
+  </script>
+</body>
+</html>
