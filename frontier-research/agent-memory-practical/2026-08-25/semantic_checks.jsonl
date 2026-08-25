@@ -1,0 +1,4 @@
+{"claim_id":"C001","verdict":"pass","evidence_ids":["EV001"],"uncovered_terms":[],"rationale":"The statement is limited to the official open-source pipeline and directly located in the README.","checked_at":"2026-08-24T16:48:30Z"}
+{"claim_id":"C002","verdict":"pass","evidence_ids":["EV002"],"uncovered_terms":[],"rationale":"The statement is limited to the pinned local read path and directly supported by the read/search files.","checked_at":"2026-08-24T16:48:35Z"}
+{"claim_id":"C003","verdict":"pass","evidence_ids":["EV003","EV004"],"uncovered_terms":[],"rationale":"The comparison is explicitly qualified as selected recent papers and prototypes.","checked_at":"2026-08-24T16:48:40Z"}
+{"claim_id":"C004","verdict":"pass","evidence_ids":["EV005","EV006"],"uncovered_terms":[],"rationale":"The inference is bounded to Codex control flow and uses the systems paper only as partial context for separate cost/quality signals.","checked_at":"2026-08-24T16:48:45Z"}

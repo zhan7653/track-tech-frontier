@@ -1,0 +1,7 @@
+{"cluster_id":"CL-ARCH","lane":"github","window_id":"TW-FOUNDATIONAL","status":"covered"}
+{"cluster_id":"CL-ARCH","lane":"github","window_id":"TW-12M-2026-08-25","status":"covered"}
+{"cluster_id":"CL-ARCH","lane":"github","window_id":"TW-90D-2026-08-25","status":"partial"}
+{"cluster_id":"CL-FRONTIER","lane":"paper","window_id":"TW-12M-2026-08-25","status":"covered"}
+{"cluster_id":"CL-FRONTIER","lane":"paper","window_id":"TW-90D-2026-08-25","status":"covered"}
+{"cluster_id":"CL-FRONTIER","lane":"benchmark","window_id":"TW-90D-2026-08-25","status":"partial"}
+{"cluster_id":"CL-FRONTIER","lane":"negative","window_id":"TW-90D-2026-08-25","status":"partial"}

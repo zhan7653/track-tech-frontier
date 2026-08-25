@@ -1,0 +1,12 @@
+{"event_id":"SE001","entity_id":"E-CODEX","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-24T16:45:30Z","rationale":"Identity and fixed commit confirmed."}
+{"event_id":"SE002","entity_id":"E-CODEX","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-24T16:45:31Z","rationale":"Opened memory README and fixed source paths."}
+{"event_id":"SE003","entity_id":"E-LANGGRAPH","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-24T16:45:32Z","rationale":"Pinned official repository identity confirmed."}
+{"event_id":"SE004","entity_id":"E-LANGGRAPH","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-24T16:45:33Z","rationale":"Opened Store documentation and pinned tree."}
+{"event_id":"SE005","entity_id":"E-OMRI","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-24T16:45:34Z","rationale":"ArXiv identity, date, authors, and abstract confirmed."}
+{"event_id":"SE006","entity_id":"E-OMRI","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-24T16:45:35Z","rationale":"Opened primary abstract and system characterization details."}
+{"event_id":"SE007","entity_id":"E-GEM","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-24T16:45:36Z","rationale":"ArXiv identity, date, and prototype description confirmed."}
+{"event_id":"SE008","entity_id":"E-GEM","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-24T16:45:37Z","rationale":"Opened primary abstract and MemState description."}
+{"event_id":"SE009","entity_id":"E-MEMTX","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-24T16:45:38Z","rationale":"ArXiv identity, date, and transactional protocol confirmed."}
+{"event_id":"SE010","entity_id":"E-MEMTX","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-24T16:45:39Z","rationale":"Opened primary abstract and evaluation boundary."}
+{"event_id":"SE011","entity_id":"E-MEMTXN","from_stage":"discovered","to_stage":"mapped","occurred_at":"2026-08-24T16:45:40Z","rationale":"ArXiv identity, date, and source-supported recovery mechanism confirmed."}
+{"event_id":"SE012","entity_id":"E-MEMTXN","from_stage":"mapped","to_stage":"deep-verified","occurred_at":"2026-08-24T16:45:41Z","rationale":"Opened primary abstract and reported audit/recovery setup."}

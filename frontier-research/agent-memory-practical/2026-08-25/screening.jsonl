@@ -1,0 +1,6 @@
+{"screening_id":"SC001","discovery_id":"D001","decision":"deep-verify","reason":"Fixed OpenAI repository anchor with inspectable memory pipeline.","checked_at":"2026-08-24T16:45:00Z"}
+{"screening_id":"SC002","discovery_id":"D002","decision":"deep-verify","reason":"Pinned official framework store with explicit namespace/key semantics.","checked_at":"2026-08-24T16:45:05Z"}
+{"screening_id":"SC003","discovery_id":"D003","decision":"deep-verify","reason":"Recent primary systems characterization directly informs construction and retrieval cost.","checked_at":"2026-08-24T16:45:10Z"}
+{"screening_id":"SC004","discovery_id":"D004","decision":"deep-verify","reason":"Recent primary position/prototype paper adds state-level governance operators.","checked_at":"2026-08-24T16:45:15Z"}
+{"screening_id":"SC005","discovery_id":"D005","decision":"deep-verify","reason":"Recent primary paper provides transactional belief commit and action gating.","checked_at":"2026-08-24T16:45:20Z"}
+{"screening_id":"SC006","discovery_id":"D006","decision":"deep-verify","reason":"Recent primary paper provides source-supported update and recovery mechanisms.","checked_at":"2026-08-24T16:45:25Z"}

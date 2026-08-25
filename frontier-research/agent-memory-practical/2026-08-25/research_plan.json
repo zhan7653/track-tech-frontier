@@ -1,0 +1,53 @@
+{
+  "as_of": "2026-08-25",
+  "important_cluster_policy": "saturated",
+  "lanes": [
+    "paper",
+    "github",
+    "benchmark",
+    "product",
+    "adoption",
+    "negative",
+    "mechanism"
+  ],
+  "required_deliverable_kinds": [
+    "readme",
+    "executive",
+    "field-tree",
+    "landscape",
+    "timeline",
+    "consensus",
+    "repository-radar",
+    "benchmark-map",
+    "method",
+    "source-index",
+    "cluster-deep-dive",
+    "project-deep-dive"
+  ],
+  "schema_version": "2.0",
+  "targets": {
+    "claims": 4,
+    "clusters": 2,
+    "deep_papers": 4,
+    "deep_repositories": 2,
+    "deep_verified_entities": 6,
+    "deliverables": 13,
+    "discovered_entities": 6,
+    "evidence": 4,
+    "mapped_entities": 6,
+    "papers_discovered": 4,
+    "papers_mapped": 4,
+    "queries": 8,
+    "recent_discovered": 6,
+    "recent_mapped": 6,
+    "repositories_discovered": 2,
+    "repositories_mapped": 2,
+    "sources": 6
+  },
+  "time_windows": [
+    "TW-FOUNDATIONAL",
+    "TW-12M-2026-08-25",
+    "TW-90D-2026-08-25"
+  ],
+  "topic": "Agent Memory：从 Codex 抽象的七层架构与近期进展"
+}

@@ -1,0 +1,3 @@
+{"window_id":"TW-FOUNDATIONAL","label":"foundational implementation context","kind":"foundational","start":"2023-01-01","end":"2025-08-24"}
+{"window_id":"TW-12M-2026-08-25","label":"rolling 12 months","kind":"recent-12m","start":"2025-08-25","end":"2026-08-25"}
+{"window_id":"TW-90D-2026-08-25","label":"rolling 90 days","kind":"recent-90d","start":"2026-05-27","end":"2026-08-25"}
