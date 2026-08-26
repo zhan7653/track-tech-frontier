@@ -1,33 +1,22 @@
-# 七层实现地图
+# 六层实现地图
 
-Codex 的实现锚点和近期补充已分别写在七个根目录章节中。本页提供导航和最小的方案、数据流、实现、成本/失败、最新研究索引。
+六层链路把真实输入、首次形成、持久状态、后续管理、当前读取和结果反馈分开。TencentDB 与 Codex 是工程锚点；每个前沿案例只出现在它实际改变的层。
 
-### 方案
+| 层 | TencentDB | Codex | 前沿案例 | 入口 |
+|---|---|---|---|---|
+| 1 输入 | Chat、Skill、Wiki、CodeGraph | Thread/rollout + 项目元数据 | 视觉观察、WorldLines、Computer History | [01](../01-input.md) |
+| 2 写入与形成 | L0→L1→L2→L3；Skill Review | Phase 1 → Phase 2 | MemTxn admission | [02](../02-write-formation.md) |
+| 3 状态、存储与索引 | JSONL/Markdown/DB/FTS/vector/graph | rollout/state/memories DB/Markdown/Git | 双时间版本图 | [03](../03-state-storage-indexing.md) |
+| 4 管理与演化 | L1/L2/L3/Skill update/version | Phase 2 文件级重写 | MemTxn、GEM/MemState、ForgetEval | [04](../04-management-evolution.md) |
+| 5 读取与上下文 | L3 直注；L2/L1/L0/Skill/Knowledge 分路径读取 | summary 直注；词法 search/read；来源下钻 | MemFlow、OpenViking、CICL | [05](../05-retrieval-context.md) |
+| 6 反馈与学习 | 轨迹 Review→Skill version | citation→usage→selection | XSkill、Trace2Skill、CoEvoSkills、MemSkill、MemCon、AFTER、ALMA、Causal Memory/Omri | [06](../06-feedback-learning.md) |
 
-七层链路把输入、形成、状态、管理、读取、使用和反馈分开，Codex 以两阶段形成和文件化读取贯穿其中。
+主循环为：
 
-### 数据流
-
-`rollout → Phase 1 → SQLite candidates → Phase 2 → Markdown/skills → read → citation/usage`。
-
-### 实现
-
-对应章节分别记录 Codex 文件路径、数据库字段、工具边界和近期官方仓库/论文。
-
-### 成本与失败
-
-后台模型调用、上下文预算、索引或文件更新、跨项目 scope、语义合并错误和删除传播是主要成本与失败面。
-
-### 最新研究
-
-近期研究集中在 source-supported write、状态级 revision/forgetting、主动检索、行动门控、技能晋升和持续反馈。
-
-| 层 | 入口 |
-|---|---|
-| 输入 | [01-input.md](../01-input.md) |
-| 写入 | [02-write-formation.md](../02-write-formation.md) |
-| 状态 | [03-state-storage-indexing.md](../03-state-storage-indexing.md) |
-| 管理 | [04-management-evolution.md](../04-management-evolution.md) |
-| 读取 | [05-retrieval-context.md](../05-retrieval-context.md) |
-| 使用 | [06-use-action-skills.md](../06-use-action-skills.md) |
-| 反馈 | [07-feedback-learning.md](../07-feedback-learning.md) |
+```text
+input → formation → persistent state
+                     ↕ management
+                  retrieval/context → feedback/learning
+                         ↑                    │
+                         └──── 新对象/策略 ──┘
+```

@@ -1,163 +1,94 @@
-# 03 状态、存储与索引层：Memory 放在哪里，怎样被找到
+# 第 3 层：状态、存储与索引
 
-## 结论
+形成后的 Memory 通常同时存在于三种状态中：可回放的原始/历史记录、当前权威正文或对象、为查找而建立的派生索引。索引命中不等于正文，当前视图也不等于完整历史；这一层的重点是把三者放对位置。
 
-Memory 系统通常同时维护三类东西：原始证据、可调度的候选/版本状态，以及给 Agent 阅读的派生视图。把它们分开，系统才有机会回答“这条经验来自哪里”“它当前是否仍有效”“索引落后时能否重建”。
+## 3.1 TencentDB：JSONL/Markdown、数据库、FTS/vector/graph、Wiki、CodeGraph
 
-Codex 的答案很鲜明：原始 rollout 留在 JSONL；候选、job、lease、watermark 和使用统计放在 `memories_1.sqlite`；最终阅读材料是 `CODEX_HOME/memories` 下的 Markdown、rollout summaries 和 skills。读取优先使用约 2500 token 的 `memory_summary.md`，需要时用普通文本 substring search 搜索 `MEMORY.md` 等文件，再按行打开详情。公开固定代码中没有 embedding、ANN 或向量重排器。
+[TencentDB Agent Memory `0aff21a`](https://github.com/TencentCloud/TencentDB-Agent-Memory/tree/0aff21a)使用的物理原语并不神秘：文件、结构化数据库、全文/向量索引和关系图。它的工程形状来自不同 Memory 对象如何组合这些载体。
 
-```text
-rollout JSONL ─────────────→ 原始证据
-thread/state DB ───────────→ 候选发现与范围线索
-memories_1.sqlite ─────────→ job、候选、watermark、usage
-MEMORY.md / summaries / skills → Agent 可读的长期视图
-```
-
-这种设计把可读性、引用和低运维成本放在首位；检索质量更多取决于巩固 Agent 写出的标题、关键词和项目结构，而非向量相似度。
-
-## Codex 的真实状态面
-
-本章仍以 [`c9b19deb`](https://github.com/openai/codex/tree/c9b19deb09c1841ce7acc33ddb96276030936a29) 为锚点。Codex 中容易混淆的状态并不都属于跨线程 Memory：当前 response items 和 compaction 服务于本线程；Goal 保存当前长期任务；`AGENTS.md` 和 checked-in docs 承担确定性规则；本地 Memory 才负责跨线程回忆偏好、项目经验和可复用流程。
-
-| 状态面 | 主要载体 | 保存什么 | 在 Memory 中的角色 |
+| 对象 | 原始、历史或权威正文 | 当前结构状态 | 查找投影 |
 |---|---|---|---|
-| 原始运行记录 | rollout JSONL | 消息、工具输入输出、执行过程 | 可回放证据 |
-| 线程元数据 | `state_5.sqlite` | source、cwd、branch、commit、更新时间、mode | 候选发现和逻辑 scope 线索 |
-| Memory 候选与调度 | `memories_1.sqlite` | Phase 1 输出、jobs、lease、watermark、usage | 形成层的权威账本 |
-| 可读长期视图 | `CODEX_HOME/memories/` | `MEMORY.md`、`memory_summary.md`、summaries、skills | Agent 实际读取的内容 |
-| 团队规则 | `AGENTS.md`、项目文档 | 必须稳定生效的约束 | 独立于生成式 Memory 的权威来源 |
+| L0 | `conversations/YYYY-MM-DD.jsonl` | DB 中的当前消息视图 | L0 FTS；可选 vector |
+| L1 | `records/YYYY-MM-DD.jsonl` 的追加版本/恢复记录 | DB 中 current record、scope、version | L1 FTS；可选 vector |
+| L2 | `scene_blocks/*.md` | 文件元信息 | 可从 Markdown 重建的 `scene_index.json` |
+| L3 | `persona.md` | team+agent 当前 Persona | 无检索索引；新 Session 直接读取 |
+| Skill | 不可变 version row + `SKILL.md`/supporting files | `is_head`、status、manifest、content hash | active head 的 FTS；可选 vector |
+| Wiki | Markdown 页面 | Wiki/source metadata | FTS/BM25、page metadata、Wikilink edges |
+| CodeGraph | 某 repo/branch/commit 的代码快照 | resource status、commit、stats | files、symbols/nodes、call/dependency edges |
 
-`memories_1.sqlite` 的迁移文件是 `codex-rs/state/memory_migrations/0001_memories.sql`。其中 `stage1_outputs` 保存 thread ID、source watermark、raw/summary、slug、生成时间、usage_count、last_usage 和 selected 标记；`jobs` 保存 Phase 1/2 的状态、worker、ownership token、lease、retry、错误和输入/成功 watermark。这个数据库承担候选及其生命周期记录，供后台工作者协调；最终可读状态位于 Memory 文件工作区。
+### 同一条 L1 为什么有三份形态
 
-### 文件工件怎样组织
+一条 L1 “缺陷修复前建立失败测试”首先追加到 JSONL，保留来源消息、时间和版本，作为历史与恢复依据；DB current row 只表达当前可见内容；FTS/vector 则是可重建的查询入口。发生 update/merge 时，历史继续追加，新 current row 与索引被替换。因此“还能在历史里找到旧版本”和“应用查询会返回旧版本”是两回事。
 
-Phase 2 由 `storage.rs` 将选中的候选物化到 Memory root。典型目录形状如下：
+### Wiki：正文、全文入口和页面关系
 
-```text
-CODEX_HOME/memories/
-  MEMORY.md                 # 详细长期手册
-  memory_summary.md         # 短索引，首行版本为 v1
-  raw_memories.md           # 多个 Phase 1 raw_memory 的工作材料
-  rollout_summaries/        # 逐线程摘要，带 rollout_path
-  skills/                   # 可复用的过程性材料
-  extensions/ad_hoc/notes/  # 显式 remember/forget/update 请求
-```
-
-`raw_memories.md` 保存多个 `raw_memory` 字段的合并结果。真正原始的 JSONL 由逐线程摘要中的 `rollout_path` 指向。这条来源链让 Agent 可以从短摘要逐步打开详细手册、rollout summary，最后回到完整任务记录。
-
-### 默认读取路径：先短摘要，再按需打开文件
-
-当 `MemoryTool` 和 `use_memories` 都启用时，`codex-rs/ext/memories/src/extension.rs` 读取 `memory_summary.md`，最多注入约 2500 token 作为 developer-policy fragment。这个常驻摘要承担用户偏好、全局索引和项目路由；它不应承载每个细节。
-
-后续读取有三层：
+Wiki 的知识正文在 Markdown 页面中。每个 Wiki 的索引库保存 `page_meta`、FTS/BM25 与由 `[[Wikilink]]` 抽出的 `graph_edge`；搜索结果先返回 title/snippet/links，Agent 再按路径读页面正文。图表达页面关系，不替代页面内容；标准 Agent search 默认从 BM25 页面种子开始，也不因为库里有边就自动执行多跳图查询。
 
 ```text
-L0  memory_summary.md
-    每个启用线程的短索引
-
-L1  MEMORY.md
-    详细手册，按项目 / cwd / 任务组组织
-
-L2  rollout_summaries/、skills/、rollout JSONL
-    只有需要精确步骤、错误文本或来源时才继续打开
+wiki/concepts/jwt-authentication.md  ← 权威页面
+        │ title + body
+        ├─→ FTS/BM25
+        └─→ [[token-revocation]] → graph_edge
 ```
 
-`LocalMemoriesBackend` 提供 list、read、search 和 add-ad-hoc-note。`local/search.rs` 的 search 是对普通文本做递归 substring scan：可做任一词命中、同一行 all-terms、行窗口 all-terms、大小写和规范化比较，并按 path 与行号返回上下文。它不计算 embedding、向量距离、ANN 邻居或 learned score。
+### CodeGraph：仓库 commit 的关系投影
 
-以下是一次搜索的伪返回，展示它更像代码搜索而非语义召回：
+CodeGraph clone 指定 branch、记录 commit，再解析 files、symbols/nodes 和调用/依赖 edges。首次 `indexAll` 建立全量投影，之后 `sync` 处理变化文件。`search` 可以按名称找节点，`callers/callees/impact` 才沿关系边读取。CodeGraph 能说明“索引时这版代码的结构”，实际修改前仍需以当前 workspace source 为准。对应载体可从 [MemoryCore store](https://github.com/TencentCloud/TencentDB-Agent-Memory/tree/0aff21a/MemoryCore/src/core/store)与 [Wiki index engine](https://github.com/TencentCloud/TencentDB-Agent-Memory/tree/0aff21a/MemoryKnowledge/src/engines/wiki)继续定位。
 
-```text
-query: ["refund", "fixture"]
+## 3.2 Codex：rollout JSONL、state/memories DB、Markdown 与 Git baseline
 
-MEMORY.md:84
-  Payments / refund integration tests
-  - If the fixture schema changed, update the fixture before rerunning.
-  Source: rollout T-1842
+[Codex `c9b19deb`](https://github.com/openai/codex/tree/c9b19deb09c1841ce7acc33ddb96276030936a29)没有预建向量或图索引。它把原始经历、后台候选和 Agent 可读状态放在不同载体：
 
-rollout_summaries/T-1842.md:12
-  Failure: stale refund_status field in fixture.
-```
-
-用户可见结果是：当用户用“退款 fixture”这类项目原词提问时，Agent 容易命中；如果 Phase 2 把原词抽象成陌生的标签，substring search 可能找不到，即使相关事实仍在文件中。Codex 把这部分责任交给文档组织、关键词与 Agent 的分步搜索。
-
-### Citation 也改变存储生命周期
-
-read-path prompt 要求 Agent 使用 Memory 后在最终回答中附带隐藏 citation block，包含实际文件行号和 rollout IDs。`memories/read/src/citations.rs` 解析它，随后 state 层更新相应 Stage 1 候选的 usage。Citation 因而不只是展示出处：它把“被使用过”的信号回流到候选选择。
-
-如果模型读了文件却漏掉 citation，或引用无效 thread ID，usage 信号就不会更新。这是一个清晰的接口边界：代码能解析格式，不能保证模型总能正确声明它使用了哪些 Memory。
-
-## 从 Codex 抽出的通用存储架构
-
-一个可审视的 Memory 存储层至少可以按下面四类对象描述：
-
-| 对象 | 最少应有的信息 | 用途 |
+| 载体 | 保存什么 | 是否是新 Thread 的主要读取面 |
 |---|---|---|
-| evidence event | 内容或位置、来源、时间、主体、hash/receipt | 回放与审计 |
-| memory candidate / revision | 类型、scope、支持来源、状态、版本 | 控制何时成为当前知识 |
-| derived index | 由哪个版本生成、索引类型、构建时间 | 检索与重建 |
-| usage / decision record | 哪次检索、是否被引用、动作和结果 | 保留、评估与纠错 |
+| rollout JSONL | user/assistant、tool call/result 与任务证据 | 否；最深层来源 |
+| `state_5.sqlite` | Thread ID、source、cwd、branch、commit、updated_at、memory mode、rollout path | 否；来源发现与定位 |
+| `memories_1.sqlite` | Phase 1 candidates、usage、selection，以及 Phase 1/2 jobs/watermarks | 否；形成与调度账本 |
+| `memory_summary.md` | 首行 `v1` 的短导航 | 是；新 Thread 直接获得 |
+| `MEMORY.md` | 跨 rollout 聚合的偏好、项目知识、流程和失败屏障 | 是；按需 search/read |
+| `rollout_summaries/*.md` | 单次任务摘要和 `rollout_path` | 是；需要证据时渐进读取 |
+| `skills/` | 可复用程序与配套工件 | 是；按需读取 |
+| `raw_memories.md` | 被选 Phase 1 `raw_memory` 的机械物化 | 否；Phase 2 输入 |
+| Git baseline | 上一次成功 Phase 2 与当前工作区之间的 diff 基线 | 否；增量形成和续跑边界 |
 
-Codex 对这四类的取舍是：evidence 留在 rollout，candidate 和 usage 放 SQLite，详细可读 view 放文件，derived index 基本由文本标题、行号和目录结构承担。它没有为每个 Memory item 分配稳定的结构化 ID，也没有把 scope 做成物理数据库 namespace；项目边界主要来自 cwd/branch 元数据以及 Markdown 中的组织方式。
+SQLite 中有候选不表示文件已经形成；文件已经形成也不表示当前 Agent 已经搜索并读到。Codex 的“索引”主要是生成式短导航 `memory_summary.md`、Markdown 的标题/关键词，以及查询时对普通文本做即时词法扫描。详细读取协议在第 5 层说明。
 
-## 近期机制：从单一检索库转向多视图、可追溯状态
-
-### LangGraph：namespace/key Store，向量索引是可选能力
-
-固定提交的 [LangGraph Store](https://github.com/langchain-ai/langgraph/tree/f09cfe8ffc1eeffd68f4b628ed69c30f7cad229f) 提供 `(namespace tuple, key)` 的 JSON object 存储，可 `get/search/put/delete/list namespaces`。其语义 index 默认关闭，只有显式配置 embedding 才启用；TTL 也默认关闭并要求 adapter 支持。它说明成熟框架并不把向量检索当作 Memory 的必需前提：先有明确 key、namespace 和对象操作，再选择是否为某些字段建语义索引。
-
-对 Codex 的对照很直观。Codex 的逻辑 scope 是 cwd 和文档结构，方便本地阅读但缺少硬 namespace；LangGraph 的 namespace/key 更适合应用主动管理对象身份和隔离，但它不会自动从 Agent 轨迹抽取有用经验。二者处理的是同一层的不同问题。
-
-### Caura：一份权威 row，多种派生检索面
-
-固定提交的 [Caura](https://github.com/caura-ai/caura/tree/54dd6d4f2075ca428b1f3a5a8c50114351ea4755) 使用 Postgres、pgvector、FTS、Redis 和 worker。其 `memories` 主表把 tenant、fleet、agent、type、content、embedding、FTS、status、visibility、`supersedes` 和 timestamps 放在同一权威 row，后台再处理 enrichment、dedup 和 contradiction。它解决的是多租户、结构化 scope、状态筛选与 hybrid retrieval 的工程需求。
-
-这是一种“数据库是权威，向量/全文/关系是可更新投影”的路线。它比 Codex 的文件化层次更强于过滤和服务端查询，也带来部署、schema 演化、异步索引滞后与多路径保证不一致的成本。仓库代码和测试表明它实现了这些组件，不代表独立生产效果。
-
-### MAP-Graph：让 lineage 进入查询与行动边界
-
-[MAP-Graph](https://arxiv.org/abs/2608.10509)（2026-08，预印本）提出 provenance-aware shared memory，将 provenance/lineage 纳入共享 Memory 的查询、权限和行动风险处理。它要解决的实际问题是：传统向量库可以找回相似文本，却难以判断这段知识是谁产生的、能否被当前主体使用、下游行动能否依赖它。
-
-其新意不在“又加一个图数据库”，而在让来源边与对象关系成为决定可见性和风险的状态。Codex 目前有 rollout ID、路径和行级 citation，能支持回查；但读取时仍由 Agent 根据全局 summary 和文本 scope 自行判断相关性，尚没有 lineage 驱动的硬访问投影。MAP-Graph 是近期研究信号，尚非通用基础设施。
-
-### Neo4j Labs Agent Memory：短期、长期和推理状态放进同一图服务（官方仓库，README 复核 2026-08-25）
-
-[Neo4j Labs Agent Memory](https://github.com/neo4j-labs/agent-memory)提供了一个图原生工程对照。README 把状态分成 per-session conversation、长期实体/偏好/事实图和 reasoning traces/tool usage；访问面同时提供 vector + text search、entity resolution、deduplication、关系抽取和相似任务检索。它还提供 buffered writes、dedupe/consolidation primitives、multi-tenant `user_identifier`、MCP tools 和 `:TOUCHED` 审计边。
-
-其主要数据流是：
+这套组合保留了一条清楚的回查链：
 
 ```text
-消息 / reasoning trace / tool usage
-  → 多阶段实体与关系抽取
-  → Neo4j 节点、边和审计关系
-  → text + vector + graph 查询
-  → context / similar task / reasoning reuse
-  → buffered write、dedup、eval harness
+memory_summary.md
+→ MEMORY.md 中的 task group 与 Sources
+→ rollout_summaries/<slug>.md
+→ rollout_path 指向的原始 JSONL
 ```
 
-它补充了 Codex 文件化状态中较弱的结构化实体、关系和跨语言 SDK。代价也很具体：需要 Neo4j 后端、embedding/LLM provider、实体解析和图维护；图中的边、摘要和向量如何同步删除仍需额外治理。仓库声明这是 Neo4j Labs 的 community-supported project，代码和 README足以说明工程形状，不能单独证明生产采用或通用性能。
+Git baseline 也不是面向读者的逐事实历史。它让下一次 Phase 2 看见物化输入与正式文件发生了什么变化；Codex 没有为每条事实建立 stable identity 与独立 revision node。候选 schema 与文件物化分别见 [Memory migration](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/state/memory_migrations/0001_memories.sql)和 [storage.rs](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/memories/write/src/storage.rs)。
 
-## 为什么 Codex 没有默认 embedding 检索
+## 3.3 双时间版本图：stable identity、immutable revision、valid time、transaction time
 
-Embedding 对同义表达、模糊问题和大规模候选召回有价值；它也需要 embedding 模型、重建策略、过滤条件、距离阈值、索引一致性和额外存储。Codex 当前选择把长期材料写成可 grep 的本地文件，并让 Agent 先从 2500-token 摘要定位，再做词法搜索和逐层打开。这样可以直接看到命中行、给出 citation，并避免维护一条始终同步的语义索引。
+[A Graph-Native Bitemporal Memory Store](https://arxiv.org/abs/2607.26520)针对覆盖更新的两个问题：旧内容被抹掉，以及“事实何时成立”与“系统何时知道”被混成一个 `updated_at`。
 
-可以把两种路径并排理解：
+它把一个稳定 Memory identity 连接到不可变 version nodes；每个版本保存两条闭开时间区间：
 
-| 问题 | Codex 当前路径 | 向量/混合路径常见回答 |
+- **valid time**：内容在现实世界中何时成立；
+- **transaction time**：该版本何时被数据库记录并对系统可见。
+
+```text
+MemoryIdentity: office_location
+├─ HAS_VERSION → v1 "上海"
+│                 valid [-∞, 7/10)
+│                 transaction [7/1, 7/13)
+└─ HAS_VERSION → v2 "杭州"
+                  valid [7/10, +∞)
+                  transaction [7/13, +∞)
+```
+
+例子中，用户 7 月 10 日搬到杭州，却到 7 月 13 日才告诉系统：
+
+| 查询 | 时间语义 | 答案 |
 |---|---|---|
-| 已知项目术语怎么找 | substring search + 目录/标题 | embedding 或 BM25 召回后过滤 |
-| 如何解释命中 | 文件、行号、rollout ID | 需要额外保留 source span 与 rerank 解释 |
-| 索引如何更新 | 编辑文本即可；无 ANN rebuild | 写新向量、删除旧向量、可能异步重建 |
-| 跨措辞召回 | 依赖摘要和 Agent 改写 query | 通常更强，但可能召回语义近却 scope 错的内容 |
-| 多租户/权限过滤 | 文本组织与 Agent 判断 | 需要在检索前/后把 scope 写入过滤器 |
+| 根据当前完整证据，7 月 11 日现实中的办公室在哪里？ | valid-time historical query | 杭州 |
+| Agent 在 7 月 11 日运行时，当时系统知道什么？ | transaction-time as-of query | 上海 |
+| 现在在哪里？ | current query | 杭州 |
 
-近期方向把 embedding 放回 Memory 状态的派生视图中。无论用 substring、BM25、向量还是图，系统仍需说明该索引对应哪个版本、失效后如何重建、删除和权限变化怎样传播。
-
-## 当前边界
-
-- `memory_summary.md` 是全局物理摘要，所有启用线程先看到同一个短索引；文件读取层没有按 cwd/project 做强制过滤。
-- SQLite 与文件系统之间没有跨介质原子提交；数据库已更新而文件更新失败，或相反，仍可能留下恢复工作。
-- 词法检索便宜、透明，但对同义改写和不良标题敏感。
-- rollout ID 与 citation 支持来源追溯，但候选/Memory 条目没有统一的稳定对象 ID、版本图和级联删除回执。
-- 更结构化的 namespace、hybrid index 和 provenance graph 已有活跃仓库或近期论文，但它们增加的复杂度、延迟和治理成本尚不能被“检索更聪明”一句话抵消。
-
-下一章将处理状态随时间怎样更新、冲突、失效、撤销和遗忘。
+更新不覆盖 v1，而是追加 v2、关闭旧区间并移动 current view。论文原型使用 agent-local Neo4j property graph、HNSW vector index 和版本化节点；真正改变状态能力的是 stable identity 与双时间 schema，而不是“用了图数据库”。它让 current、现实历史和系统认知历史都可查询，但不自动解决 identity resolution、自然语言时间抽取或来源真伪。版本冲突如何选择、派生状态怎样修订，在第 4 层继续。

@@ -317,19 +317,18 @@ Phase 1 使用每线程 job、source watermark、lease 和 retry。Phase 2 使�
 
 跨数据库和文件系统的边界仍然存在：候选选择、SQLite 状态、Markdown 写入和新线程读取没有一个覆盖全部步骤的原子快照。官方 [issue #26684](https://github.com/openai/codex/issues/26684) 讨论并发 Stage 1 写入与 Phase 2 `LIMIT/OFFSET` 分页可能造成候选遗漏或重复；[issue #38860](https://github.com/openai/codex/issues/38860) 报告长 rollout 的 context-window failure。两者都是公开问题报告，本文不把它们转换成总体发生率。
 
-## 12. 与七层通用架构的对应关系
+## 12. 与六层通用架构的对应关系
 
 | 通用层 | Codex 对应实现 | 当前证据强度 |
 |---|---|---|
 | 输入 | startup eligibility、rollout filter、redaction、budget | 代码和官方文档可见 |
 | 写入 | Phase 1 JSON 抽取、Phase 2 consolidation | 代码、prompt、工件可见 |
 | 状态 | SQLite candidates/jobs + Markdown/Git artifacts | schema 和文件路径可见 |
-| 管理 | usage/recency selection、notes、pollution、reset | 代码可见，语义正确性较弱 |
+| 管理 | Phase 2 文件级合并、改写与来源变化传播 | 代码和 Prompt 可见，语义正确性较弱 |
 | 读取 | summary injection、lexical search、progressive disclosure | 代码和 prompt 可见 |
-| 使用 | read instructions、citation、只读 root、工具权限 | 代码和 prompt 可见 |
 | 反馈 | citation → usage → selection → consolidation | 控制流可见，长期收益未独立测量 |
 
-这个对应表提供了前七章的成熟锚点。每个功能章会把 Codex 这一格展开，再放入近期工作对该格的扩展。
+这个对应表提供了六层正文的 Codex 工程锚点。每一层再用 TencentDB 或具体前沿案例补足不同机制。
 
 ## 13. Codex 目前最成熟、最薄弱的部分
 

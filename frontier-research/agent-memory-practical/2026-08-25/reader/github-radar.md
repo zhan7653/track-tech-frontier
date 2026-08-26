@@ -1,13 +1,14 @@
-# GitHub 雷达兼容入口
+# GitHub 工程入口
 
-本报告只把能改变实现理解的仓库放入正文。入选依据是组织/项目身份、可读代码或官方文档、固定版本路径和实际机制；Star 只负责剔除明显低关注噪声。
+本页只导航到六层正文实际使用的仓库；关注度不承担质量、性能或生产采用证明。
 
-| 项目 | 证据身份 | 正文用途 |
+| 项目 | 固定/官方证据 | 正文用途 |
 |---|---|---|
-| [OpenAI Codex](https://github.com/openai/codex/tree/c9b19deb09c1841ce7acc33ddb96276030936a29) | OpenAI 官方仓库，固定 commit | 两阶段形成、文件化读取和反馈锚点 |
-| [Microsoft Agent Framework Azure Cosmos Memory](https://github.com/microsoft/agent-framework/blob/main/python/packages/azure-cosmos-memory/README.md) | Microsoft 官方仓库，main README | cadence 抽取、分类、TTL、去重和 user/thread scope |
-| [Neo4j Labs Agent Memory](https://github.com/neo4j-labs/agent-memory) | Neo4j Labs community 项目，官方仓库/README；页面复核时约 488 stars（2026-08-25） | 图状态、实体去重、reasoning trace、vector/text 检索 |
-| [LangGraph Store](https://github.com/langchain-ai/langgraph/tree/f09cfe8ffc1eeffd68f4b628ed69c30f7cad229f) | LangChain 官方仓库固定 commit | namespace/key、可选 semantic index 和 TTL |
-| [Caura](https://github.com/caura-ai/caura/tree/54dd6d4f2075ca428b1f3a5a8c50114351ea4755) | 可检查固定 commit | 多租户权威 row 与派生检索面 |
+| [TencentDB Agent Memory](https://github.com/TencentCloud/TencentDB-Agent-Memory/tree/0aff21a) | TencentCloud 官方仓库，固定提交 `0aff21a` | L0–L3、Skill、Wiki、CodeGraph 的输入、形成、状态、管理与读取主线 |
+| [OpenAI Codex](https://github.com/openai/codex/tree/c9b19deb09c1841ce7acc33ddb96276030936a29) | OpenAI 官方仓库，固定提交 `c9b19deb` | Phase 1/2、文件化 Memory、词法渐进读取与 citation usage |
+| [OpenViking](https://github.com/volcengine/OpenViking) | 官方仓库与检索文档；v10 工程检查固定到 `7f6085a` | `viking://`、目录递归、L0/L1/L2 hydration 与检索轨迹 |
+| [XSkill](https://github.com/XSkill-Agent/XSkill/tree/b65192501767f69fac7acc53321ac16e57fca86a) | 作者仓库，固定提交 `b651925` | Experience Bank、Skill Library、多路径与 cross-rollout critique |
+| [Causal Memory](https://github.com/JingxuanC/causal-memory/tree/054af36507537f7b616fa41db07be483cc6e55c3) | 固定提交 `054af36` | session log、facts、decision→outcome edges 与多路读取 |
+| [MemCon](https://github.com/ericjiang18/MemCon) | 作者仓库与论文 | backend-agnostic Memory controller、UCB 在线策略 |
 
-Star 只用于去掉明显低关注噪声；仓库代码、文档、固定版本和维护边界才是正文证据。完整 Codex 工程路径见[Codex 完整说明](codex-complete.md)。
+其他第六层来源以论文方法为主，直接从[反馈、经验与持续学习](06-feedback-learning.md)进入。

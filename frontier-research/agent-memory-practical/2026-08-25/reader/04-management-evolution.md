@@ -1,164 +1,179 @@
-# 第 4 章　管理与演化：Memory 怎样被保留、修订、隔离和清除
+# 第 4 层：管理与演化
 
-## 结论
+首次形成以后，新证据可能补充、限制或推翻旧结论。管理层要把这种变化表达为 `update / merge / supersede / conflict / version`，并让当前状态与必要历史仍可解释。TencentDB 与 Codex 已经实现了不同形状的更新管理；MemTxn、GEM/MemState 与 ForgetEval 则把来源校验、状态轨迹和语义遗忘进一步变成显式机制。
 
-管理层决定一段候选经历之后的命运：进入全局手册、继续保留、等待下一次重写、因外部内容而隔离，或被清除。它处理的是跨任务、跨时间的状态变化，因此要同时看四件事：选择规则、使用反馈、污染边界和重置范围。
+## 4.1 TencentDB：L1/L2/L3/Skill 的 update、merge、version 与 conflict
 
-Codex 已经把这四件事做成了可观察的工程流程。它有候选账本、使用次数、后台单例任务、外部内容污染标记和全量 reset；最终的修订判断仍由 Phase 2 内部 Agent 写 Markdown 完成。调度与文件边界由确定性代码控制，哪条经验应合并、保留多久、怎样改写，仍有生成式判断参与。
+[TencentDB Agent Memory `0aff21a`](https://github.com/TencentCloud/TencentDB-Agent-Memory/tree/0aff21a)没有一个统一 Evolution Engine。Chat 由 L1→L2→L3 的触发器和 Prompt 串联；Skill 走独立的不可变版本链。
 
-## 4.1 这一层管理什么
+### L1：先找相似旧对象，再决定当前表示
 
-前面几层产生 rollout、候选记忆和存储工件；管理层持续回答下面的问题。
+每个新 L1 候选先通过向量或 FTS 找 Top-K 相关旧项，冲突/去重 Prompt 再返回：
 
-| 管理问题 | 对用户的可见结果 | Codex 的主要载体 |
+| 动作 | 语义 | 当前状态变化 |
 |---|---|---|
-| 哪些候选值得进入下一次巩固 | 常用或近期经历更可能留在手册中 | `stage1_outputs` 的使用与时间字段 |
-| 一次巩固应处理哪些候选 | `MEMORY.md`、摘要和 skills 被增量改写 | Phase 2 selection + Git baseline |
-| 外部内容进入过线程后怎么办 | 该线程可以退出未来 Memory 来源 | thread `memory_mode` / `polluted` 状态 |
-| 用户说“记住、更新、忘记”后怎么办 | 先留下不可覆盖的请求记录，随后由巩固处理 | `extensions/ad_hoc/notes/` |
-| 全部清除到底清什么 | 当前生成式 Memory 消失，原始会话仍可能保留 | `memories_1.sqlite` + Memory 目录 reset |
+| `store` | 没有相关旧项 | 创建新 ID，version=1 |
+| `update` | 新证据修正或补强一个旧对象 | 保留对象身份，写新内容并递增 version |
+| `merge` | 多条内容属于同一对象或方法 | 合并正文、类型、优先级、时间和来源，旧 current 退出 |
+| `skip` | 重复、低价值或不应保存 | 不改变状态 |
 
-这里的“管理”不等于数据库管理界面。它直接影响下一次 Agent 会看到哪段历史，也影响旧结论会不会继续影响行为。
+更新后的版本继续追加到 JSONL，DB current row 与 FTS/vector 投影则切换到新内容。`source_message_ids` 与 team/user/agent/session/task scope 一起保留，使后续能回到触发这次变化的消息。这里的删除只是 update/merge 中旧 current 表示退出，不是跨层语义遗忘。
 
-## 4.2 Codex 的选择链：从候选账本到一次全局巩固
+### L2：Scene Agent 用文件操作完成 UPDATE / MERGE
 
-固定快照为 [`openai/codex@c9b19deb`](https://github.com/openai/codex/tree/c9b19deb09c1841ce7acc33ddb96276030936a29)。Phase 1 已把每个 rollout 的 `raw_memory`、`rollout_summary`、来源 thread、水位和使用字段写入 `memories_1.sqlite`。Phase 2 启动时，先领取一个全局 singleton job，再从这个数据库取候选；成功后才提交选择快照和新的 baseline。[Phase 2 主流程](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/memories/write/src/phase2.rs#L47-L212)
+Scene Agent 读取新 L1、当前 Scene 索引和必要正文，判断 `UPDATE / MERGE / CREATE / NO-OP`。默认优先更新已有场景；高度重叠或容量压力下才合并。运行前工程侧备份 `scene_blocks/`，成功后扫描 Markdown 并重建 `scene_index.json`；失败或留下部分文件时可恢复备份。
 
-```text
-stage1_outputs
-  → 按使用与新鲜度选取最多 256 条
-  → 物化 raw_memories.md / rollout_summaries/*.md
-  → Phase 2 Agent 对比 Git baseline 与新增材料
-  → 更新 MEMORY.md、memory_summary.md、可复用 skills
-  → 检查工件、reset baseline
-  → 在同一数据库事务提交 selection flags 与 job watermark
-```
+合并时，Agent 先写新的综合 Scene，再把旧文件写为 `[DELETED]`；cleanup 随后 unlink 文件、清理 L2 当前视图并重建索引。这是“Agent 提议文件变化 + 工程代码落实”的局部管理动作。它不会自动沿来源关系去修改所有下游对象。
 
-选择顺序是：`usage_count` 降序，再按 `last_usage` 或 `source_updated_at` 的新鲜度、`source_updated_at` 和 thread ID 排序。使用过的候选按最后使用时间判断 30 天窗口；从未使用的候选按来源时间判断。默认最多选择 256 条。代码将成功的准确集合写回 `selected_for_phase2`，避免“这次到底处理了谁”只存在于模型输出中。[选择查询与提交](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/state/src/runtime/memories.rs#L431-L525)
+### L3：旧 Persona 与变化 Scene 共同驱动增量重写
 
-| 固定版本默认值 | 作用 | 读者能看到的后果 |
-|---|---|---|
-| 每次 startup 最多处理 2 个 rollout | 限制后台写入负担 | 新完成任务可能需等待多次启动 |
-| 最近 10 天、至少空闲 6 小时 | 避免仍在变化的线程过早被提炼 | 太旧或持续活跃的线程不会成为候选 |
-| Phase 2 最多 256 条 raw memories | 控制巩固上下文 | 很多候选时，低使用、较旧内容更容易被排到后面 |
-| 未使用窗口 30 天 | 清理长期没有进入巩固视野的候选 | “未被用到”逐渐成为弱淘汰信号 |
-
-这些默认值来自开源客户端，配置或托管环境可以覆盖它们；它们描述当前代码的工作方式，不能直接推广为所有 Agent 的通用最佳参数。
-
-### 一个选择例子
-
-假设候选账本中有四条记录：
-
-| rollout | 内容摘要 | usage_count / last_usage | 来源更新时间 | 下一次优先级 |
-|---|---|---|---|---|
-| R-17 | 支付项目的集成测试顺序 | 6 / 昨天 | 20 天前 | 高 |
-| R-31 | 同一项目一次未完成的排错 | 0 / — | 昨天 | 高 |
-| R-08 | 已迁移分支上的构建命令 | 2 / 40 天前 | 50 天前 | 低 |
-| R-42 | 刚发现的外部网页方案 | 0 / — | 今天 | 取决于污染状态 |
-
-R-17 由于多次在后续回答中被引用，优先留在巩固输入中；R-31 足够新，也有机会被纳入；R-08 的时间和使用信号都弱；R-42 若被标为 `polluted`，会转入排除路径。这个例子展示的是排序机制，并不意味着某条“更常被引用”的经验一定更正确。
-
-## 4.3 usage：引用回写形成一条简单的保留反馈
-
-Codex 的读取提示要求 Agent 使用 Memory 后，在最终回答中附隐藏 citation block，带上实际文件行号和 rollout ID。读取模块解析该 citation；有效的 rollout ID 会让对应 `stage1_outputs` 行的 `usage_count` 加一，并刷新 `last_usage`。[citation 解析](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/memories/read/src/citations.rs#L6-L50)、[usage 回写](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/state/src/runtime/memories.rs#L51-L86)
+L3 不在每条 L1 变化后立即更新。触发仍是首次生成、累计 50 条新 L1、`PERSONA_UPDATE_REQUEST` 或 Persona 丢失恢复。增量 Prompt 输入：
 
 ```text
-Agent 搜到 MEMORY.md 第 84 行
-  → 回答末尾引用该行关联的 R-17
-  → citation parser 验证 ID
-  → R-17.usage_count + 1，last_usage = 当前时间
-  → 下次 Phase 2 selection 更容易再看到 R-17
+old persona.md
++ 上次成功时间之后变化的 Scene 完整正文
++ trigger reason / counters / scene stats
 ```
 
-它给系统提供了“这一来源被实际用过”的信号，成本很低，也保留了来源线索。当前代码没有把它实现成点击率模型：系统没有记录“候选曾被展示却未采用”、用户是否认可这次引用、引用是否真的帮助任务成功。因此会出现曝光偏差：已在摘要中、关键词容易被搜到的材料更容易继续被引用；同样有价值但没有被找到的材料得不到强化。
+Prompt 可以收窄、合并或移除旧规则；大改用 `write`，局部替换用 `edit`。成功后计数归零，工程侧清理模型误写的导航并重新追加最新 L2 导航。已有 Session 常使用 `session_init` 缓存，所以新 Persona 主要在新 Session 生效。
 
-## 4.4 pollution：外部上下文如何退出候选池
-
-Codex 可以配置 `disable_on_external_context`。启用后，Web Search、Tool Search、可能带外部内容的工具输出，以及被标为会污染 Memory 的 MCP 调用，会将当前 thread 标成 `polluted`；它不再作为未来 Phase 1 的正常候选。若该 thread 在上一轮 Phase 2 selection 中，代码会安排后续 consolidation，尝试移除仅由这条 thread 支持的内容。[污染标记与 forgetting enqueue](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/state/src/runtime/memories.rs#L617-L652)
-
-这一机制针对的是来源隔离，避免网页、搜索结果或不可信工具材料直接沉淀成长期经验。固定配置中的 `disable_on_external_context` 默认值为 `false`；使用者必须开启它，防线才会生效。[Memory 配置](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/config/src/types.rs#L288-L354)
-
-| 场景 | 线程状态 | 之后会发生什么 | 还没有得到的保证 |
-|---|---|---|---|
-| 本地代码与测试工具 | 正常 | 可按 idle/age 进入 Phase 1 | 提取内容一定正确 |
-| 启用防护后的网页搜索 | `polluted` | 后续不再作为普通来源；可能触发巩固清理 | 已进入所有摘要、skill、缓存的内容立即消失 |
-| 用户关闭 thread Memory | `disabled` | 阻止未来生成资格 | 已经写入手册的派生内容同步删除 |
-| 未启用防护的外部工具 | 正常 | 仍可能进入候选流程 | 来源已被安全隔离 |
-
-因此 `polluted` 只提供一次面向来源的软隔离。系统还要能够追到由它支持的摘要、技能、索引和已执行行动，才能证明旧内容不再造成影响。
-
-## 4.5 更新、忘记与 reset：三种不同力度的操作
-
-用户明确要求“记住、更新、忘记”时，专用工具不会直接改 `MEMORY.md`。它会在 `extensions/ad_hoc/notes/` 下创建带时间戳、不可覆盖的 Markdown note；下一次 Phase 2 必须把该 note 当作输入，同时把其中内容当数据而非执行指令。[ad-hoc note 实现](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/ext/memories/src/tools/ad_hoc_note.rs#L22-L90)
-
-全量 reset 的行为更强，但边界也更窄：App Server 先在事务中删除 `memories_1.sqlite` 的 stage1 outputs 和 jobs，再清空 Memory 目录。它不会删除原始 rollout，也不会把历史 thread 的 `memory_mode` 改为 disabled。10 天窗口内、已空闲且仍 enabled 的旧 thread 之后可以再次被 Phase 1 抽取。[reset 路径](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/app-server/src/request_processors/thread_processor.rs#L1774-L1801)
+用“失败测试规则”可以看到冲突如何跨层传播：
 
 ```text
-“忘记退款项目的旧构建规则”
-  → append-only note：请求撤销
-  → 下一轮 Phase 2 判断应删/改哪些手册内容
-  → 未来 read path 不应继续推荐旧规则
+旧 L1/L2/L3：所有代码修改前先写失败测试
 
-“reset all memories”
-  → 清候选账本与 Memory 工作区
-  → 原始 rollout 仍在
-  → 条件仍满足时，旧 rollout 以后可重新生成候选
+新 Session：纯重构没有待修复失败，但必须先建立行为基线
+  → L1 update/merge：把绝对规则改成条件规则
+  → L2 UPDATE：区分缺陷修复与纯重构
+  → L3 触发后重写：
+     缺陷修复先建立失败证据；纯重构先锁定行为基线
 ```
 
-这组区别解释了为什么管理 UI 中同样写着“忘记”，实际效果可能差很多：关闭 thread、写一条忘记 note、污染隔离和 reset 分别作用在生成资格、未来巩固、来源筛选和当前派生状态上。
+这不是数据库依赖图自动传播。若 L2/L3 尚未触发或生成失败，高层状态可以暂时落后于 L1。
 
-## 4.6 近半年补充：从“重写文档”走向可治理状态
+### Skill：immutable versions 与 active head
 
-### GEM / MemState：把演化定义成状态操作
-
-2026 年 5 月的 [GEM / MemState 论文](https://arxiv.org/abs/2605.26252)把长期 Memory 提炼为 ingestion、revision、forgetting、retrieval 四种状态级操作，并以 property-graph 原型验证可行性。它要解决的痛点是：一条 record、一个 embedding 或一条 edge 各自看起来正确，整体状态却会无控制增长、无法表达语义修订，或者遗忘后仍留下派生物。
-
-若把这一思路放回 Codex，`raw_memory → MEMORY.md` 之间缺少稳定的对象 ID、修订关系和派生边；Phase 2 可以改对文本，却很难机械地列出“这条被撤销的 rollout 曾影响哪些摘要或 skills”。GEM 给出的方向是让 revision 和 forgetting 成为显式操作，并在状态中保留依赖。它目前是论文和 MemState 原型，尚未成为 Codex 或通用 Agent runtime 的共同接口。
-
-### MemTxn：把来源验证、版本选择和故障恢复放在回答模型之外
-
-2026 年 7 月的 [MemTxn](https://arxiv.org/abs/2607.27834)提出三件配套机制：Ordered PatchTest 检查更新是否有来源支持，Temporal Resolver 在冲突版本中选可见版本，durable snapshot journal 在故障后恢复声明的完整活跃状态。论文报告了作者设置下的审计、恢复和 FactConsolidation 结果；它仍是预印本和原型，不能外推为工业部署效果。
-
-它补的是 Codex 管理链中的确定性空档。Codex 的 lease、watermark 和 Git baseline 已经能协调后台 job；Phase 2 仍由模型决定某句新材料是否足以覆盖旧结论。MemTxn 会把“可否更新”“当前版本是谁”“崩溃后如何恢复”拆到一个独立事务边界中。这样做增加了 receipt、版本和 journal 的维护成本，换来更可检查的更新语义。
-
-可以把一次更新写成前后状态：
+Skill Review 在新轨迹到来后先通过最近提示、`skill_list`、`skill_view` 读取当前能力，再选择 no-op、create、update、patch 或 `files_write`。对已有 Skill 的写操作必须带刚读到的 `expected_version`；stale version 会被拒绝并要求重读。
 
 ```text
-旧状态：
-  preference = "refund_status"
-  valid_until = null
-  source = T-1842
-
-新输入：
-  patch = "refund_state"
-  source = T-1910
-  valid_from = 2026-08-24
-
-提交前：
-  PatchTest 检查新值是否能回到 T-1910
-  Temporal Resolver 选择当前可见版本
-
-提交后：
-  current = refund_state
-  history 保留 T-1842 → T-1910
-  snapshot journal 记录可恢复点
+auth-token-revocation@v1
+  基本撤销流程
+      ↓ 新轨迹：多实例状态不一致
+auth-token-revocation@v2
+  Decision rules 加入共享 Store
+      ↓ 新轨迹：旧 token / 并发刷新回归缺失
+auth-token-revocation@v3
+  Validation 补上两类测试
 ```
 
-如果写入在“更新 current、尚未更新索引”时崩溃，恢复流程应从 journal 回到完整的旧状态或完整的新状态。Codex 的 Git baseline 能让下一轮看到未提交 diff，但它没有把每个 Markdown 结论和 SQLite row 绑定成这样的统一事务对象。
+每个 `(skill_id, version)` 是不可变快照；成功写入后旧版 `is_head=0`，新版 `is_head=1`，FTS/vector 只更新 active head。Review Agent 没有 delete 工具，因此自动链的主要动作是版本化修订和 no-op，而不是自主淘汰整个 Skill。管理动作可回查 [L1 writer](https://github.com/TencentCloud/TencentDB-Agent-Memory/blob/0aff21a/MemoryCore/src/core/record/l1-writer.ts)、[Scene Prompt](https://github.com/TencentCloud/TencentDB-Agent-Memory/blob/0aff21a/MemoryCore/src/core/prompts/scene-extraction.ts)、[Persona 模块](https://github.com/TencentCloud/TencentDB-Agent-Memory/tree/0aff21a/MemoryCore/src/core/persona)与 [Skill 模块](https://github.com/TencentCloud/TencentDB-Agent-Memory/tree/0aff21a/MemoryCore/src/core/skill)。
 
-### Omri 等：把选择策略当作可计量的系统决策
+## 4.2 Codex：Phase 2 文件级合并、改写、supersede 与冲突处理
 
-2026 年 6 月的 [Agent Memory: Characterization and System Implications](https://arxiv.org/abs/2606.06448)对十类系统按 construction、retrieval、generation 分段测量，讨论 construction scheduling、query 量摊销和 freshness–latency 取舍。它提醒工程实现：一个“延后巩固”的策略没有消灭成本，只是把成本移到后台并引入新鲜度延迟。
+[Codex `c9b19deb`](https://github.com/openai/codex/tree/c9b19deb09c1841ce7acc33ddb96276030936a29)没有稳定 Memory item ID 上的 per-fact update。新/变化 rollout 先刷新对应 Phase 1 candidate；Phase 2 再把选中候选、旧文件、ad-hoc notes 与 workspace diff 交给 Consolidation Agent，重写同一套全局 Markdown。
 
-Codex 的 6 小时 idle、每次最多两个 rollout、使用/新鲜度选择正好能放进这张账：写入负担较平缓，刚得到的纠正可能不会立刻可用。论文提供系统分析框架，不提供一个替代 Codex 默认值的万能参数。
+```text
+new/changed Stage 1 candidates
++ old MEMORY.md / memory_summary.md / skills
++ raw_memories / rollout_summaries 的增删改 diff
+→ Phase 2 incremental consolidation
+→ current MEMORY.md / summary / skills
+```
 
-## 4.7 当前边界
+Prompt 对文件级更新规定了几条关键语义：
 
-- selection 使用过往引用作为强化信号，缺少“被看见但未采用”和用户纠正的反向证据；
-- `polluted` 与 `disabled` 防止未来采集，无法单独证明历史派生物、缓存或行动前提已全部修复；
-- ad-hoc note 是 append-only 请求，没有逐项稳定 ID、同步删除或确定性冲突裁决；
-- reset 跨越数据库和文件系统，两个步骤之间没有一个统一事务；它也不会抹去原始 rollout；
-- 物理存储根仍是全局的，scope 主要通过 cwd、rollout summary 和文本组织表达；
-- Phase 2 artifact validation 验证文件形状和路径安全，不验证每条文本结论是否仍受现有来源支持。
+- 新候选合入适当 task group，而不是机械追加；
+- diff 中的输入修改与删除必须传播到正式文件；
+- 一个 Memory block 若同时有失效与仍有效来源，只移除失效 reference 或局部结论，不能整块删除；
+- `MEMORY.md` 收窄后同步修正 `memory_summary.md`；
+- 无 meaningful signal 时保持最小变更；
+- 不打开原始 rollout transcript，冲突依据来自候选与 rollout summary。
 
-对不太懂技术的读者，最实用的判断标准是：先问系统能否说明“这条 Memory 从哪来、何时被用过、谁把它改掉、清除后哪些副本仍可能存在”。Codex 已能回答其中一部分；把这些回答连成可验证的修订链，仍是当前研究和工程的重点。
+例如旧 `MEMORY.md` 写“所有修改前先写失败测试”，新 candidate 明确限定纯重构只需行为基线。Phase 2 不是建立一条 `SUPERSEDES` edge，而是直接把段落改成两条条件规则，并更新 summary 导航。旧表述仍能在原始 rollout、candidate source 和 Git 差异中回查，但当前 Agent 只读最新文件。
+
+Git baseline 让下一次 Phase 2 看见上次成功基线与当前工作区的差异；job ownership、watermark 和 selection snapshot 管理后台提交。它们能说明哪次生成成功处理了哪些候选，却不能证明每个 clause 都已正确解冲突。文件间的语义一致性仍由 Phase 2 Prompt 与后续运行检查维持。
+
+Codex 的管理单元因此是“受来源指针约束的文件级 current state”，而 TencentDB 同时有 L1 item version、Scene 文件和 Skill version head。两者都能修正当前内容，但都没有统一的跨对象 revision graph。文件改写与 selection 状态分别见 [Phase 2](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/memories/write/src/phase2.rs)和 [Memory state runtime](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/state/src/runtime/memories.rs)。
+
+## 4.3 MemTxn：来源校验、Temporal Resolver、提交与恢复
+
+[MemTxn](https://arxiv.org/abs/2607.27834)把更新拆成四个职责，形成位于 answer model 之外的 transaction boundary：
+
+```text
+source receipt + proposed patch + current state
+→ Ordered PatchTest：新断言是否由来源支持
+→ Temporal Resolver：冲突版本中谁当前可见
+→ commit new revision / reject
+→ durable snapshot journal：保存可恢复的 active map
+```
+
+### Ordered PatchTest 先验证“能不能写”
+
+更新 proposal 不能只因语言流畅而被接受。PatchTest 对新 assertion 与 source span/tool receipt 做有序检查；不支持的 clause 被拒绝。论文报告的 item-disjoint audit 用 supported originals 与 hard negatives 检查这道准入，但结果只适用于其作者协议。
+
+### Temporal Resolver 再决定“哪一版可见”
+
+当旧值与新值冲突时，Resolver 使用时间和版本信息选择 application-visible state，同时保留必要历史。例如：
+
+```text
+v1  所有修改前先写失败测试
+source: Session A
+
+proposal v2
+  缺陷修复：先失败测试
+  纯重构：先行为基线
+source: Session B 的明确纠正
+
+结果
+  current = v2
+  history = v1 → v2
+```
+
+这与“把两句话都放进 top-k，让回答模型自己猜”不同；可见版本在进入回答模型前已经被解析。
+
+### Snapshot journal 恢复的是完整 active state
+
+多 key 更新可能只写成功一部分。MemTxn 的 durable snapshot journal 记录声明的 active map；故障后恢复完整旧状态或完整新状态，而不是假设它知道底层实际写成功了哪些 key。论文在 LongMemEval-S、LoCoMo 状态与 MemoryAgentBench FactConsolidation 上报告作者实验结果；它是原型机制证据，不等于任意文件、向量和图后端已经共享一个 ACID 事务。
+
+MemTxn 将“模型提出修改”“来源允许修改”“当前版本切换”“故障恢复”分开。这个分工正是 TencentDB/Codex 生成式改写中尚未独立建模的部分。
+
+## 4.4 GEM/MemState：状态级 revision 与派生关系管理
+
+[GEM / MemState](https://arxiv.org/abs/2605.26252)认为长期 Memory 的正确性不是某一 row、embedding 或 edge 单独正确，而是整个 state trajectory 在多次变化后仍满足约束。它把 ingestion、revision、forgetting、retrieval 定义为四种 state-level operators，并在 property-graph 原型中把 content、typed structure 与 policy 放在同一状态模型。
+
+对 revision 最重要的变化是：系统必须区分“相关”与“派生”。`SIMILAR_TO` 或普通 association 只帮助查找，不应因上游变化自动删除邻居；extension/dependency/derived-from 关系才表示下游对象依赖某个 revision，需要失效或重算。
+
+```text
+L1 fact f1：所有修改前先写失败测试
+  ├─ derives → Scene s1
+  ├─ derives → Persona rule p1
+  └─ derives → Skill validation k1
+
+f1 revision → f2：纯重构改为行为基线
+  → s1 / p1 标记受影响并重算
+  → k1 只有真正依赖绝对规则时才进入 revalidation
+```
+
+输出不是一次无差别全库重写，而是新的 governed state：哪些 revision 成为 current、哪些派生物已重建、哪些仍 unresolved。TencentDB 当前用 L1 scheduler、L2/L3 Prompt 串联，Codex 用全局 Phase 2 重写；GEM/MemState 把这种传播关系提升为显式数据管理语义。
+
+## 4.5 Control-Plane Placement / ForgetEval：语义遗忘怎样落地
+
+[Control-Plane Placement / ForgetEval](https://arxiv.org/abs/2606.15903)研究的不是“有没有 delete API”，而是 mutation hook 放在哪里，会覆盖哪类遗忘失败。论文把 recall plane 与会改变状态的 control plane 分开，并使用三种操作语义：
+
+| 操作 | 状态含义 |
+|---|---|
+| `supersede` | 新 revision 成为 current，旧版保留为历史 |
+| `release` | 对象退出 active working/context 层，但 durable state 可保留 |
+| `purge` | 在受管范围内清除 payload 与派生投影 |
+
+它比较的三种 placement 各自看到不同信息：
+
+1. **deterministic primitive** 直接按标识与时间改 store，擅长精确 lexical/temporal 目标，但难以处理同一对象的别名、跨语言表述或被拆开的 compound fact；
+2. **inscribe-time LLM** 在写入时做 canonicalization，能把别名归到稳定对象，却还不知道用户未来一次遗忘请求具体要撤销哪个语义部分；
+3. **mutation-time hook** 在收到 supersede/release/purge 意图时解析目标与范围，再调用确定性 primitive，因而能处理 prefix collision、compound fact 等 intent-aware mutation。
+
+例如 Memory 中同时存在“本地 Map 适合单实例测试”和“本地 Map 可用于生产”。用户要求撤销第二条时，简单字符串删除可能误删两条；写入时 canonicalization 只能知道它们都谈 Map；mutation-time hook 需要把“生产适用性”解析为目标，再让底层只更新对应 revision 和派生状态。
+
+ForgetEval 用模板与 adversarial cases 分别测 canonicalization 和 intent-aware deletion，并让异构 store 通过 Adapter Protocol 暴露真实支持的操作。它说明语义遗忘至少需要：稳定对象/版本、明确操作、正确 placement、派生修复与可核验结果。TencentDB 的 L1 current 替换、L2 文件清理或 L3 重写，以及 Codex 的文件级删改，都只是局部更新结果；两套固定实现没有把“未来不再相信、召回、派生或据此行动”建模成统一的语义遗忘机制。
+
+第 5 层从这里接过已经形成的当前状态，继续回答每一种 Memory 究竟怎样进入上下文。
