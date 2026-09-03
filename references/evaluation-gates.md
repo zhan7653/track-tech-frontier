@@ -48,6 +48,7 @@ Use an independent-reader test when available. Its absence is an advisory, not a
 - Validate manifest paths, hashes, IDs, relative links, and the internal consistency of supplied audit records. Treat deterministic validation as a check for consistency, not quality completion.
 - Provide a default reading path plus links to the general architecture model, mechanism landscape, scenario views, trends, evidence/limitations, branch reports, and selected project reports.
 - When a static HTML site is delivered, its default entry exposes the same reading path; internal links, UTF-8, search targets, diagram fallbacks, mobile layout, keyboard access, and print structure have been checked against the actual generated suite.
+- Every retained AI-created research figure has an explicit user-approved visual alignment record, a validated semantic specification, evidence-backed directed edges, an explicit visible-text whitelist, and a visible-output review. The raster does not invent or reverse relationships and is not the sole carrier of a technical conclusion.
 - Produce a complete, coherent reader suite before an optional human-review list. Limit review to high-impact conflicts, low-confidence signals, or subjective representative choices; it must only trigger incremental revision.
 
 Record each gate as `pass`, `partial`, or `fail` with direct artifact evidence. Do not collapse the gates into one score that hides a reader-outcome failure.

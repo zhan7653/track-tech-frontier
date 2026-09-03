@@ -1,238 +1,261 @@
-# 第 6 层：反馈、经验与持续学习
+# 第 4 层：反馈与持续学习
 
-前五层让经历成为可读 Memory；第六层才回答“使用以后，系统怎样知道什么值得保留、怎样把结果变成更好的经验、Skill 或 Memory design”。TencentDB 与 Codex 目前各闭合了一小段反馈链，主体进展来自下面这些具体论文和仓库。
-
-## 6.1 TencentDB：轨迹 Review → Skill 版本
-
-[TencentDB Agent Memory `0aff21a`](https://github.com/TencentCloud/TencentDB-Agent-Memory/tree/0aff21a)把真实 `user/assistant/tool_call/tool_result` 轨迹归档给 Review Agent。Review 通过分类、72 分门槛、`skill_list/skill_view` 查重后，选择 create/update/patch/no-op，并以 `expected_version` 形成新的不可变 Skill version。新 Session 只看到 active head。
+前三层已经把原始输入提炼成 Memory，并在需要时放进当前上下文。第四层继续追问：这些 Memory 被使用以后，任务结果怎样反过来改变下一次任务？
 
 ```text
-任务轨迹
-→ Review：是否存在可复用能力
-→ Skill v1 / v2 / v3 或 no-op
-→ 后续 Session 读取 active version
+Memory / Skill / 读取策略
+→ 在本轮任务中被读取并影响行动
+→ 得到任务结果或用户纠正
+→ 判断哪些经验和决定应得到反馈
+→ 更新 Memory 内容、Skill 版本或读取策略
+→ 改变下一次任务的输入与行动
 ```
 
-这已经实现“执行经历 → 版本化能力 → 再复用”，但轨迹中没有稳定账本把某个 Skill 的曝光、实际采用和最终任务质量连接起来。可选 Asset Reflection 默认关闭；即使生成文字反思，固定实现也不会自动解析并据此调整资产效用。
+反馈的关键不是再保存一份执行轨迹，而是把“本轮用了什么”“结果怎样”和“接下来更新什么”连接起来。同一个结果可以产生不同学习目标：改写一条经验、晋升一个 Skill 版本，或者调整下一次如何读取 Memory。
 
-## 6.2 Codex：citation → usage → Phase 2 selection
+## 4.1 TencentDB 与 Codex：两个基础反馈回路
 
-[Codex `c9b19deb`](https://github.com/openai/codex/tree/c9b19deb09c1841ce7acc33ddb96276030936a29)要求 Agent 使用 Local Memory 后在最终回答附文件行与 rollout IDs。citation parser 验证 ID，并让对应 Stage 1 candidate 的 `usage_count += 1`、`last_usage = now`；Phase 2 以后按使用与新鲜度选择候选。
+TencentDB 和 Codex 已经各自形成了一段反馈回路，只是回写的对象不同。
+
+| 系统 | 反馈从哪里开始 | 回写什么 | 下一次发生什么变化 |
+|---|---|---|---|
+| TencentDB Agent Memory | 执行轨迹中出现的新方法、失败与纠正 | 创建或修订 Skill，形成新的版本 | 后续 Session 使用更新后的 Skill |
+| Codex Local Memory | 新 Thread 采用了某个旧 Thread 产生的经验 | 更新这个旧 Thread 对应候选记录的使用次数和时间 | 下次整理 Memory 时，优先选择经常被复用的来源 |
+
+[TencentDB Agent Memory](https://github.com/TencentCloud/TencentDB-Agent-Memory/tree/0aff21a)当前明确的反馈对象是 Skill。一次执行留下 user、assistant、tool call 和 tool result；轨迹归档后，其中的新方法、验证结果和用户纠正会用于更新 Skill：
 
 ```text
-Memory 片段被回答引用
-→ citation 指向 rollout IDs
-→ usage_count / last_usage 更新
-→ 下次 Phase 2 更可能选择这些来源
+出现新的可复用方法
+→ 创建新的 Skill
+
+现有方法被证明有遗漏、错误或不够具体
+→ 补充步骤、判断条件、验证方式或常见错误
+→ 形成新的 Skill version
+
+没有带来可复用变化
+→ 不更新
 ```
 
-这闭合的是 citation-driven retention，不是效果学习：citation 证明 Agent 声称采用了来源，不证明任务成功，也不记录内容被展示却未采用的 exposure。
+新版本成为后续 Session 使用的当前版本。这样，本次执行中发现的有效方法和纠正，会直接改变 Agent 下一次处理同类任务时遵循的流程。
 
-## 6.3 XSkill：Experience Bank、Skill Library、多路径与 cross-rollout critique
+[Codex Local Memory](https://github.com/openai/codex/tree/c9b19deb09c1841ce7acc33ddb96276030936a29)记录的是“哪一次过去的任务经验，后来又被新任务用到了”。这里的旧任务不是一个 Markdown 文件，而是一次已经完成的 Codex Thread，也叫 rollout。
 
-[XSkill](https://arxiv.org/abs/2603.12056)把一次成功轨迹拆成两种不同学习产物：Experience 是 action-level 的“触发条件 → 建议动作”；Skill 是 task-level 的结构化 workflow 与工具模板。它们分别进入 JSON Experience Bank 与 Markdown Skill Library。
+Phase 1 处理旧 Thread 后，会在状态库中为它保存一条候选记录，包括提炼内容、rollout ID、`usage_count` 和 `last_usage`。Phase 2 再把多条候选合并进 `MEMORY.md`。因此，`usage_count` 属于“旧 Thread 产生的候选记录”，不属于 `MEMORY.md` 文档或其中某一行。
+
+例如，旧 Thread A 发现“退款测试依赖共享 fixture”，Phase 2 后这条经验出现在 `MEMORY.md` 第 84–89 行。后来新 Thread B 遇到退款测试失败，读取并采用了这段内容。回答末尾的机器标记会同时写入两个位置：
 
 ```text
-Experience e = (condition, recommended action, embedding)
+MEMORY.md:84-89
+→ 表示新 Thread B 具体使用了哪段 Memory 内容
 
-Skill k = (
-  metadata: name / description / version,
-  workflow sequence,
-  reusable tool templates
-)
+rollout_id=A
+→ 表示这段内容来自哪个旧 Thread
+→ 程序找到 A 对应的 Phase 1 候选记录
+→ usage_count：0 → 1
+→ last_usage：更新为当前时间
+
+下一次 Phase 2：重新选择一批过去任务的候选并整理 MEMORY.md
+→ 按使用次数和最近使用时间选择候选
+→ A 对应的候选更容易继续参与长期 Memory 的整理
 ```
 
-### 同一任务主动运行多条路径
+因此，Codex 的这条反馈改变的是历史来源的保留优先级：过去经验被后续任务反复使用，就更容易继续进入下一轮 Memory 整理。它回答的是“这段经验后来有没有被复用”，而不是“复用以后任务是否成功”。
 
-在 accumulation phase，同一训练任务由执行模型独立运行多次；论文主设置使用 N=4 rollouts。每条路径保留任务图片、视觉中间状态、文本推理、工具调用/结果和最终 outcome。知识管理 MLLM 先做 visually grounded summary：它不只写“调用了旋转工具”，还记录倒置图像这一视觉证据为何触发旋转、旋转后的观察怎样改变后续判断。
+## 4.2 XSkill：比较成功与失败路径，更新 Experience 和 Skill
 
-随后 cross-rollout critique 横向比较成功与失败路径：哪些动作在成功路径稳定出现，哪些只是偶然步骤，哪些失败由错误工具选择或遗漏视觉条件造成。Critique 输出 Experience 的 `add/modify` 操作；成功轨迹同时贡献 Skill fragments。Experience 在提交前按 cosine similarity 合并近似项，容量超限时再移除冗余/低质量项；Skill fragments 则与全局 Skill 文档分层合并、去重和抽象。
+[XSkill](https://arxiv.org/abs/2603.12056)同时维护两种可学习内容：Experience 保存特定条件下的建议动作，Skill 保存一类任务的完整工作流和工具模板。一次任务的结果可以同时更新这两个层次。
+
+![XSkill 从多条执行路径中提炼 Experience 与 Skill，并在新任务中检索、改写和使用](assets/figures/xskill-figure-2.png)
+
+*[XSkill: Continual Learning from Experience and Skills in Multimodal Agents](https://arxiv.org/html/2603.12056v3)，Figure 2。*
+
+图的左半部分是经验积累。执行模型先对同一个任务运行多条独立路径，保留其中的推理、工具调用、视觉中间状态和最终结果。知识管理模型随后做两步处理：
+
+1. **Rollout Summary：** 分别总结每条路径的关键判断、工具使用和失败原因，同时从成功路径中抽取工作流与工具模板。
+2. **Cross-Rollout Critique：** 横向比较成功与失败路径，找出哪些动作稳定地带来正确结果，哪些遗漏或错误选择反复导致失败。
+
+橙色路径把任务级流程写入 Skill Library；绿色路径把更局部的“触发条件 → 建议动作”写入 Experience Bank。两个 Manager 再负责相似项合并、去重和容量控制，避免每次执行都只追加一条近似记录。
+
+例如，同一个识图任务有的路径直接识别倒置图像而失败，有的路径先旋转、再裁剪局部区域而成功。对比结果可以形成两种 Memory：
 
 ```text
-同一视觉任务
-├─ rollout A：未旋转图像 → 识别失败
-├─ rollout B：旋转后裁剪 → 成功
-├─ rollout C：只增强对比度 → 仍失败
-└─ rollout D：旋转 + 裁剪 + 识别 → 成功
-       ↓ visually grounded summaries
-       ↓ cross-rollout critique
-Experience：检测到方向异常时，先校正方向再做局部识别
-Skill：视觉检查 → 方向判断 → 变换 → ROI 裁剪 → 验证
+Experience：检测到图像方向异常时，先校正方向再识别
+Skill：视觉检查 → 方向判断 → 图像变换 → 局部裁剪 → 结果验证
 ```
 
-Inference phase 先把新任务分解为多个技术子目标，分别检索 Experience；再根据当前图片重写触发条件与动作，丢掉明显不适用项。Skill adaptor 剪去无关工作流、把重写后的 Experience 嵌入步骤，并把结果作为非强制参考注入执行模型。实际使用过的 Experience/Skill 形成 usage history，下一轮 accumulation 又以它为 critique 参考。XSkill 的持续学习因此发生在外部双流知识库，而不是模型参数中。
+图的右半部分展示这些内容怎样重新影响行动。新任务先被拆成若干子目标，分别检索相关 Experience；检索结果会按照当前图像重写，Skill 也会删去无关步骤并吸收这些具体建议，最后作为参考进入执行模型的 Prompt。实际使用过的 Experience 和 Skill 又会进入 usage history，供下一轮路径比较和内容修订使用。
 
-## 6.4 Trace2Skill：轨迹池、并行 patch、层次化 Skill 合并与迁移
+## 4.3 CoEvoSkills：让 Skill 和验证方法一起演化
 
-[Trace2Skill](https://arxiv.org/abs/2603.25158)不在推理时检索许多零散经验，而是先用大规模轨迹池把经验编译成一个可直接加载的 Skill directory：根 `SKILL.md` 保存广泛程序，`references/`、scripts 或 assets 保存低频细节和确定性工具。
+只有成功或失败，通常不足以告诉系统该怎样修改一个多文件 Skill。[CoEvoSkills](https://arxiv.org/abs/2604.01687)把生成、诊断和最终验收分给三个彼此隔离的角色。
 
-它的三阶段管线是：
+![CoEvoSkills 通过 Skill Generator、Surrogate Verifier 与隐藏 Ground-Truth Oracle 共同演化 Skill](assets/figures/coevoskills-figure-3.png)
 
-1. 冻结的 ReAct Agent 使用初始 Skill 跑 evolution tasks，收集 query、推理/工具历史、最终输出和 binary correctness；轨迹分成 success 与 failure pools。
-2. 大量 analyst sub-agents 并行处理单条轨迹。Success analyst 从成功路径抽取可复用行为；Error analyst 可以检查 trace 和 artifacts、与 ground truth 对照并验证候选修复。无法解释因果失败的轨迹不产生 patch。
-3. 所有 trajectory-local patches 进入层次化 many-to-one merge。每层最多合并一批 patch，去重、解冲突并保留不重叠洞见，直到得到一个 consolidated patch；最后转成 diff-style edits，拒绝不存在文件、搁置行区间冲突并验证 Skill 格式。
+*[CoEvoSkills: Self-Evolving Agent Skills via Co-Evolutionary Verification](https://arxiv.org/html/2604.01687v3)，Figure 3。*
+
+| 角色 | 实际是什么 | 能看到什么 | 产出什么 |
+|---|---|---|---|
+| Skill Generator | 一个持续多轮工作的 LLM Agent | 任务说明、公开背景资料、`skill-creator` 编写规范、当前 Skill、历次失败诊断 | `SKILL.md`、脚本和参考文件组成的 Skill package |
+| Surrogate Verifier | 另一个全新的 LLM session | 任务说明、公开输入、当前输出产物、上一版测试 | 可执行的 pytest 测试，以及失败项、根因和修改建议 |
+| Ground-Truth Oracle | 全新环境中的任务 Agent，加一套隐藏的权威测试 | 任务说明和冻结后的 Skill | 最终通过或不通过的验收结果 |
+
+### Generator：先做出 Skill，再用它完成任务
+
+Generator 不是直接生成一次答案。它先读取任务和公开背景资料，再按照 `skill-creator` 规范创建一个可以交给其他 Agent 使用的 Skill package，例如：
 
 ```text
-frozen agent + initial skill
-→ labeled trajectory pool
-→ success/error analysts 并行提出 patches
-→ patch pool
-→ merge tree：局部补丁 → 中间补丁 → consolidated patch
-→ portable SKILL.md + references/scripts/assets
+evo-exoplanet-period/
+├─ SKILL.md：何时使用、操作流程和验证方法
+└─ scripts/：可以直接调用的数据处理与计算函数
 ```
 
-层次化合并的学习单位不是“最相似的一条历史”，而是多条独立 patch 中反复出现的错误、workaround 和标准操作。普遍模式留在 `SKILL.md`；task-specific quirks 下沉到按需 reference。形成后的 Skill 直接用于 inference，不需要再次检索每条轨迹。
+Generator 随后必须实际调用这个 Skill 处理当前任务，生成文件、代码或分析结果。它的对话上下文会保留多轮诊断；收到 Verifier 的反馈后，它修改 Skill 的说明或脚本，再重新执行任务，形成下一版 Skill 和新的输出产物。
 
-论文同时区分 Skill deepening 与 creation：前者从人工 Skill 开始补强，后者从模型参数知识生成的弱草稿开始。迁移实验再把 author model 与 user model 分开，检查 Skill 是否能跨模型规模、模型家族和 OOD table-QA 任务使用。于是反馈链的输出不只是“原任务变好”，还包括一份可以在不同执行 Agent 上复用的程序工件。
+### Verifier：不看 Skill 源码，只从输出反推应该怎样检查
 
-## 6.5 EvoSkills / CoEvoSkills：Generator–Verifier 迭代晋升
-
-[CoEvoSkills](https://arxiv.org/abs/2604.01687)面对的是多文件 Skill package：单次生成很容易留下覆盖缺口和逻辑错误，因此用 Skill Generator、独立 Surrogate Verifier 与 Ground-Truth Oracle 组成共同演化循环。
-
-Skill Generator 从任务说明、可见背景资料和通用 skill-creator meta-skill 出发，产生第一个 package。执行该版本后，Surrogate Verifier 在独立 LLM session 中只看到任务输入、输出 artifacts 与自己维护的测试脚本；它看不到 Generator reasoning、Skill source 或隐藏 oracle tests。Verifier 生成确定性 assertions，返回逐项失败、根因和可操作修订建议。
+Verifier 与 Generator 使用独立上下文。它可以读取任务要求、公开输入和 Generator 生成的结果，但不能读取 Generator 的推理过程、Skill 目录或隐藏测试。它需要自己把任务要求翻译成一组确定性断言，并写成可执行的 pytest 脚本，例如检查：
 
 ```text
-Skill S(i)
-→ 在工作环境执行，产生 artifacts y(i)
-→ Surrogate Verifier 跑 V(j)
-   ├─ fail：固定测试集，diagnostics → Generator 修订 S(i+1)
-   └─ pass：在新环境重新执行 → Ground-Truth Oracle
-              ├─ pass：晋升/结束
-              └─ fail：只回传 pass/fail bit，Verifier 自主加难 V(j+1)
+输出文件是否存在、格式是否正确
+结果是否覆盖全部输入
+数值和关系是否满足任务约束
+输出能否从公开输入重新计算得到
 ```
 
-Surrogate 通过而 Oracle 失败时，系统不泄露隐藏测试内容；Verifier 必须根据可观察输入与当前 artifacts 扩展测试。每次 Oracle 评估都在 fresh environment 重跑，系统保存 best Skill snapshot，达到完美结果提前结束。
+程序运行这些测试。如果有断言失败，Verifier 会给出具体失败项、实际值与预期、可能根因和修改建议；这些诊断进入 Generator 的上下文。此时测试集保持不变，Generator 要修改 Skill，直到同一批问题被真正修复。
 
-论文的 exoplanet transit 案例展示了产物怎样演化：早期 BLS 方案先被 surrogate 捕获格式与逻辑 bug；surrogate 全过后 Oracle 仍指出精度不足；多轮反馈最终让 Skill 从 BLS 切换到 TLS，并加入两阶段精度与 alias 检查。Generator 与 Verifier 都在演化：一个修 Skill，一个修“怎样验证 Skill”。
+### Oracle：用全新 Agent 检查这个 Skill 能否独立工作
 
-## 6.6 MemSkill：controller、executor、designer 与 hard-case evolution
+可见测试全部通过后，系统不会直接接受当前版本。它会启动一个全新的任务 Agent，只给它任务说明和冻结后的 Skill，不提供 Generator 的演化对话和背景资料。这个 Agent 在新环境中从头执行 Skill，产物再由隐藏的权威测试验收。
 
-[MemSkill](https://arxiv.org/abs/2602.02474)学习的不是业务 Skill，而是“如何从交互轨迹构造和修订 Memory”的 memory skills。它明确分开两个 store：每条 trace 自己的 memory bank，以及跨 trace 共享的 skill bank。Skill bank 从 Insert、Update、Delete、Skip 四个基本 operation 起步。
+Oracle 通过，当前 Skill 成为最终版本；Oracle 未通过，演化流程只得到失败信号，看不到隐藏测试内容。这个结果说明现有 Verifier 的覆盖仍有缺口，于是 Verifier 重新检查任务、公开输入、当前产物和旧测试，增加此前没有覆盖的边界条件或更严格的断言，再形成下一版测试。
 
-### Controller 与 Executor 先学习怎样使用现有 Skill
-
-长 trace 按 token 切成连续 spans。对每个 span，controller 同时看当前文本与该 trace 已检索的现有 memories，从不断变化的 skill bank 选 Top-K。LLM executor 一次应用这些 Skill，更新 trace-specific memory bank。完成后的 Memory 再回答 memory-dependent training queries，任务 reward 用于优化 controller 的 selection policy。
-
-### Designer 从反复失败处改变 Skill bank
-
-回答错误或不完整的 query 连同 used memories、prediction、reference、reward 与 failure count 进入滑动 hard-case buffer。Designer 对 cases 聚类，在每个 cluster 中优先选择低 reward、反复失败的代表项，然后分两步更新：先分析缺失或错误的 memory behavior，再提出对现有 Skill 的具体 edit 或新增 Skill。
+完整循环因此是：
 
 ```text
-trace spans
-→ controller 选 memory skills
-→ executor 构造/修订 trace memory
-→ query evaluation + reward
-→ hard-case buffer
-→ cluster + difficulty selection
-→ designer：behavior diagnosis → edit/new skill
-→ 新 skill bank → 下一轮 controller/executor
+Generator 写 Skill → 执行任务 → 产生输出
+                         ↓
+Verifier 写测试 → 程序运行测试
+├─ 失败：固定测试 → 诊断问题 → Generator 修 Skill
+└─ 通过：全新 Agent 使用 Skill → Oracle 隐藏验收
+          ├─ 通过：结束
+          └─ 失败：Verifier 扩充测试 → 下一轮
 ```
 
-系统保存最佳 skill-bank snapshot；更新导致性能下降时 rollback，连续不提升则 early stop。新增 Skill 后短暂提高其探索概率，让 controller 真正试用并学习效用。MemSkill 的闭环同时优化“选哪些 operation”和“operation 本身怎样写”，而不只是不断往 Memory 追加文本。
+论文中的系外行星周期识别案例把这个过程展示得很具体。早期 Skill 使用 BLS 算法，Surrogate Verifier 先发现格式和逻辑错误；后续版本虽然通过了可见测试，但论文复盘显示隐藏测试仍只有 3/4 通过。经过测试升级和多轮修订，最终版本改用 TLS、两阶段精度搜索和周期 alias 检查，隐藏测试达到 4/4。反馈在这里推动的不是一次答案修正，而是整个 Skill 的算法、验证步骤和文件内容一起升级。
 
-## 6.7 MemCon：任务反馈驱动的 Memory 操作策略
+## 4.4 MemCon：用任务结果学习“什么时候怎样读 Memory”
 
-[MemCon](https://arxiv.org/abs/2607.13591)不替换底层 store，而是在任意 memory backend 的 `retrieve/store` 外包一层轻量 controller。它把每次 Memory 操作建模为 Memory MDP 的 action：
+XSkill 和 CoEvoSkills 都在改变 Experience 或 Skill 的内容。[MemCon](https://arxiv.org/abs/2607.13591)全称 **Memory as a Controlled Process**，是一套包在现有 Memory 系统外面的程序控制框架。它由状态提取、Q-table/UCB 选择策略、backend wrapper、成功计划索引和 reward 更新组成；不是一个 Agent，也不包含负责决策的 LLM。它学习的是：在当前状态下，应该执行哪一种 Memory 操作。
+
+![MemCon 把 Memory 操作建模为在线策略，并用每次任务的成功、失败与效率结果更新策略](assets/figures/memcon-figure-1.png)
+
+*[Memory as a Controlled Process: Learned Adaptive Memory Management for LLM Agents](https://arxiv.org/html/2607.13591v1)，Figure 1。*
+
+### MemCon 在哪里做决定
+
+每当主 Agent 准备访问 Memory，MemCon 这个轻量程序控制器都会先拦截请求。主 Agent 仍负责理解任务、调用工具和完成行动，MemCon 只负责选择 Memory 操作：
 
 ```text
-Retrieve(top_k, insight_k, hop)
-PlanInject
-Re-Retrieve(alternative query)
-Consolidate
-Forget
-NoOp
+主 Agent 到达一次 Memory 访问点
+→ MemCon 读取当前任务状态和 Memory 状态
+→ 把状态离散成一个 key，查询 Q-table
+→ 选择一个操作及其检索参数
+→ 调用原有 Memory backend
+→ 结果进入主 Agent 的 Prompt
 ```
 
-状态同时描述 task progress 与 memory status：goal type、step phase、是否 stuck、已访问位置，以及 store size、是否存在成功计划、当前 learning phase。实现把状态离散成几百个 key，用 tabular contextual bandit 和 UCB 在 action value 与探索奖励间选择；初始化 priors 让 Retrieve/PlanInject 较早被尝试，Forget/NoOp 较保守。
+状态不是一段自然语言，也不是由 LLM 临场概括出来的标签，而是程序在每次 Memory 访问前读取信号，再按固定阈值离散化：
 
-每个任务结束后，环境给出 success/failure 和效率奖励。系统用 reverse-discounted Monte Carlo return 更新本次访问过的 `(state, action)`；越接近最终结果的 Memory 决策得到越强 credit。Q-table 定期持久化，所以策略跨任务流积累。
-
-一个 stuck Agent 连续重复同一动作时，state 中 `is_stuck=true`；policy 可以从普通 Retrieve 切到 Re-Retrieve，用“alternative approach”改写 query，避免再次读到相同 top-k。遇到相同 goal type 时，PlanInject 可以加载过去成功轨迹抽象出的对象无关动作模板。Consolidate/Forget 只在 backend 真正提供 maintenance hook 时执行，否则静默 no-op；这避免把论文 action name 误写成所有后端都有的能力。
-
-MemCon 从任务级二值结果学习“何时、取什么、取多少、何时不取”，且 controller lookup 不增加 LLM 调用。它的持续学习对象是操作策略，不是 Memory 正文。
-
-## 6.8 AFTER：跨任务、角色、模型的程序性经验迁移
-
-[AFTER](https://arxiv.org/abs/2606.23127)是一套专门测 procedural memory 是否真正可迁移的 benchmark，而不是另一个 Skill 生成器。它包含 382 个现实 workplace tasks、六种专业角色与 22 类 procedural skills，并为每个 role-skill cell 建立 train/validation/test splits。
-
-评测依次区分四件事：静态 Skill 是否改善本地任务；一次 refinement 是否有效；从 narrow traces 与 diverse traces 演化的 Skill 有何不同；Skill 换 task、role 或 model 后是否仍有效。每次执行 trace 都链接到使用的 Skill version；operator 修改后产生 child version，未采用候选保留为 inactive branch，named snapshot 固定一次评测的 active versions。
-
-```text
-source tasks / roles / models 的执行 traces
-→ skill refinement/evolution
-→ version lineage + active snapshot
-→ held-out task test
-→ cross-role test
-→ cross-model test
-→ transfer matrix：general / specialized / regressed
-```
-
-论文结果说明“在原角色上变好”不能代替迁移证据。多模型来源的多样 traces 形成的 Skill 在作者 cross-model protocol 中达到 73.1% test accuracy，高于单一来源；但同一个 PDF Skill 从 Project Manager 迁到 Data Scientist，或反向迁移，会因工作目的不同而损失 4.8–7.5 个点。输出因此应包括适用角色和迁移结果，而不是只给一个累计成功次数。
-
-AFTER 将持续学习的验收从“文件生成了”推进到“离开原任务后还是否有用”，并揭示程序经验会自然形成 specialization。
-
-## 6.9 ALMA：Meta Agent 搜索 Memory design
-
-[ALMA](https://arxiv.org/abs/2602.07755)把学习对象再提升一层：不是改一条 Memory、一个 Skill 或一个 controller action，而是搜索由可执行 Python 表达的完整 Memory design，包括 schema、抽取、更新和检索机制。
-
-Memory design archive 从一组抽象类模板开始。每轮 Meta Agent 从 archive 采样旧 design，读取其 source code、成功率，以及从成功/失败 execution logs 分层抽样出的少量代表记录；随后反思、提出 plan，并实现一个新 design。trial run 用少量 collection/deployment tasks 检查实现，runtime error 时最多进行三轮 reflection/debug。
-
-```text
-archive：design code + score + sampled logs + sample count
-→ sample parent designs
-→ Meta Agent：reflect → propose → implement code
-→ trial run / debug
-→ Memory Collection：general_update(trajectory)
-→ Deployment：general_retrieve(task)
-→ success、cost、interaction logs
-→ 新 design 加回 archive
-```
-
-正式 evaluation 把任务分为 Memory Collection 与 Deployment 两段；固定 Agent 使用 `general_update` 写入经验，再用 `general_retrieve` 取回。新 design 的表现与 end-to-end cost、retrieved-context tokens 一起记录。Archive sampling 同时考虑相对无 Memory baseline 的收益和某个 design 已被采样的次数，避免永远只沿当前最优分支贪心搜索。
-
-最终产物是一棵可追溯的 Memory-design lineage：中等分数的 schema/normalization/strategy-switching 设计也可能成为后来更优设计的 stepping stone。论文在 ALFWorld、TextWorld、Baba Is AI 与 MiniHack 等顺序决策域评估该搜索过程；它说明 Memory 架构本身可以由任务结果驱动演化。
-
-## 6.10 Causal Memory、Omri 与相关基准：结果归因、成本和持续评测
-
-### Causal Memory：把 decision → outcome 保存成可检索关系
-
-[Causal Memory 固定提交 `054af36`](https://github.com/JingxuanC/causal-memory/tree/054af36507537f7b616fa41db07be483cc6e55c3)先保存 raw session logs，再以每 Session 一次 distill 抽取 atomic facts 与 decision→outcome causal edges；失败时不写 done marker，原日志仍可重试。读取分别从 BM25/optional embedding、causal、entity 与 trace route 取候选，用 RRF 汇合并可做 typed spreading activation。
-
-```text
-session log
-→ context + decision/action + outcome
-→ fact / causal edge / lesson
-→ BM25 + semantic + entity/trace + causal activation
-→ 后续任务的 prompt-visible memory lines
-```
-
-这使系统能问“哪个决定在什么条件下导致了什么结果”，而不只找相似文本。它保存的是结构化 lesson，不是可执行 Skill；causal edge 仍由 distillation 生成，弱相似建立的跨任务 meta-edge 可能放大错误类比。要做效果归因，还需把召回的 edge、实际行动与新 outcome 再连接起来。
-
-### Omri：把 Memory 成本按 construction / retrieval / generation 计量
-
-[Agent Memory: Characterization and System Implications](https://arxiv.org/abs/2606.06448)建立 phase-aware profiling harness，在同一 monotonic timeline 上记录 API 与硬件 telemetry，把 token、模型调用、延迟、utilization 和 energy 分到 construction、retrieval、generation 三阶段。这样可以看见“短 Prompt”是否只是把成本搬到后台抽取和巩固。
-
-论文还测 construction scheduling 的 freshness–latency trade-off：异步构造减少前台写延迟，却可能让下一 Session 查询尚未提交的新状态；不同系统的 per-session construction time 在作者测试中跨越多个数量级。持续学习因此不能只优化成功率，还要记录后台积压、写到可见的延迟、每次再检索和重建成本。
-
-### 相关基准各自测闭环的一段
-
-| 基准 | 具体观察对象 | 对持续学习的作用 |
+| 原始信号 | 程序怎样得到 | 离散后的值 |
 |---|---|---|
-| [MemoryAgentBench](https://arxiv.org/abs/2507.05257) | accurate retrieval、test-time learning、long-range understanding、selective forgetting | 区分“读到”与“新规则改变旧状态” |
-| [Mem2ActBench](https://arxiv.org/abs/2601.19935) | 历史约束是否改变工具选择与参数 | 把 Memory 使用连接到实际 action |
-| [SkillsBench](https://arxiv.org/abs/2602.12670) | 多文件 Skill package 在专业任务中的表现 | 检查 Skill 内容与执行结果，而非文件是否存在 |
-| [ForgetEval](https://arxiv.org/abs/2606.15903) | supersede/release/purge 及 control-plane placement | 检查状态变化是否覆盖 canonicalization 与 intent-aware mutation |
-| AFTER | local、cross-task、cross-role、cross-model transfer | 检查经验是否过拟合形成环境 |
+| 目标类型 | 从任务文本识别 `put`、`clean`、`heat`、`puttwo` 等目标 | `goal_type` |
+| 任务阶段 | 统计当前已经执行的物理动作数 | early（<8）、mid（8–17）、late（≥18） |
+| 是否卡住 | 检查是否连续重复同一个物理动作并达到阈值 | `is_stuck = true / false` |
+| 已访问位置 | 从环境观察中累计不同位置 | 每 3 个位置为一档，最多记到第 4 档 |
+| Memory 大小 | 查询底层 Memory 的条目数 | 每 10 条为一档，最多记到第 5 档 |
+| 成功计划 | 检查是否已有该目标类型的成功计划 | `plan_available = true / false` |
+| 学习阶段 | 统计这是第几个任务 | 前 15 个任务为 cold，之后为 warm |
 
-这些结果不能压成一个“Memory 分数”。一套持续评测应把同一条链逐段记录：
+论文的状态定义还可以包含“手里拿着几个对象”等任务信号；在公开的 ALFWorld 适配器中，这一项当前固定传入 0。最终这些离散值拼成一个 key，只有 key 相同的情况才共享同一组操作经验。
+
+例如，任务是“把两个手机放到桌上”，刚开始执行第 3 个任务时，程序可能得到：
 
 ```text
-memory/skill version
-→ 是否曝光、读取、采用
-→ 进入了哪次计划或工具参数
-→ task outcome / 用户纠正
-→ token、延迟、重试与维护成本
-→ 下一版 Memory、Skill、policy 或 design
+goal_type=puttwo
+step_phase=early       （0 个物理动作）
+is_stuck=false
+visited=0               （还没有到达新位置）
+mem_size=0              （底层只有 6 条 Memory，按十条一档）
+plan_available=false
+learning_phase=cold    （任务序号 ≤ 15）
 ```
 
-只有这条可追溯链建立以后，系统才能区分“常被引用”“确实改善结果”“只在原环境有效”和“收益低于维护成本”。本层各案例分别补充了 Experience/Skill 形成、验证晋升、操作策略、迁移、架构搜索、结果关系和系统成本中的一段。
+对应的状态 key 是：
+
+```text
+puttwo | early | stuck=False | hold=0 | visited=0 | mem=0 | plan=False | phase=cold
+```
+
+另一个例子是第 20 个任务：当前仍是 `puttwo`，已执行到第 9 个物理动作并反复尝试 `open drawer 2`，已经访问 4 个位置，Memory 有 23 条，且过去成功过一次 `puttwo` 任务。此时 key 会是：
+
+```text
+puttwo | mid | stuck=True | hold=0 | visited=1 | mem=2 | plan=True | phase=warm
+```
+
+前一个 key 可能更适合浅层 `Retrieve`，后一个 key 则更可能触发 `Re-Retrieve` 或 `PlanInject`。这就是“状态影响操作选择”的具体含义：不是理解了更长的上下文，而是几个可观测信号跨过阈值后，查到了 Q-table 的另一行。
+
+### 它究竟在若干个什么操作中选择
+
+MemCon 不是从无限多种行为中自由生成方案，而是在预先定义的有限操作集合中选择一个“操作—参数”组合。论文默认的九个选项可以这样理解：
+
+| 操作 | 参数或作用 |
+|---|---|
+| `Retrieve`（浅/中/深） | 分别取少量、中等或更多候选，并使用不同检索深度 |
+| `Retrieve`（insight-only） | 只取少量派生规则，不展开更深的 Memory |
+| `PlanInject` | 把同类成功任务抽象出的通用行动步骤放进上下文 |
+| `Re-Retrieve` | 卡住时改写查询方向，重新寻找另一组证据 |
+| `Consolidate` | 调用 backend 的维护接口合并重复经验 |
+| `Forget` | 调用 backend 的维护接口清理内容 |
+| `NoOp` | 当前访问点跳过 Memory |
+
+因此，`Retrieve(top_k=1, hop=1)` 和 `Retrieve(top_k=3, hop=2)` 是两个不同的可选动作，不是先由 Agent 选 Retrieve 再另行决定参数。成功计划由过去任务的行动序列抽取而来，并把具体对象替换成可复用的占位符；同类目标再次出现时，`PlanInject` 才有机会被选中。
+
+### Q-table 如何决定这一次选什么
+
+Q-table 不是 Memory 内容表，而是控制器的经验表。对每一个状态 key 和每一个候选动作，它保存一个 `Q(state, action)`，表示过去在该状态选择该动作后得到的平均收益。
+
+程序给每个动作计算一个选择分数：
+
+```text
+选择分数 = Q(state, action) + UCB 探索奖励
+```
+
+历史收益高的动作会被优先利用；尝试次数少的动作会得到更大的探索奖励，尚未尝试过的动作会被强制探索。冷启动时还会用简单的人工先验初始化：普通检索和已有计划通常先给正向先验，卡住时的 `Re-Retrieve` 给较小正向先验，`Forget` 和 `NoOp` 更保守。最终由程序取最高选择分数的动作，不需要再调用一个 LLM 来“想一遍该怎么读”。
+
+### Reward 如何把结果变成下一次的选择
+
+一次任务中可能连续做出多个 Memory 决定：
+
+```text
+Retrieve → Retrieve → Re-Retrieve → PlanInject → 任务结束
+```
+
+任务结束时才得到一次 reward，它同时考虑任务是否成功、失败惩罚和执行效率；论文图中把它概括为成功 `+1`、失败 `-0.5`，再加效率奖励。这个 reward 不是某条 Memory 的分数，而是对整次任务结果的评价。
+
+程序把本轮访问过的每个“状态—动作”记录下来，再用反向折扣更新 Q 值：越靠近任务结束的动作，分到的 reward 越完整；越早的动作，反馈逐步减弱。
+
+```text
+任务成功
+→ Re-Retrieve 之后紧接着完成任务
+→ Q(卡住状态, Re-Retrieve) 得到较强正向更新
+→ 后续遇到相同状态，更倾向于 Re-Retrieve
+
+任务失败或耗费过多步骤
+→ 本轮相关动作得到负向或较低更新
+→ 后续减少在相同状态下选择它们
+```
+
+Q-table 会跨任务保存，所以这是一种在线的 contextual bandit 优化：它不更新 LLM 参数，也不改写 Memory 正文，而是不断估计“在什么状态下选择哪种 Memory 操作，最终更容易成功且更省上下文”。
+
+例如，Agent 连续两次执行同一个无效动作时，程序把 `is_stuck` 设为 `true`。普通 `Retrieve` 仍返回相同内容，`Re-Retrieve` 改写查询后帮助任务完成；下一次出现同样状态时，UCB 计算会看到更高的 `Q(state, Re-Retrieve)`，从而更早切换查询方向。

@@ -24,6 +24,7 @@ Read these references before acting:
 - [synthesis-and-deliverables.md](references/synthesis-and-deliverables.md) before clustering and drafting;
 - [evaluation-gates.md](references/evaluation-gates.md) before declaring completion;
 - [reference-research-behaviors.md](references/reference-research-behaviors.md) for behavioral comparison;
+- [research-figure-generation.md](references/research-figure-generation.md) before generating or integrating AI-created research figures;
 - [html-presentation.md](references/html-presentation.md) before generating or reviewing the reader-facing HTML site;
 - [update-mode.md](references/update-mode.md) for an update.
 
@@ -90,6 +91,8 @@ For a selected repository, inspect pinned code and documentation closely enough 
 Apply strict direct evidence and precise locators to core conclusions, critical numbers, versions, comparisons, security/adoption facts, and consequential limitations. Use conservative citations and logical coherence for ordinary explanatory prose. Keep claims, evidence, screening, and saturation ledgers for traceability, but keep their IDs and process language out of reader prose.
 
 Draft the reader suite only after mapping and deep packets exist. Lead with the field answer, not corpus counts or internal taxonomy. Use the report contract to make the main report independently readable, present a descriptive **general architecture model** rather than a recommended architecture, and give each important mechanism branch a clear solution-family comparison. Describe applicability conditions, maturity, tradeoffs, failure modes, consensus, disputes, and uncertainty without telling the reader what to choose or deploy.
+
+When a generated figure would materially improve first-glance understanding, build a small figure inventory and follow `references/research-figure-generation.md`. Before calling an image tool, present the complete text-only visual plan and wait for explicit user approval. Keep source-grounded entities and relationships separate from visual composition, inspect the actual raster, and retain exact conclusions in Markdown or a code-native diagram. Do not add decorative images or force one figure per page.
 
 After the Markdown reader suite is complete, generate the static HTML presentation with `scripts/render_reader_html.py`. Treat HTML as a rebuildable understanding layer: preserve Markdown as the authority; validate rewritten links and UTF-8; keep diagrams searchable and readable without interaction; and inspect the entry, a long mechanism page, a project page, search, mobile layout, dark mode, and print structure in a real browser. Do not hand-edit generated HTML.
 

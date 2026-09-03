@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Agent Memory 的第一层只回答一个问题：系统实际收到了什么？ 当前 Agent 主要以对话方式工作，因此最重要的输入主干是按时间发生的交互—执行事件：user input → assistant response → tool call → tool result。">
+  <title>第 1 层：输入 · Frontier Atlas</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/search-index.js" defer></script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body data-page-type="layer">
+  <a class="skip-link" href="#main-content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <header class="topbar">
+    <button class="icon-button nav-toggle" type="button" aria-controls="suite-nav" aria-expanded="false"><span aria-hidden="true">☰</span><span class="sr-only">打开套件导航</span></button>
+    <a class="brand" href="index.html"><span class="brand-mark">F</span><span><strong>Frontier Atlas</strong><small>技术调研 · 理解优先</small></span></a>
+    <div class="top-actions">
+      <button class="search-trigger" type="button" aria-haspopup="dialog"><span aria-hidden="true">⌕</span><span>搜索整套报告</span><kbd>Ctrl K</kbd></button>
+      <button class="icon-button focus-toggle" type="button" aria-pressed="false" title="专注阅读"><span aria-hidden="true">◫</span><span class="sr-only">切换专注阅读</span></button>
+      <button class="icon-button theme-toggle" type="button" title="切换主题"><span aria-hidden="true">◐</span><span class="sr-only">切换明暗主题</span></button>
+    </div>
+  </header>
+  <noscript><div class="noscript-note">JavaScript 已关闭：正文、图表、链接和打印仍可使用；全文搜索、主题切换与当前章节高亮不可用。</div></noscript>
+  <aside class="suite-nav" id="suite-nav"><nav class="suite-nav-inner" aria-label="研究套件"><section class="nav-group"><h2>核心内容</h2><ul><li><a href="index.html"><span>总览与架构</span><small>574 字</small></a></li><li><a class="active" aria-current="page" href="01-input.html"><span>01 · 输入</span><small>447 字</small></a></li><li><a href="02-write-formation.html"><span>02 · 提炼与管理</span><small>4,563 字</small></a></li><li><a href="03-retrieval-orchestration.html"><span>03 · 读取与编排</span><small>3,658 字</small></a></li><li><a href="04-feedback-learning.html"><span>04 · 反馈与持续学习</span><small>4,301 字</small></a></li></ul></section></nav></aside>
+  <button class="nav-backdrop" type="button" tabindex="-1" aria-label="关闭导航"></button>
+  <main class="reader-main" id="main-content">
+    <article class="reader-article">
+      <nav class="breadcrumb" aria-label="面包屑"><a href="index.html">调研入口</a><span>/</span><span>核心内容</span></nav>
+      <header class="article-hero">
+        <div class="article-meta"><span>第 1 层</span><span>447 字</span><span>1 节</span><span>reader/01-input.md</span></div>
+        <h1>第 1 层：输入</h1>
+        <p>Agent Memory 的第一层只回答一个问题：系统实际收到了什么？ 当前 Agent 主要以对话方式工作，因此最重要的输入主干是按时间发生的交互—执行事件：user input → assistant response → tool call → tool result。</p>
+      </header>
+      
+      <div class="article-body"><p>Agent Memory 的第一层只回答一个问题：<strong>系统实际收到了什么？</strong> 当前 Agent 主要以对话方式工作，因此最重要的输入主干是按时间发生的交互—执行事件：<code>user input → assistant response → tool call → tool result</code>。</p>
+<p>原始输入还包括文档、代码仓库、视觉观察，以及世界或设备状态。每条输入同时带着定位其含义的上下文，例如 user、agent、session、task、时间，以及 cwd、branch、commit、source 和 SHA。并非每种输入都有全部字段，而是携带与自身相关的定位信息。</p>
+<p><img src="assets/source/reader/assets/figures/agent-memory-input-envelope.png" alt="Agent Memory 输入层：对话执行事件、非对话资源与扩展观察共同构成原始输入，外围元数据负责定位" loading="lazy" data-link-kind="asset"></p>
+<h2 id="世界与设备状态worldlines"><a class="heading-anchor" href="#世界与设备状态worldlines" aria-label="链接到本节">#</a>世界与设备状态：WorldLines</h2>
+<p>当前 Agent 虽然主要由对话触发，但 Memory 的原始输入不一定来自一轮对话。对象或设备的状态发生变化时，也可以独立产生一条带时间的输入事件。WorldLines 将 Dialogue、State 和 Action 放在同一条跨天轨迹中，展示对话输入与非对话状态输入怎样共同积累。</p>
+<p><img src="assets/source/reader/assets/figures/worldlines-world-state-figure-1.png" alt="WorldLines 世界状态示例：对话、状态和动作随时间共同形成长程输入" loading="lazy" data-link-kind="asset"></p>
+<p><em><a href="https://arxiv.org/abs/2606.18847v2" data-link-kind="external" target="_blank" rel="noopener noreferrer">《WorldLines: Benchmarking and Modeling Long-Horizon Stateful Embodied Agents》</a>，Figure 1。</em></p>
+<p>例如，咖啡机连续多个工作日都在 07:00 从 <code>idle</code> 变为 <code>brewing</code>，约 12 分钟后变为 <code>ready</code>。Memory 记录这些每天发生的状态变化后，就能知道这是一个日常规律；如果某天到 07:15 仍然是 <code>idle</code>，后续分析便能发现这次变化与往常不同。这个例子说明，即使没有用户发起新对话，状态变化本身也可以成为有价值的 Memory 输入。</p></div>
+      <nav class="page-pager" aria-label="同组页面导航"><a class="pager-card previous" href="index.html"><small>← 上一篇 · 架构总览</small><strong>Agent Memory 总览与架构</strong></a><a class="pager-card next" href="02-write-formation.html"><small>→ 下一篇 · 第 2 层</small><strong>第 2 层：提炼与管理</strong></a></nav>
+      <footer class="article-footer"><span>Markdown 是权威内容源</span><button type="button" onclick="window.print()">打印 / 导出 PDF</button></footer>
+    </article>
+  </main>
+  <aside class="page-outline" aria-label="本页目录"><div><span class="outline-kicker">On this page</span><h2>本页目录</h2><ol><li class="level-2"><a href="#世界与设备状态worldlines">世界与设备状态：WorldLines</a></li></ol></div></aside>
+  <dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title">
+    <form method="dialog" class="search-shell">
+      <header><div><span>Search the research suite</span><h2 id="search-title">搜索整套报告</h2></div><button value="close" aria-label="关闭搜索">×</button></header>
+      <label class="search-field"><span class="sr-only">输入技术概念</span><input id="search-input" type="search" autocomplete="off" placeholder="输入机制、项目、风险或术语…"></label>
+      <p class="search-hint">标题和章节优先；支持中文子串。↑ ↓ 选择，Enter 打开，Esc 关闭。</p>
+      <div class="search-results" id="search-results" role="listbox" aria-label="搜索结果"></div>
+    </form>
+  </dialog>
+</body>
+</html>

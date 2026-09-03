@@ -68,6 +68,33 @@ flowchart LR
         self.assertEqual(manifest["source_root"], ".")
         self.assertNotIn(str(root), json.dumps(manifest))
 
+    def test_displays_word_count_instead_of_estimated_minutes(self) -> None:
+        temporary, root, output = self._suite()
+        self.addCleanup(temporary.cleanup)
+        (root / target.PRESENTATION_CONFIG).write_text(
+            json.dumps(
+                {
+                    "page_length_metric": "word_count",
+                    "pages": [
+                        {
+                            "source": "reader/overview.md",
+                            "output": "index.html",
+                            "page_type": "landing",
+                            "page_type_label": "Overview",
+                        }
+                    ],
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        target.build_site(root, output)
+        text = (output / "index.html").read_text(encoding="utf-8")
+
+        self.assertRegex(text, r"\d[\d,]* 字")
+        self.assertNotIn("分钟</small>", text)
+        self.assertNotIn("分钟</span>", text)
+
     def test_renders_mermaid_table_and_safe_markup(self) -> None:
         temporary, root, output = self._suite()
         self.addCleanup(temporary.cleanup)
@@ -93,6 +120,54 @@ flowchart LR
         entry = (output / "index.html").read_text(encoding="utf-8")
 
         self.assertIn('href="overview.html"', entry)
+
+    def test_presentation_config_publishes_only_selected_pages(self) -> None:
+        temporary, root, output = self._suite()
+        self.addCleanup(temporary.cleanup)
+        layer = root / "reader" / "01-layer.md"
+        layer.write_text("# Layer one\n\nOnly the first layer.\n", encoding="utf-8")
+        config = root / target.PRESENTATION_CONFIG
+        config.write_text(
+            json.dumps(
+                {
+                    "pages": [
+                        {
+                            "source": "reader/overview.md",
+                            "output": "index.html",
+                            "page_type": "landing",
+                            "page_type_label": "Overview",
+                            "navigation_group": "Core",
+                            "navigation_order": 0,
+                            "navigation_title": "Short overview",
+                        },
+                        {
+                            "source": "reader/01-layer.md",
+                            "page_type": "layer",
+                            "page_type_label": "Layer 1",
+                            "navigation_group": "Core",
+                            "navigation_order": 1,
+                        },
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        manifest = target.build_site(root, output)
+        entry = (output / "index.html").read_text(encoding="utf-8")
+
+        self.assertEqual(manifest["page_count"], 2)
+        self.assertEqual(len(list(output.rglob("*.html"))), 2)
+        self.assertFalse((output / "about.html").exists())
+        self.assertFalse((output / "overview.html").exists())
+        self.assertEqual(entry.count('class="nav-group"'), 1)
+        self.assertIn("Short overview", entry)
+        self.assertIn("Layer one", entry)
+        self.assertNotIn("关于本套件", entry)
+        self.assertEqual(target.validate_manifest(output, root), [])
+
+        config.write_text(config.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+        self.assertTrue(any("hash mismatch" in error for error in target.validate_manifest(output, root)))
 
     def test_inline_code_link_preserves_code_markup_without_renderer_tokens(self) -> None:
         temporary, root, output = self._suite()

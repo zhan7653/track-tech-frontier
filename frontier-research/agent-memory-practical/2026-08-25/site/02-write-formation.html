@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="输入层保存的是原始材料，其中只有一部分值得长期保留。提炼负责从输入中筛选、抽取和去重，管理则决定提炼结果应该新增、更新、合并，还是不写入。">
+  <title>第 2 层：提炼与管理 · Frontier Atlas</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/search-index.js" defer></script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body data-page-type="layer">
+  <a class="skip-link" href="#main-content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <header class="topbar">
+    <button class="icon-button nav-toggle" type="button" aria-controls="suite-nav" aria-expanded="false"><span aria-hidden="true">☰</span><span class="sr-only">打开套件导航</span></button>
+    <a class="brand" href="index.html"><span class="brand-mark">F</span><span><strong>Frontier Atlas</strong><small>技术调研 · 理解优先</small></span></a>
+    <div class="top-actions">
+      <button class="search-trigger" type="button" aria-haspopup="dialog"><span aria-hidden="true">⌕</span><span>搜索整套报告</span><kbd>Ctrl K</kbd></button>
+      <button class="icon-button focus-toggle" type="button" aria-pressed="false" title="专注阅读"><span aria-hidden="true">◫</span><span class="sr-only">切换专注阅读</span></button>
+      <button class="icon-button theme-toggle" type="button" title="切换主题"><span aria-hidden="true">◐</span><span class="sr-only">切换明暗主题</span></button>
+    </div>
+  </header>
+  <noscript><div class="noscript-note">JavaScript 已关闭：正文、图表、链接和打印仍可使用；全文搜索、主题切换与当前章节高亮不可用。</div></noscript>
+  <aside class="suite-nav" id="suite-nav"><nav class="suite-nav-inner" aria-label="研究套件"><section class="nav-group"><h2>核心内容</h2><ul><li><a href="index.html"><span>总览与架构</span><small>574 字</small></a></li><li><a href="01-input.html"><span>01 · 输入</span><small>447 字</small></a></li><li><a class="active" aria-current="page" href="02-write-formation.html"><span>02 · 提炼与管理</span><small>4,563 字</small></a></li><li><a href="03-retrieval-orchestration.html"><span>03 · 读取与编排</span><small>3,658 字</small></a></li><li><a href="04-feedback-learning.html"><span>04 · 反馈与持续学习</span><small>4,301 字</small></a></li></ul></section></nav></aside>
+  <button class="nav-backdrop" type="button" tabindex="-1" aria-label="关闭导航"></button>
+  <main class="reader-main" id="main-content">
+    <article class="reader-article">
+      <nav class="breadcrumb" aria-label="面包屑"><a href="index.html">调研入口</a><span>/</span><span>核心内容</span></nav>
+      <header class="article-hero">
+        <div class="article-meta"><span>第 2 层</span><span>4,563 字</span><span>3 节 · 4 表</span><span>reader/02-write-formation.md</span></div>
+        <h1>第 2 层：提炼与管理</h1>
+        <p>输入层保存的是原始材料，其中只有一部分值得长期保留。提炼负责从输入中筛选、抽取和去重，管理则决定提炼结果应该新增、更新、合并，还是不写入。</p>
+      </header>
+      <nav class="section-map" aria-label="本页理解地图"><span class="section-map-label">本页理解地图</span><div><a href="#tencentdb从-l0-到-l3-的逐层提炼"><span>01</span><strong>TencentDB：从 L0 到 L3 的逐层提炼</strong></a><a href="#codex两阶段提炼与文件级管理"><span>02</span><strong>Codex：两阶段提炼与文件级管理</strong></a><a href="#前沿探索学习型管理与效用遗忘"><span>03</span><strong>前沿探索：学习型管理与效用遗忘</strong></a></div></nav>
+      <div class="article-body"><p>输入层保存的是原始材料，其中只有一部分值得长期保留。提炼负责从输入中筛选、抽取和去重，管理则决定提炼结果应该新增、更新、合并，还是不写入。</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">输入层材料
+→ 筛选、抽取、去重
+→ 与已有 Memory 比较
+→ create / update / merge / no-op
+→ 形成或更新后的 Memory</code></pre></figure>
+<p>不同系统还会增加自己的管理机制，例如优先级、热度、版本、使用信号和遗忘。这些机制不一定处于同一条流水线上，但都会影响哪些内容成为当前 Memory、哪些被保留为历史，以及哪些逐渐退出。</p>
+<h2 id="tencentdb从-l0-到-l3-的逐层提炼"><a class="heading-anchor" href="#tencentdb从-l0-到-l3-的逐层提炼" aria-label="链接到本节">#</a>TencentDB：从 L0 到 L3 的逐层提炼</h2>
+<p><a href="https://github.com/TencentCloud/TencentDB-Agent-Memory/tree/0aff21a" data-link-kind="external" target="_blank" rel="noopener noreferrer">TencentDB Agent Memory</a>把对话 Memory 分成 L0、L1、L2 和 L3，同时从执行轨迹形成 Skill，并把文档与代码仓库分别形成 Wiki 和 CodeGraph。</p>
+<p><img src="assets/source/reader/assets/figures/tencentdb-memory-processing.png" alt="TencentDB Agent Memory 技术实现总览：对话、执行轨迹、文档和代码分别形成不同 Memory 资产" loading="lazy" data-link-kind="asset"></p>
+<p><em><a href="https://github.com/TencentCloud/TencentDB-Agent-Memory/blob/0aff21a2d9f2b8a0354aaa80a2e586aab4054562/assets/images/flowchart5.png" data-link-kind="external" target="_blank" rel="noopener noreferrer">TencentDB Agent Memory 技术实现总览</a>。本层聚焦左侧 <code>Memory Processing</code> 虚线框。</em></p>
+<p>虚线框从上到下展示四条提炼路径：Conversation 逐层形成 L0–L3，Workflow Execution 形成 Skills，Documents 形成 Wiki，Codebase 形成 CodeGraph。右侧 Memory Assets、Memory Hub 和 New Task 负责资产登记、权限与后续使用，不在本层展开。</p>
+<h3 id="conversation-l0-l1-l2-l3"><a class="heading-anchor" href="#conversation-l0-l1-l2-l3" aria-label="链接到本节">#</a>Conversation → L0 → L1 → L2 → L3</h3>
+<p>这条主链从原始消息开始，逐步形成原子 Memory、场景和长期 Persona。四层不是四份相同内容，而是抽象程度不同的结果。</p>
+<h4 id="l0保留发生过的消息"><a class="heading-anchor" href="#l0保留发生过的消息" aria-label="链接到本节">#</a>L0：保留发生过的消息</h4>
+<p>L0 保存本轮新增的 user 和 assistant 消息，以及 user、agent、session、task 和时间等定位信息。它只负责记录，不在入口处总结，也不表示这些消息已经成为长期 Memory。</p>
+<h4 id="l1提炼成可独立理解的原子-memory"><a class="heading-anchor" href="#l1提炼成可独立理解的原子-memory" aria-label="链接到本节">#</a>L1：提炼成可独立理解的原子 Memory</h4>
+<p>L1 从一批 L0 消息中抽取以后仍可能有用的事实、偏好、任务、方法或资产。内容必须脱离原对话仍能理解；信号不足时可以不产生任何 Memory。</p>
+<p>一条 L1 是可以独立检索和继续更新的原子记录，形态可以概括为：</p>
+<figure class="code-block"><figcaption><span>json</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-json">{
+  &quot;type&quot;: &quot;work_method&quot;,
+  &quot;content&quot;: &quot;修复行为缺陷前先建立稳定失败的复现测试&quot;,
+  &quot;priority&quot;: 90,
+  &quot;source_message_ids&quot;: [&quot;msg-a1&quot;],
+  &quot;version&quot;: 1
+}</code></pre></figure>
+<p><code>content</code>保存提炼后的最小事实或方法，<code>source_message_ids</code>指回原始消息，<code>priority</code>和<code>version</code>则供后续管理使用。</p>
+<p>新候选还会与已有 L1 比较，再选择：</p>
+<div class="table-frame"><div class="table-toolbar"><span>Comparison · 2 列</span><small>横向滚动 · 点击一行聚焦</small></div><div class="table-wrap" tabindex="0" role="region" aria-label="可横向滚动的比较表"><table><thead><tr><th scope="col">操作</th><th scope="col">含义</th></tr></thead><tbody><tr><td><code>store</code></td><td>没有相关旧项，新增一条 Memory</td></tr><tr><td><code>update</code></td><td>新证据修正或补充一个已有对象</td></tr><tr><td><code>merge</code></td><td>新旧内容属于同一对象，合并为新的当前表示</td></tr><tr><td><code>skip</code></td><td>内容重复、价值不足或不应保存</td></tr></tbody></table></div></div>
+<p>L1 同时保存来源、类型、优先级和版本，使后续更新仍能回到原始消息。</p>
+<p><strong>管理触发：</strong> 每轮对话结束后，新消息先进入当前 Session 的缓冲区。新 Session 默认按 1 → 2 → 4 → 5 轮逐步扩大处理批次，稳定后每 5 轮运行一次 L1；不足一批但连续 10 分钟没有新对话，也会处理剩余消息。每次运行都把新候选与已有 L1 比较，执行 <code>store / update / merge / skip</code>。</p>
+<h4 id="l2把原子-memory-整理成场景"><a class="heading-anchor" href="#l2把原子-memory-整理成场景" aria-label="链接到本节">#</a>L2：把原子 Memory 整理成场景</h4>
+<p>L2 将多条相关 L1 整理成一个可复用场景，例如把“修缺陷前先复现”和“修改后运行回归”组织成“缺陷修复与回归验证”Scene。Scene 不只是摘要，还会写清适用条件、操作步骤、判断逻辑和反模式。</p>
+<p>它的具体产出是一份 Scene Markdown：</p>
+<figure class="code-block"><figcaption><span>markdown</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-markdown">-----META-START-----
+created: 2026-08-20T09:00:00Z
+updated: 2026-08-25T14:30:00Z
+summary: 修复行为缺陷时的复现、修改与回归流程
+heat: 3
+-----META-END-----
+
+## 适用条件
+已有行为与预期不一致，需要修改实现。
+
+## 核心 SOP
+1. 先建立稳定失败的复现测试。
+2. 修改最小范围实现。
+3. 复现转绿后运行相关回归。
+
+## 禁忌与反模式
+没有失败证据就直接修改代码。</code></pre></figure>
+<p>因此 L2 已经不是一条事实，而是一份特定场景下可以再次阅读和执行的方法文档。</p>
+<p>面对新 L1，Scene 可以执行 <code>CREATE / UPDATE / MERGE / NO-OP</code>。每个 Scene 还带有 heat：新建时从 1 开始，更新时递增，合并时累加。它用于导航排序，并在 Scene 数量接近上限时辅助合并或删除选择。</p>
+<p><strong>管理触发：</strong> L1 完成后会安排下一次 Scene 整理：默认至少等待 10 秒，并与上一次 L2 保持 15 分钟间隔；活跃 Session 最长每小时再检查一次。L2 从上次处理位置继续读取新增或变化的 L1，再决定新建、更新、合并 Scene，或者保持不变。</p>
+<h4 id="l3形成跨场景的长期准则"><a class="heading-anchor" href="#l3形成跨场景的长期准则" aria-label="链接到本节">#</a>L3：形成跨场景的长期准则</h4>
+<p>L3 从多个 Scene 中继续提炼长期 Persona。它不会把所有 Scene 机械拼接，而是合并重复原则、排除临时状态，并在新证据出现时收窄或修正旧规则。</p>
+<p>它的产出是当前 team + agent 范围下的 <code>persona.md</code>。正文保存跨场景仍然稳定的偏好和准则，文件末尾再附 Scene 导航：</p>
+<figure class="code-block"><figcaption><span>markdown</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-markdown"># persona.md
+
+# Team Operating Doctrine
+
+&gt; **Operating Thesis**: 修改必须先建立与任务类型相匹配的验证基线。
+
+## Core Principles
+- 缺陷修复先建立失败证据。
+
+## Reusable SOPs
+- 纯重构先建立行为基线，完成后运行相关回归。
+
+## Decision Logic
+- 先判断是行为缺陷还是纯重构，再选择验证方式。
+
+## Boundaries &amp; Anti-patterns
+- 不要在没有失败证据或行为基线时直接修改实现。
+
+## Scene Navigation
+- 缺陷修复与回归验证：path / summary / heat
+- 发布与回滚：path / summary / heat</code></pre></figure>
+<p>新 Session 可以先获得这份长期准则，再沿导航按需打开具体 Scene。</p>
+<p><strong>管理触发：</strong> 每次 L2 完成后都会检查是否需要更新 L3。首次形成 Scene 且还没有 Persona 时立即生成；此后出现显式更新请求、<code>persona.md</code> 正文丢失，或累计 50 条新 L1 时再更新。大范围变化重写全文，局部变化精确修改相应段落，完成后重新附上最新 Scene 导航。</p>
+<p>例如：</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">L0：用户说“修复缺陷前先写失败测试”
+→ L1：修改前建立失败证据
+→ L2：缺陷修复与回归验证场景
+→ L3：缺陷修复先建立失败证据
+
+后来用户补充“纯重构没有待修复失败，但要先锁定行为基线”
+→ L1 / L2 更新条件
+→ L3 改为：缺陷修复先失败测试；纯重构先建立行为基线</code></pre></figure>
+<p>这条链同时体现了提炼和管理：第一次形成时逐层抽象，新证据到来后再更新已有 L1、Scene 和 Persona。</p>
+<h3 id="workflow-execution-skills"><a class="heading-anchor" href="#workflow-execution-skills" aria-label="链接到本节">#</a>Workflow Execution → Skills</h3>
+<p>Skill 走另一条链。它的输入不是只看 user 与 assistant 的对话，而是一段同时保留 tool call 和 tool result 的执行轨迹。</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">每轮执行轨迹 → Session Buffer
+├─ 自动触发：累计 10 次 tool call 或 40 KB
+└─ 主动触发：强制归档当前 Buffer，或直接提交选定轨迹
+→ Archive
+→ Review
+→ create / update / patch / files_write / no-op
+→ versioned SKILL.md</code></pre></figure>
+<p>正常链路在每轮结束后把新增轨迹追加到当前 Session Buffer。默认累计到 10 次 tool call，或 Buffer 达到 40 KB，就归档当前轨迹并清空计数；一次新增轨迹本身达到 40 KB，也会立即归档。调用方还可以直接归档当前 Buffer，或提交一段选定轨迹进入同一条 Review 链，不必等待自动阈值。</p>
+<p>归档只表示“值得检查”，还不表示一定生成 Skill。Review 会先把候选区分为 Skill、Memory、Wiki、CodeGraph 或临时上下文；只有可复用、任务边界明确、能指导执行的 Skill 候选才继续。候选还要通过四项评分：能力定位、任务边界、复用与泛化、可执行流程，总分至少 72，且任何一项不能低于 12。</p>
+<p>系统会先提供最近更新的最多 5 个 Skill 作为线索；Review 仍要列出当前 Skill 库并打开相似项，再决定管理动作：</p>
+<div class="table-frame"><div class="table-toolbar"><span>Comparison · 2 列</span><small>横向滚动 · 点击一行聚焦</small></div><div class="table-wrap" tabindex="0" role="region" aria-label="可横向滚动的比较表"><table><thead><tr><th scope="col">轨迹带来的变化</th><th scope="col">管理动作</th></tr></thead><tbody><tr><td>出现一个现有 Skill 未覆盖的新任务类型</td><td><code>create</code>：创建 v1</td></tr><tr><td>现有 Skill 只缺一个步骤、分支或纠错</td><td><code>patch</code>：局部修改</td></tr><tr><td>现有 Skill 的流程需要整体重写</td><td><code>update</code>：替换完整 <code>SKILL.md</code></td></tr><tr><td>需要补充脚本、模板或参考材料</td><td><code>files_write</code>：写入 supporting files</td></tr><tr><td>不属于 Skill、评分不足、内容重复或已有 Skill 已覆盖</td><td><code>no-op</code></td></tr></tbody></table></div></div>
+<p>更新已有 Skill 前，Review 必须先读到当前版本，并在写入时携带 <code>expected_version</code>。成功写入会追加一个新版本并切换 active head；如果期间已有其他更新使版本过期，就重新读取最新版本再判断，而不是覆盖刚发生的变化。</p>
+<p>具体产出是一个版本化能力包：</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">auth-token-revocation
+├─ SKILL.md
+├─ files/
+│  ├─ scripts/
+│  ├─ templates/
+│  └─ references/
+└─ resource manifest
+
+v1 → v2 → v3（active head）</code></pre></figure>
+<p>其中 <code>SKILL.md</code> 会写清适用与不适用条件、所需输入、操作流程、判断规则、输出格式、验证方式和常见陷阱；<code>references/</code>、<code>scripts/</code>等 supporting files 承载正文放不下的材料或可执行工具。</p>
+<p>Chat Memory 主要从对话中提炼事实、场景和长期准则；Skill 则从实际执行过程提炼以后可以再次运行的工作方法。</p>
+<h3 id="documents-wikicodebase-codegraph"><a class="heading-anchor" href="#documents-wikicodebase-codegraph" aria-label="链接到本节">#</a>Documents → Wiki；Codebase → CodeGraph</h3>
+<p>图中另外两条路径处理非对话材料，它们的产出都是知识图谱，但图谱对象不同：</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">Documents → Wiki 知识图谱
+页面节点：概念、方案、说明文档
+关系边：页面链接、相关概念、引用关系
+
+Codebase → 代码知识图谱
+节点：文件、类、函数、符号
+关系边：定义、调用、导入、依赖</code></pre></figure>
+<p>Wiki 同时保留可读的 Markdown 页面，CodeGraph 则固定到具体 branch 和 commit。它们都不是把原文简单切成一堆 chunk，而是把内容和内容之间的关系也保存下来；更新文档或代码后，相应图谱和索引需要重新同步。</p>
+<h2 id="codex两阶段提炼与文件级管理"><a class="heading-anchor" href="#codex两阶段提炼与文件级管理" aria-label="链接到本节">#</a>Codex：两阶段提炼与文件级管理</h2>
+<p><a href="https://github.com/openai/codex/tree/c9b19deb09c1841ce7acc33ddb96276030936a29" data-link-kind="external" target="_blank" rel="noopener noreferrer">Codex Local Memory</a>把过去完成的任务整理成本地文件，让新的任务能够复用之前发现的项目知识、用户偏好、工作方法和失败经验。任务完成后，user、assistant、工具调用和工具结果先保留在 rollout 中；后续 root Session 启动时，后台流程再处理已经结束并空闲的 rollout。</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">一次任务的 rollout
+→ Phase 1：提炼该任务的候选 Memory
+→ memories_1.sqlite：保存候选与来源
+
+多条候选 + 已有 Memory 文件 + 来源变化
+→ Phase 2：跨任务合并、去重和改写
+→ memory_summary.md / MEMORY.md / rollout_summaries / skills</code></pre></figure>
+<p><strong>Phase 1：先理解一次任务。</strong> 抽取模型每次只看一个 rollout，判断其中有没有能帮助未来任务的信息。它不会把整段对话压成一篇摘要，而是输出三个字段：</p>
+<figure class="code-block"><figcaption><span>json</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-json">{
+  &quot;rollout_summary&quot;: &quot;这次任务做了什么、结果如何&quot;,
+  &quot;rollout_slug&quot;: &quot;便于定位这次任务的短名称&quot;,
+  &quot;raw_memory&quot;: &quot;可能影响未来 Agent 行为的候选经验&quot;
+}</code></pre></figure>
+<p>例如，一次退款测试任务发现：fixture 仍使用旧字段 <code>refund_status</code>，修改 fixture 后测试恢复。Phase 1 可以把它提炼为“处理退款集成测试失败时，先检查 fixture schema 与当前字段是否一致”。没有可复用信息时，Phase 1 直接产生 no-op。此时结果只是带来源的候选，未来任务还不会直接读取它。</p>
+<p><strong>Phase 2：再整理多次任务。</strong> Phase 2 选择一批候选，同时读取现有 Memory 文件和相对上次成功结果的变化，然后按项目与任务类型重新组织内容。相近经验会合并，重复内容会去除，新证据可以补充、收窄或替换旧结论；如果来源已经退出，依赖它的内容也可以从当前文件中移除。</p>
+<p>最终产出各有分工：</p>
+<div class="table-frame"><div class="table-toolbar"><span>Comparison · 2 列</span><small>横向滚动 · 点击一行聚焦</small></div><div class="table-wrap" tabindex="0" role="region" aria-label="可横向滚动的比较表"><table><thead><tr><th scope="col">文件</th><th scope="col">作用</th></tr></thead><tbody><tr><td><code>memory_summary.md</code></td><td>一份短导航，告诉新任务有哪些长期信息可以继续查</td></tr><tr><td><code>MEMORY.md</code></td><td>按项目和任务类型组织的详细手册，保存经验正文与来源线索</td></tr><tr><td><code>rollout_summaries/</code></td><td>保存每次历史任务的简要过程，供需要证据时继续下钻</td></tr><tr><td><code>skills/</code></td><td>当候选足以形成独立、可执行流程时，保存为可复用 Skill</td></tr></tbody></table></div></div>
+<p>前面的退款测试候选进入 Phase 2 后，可能被写入 <code>MEMORY.md</code> 的 “Payments / refund integration tests” 小节；<code>memory_summary.md</code> 只保留“退款测试：fixture schema 与字段迁移”这条导航。以后再遇到退款测试失败，新任务先看到导航，再按需打开详细条目。</p>
+<p>候选在后续任务中被引用后，Codex 会更新它的使用次数和最近使用时间，这些信号会影响下一轮 Phase 2 的候选选择。</p>
+<p>因此，Codex 管理的核心不是一组逐层升级的 Memory 对象，而是一套持续改写的本地手册：Phase 1 保留每次任务的候选与来源，Phase 2 决定当前手册最终应该怎么写。</p>
+<h2 id="前沿探索学习型管理与效用遗忘"><a class="heading-anchor" href="#前沿探索学习型管理与效用遗忘" aria-label="链接到本节">#</a>前沿探索：学习型管理与效用遗忘</h2>
+<h3 id="memory-r1从规则选择到学习策略"><a class="heading-anchor" href="#memory-r1从规则选择到学习策略" aria-label="链接到本节">#</a>Memory-R1：从规则选择到学习策略</h3>
+<p><a href="https://aclanthology.org/2026.acl-long.583/" data-link-kind="external" target="_blank" rel="noopener noreferrer">Memory-R1</a>保留了常见的 <code>ADD / UPDATE / DELETE / NOOP</code> 操作，但不再只依靠固定 Prompt 选择动作。它用强化学习训练一个 Memory Manager，让管理策略直接从后续任务结果中学习。</p>
+<p><img src="assets/source/reader/assets/figures/memory-r1-figure-1.png" alt="Memory-R1 在两次不同 Session 的新信息之间选择 UPDATE，而不是 DELETE 加 ADD" loading="lazy" data-link-kind="asset"></p>
+<p><em><a href="https://aclanthology.org/2026.acl-long.583/" data-link-kind="external" target="_blank" rel="noopener noreferrer">Memory-R1: Enhancing Large Language Model Agents to Manage and Utilize Memories via Reinforcement Learning</a>，Figure 1。</em></p>
+<p>图的左侧是两次不同 Session：Andrew 先收养了 Buddy，后来又收养了 Scout。中间的普通 Memory Manager 把两个名字误判为互相冲突，先删除 Buddy，再新增 Scout；Memory Bank 最终只剩一只狗，后续问题也只能回答“一只”。</p>
+<p>右侧的 RL Memory Manager 判断第二条信息是在补充第一条，于是执行一次 <code>UPDATE</code>：</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">Andrew adopted a dog named Buddy
++ Andrew adopted another dog named Scout
+→ Andrew adopted two dogs named Buddy and Scout</code></pre></figure>
+<p>它的完整管理过程是：</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">新对话
+→ 提炼候选信息 x
+→ 检索相关旧 Memory M_old
+→ Memory Manager 输出 (operation, updated content)
+→ 更新 Memory Bank</code></pre></figure>
+<p>四种动作分别处理不同关系：</p>
+<div class="table-frame"><div class="table-toolbar"><span>Comparison · 2 列</span><small>横向滚动 · 点击一行聚焦</small></div><div class="table-wrap" tabindex="0" role="region" aria-label="可横向滚动的比较表"><table><thead><tr><th scope="col">动作</th><th scope="col">何时选择</th></tr></thead><tbody><tr><td><code>ADD</code></td><td>没有相关旧项，候选形成一条新 Memory</td></tr><tr><td><code>UPDATE</code></td><td>新信息补充或修正已有对象，生成合并后的内容</td></tr><tr><td><code>DELETE</code></td><td>已有内容被明确推翻，不应继续保留</td></tr><tr><td><code>NOOP</code></td><td>新信息重复、无关，或不值得改变 Memory</td></tr></tbody></table></div></div>
+<p>训练阶段会把 Manager 选出的动作实际应用到 Memory Bank，再让固定的 Answer Agent 使用更新后的 Memory 回答后续问题。答案与标准答案一致时获得奖励；PPO 或 GRPO 据此提高这类管理动作的概率。训练完成后，Manager 学到的不只是操作名称，还包括什么时候合并、什么时候覆盖，以及更新后的 Memory 应该怎样表达。</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">固定 Prompt 管理：规则决定 operation
+Memory-R1：后续回答结果训练 operation policy</code></pre></figure>
+<p>这使 <code>ADD / UPDATE / DELETE / NOOP</code> 从一组人工规定的动作，变成一套由任务效果训练出来的管理策略。论文在 LoCoMo、MSC 和 LongMemEval 上验证了这套方法，并覆盖 3B 到 14B 的不同模型规模。</p>
+<h3 id="历史效用删除常被使用不等于值得保留"><a class="heading-anchor" href="#历史效用删除常被使用不等于值得保留" aria-label="链接到本节">#</a>历史效用删除：常被使用不等于值得保留</h3>
+<p><a href="https://aclanthology.org/2026.acl-long.27/" data-link-kind="external" target="_blank" rel="noopener noreferrer">How Memory Management Impacts LLM Agents</a>研究的是 episodic Memory：每条记录保存一次历史任务的 query 与 execution，以后作为示例指导相似任务。论文把新增、使用反馈和删除放进同一条持续变化的链路。</p>
+<p><img src="assets/source/reader/assets/figures/history-utility-deletion-figure-1.png" alt="一次 Agent 执行从 Memory Bank 检索历史经验，完成后再触发新增与删除" loading="lazy" data-link-kind="asset"></p>
+<p><em><a href="https://aclanthology.org/2026.acl-long.27/" data-link-kind="external" target="_blank" rel="noopener noreferrer">How Memory Management Impacts LLM Agents: An Empirical Study of Experience-Following Behavior</a>，Figure 1。</em></p>
+<p>图从左向右展示一次 Memory 更新。<code>Q_t</code> 是当前任务，<code>E_t</code> 是 Agent 完成该任务的执行过程与结果，例如生成的代码、规划轨迹或最终判断。系统先从 <code>Memory_t</code> 取回若干历史记录 <code>(Q_i, E_i)</code>，Agent 参考这些经验完成本次执行。任务结束后，Memory Management 一方面判断是否加入新的 <code>(Q_t, E_t)</code>，另一方面决定哪些旧记录应该删除，最后形成 <code>Memory_{t+1}</code>。</p>
+<p>使用频率可以找到“长期没人需要”的冷 Memory，但它无法识别另一类问题：一条经验可能经常被相似任务命中，却持续把 Agent 引向错误做法。论文因此为每条被取回的 Memory 继续记录它对后续任务的实际影响：</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">Memory i 每被使用一次：
+retrieval_count_i += 1
+utility_sum_i += 本次任务的评价 Φ
+
+average_utility_i = utility_sum_i / retrieval_count_i</code></pre></figure>
+<p>其中 <code>Φ</code> 由任务评价器给出，可以是成功/失败、与标准答案的 Exact Match，或自动评价结果；它表示使用这些 Memory 后，本次任务完成得怎么样。</p>
+<p>删除不会由一次偶然失败触发。只有当一条 Memory 已经被使用至少 <code>n</code> 次，平均效用仍低于阈值 <code>β</code> 时，history-based deletion 才把它移出 Memory Bank：</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">retrieval_count_i &gt; n
+且 average_utility_i ≤ β
+→ DELETE Memory i</code></pre></figure>
+<p>例如，一条旧的故障处理经验被连续取回八次，却在多数任务中导致验证失败。它的访问次数很高，按普通 heat 会显得“活跃”；历史效用则会持续下降，最终触发删除。这避免了错误经验因为反复被命中、反复被模仿而不断自我强化。</p>
+<p>论文同时给出一种更简单的 periodical deletion：如果某条 Memory 在最近时间窗口内的取回次数低于阈值，就把它作为冷数据删除。两种条件可以组合：长期不用的内容控制容量，经常使用但效果差的内容控制质量。</p>
+<figure class="code-block"><figcaption><span>text</span><button type="button" class="copy-code">复制</button></figcaption><pre><code class="language-text">冷：最近很少被取回
+或
+差：多次被使用后平均效用仍低
+→ 从当前 Memory Bank 删除</code></pre></figure>
+<p>TencentDB Scene 的 heat 主要记录 Scene 被创建、更新和合并的活跃程度；这里的历史效用进一步记录“Memory 被实际使用以后发生了什么”。论文在 EHR、自动驾驶和 IoT 等四类 Agent 上验证了这套删除策略，并说明可靠的任务评价器是效用遗忘能够生效的关键。</p></div>
+      <nav class="page-pager" aria-label="同组页面导航"><a class="pager-card previous" href="01-input.html"><small>← 上一篇 · 第 1 层</small><strong>第 1 层：输入</strong></a><a class="pager-card next" href="03-retrieval-orchestration.html"><small>→ 下一篇 · 第 3 层</small><strong>第 3 层：读取与编排</strong></a></nav>
+      <footer class="article-footer"><span>Markdown 是权威内容源</span><button type="button" onclick="window.print()">打印 / 导出 PDF</button></footer>
+    </article>
+  </main>
+  <aside class="page-outline" aria-label="本页目录"><div><span class="outline-kicker">On this page</span><h2>本页目录</h2><ol><li class="level-2"><a href="#tencentdb从-l0-到-l3-的逐层提炼">TencentDB：从 L0 到 L3 的逐层提炼</a></li><li class="level-3"><a href="#conversation-l0-l1-l2-l3">Conversation → L0 → L1 → L2 → L3</a></li><li class="level-3"><a href="#workflow-execution-skills">Workflow Execution → Skills</a></li><li class="level-3"><a href="#documents-wikicodebase-codegraph">Documents → Wiki；Codebase → CodeGraph</a></li><li class="level-2"><a href="#codex两阶段提炼与文件级管理">Codex：两阶段提炼与文件级管理</a></li><li class="level-2"><a href="#前沿探索学习型管理与效用遗忘">前沿探索：学习型管理与效用遗忘</a></li><li class="level-3"><a href="#memory-r1从规则选择到学习策略">Memory-R1：从规则选择到学习策略</a></li><li class="level-3"><a href="#历史效用删除常被使用不等于值得保留">历史效用删除：常被使用不等于值得保留</a></li></ol></div></aside>
+  <dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title">
+    <form method="dialog" class="search-shell">
+      <header><div><span>Search the research suite</span><h2 id="search-title">搜索整套报告</h2></div><button value="close" aria-label="关闭搜索">×</button></header>
+      <label class="search-field"><span class="sr-only">输入技术概念</span><input id="search-input" type="search" autocomplete="off" placeholder="输入机制、项目、风险或术语…"></label>
+      <p class="search-hint">标题和章节优先；支持中文子串。↑ ↓ 选择，Enter 打开，Esc 关闭。</p>
+      <div class="search-results" id="search-results" role="listbox" aria-label="搜索结果"></div>
+    </form>
+  </dialog>
+</body>
+</html>

@@ -11,6 +11,8 @@ python <skill-dir>/scripts/render_reader_html.py --root <suite-dir> --output <su
 
 The output is a static multi-page site whose default entry is `site/index.html`. It must work from a normal static server and remain readable when opened from local files. Shared CSS, JavaScript, and the search index live under `site/assets/`; `build-manifest.json` records UTF-8 byte hashes without embedding an absolute local source path.
 
+For a deliberately curated presentation, add `html-presentation.json` at the suite root. Its `pages` array selects the published Markdown sources and may override each output path, page type/label, navigation group/order, and short navigation title. The build manifest hashes this file so `--check` detects publication-scope drift.
+
 ## Reader jobs
 
 The presentation must help a technically literate newcomer do four jobs:
@@ -21,6 +23,8 @@ The presentation must help a technically literate newcomer do four jobs:
 4. **Verify:** reach nearby sources, project versions, limitations, and audit material without internal process IDs dominating the narrative.
 
 Use landing cards only for orientation, prose for causal explanation, tables for repeated exact comparisons, diagrams for relationships, and details for supplementary material. Do not turn every paragraph into a card or every report into a dashboard.
+
+For AI-created architecture or mechanism figures, follow [research-figure-generation.md](research-figure-generation.md) before adding the accepted raster to Markdown. Generated imagery supplements rather than replaces exact, accessible technical relationships.
 
 ## Supported source contract
 

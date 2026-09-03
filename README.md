@@ -10,6 +10,7 @@
 - 同时追踪论文前沿与近期 GitHub 工程趋势。
 - 显式整理共识、争议、反例、证据空白和未解决问题。
 - 输出独立可读的总览、通用架构模型、机制报告、场景视图、GitHub radar 与项目工程报告；审计材料下沉。
+- 在确有理解收益时，用来源约束、候选审核和 Codex 图像生成制作少量架构图或机制图，并从 Markdown 重建进 HTML。
 
 ## 仓库结构
 
@@ -17,7 +18,10 @@
 SKILL.md                         Skill 主入口
 agents/openai.yaml               Codex 展示与默认提示
 references/                      方法、证据、GitHub、综合与交付规范
+references/research-figure-generation.md  研究架构图与机制图生成规范
+assets/figure-studio/            可选的图类型、布局与表面风格参考板
 scripts/                         corpus discovery、bundle 管理与测试
+scripts/compile_figure_prompt.py  制图语义合同校验与生图 Prompt 编译
 examples/agent-memory-v09/       Agent Memory 前沿调研最终快照
 examples/agent-memory-v10/       基于 v09 重编的读者版参考实现
 ```

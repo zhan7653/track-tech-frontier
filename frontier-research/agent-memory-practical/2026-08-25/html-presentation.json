@@ -1,0 +1,49 @@
+{
+  "page_length_metric": "word_count",
+  "writing_guidance": "site-writing-guidelines.md",
+  "pages": [
+    {
+      "source": "reader/overview.md",
+      "output": "index.html",
+      "page_type": "landing",
+      "page_type_label": "架构总览",
+      "navigation_group": "核心内容",
+      "navigation_order": 0,
+      "navigation_title": "总览与架构"
+    },
+    {
+      "source": "reader/01-input.md",
+      "page_type": "layer",
+      "page_type_label": "第 1 层",
+      "navigation_group": "核心内容",
+      "navigation_order": 1,
+      "navigation_title": "01 · 输入"
+    },
+    {
+      "source": "reader/02-write-formation.md",
+      "page_type": "layer",
+      "page_type_label": "第 2 层",
+      "navigation_group": "核心内容",
+      "navigation_order": 2,
+      "navigation_title": "02 · 提炼与管理"
+    },
+    {
+      "source": "reader/05-retrieval-context.md",
+      "output": "03-retrieval-orchestration.html",
+      "page_type": "layer",
+      "page_type_label": "第 3 层",
+      "navigation_group": "核心内容",
+      "navigation_order": 3,
+      "navigation_title": "03 · 读取与编排"
+    },
+    {
+      "source": "reader/06-feedback-learning.md",
+      "output": "04-feedback-learning.html",
+      "page_type": "layer",
+      "page_type_label": "第 4 层",
+      "navigation_group": "核心内容",
+      "navigation_order": 4,
+      "navigation_title": "04 · 反馈与持续学习"
+    }
+  ]
+}

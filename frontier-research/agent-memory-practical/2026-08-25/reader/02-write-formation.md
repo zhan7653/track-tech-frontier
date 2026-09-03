@@ -1,221 +1,341 @@
-# 第 2 层：写入与形成
+# 第 2 层：提炼与管理
 
-输入层保存“发生了什么”；写入与形成层决定“其中什么值得成为长期对象，以及第一次写成什么形态”。这一层包含触发、筛选、抽取、分类、去重、no-op 与准入，但不把后续版本冲突和持续改写提前写成同一件事。
-
-## 2.1 TencentDB：L0 → L1 → L2 → L3 与 Skill 的首次形成
-
-[TencentDB Agent Memory `0aff21a`](https://github.com/TencentCloud/TencentDB-Agent-Memory/tree/0aff21a)有两条主要形成链：Chat 从 L0 消息逐级形成 L1/L2/L3；Skill 从带工具结果的完整 Session 轨迹形成版本化 `SKILL.md`。L0 是捕获边界，真正的语义形成从 L1 开始。
+输入层保存的是原始材料，其中只有一部分值得长期保留。提炼负责从输入中筛选、抽取和去重，管理则决定提炼结果应该新增、更新、合并，还是不写入。
 
 ```text
-Chat：user/assistant 消息
-  → L0 原始记录
-  → L1 原子 Memory
-  → L2 场景方法文档
-  → L3 跨场景长期准则
-
-Skill：user/assistant/tool_call/tool_result
-  → Session Buffer / Archive
-  → Review Agent
-  → SKILL.md + supporting files + active version
+输入层材料
+→ 筛选、抽取、去重
+→ 与已有 Memory 比较
+→ create / update / merge / no-op
+→ 形成或更新后的 Memory
 ```
 
-### L0：先保留新增消息，不在入口处总结
+不同系统还会增加自己的管理机制，例如优先级、热度、版本、使用信号和遗忘。这些机制不一定处于同一条流水线上，但都会影响哪些内容成为当前 Memory、哪些被保留为历史，以及哪些逐渐退出。
 
-L0 接收 team/user/agent/session/task 与本轮 user/assistant 消息，去掉 system、工具轨迹和已注入的 memory/persona/scene 块，再写出带独立 ID、role、content、timestamp 的记录。它返回 `accepted_ids`，只证明消息已落入原始层；后面可能抽不到任何 L1。
+## TencentDB：从 L0 到 L3 的逐层提炼
 
-### L1：Prompt 将一批消息变成可独立更新的原子 Memory
+[TencentDB Agent Memory](https://github.com/TencentCloud/TencentDB-Agent-Memory/tree/0aff21a)把对话 Memory 分成 L0、L1、L2 和 L3，同时从执行轨迹形成 Skill，并把文档与代码仓库分别形成 Wiki 和 CodeGraph。
 
-L1 可以由累计对话阈值、新 Session 的 `1 → 2 → 4 → 5` warm-up 或 idle 触发。动态输入包含背景消息、本轮新增消息和 `code/chat` mode；固定 Prompt 规定什么值得保存：
+![TencentDB Agent Memory 技术实现总览：对话、执行轨迹、文档和代码分别形成不同 Memory 资产](assets/figures/tencentdb-memory-processing.png)
 
-- 内容在未来仍有价值，并且脱离原对话也能独立理解；
-- code mode 偏团队事实、任务、工作方法和资产，chat mode 偏用户事实、偏好与经历；
-- 用户明确采纳的约定可以保存，Assistant 单方面提出的建议不能自动升级为团队事实；
-- 不复制整段对话，而输出结构化候选；信号不足时不写。
+*[TencentDB Agent Memory 技术实现总览](https://github.com/TencentCloud/TencentDB-Agent-Memory/blob/0aff21a2d9f2b8a0354aaa80a2e586aab4054562/assets/images/flowchart5.png)。本层聚焦左侧 `Memory Processing` 虚线框。*
+
+虚线框从上到下展示四条提炼路径：Conversation 逐层形成 L0–L3，Workflow Execution 形成 Skills，Documents 形成 Wiki，Codebase 形成 CodeGraph。右侧 Memory Assets、Memory Hub 和 New Task 负责资产登记、权限与后续使用，不在本层展开。
+
+### Conversation → L0 → L1 → L2 → L3
+
+这条主链从原始消息开始，逐步形成原子 Memory、场景和长期 Persona。四层不是四份相同内容，而是抽象程度不同的结果。
+
+#### L0：保留发生过的消息
+
+L0 保存本轮新增的 user 和 assistant 消息，以及 user、agent、session、task 和时间等定位信息。它只负责记录，不在入口处总结，也不表示这些消息已经成为长期 Memory。
+
+#### L1：提炼成可独立理解的原子 Memory
+
+L1 从一批 L0 消息中抽取以后仍可能有用的事实、偏好、任务、方法或资产。内容必须脱离原对话仍能理解；信号不足时可以不产生任何 Memory。
+
+一条 L1 是可以独立检索和继续更新的原子记录，形态可以概括为：
 
 ```json
 {
   "type": "work_method",
   "content": "修复行为缺陷前先建立稳定失败的复现测试",
-  "priority": 0.90,
-  "source_message_ids": ["msg-a1"]
+  "priority": 90,
+  "source_message_ids": ["msg-a1"],
+  "version": 1
 }
 ```
 
-每个新候选会先通过 vector 或 FTS/BM25 找 Top-K 相似旧 L1，再由去重 Prompt 选择 `store / update / merge / skip`。首次没有相关项时 `store` 形成带 scope、来源、类型、优先级和 version 的原子 Memory；其他动作的持续管理在第 4 层展开。L1 一旦写入就是可以独立检索、也可以成为 L2 输入的对象。
+`content`保存提炼后的最小事实或方法，`source_message_ids`指回原始消息，`priority`和`version`则供后续管理使用。
 
-### L2：Scene Agent 把零散 L1 整理成场景方法
+新候选还会与已有 L1 比较，再选择：
 
-L2 的动态输入是本轮新 L1 正文，加上 team+agent 现有 Scene 的 path/summary/heat/updated 索引。固定 Prompt 让 Agent 在 `UPDATE / MERGE / CREATE / NO-OP` 中判断，并限制它只操作 `scene_blocks/`；首次没有合适场景时才创建文件。
+| 操作 | 含义 |
+|---|---|
+| `store` | 没有相关旧项，新增一条 Memory |
+| `update` | 新证据修正或补充一个已有对象 |
+| `merge` | 新旧内容属于同一对象，合并为新的当前表示 |
+| `skip` | 内容重复、价值不足或不应保存 |
 
-Prompt 同时规定 Scene 的可读骨架：
+L1 同时保存来源、类型、优先级和版本，使后续更新仍能回到原始消息。
+
+**管理触发：** 每轮对话结束后，新消息先进入当前 Session 的缓冲区。新 Session 默认按 1 → 2 → 4 → 5 轮逐步扩大处理批次，稳定后每 5 轮运行一次 L1；不足一批但连续 10 分钟没有新对话，也会处理剩余消息。每次运行都把新候选与已有 L1 比较，执行 `store / update / merge / skip`。
+
+#### L2：把原子 Memory 整理成场景
+
+L2 将多条相关 L1 整理成一个可复用场景，例如把“修缺陷前先复现”和“修改后运行回归”组织成“缺陷修复与回归验证”Scene。Scene 不只是摘要，还会写清适用条件、操作步骤、判断逻辑和反模式。
+
+它的具体产出是一份 Scene Markdown：
 
 ```markdown
-## 工作场景
+-----META-START-----
+created: 2026-08-20T09:00:00Z
+updated: 2026-08-25T14:30:00Z
+summary: 修复行为缺陷时的复现、修改与回归流程
+heat: 3
+-----META-END-----
+
 ## 适用条件
+已有行为与预期不一致，需要修改实现。
+
 ## 核心 SOP
-## 判断逻辑
+1. 先建立稳定失败的复现测试。
+2. 修改最小范围实现。
+3. 复现转绿后运行相关回归。
+
 ## 禁忌与反模式
-## 关键事实依据
-## 相关任务与资产
-## 演化记录
-## 待确认问题
+没有失败证据就直接修改代码。
 ```
 
-例如两条 L1——“修 bug 前先建立失败测试”“完成后运行相关回归”——可以形成 `scene_blocks/缺陷修复与回归验证.md`：
+因此 L2 已经不是一条事实，而是一份特定场景下可以再次阅读和执行的方法文档。
+
+面对新 L1，Scene 可以执行 `CREATE / UPDATE / MERGE / NO-OP`。每个 Scene 还带有 heat：新建时从 1 开始，更新时递增，合并时累加。它用于导航排序，并在 Scene 数量接近上限时辅助合并或删除选择。
+
+**管理触发：** L1 完成后会安排下一次 Scene 整理：默认至少等待 10 秒，并与上一次 L2 保持 15 分钟间隔；活跃 Session 最长每小时再检查一次。L2 从上次处理位置继续读取新增或变化的 L1，再决定新建、更新、合并 Scene，或者保持不变。
+
+#### L3：形成跨场景的长期准则
+
+L3 从多个 Scene 中继续提炼长期 Persona。它不会把所有 Scene 机械拼接，而是合并重复原则、排除临时状态，并在新证据出现时收窄或修正旧规则。
+
+它的产出是当前 team + agent 范围下的 `persona.md`。正文保存跨场景仍然稳定的偏好和准则，文件末尾再附 Scene 导航：
 
 ```markdown
-## 适用条件
-- 已有行为与预期不一致，需要修改实现。
+# persona.md
 
-## 核心 SOP
-1. 先写能稳定失败的复现测试。
-2. 确认失败原因与目标缺陷一致。
-3. 修改最小范围实现。
-4. 复现转绿后运行相关回归。
+# Team Operating Doctrine
 
-## 禁忌与反模式
-- 没有失败证据就直接改代码。
+> **Operating Thesis**: 修改必须先建立与任务类型相匹配的验证基线。
+
+## Core Principles
+- 缺陷修复先建立失败证据。
+
+## Reusable SOPs
+- 纯重构先建立行为基线，完成后运行相关回归。
+
+## Decision Logic
+- 先判断是行为缺陷还是纯重构，再选择验证方式。
+
+## Boundaries & Anti-patterns
+- 不要在没有失败证据或行为基线时直接修改实现。
+
+## Scene Navigation
+- 缺陷修复与回归验证：path / summary / heat
+- 发布与回滚：path / summary / heat
 ```
 
-输出不只是摘要，而是一份以后可以通过索引导航再读取正文的工作场景。
+新 Session 可以先获得这份长期准则，再沿导航按需打开具体 Scene。
 
-### L3：从变化 Scene 与旧 Persona 形成长期准则
+**管理触发：** 每次 L2 完成后都会检查是否需要更新 L3。首次形成 Scene 且还没有 Persona 时立即生成；此后出现显式更新请求、`persona.md` 正文丢失，或累计 50 条新 L1 时再更新。大范围变化重写全文，局部变化精确修改相应段落，完成后重新附上最新 Scene 导航。
 
-L3 的触发比 L1/L2 稀疏：第一次已经存在 L2 但没有 Persona、上次成功后累计 50 条新 L1、L2 写出 `PERSONA_UPDATE_REQUEST`，或系统发现 `persona.md` 丢失。首次生成读取现有 Scene；增量生成只读取上次成功后变化的 L2 完整正文，同时始终提供旧 `persona.md`、触发原因、计数和 Scene 统计。
-
-Prompt 要求比较而非机械追加：新 Scene 只是再次支持旧规则时不重复；新证据限制旧规则时收窄适用条件；重复原则合并；临时项目状态不晋升；code mode 正文控制在约 1200 字。输出是 team+agent Profile Scope 下的 `persona.md`，工程侧再追加 L2 导航。
-
-一条规则的首次形成与后续修正可以贯穿三层理解：
+例如：
 
 ```text
-L0  用户：所有代码修改前都先写失败测试
-↓
-L1  work_method：修改前建立失败证据
-↓
-L2  “缺陷修复与回归验证”场景
-↓
-L3  所有修改前先写失败测试
+L0：用户说“修复缺陷前先写失败测试”
+→ L1：修改前建立失败证据
+→ L2：缺陷修复与回归验证场景
+→ L3：缺陷修复先建立失败证据
 
-新 Session：用户说明纯重构没有待修复失败，但须先锁定行为基线
-↓
-L1/L2 提供更具体条件
-↓
-L3 改为：缺陷修复先建立失败证据；纯重构先建立行为基线
+后来用户补充“纯重构没有待修复失败，但要先锁定行为基线”
+→ L1 / L2 更新条件
+→ L3 改为：缺陷修复先失败测试；纯重构先建立行为基线
 ```
 
-第一次形成属于本层；旧规则如何被改写属于第 4 层。
+这条链同时体现了提炼和管理：第一次形成时逐层抽象，新证据到来后再更新已有 L1、Scene 和 Persona。
 
-### Skill：Review Prompt 把真实执行轨迹形成可复用能力
+### Workflow Execution → Skills
 
-Skill Buffer 按 `space + user + team + agent + session` 隔离；累计 10 次 tool call 或约 40 KB 内容后归档并异步 Review。一次 Archive 只消费当前 Session 的轨迹，不把多个 Session 的计数直接相加。
-
-Review Agent 先回答“这是什么知识”：Skill、Memory、Wiki、CodeGraph 或 Temporary Context。只有归为 Skill 且评分达到 72，才继续形成。它先看到最近最多 5 个 Skill 的 name/description 提示，随后 Prompt 要求使用 `skill_list` 与 `skill_view` 检查完整已有内容，再决定：
+Skill 走另一条链。它的输入不是只看 user 与 assistant 的对话，而是一段同时保留 tool call 和 tool result 的执行轨迹。
 
 ```text
-Nothing to save
-create
-update
-patch
-files_write
+每轮执行轨迹 → Session Buffer
+├─ 自动触发：累计 10 次 tool call 或 40 KB
+└─ 主动触发：强制归档当前 Buffer，或直接提交选定轨迹
+→ Archive
+→ Review
+→ create / update / patch / files_write / no-op
+→ versioned SKILL.md
 ```
 
-`SKILL.md` 不是一句经验。Prompt 强制它写清：When to use、When not to use、Required inputs、Workflow、Decision rules、Output format、Validation、Pitfalls 与 Supporting files。对已有 Skill 的写入带 `expected_version`；形成新版本而不是覆盖旧快照。
+正常链路在每轮结束后把新增轨迹追加到当前 Session Buffer。默认累计到 10 次 tool call，或 Buffer 达到 40 KB，就归档当前轨迹并清空计数；一次新增轨迹本身达到 40 KB，也会立即归档。调用方还可以直接归档当前 Buffer，或提交一段选定轨迹进入同一条 Review 链，不必等待自动阈值。
 
-以 token 撤销任务为例，首条轨迹可能形成 `auth-token-revocation@v1`：使用场景、共享 store 的步骤和回归测试。后续 Session 发现多实例问题与并发刷新边界后，才在第 4 层形成 v2/v3。首次形成的输出是一个可读、可检索、带 supporting files manifest 的能力包。
+归档只表示“值得检查”，还不表示一定生成 Skill。Review 会先把候选区分为 Skill、Memory、Wiki、CodeGraph 或临时上下文；只有可复用、任务边界明确、能指导执行的 Skill 候选才继续。候选还要通过四项评分：能力定位、任务边界、复用与泛化、可执行流程，总分至少 72，且任何一项不能低于 12。
 
-固定源码可从 [L0 recorder](https://github.com/TencentCloud/TencentDB-Agent-Memory/blob/0aff21a/MemoryCore/src/core/conversation/l0-recorder.ts)、[L1 writer](https://github.com/TencentCloud/TencentDB-Agent-Memory/blob/0aff21a/MemoryCore/src/core/record/l1-writer.ts)、[Scene Prompt](https://github.com/TencentCloud/TencentDB-Agent-Memory/blob/0aff21a/MemoryCore/src/core/prompts/scene-extraction.ts)和 [Skill Review Prompt](https://github.com/TencentCloud/TencentDB-Agent-Memory/blob/0aff21a/MemoryCore/src/core/skill/prompts/skill-review-prompt.ts)继续定位。
+系统会先提供最近更新的最多 5 个 Skill 作为线索；Review 仍要列出当前 Skill 库并打开相似项，再决定管理动作：
 
-## 2.2 Codex：Phase 1 候选与 Phase 2 文件化 Memory/Skill 形成
+| 轨迹带来的变化 | 管理动作 |
+|---|---|
+| 出现一个现有 Skill 未覆盖的新任务类型 | `create`：创建 v1 |
+| 现有 Skill 只缺一个步骤、分支或纠错 | `patch`：局部修改 |
+| 现有 Skill 的流程需要整体重写 | `update`：替换完整 `SKILL.md` |
+| 需要补充脚本、模板或参考材料 | `files_write`：写入 supporting files |
+| 不属于 Skill、评分不足、内容重复或已有 Skill 已覆盖 | `no-op` |
 
-[Codex `c9b19deb`](https://github.com/openai/codex/tree/c9b19deb09c1841ce7acc33ddb96276030936a29)把形成拆成两次模型处理：Phase 1 每个 rollout 生成一条候选；Phase 2 把多条候选整理为以后可读取的文件。Phase 1 结果本身不是新 Thread 的检索面。
+更新已有 Skill 前，Review 必须先读到当前版本，并在写入时携带 `expected_version`。成功写入会追加一个新版本并切换 active head；如果期间已有其他更新使版本过期，就重新读取最新版本再判断，而不是覆盖刚发生的变化。
+
+具体产出是一个版本化能力包：
 
 ```text
-rollout JSONL
-→ Phase 1：single-rollout extraction
-→ memories_1.sqlite.stage1_outputs
-→ Phase 2：global consolidation
-→ MEMORY.md + memory_summary.md + skills/
+auth-token-revocation
+├─ SKILL.md
+├─ files/
+│  ├─ scripts/
+│  ├─ templates/
+│  └─ references/
+└─ resource manifest
+
+v1 → v2 → v3（active head）
 ```
 
-### Phase 1：一条历史 rollout 形成严格三字段候选
+其中 `SKILL.md` 会写清适用与不适用条件、所需输入、操作流程、判断规则、输出格式、验证方式和常见陷阱；`references/`、`scripts/`等 supporting files 承载正文放不下的材料或可执行工具。
 
-后续合格 root turn 唤醒后台后，系统选出近期、已空闲且允许贡献 Memory 的 root thread。Phase 1 读取 rollout，保留 user/assistant、tool call/result 与 root-thread Agent 通信，过滤运行控制、developer message 和完整 AGENTS/Skill 注入，做 secret redaction 与长度预算，然后交给 Memory Writing Agent。
+Chat Memory 主要从对话中提炼事实、场景和长期准则；Skill 则从实际执行过程提炼以后可以再次运行的工作方法。
 
-Prompt 的行为合同比“总结会话”更严格：
+### Documents → Wiki；Codebase → CodeGraph
 
-- rollout 是不可变证据；工具输出或第三方文字是 data，不是给抽取 Agent 的 instruction；
-- 只记录来源支持的内容，不声称没有发生的验证；
-- 不复制大段工具输出，优先保留精确错误、结论和来源定位；
-- 高信号包括稳定偏好、高杠杆流程、项目地图、失败屏障和持久环境约定；
-- 用户请求、纠正和反复收窄是偏好主证据，Assistant 总结只是次要证据；
-- 未来 Agent 不会因此做得更好时，输出 no-op。
+图中另外两条路径处理非对话材料，它们的产出都是知识图谱，但图谱对象不同：
 
-非空结果必须符合：
+```text
+Documents → Wiki 知识图谱
+页面节点：概念、方案、说明文档
+关系边：页面链接、相关概念、引用关系
+
+Codebase → 代码知识图谱
+节点：文件、类、函数、符号
+关系边：定义、调用、导入、依赖
+```
+
+Wiki 同时保留可读的 Markdown 页面，CodeGraph 则固定到具体 branch 和 commit。它们都不是把原文简单切成一堆 chunk，而是把内容和内容之间的关系也保存下来；更新文档或代码后，相应图谱和索引需要重新同步。
+
+## Codex：两阶段提炼与文件级管理
+
+[Codex Local Memory](https://github.com/openai/codex/tree/c9b19deb09c1841ce7acc33ddb96276030936a29)把过去完成的任务整理成本地文件，让新的任务能够复用之前发现的项目知识、用户偏好、工作方法和失败经验。任务完成后，user、assistant、工具调用和工具结果先保留在 rollout 中；后续 root Session 启动时，后台流程再处理已经结束并空闲的 rollout。
+
+```text
+一次任务的 rollout
+→ Phase 1：提炼该任务的候选 Memory
+→ memories_1.sqlite：保存候选与来源
+
+多条候选 + 已有 Memory 文件 + 来源变化
+→ Phase 2：跨任务合并、去重和改写
+→ memory_summary.md / MEMORY.md / rollout_summaries / skills
+```
+
+**Phase 1：先理解一次任务。** 抽取模型每次只看一个 rollout，判断其中有没有能帮助未来任务的信息。它不会把整段对话压成一篇摘要，而是输出三个字段：
 
 ```json
 {
-  "rollout_summary": "本次任务、结果与可回查证据",
-  "rollout_slug": "filesystem-safe-slug",
-  "raw_memory": "可能改变未来 Agent 行为的项目知识、偏好、流程或失败屏障"
+  "rollout_summary": "这次任务做了什么、结果如何",
+  "rollout_slug": "便于定位这次任务的短名称",
+  "raw_memory": "可能影响未来 Agent 行为的候选经验"
 }
 ```
 
-没有高信号时三个字段全部为空。这里的 `raw_memory` 已经是模型派生文本，不是原始 JSONL。
+例如，一次退款测试任务发现：fixture 仍使用旧字段 `refund_status`，修改 fixture 后测试恢复。Phase 1 可以把它提炼为“处理退款集成测试失败时，先检查 fixture schema 与当前字段是否一致”。没有可复用信息时，Phase 1 直接产生 no-op。此时结果只是带来源的候选，未来任务还不会直接读取它。
 
-假设 Rollout A 记录“修复行为缺陷前建立失败测试并跑回归”，Rollout B 记录“纯重构先锁定行为基线，不要求伪造失败”。Phase 1 会分别得到两个带来源的任务候选，而不是在单条 rollout 内提前发明全局规则。
+**Phase 2：再整理多次任务。** Phase 2 选择一批候选，同时读取现有 Memory 文件和相对上次成功结果的变化，然后按项目与任务类型重新组织内容。相近经验会合并，重复内容会去除，新证据可以补充、收窄或替换旧结论；如果来源已经退出，依赖它的内容也可以从当前文件中移除。
 
-### Phase 2：把候选、旧文件与 diff 形成正式阅读面
+最终产出各有分工：
 
-Phase 2 选择一个有界候选集合，Host 将内容机械物化成 `raw_memories.md` 与 `rollout_summaries/*.md`，再生成相对上次成功 Git baseline 的 workspace diff。Consolidation Agent 的输入包括：
+| 文件 | 作用 |
+|---|---|
+| `memory_summary.md` | 一份短导航，告诉新任务有哪些长期信息可以继续查 |
+| `MEMORY.md` | 按项目和任务类型组织的详细手册，保存经验正文与来源线索 |
+| `rollout_summaries/` | 保存每次历史任务的简要过程，供需要证据时继续下钻 |
+| `skills/` | 当候选足以形成独立、可执行流程时，保存为可复用 Skill |
 
-```text
-raw_memories.md
-existing MEMORY.md
-rollout_summaries/*.md
-existing memory_summary.md（首行必须是 v1）
-existing skills/*
-extensions/ad_hoc/notes/*
-phase2 workspace diff
-```
+前面的退款测试候选进入 Phase 2 后，可能被写入 `MEMORY.md` 的 “Payments / refund integration tests” 小节；`memory_summary.md` 只保留“退款测试：fixture schema 与字段迁移”这条导航。以后再遇到退款测试失败，新任务先看到导航，再按需打开详细条目。
 
-固定 Prompt 同时支持 INIT 和 INCREMENTAL UPDATE。首次形成时，它要求 `MEMORY.md` 比 raw candidates 更聚合、更可行动；`memory_summary.md` 只做密集导航；只有出现独立、可复用程序时才创建 `skills/`，并可带 scripts、templates 和 examples。它不按 `raw_memories.md` 的文件顺序推断重要性，也不打开原始 rollout；需要更强证据时只沿候选去读对应 raw-memory 段与 rollout summary。没有新信号时保持最小变更。
+候选在后续任务中被引用后，Codex 会更新它的使用次数和最近使用时间，这些信号会影响下一轮 Phase 2 的候选选择。
 
-前述两个候选首次进入 Phase 2 后，可以形成：
+因此，Codex 管理的核心不是一组逐层升级的 Memory 对象，而是一套持续改写的本地手册：Phase 1 保留每次任务的候选与来源，Phase 2 决定当前手册最终应该怎么写。
 
-```markdown
-# MEMORY.md
+## 前沿探索：学习型管理与效用遗忘
 
-## 缺陷修复与行为保护
-- 修复行为缺陷时，先建立稳定失败的复现证据。
-- 纯重构时，先建立现有行为基线和回归保护。
-- 两类任务完成后都运行相关回归。
-- Sources: bug-fix-with-repro, refactor-behavior-baseline
-```
+### Memory-R1：从规则选择到学习策略
 
-```markdown
-# memory_summary.md
-v1
+[Memory-R1](https://aclanthology.org/2026.acl-long.583/)保留了常见的 `ADD / UPDATE / DELETE / NOOP` 操作，但不再只依靠固定 Prompt 选择动作。它用强化学习训练一个 Memory Manager，让管理策略直接从后续任务结果中学习。
 
-- 编码工作方式：缺陷复现、纯重构行为基线与回归要求，见 MEMORY.md。
-```
+![Memory-R1 在两次不同 Session 的新信息之间选择 UPDATE，而不是 DELETE 加 ADD](assets/figures/memory-r1-figure-1.png)
 
-若证据足以形成完整程序，才额外写出 `skills/behavior-safe-change/SKILL.md`。从此以后，新 Thread 先获得短索引，再按需搜索手册或 Skill；下一次增量合并则属于第 4 层。
+*[Memory-R1: Enhancing Large Language Model Agents to Manage and Utilize Memories via Reinforcement Learning](https://aclanthology.org/2026.acl-long.583/)，Figure 1。*
 
-TencentDB L1 与 Codex Phase 1 都做单次经历抽取，但状态不同：L1 写入后可直接检索和独立更新；Codex Phase 1 只是候选，必须经过 Phase 2 文件化后才进入未来读取路径。固定实现见 [Phase 1](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/memories/write/src/phase1.rs)、[Phase 2](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/memories/write/src/phase2.rs)与 [Consolidation Prompt](https://github.com/openai/codex/blob/c9b19deb09c1841ce7acc33ddb96276030936a29/codex-rs/memories/write/templates/memories/consolidation.md)。
+图的左侧是两次不同 Session：Andrew 先收养了 Buddy，后来又收养了 Scout。中间的普通 Memory Manager 把两个名字误判为互相冲突，先删除 Buddy，再新增 Scout；Memory Bank 最终只剩一只狗，后续问题也只能回答“一只”。
 
-## 2.3 MemTxn：source-supported proposal → admission → commit
-
-[MemTxn](https://arxiv.org/abs/2607.27834)把“模型写出的内容”和“正式 Memory”之间增加了一道准入边界。抽取器或回答模型先提出 patch，并附 source span、tool receipt 等来源；Ordered PatchTest 检查新断言是否得到来源支持。通过才允许 commit，不支持则 reject。
+右侧的 RL Memory Manager 判断第二条信息是在补充第一条，于是执行一次 `UPDATE`：
 
 ```text
-current state + source receipt
-→ LLM proposed patch
-→ Ordered PatchTest：逐项检查来源支持
-→ admission
-   ├─ supported → commit revision
-   └─ unsupported → reject proposal
+Andrew adopted a dog named Buddy
++ Andrew adopted another dog named Scout
+→ Andrew adopted two dogs named Buddy and Scout
 ```
 
-例如用户明确说“纯重构只要求行为基线”，模型可以提议把绝对规则拆成“缺陷修复/纯重构”两条条件规则；准入层必须能把每个新增 clause 回指到用户原话，而不是因为改写听起来合理就接受。
+它的完整管理过程是：
 
-本层只借 MemTxn 说明责任变化：形成模型输出的是 proposal，不是自动生效的真相。新旧版本冲突怎样解析、当前状态怎样切换以及故障后怎样恢复，在第 4 层继续展开。
+```text
+新对话
+→ 提炼候选信息 x
+→ 检索相关旧 Memory M_old
+→ Memory Manager 输出 (operation, updated content)
+→ 更新 Memory Bank
+```
+
+四种动作分别处理不同关系：
+
+| 动作 | 何时选择 |
+|---|---|
+| `ADD` | 没有相关旧项，候选形成一条新 Memory |
+| `UPDATE` | 新信息补充或修正已有对象，生成合并后的内容 |
+| `DELETE` | 已有内容被明确推翻，不应继续保留 |
+| `NOOP` | 新信息重复、无关，或不值得改变 Memory |
+
+训练阶段会把 Manager 选出的动作实际应用到 Memory Bank，再让固定的 Answer Agent 使用更新后的 Memory 回答后续问题。答案与标准答案一致时获得奖励；PPO 或 GRPO 据此提高这类管理动作的概率。训练完成后，Manager 学到的不只是操作名称，还包括什么时候合并、什么时候覆盖，以及更新后的 Memory 应该怎样表达。
+
+```text
+固定 Prompt 管理：规则决定 operation
+Memory-R1：后续回答结果训练 operation policy
+```
+
+这使 `ADD / UPDATE / DELETE / NOOP` 从一组人工规定的动作，变成一套由任务效果训练出来的管理策略。论文在 LoCoMo、MSC 和 LongMemEval 上验证了这套方法，并覆盖 3B 到 14B 的不同模型规模。
+
+### 历史效用删除：常被使用不等于值得保留
+
+[How Memory Management Impacts LLM Agents](https://aclanthology.org/2026.acl-long.27/)研究的是 episodic Memory：每条记录保存一次历史任务的 query 与 execution，以后作为示例指导相似任务。论文把新增、使用反馈和删除放进同一条持续变化的链路。
+
+![一次 Agent 执行从 Memory Bank 检索历史经验，完成后再触发新增与删除](assets/figures/history-utility-deletion-figure-1.png)
+
+*[How Memory Management Impacts LLM Agents: An Empirical Study of Experience-Following Behavior](https://aclanthology.org/2026.acl-long.27/)，Figure 1。*
+
+图从左向右展示一次 Memory 更新。`Q_t` 是当前任务，`E_t` 是 Agent 完成该任务的执行过程与结果，例如生成的代码、规划轨迹或最终判断。系统先从 `Memory_t` 取回若干历史记录 `(Q_i, E_i)`，Agent 参考这些经验完成本次执行。任务结束后，Memory Management 一方面判断是否加入新的 `(Q_t, E_t)`，另一方面决定哪些旧记录应该删除，最后形成 `Memory_{t+1}`。
+
+使用频率可以找到“长期没人需要”的冷 Memory，但它无法识别另一类问题：一条经验可能经常被相似任务命中，却持续把 Agent 引向错误做法。论文因此为每条被取回的 Memory 继续记录它对后续任务的实际影响：
+
+```text
+Memory i 每被使用一次：
+retrieval_count_i += 1
+utility_sum_i += 本次任务的评价 Φ
+
+average_utility_i = utility_sum_i / retrieval_count_i
+```
+
+其中 `Φ` 由任务评价器给出，可以是成功/失败、与标准答案的 Exact Match，或自动评价结果；它表示使用这些 Memory 后，本次任务完成得怎么样。
+
+删除不会由一次偶然失败触发。只有当一条 Memory 已经被使用至少 `n` 次，平均效用仍低于阈值 `β` 时，history-based deletion 才把它移出 Memory Bank：
+
+```text
+retrieval_count_i > n
+且 average_utility_i ≤ β
+→ DELETE Memory i
+```
+
+例如，一条旧的故障处理经验被连续取回八次，却在多数任务中导致验证失败。它的访问次数很高，按普通 heat 会显得“活跃”；历史效用则会持续下降，最终触发删除。这避免了错误经验因为反复被命中、反复被模仿而不断自我强化。
+
+论文同时给出一种更简单的 periodical deletion：如果某条 Memory 在最近时间窗口内的取回次数低于阈值，就把它作为冷数据删除。两种条件可以组合：长期不用的内容控制容量，经常使用但效果差的内容控制质量。
+
+```text
+冷：最近很少被取回
+或
+差：多次被使用后平均效用仍低
+→ 从当前 Memory Bank 删除
+```
+
+TencentDB Scene 的 heat 主要记录 Scene 被创建、更新和合并的活跃程度；这里的历史效用进一步记录“Memory 被实际使用以后发生了什么”。论文在 EHR、自动驾驶和 IoT 等四类 Agent 上验证了这套删除策略，并说明可靠的任务评价器是效用遗忘能够生效的关键。

@@ -1,0 +1,137 @@
+{
+  "asset_count": 14,
+  "assets": {
+    "assets/favicon.svg": "8a735ccb226aabd4ced526ca0a20814c4878521451b3343d2b6bcd556b921df7",
+    "assets/search-index.js": "f23203368fe85024f5fd91a00110350211870af6569b56931b188cc0f20f67e2",
+    "assets/site.css": "d2512c6aa4a3d84dadfed124ac857d77a354e21a1864fb673501ebb1087f1fc9",
+    "assets/site.js": "34989123d1ba6683041d755a96683401a2ccdb1ce88f250a4c69664f1d1101eb"
+  },
+  "copied_assets": [
+    {
+      "output": "assets/source/reader/assets/figures/agent-memory-input-envelope.png",
+      "output_sha256": "fbb405a9a547170c1aa81441de685ca2f09fce08a3e3017ea3d3977e52dd3f8b",
+      "source": "reader/assets/figures/agent-memory-input-envelope.png",
+      "source_sha256": "fbb405a9a547170c1aa81441de685ca2f09fce08a3e3017ea3d3977e52dd3f8b"
+    },
+    {
+      "output": "assets/source/reader/assets/figures/cicl-figure-1.png",
+      "output_sha256": "802ae0f6b3cd22aa8963c53875460645ea37e1bdc608daefebb2df7f190180ac",
+      "source": "reader/assets/figures/cicl-figure-1.png",
+      "source_sha256": "802ae0f6b3cd22aa8963c53875460645ea37e1bdc608daefebb2df7f190180ac"
+    },
+    {
+      "output": "assets/source/reader/assets/figures/coevoskills-figure-3.png",
+      "output_sha256": "e5a1f118d8667c2d0f56a54e33a77be717dd4d7839f04720524889ee8f1ff97d",
+      "source": "reader/assets/figures/coevoskills-figure-3.png",
+      "source_sha256": "e5a1f118d8667c2d0f56a54e33a77be717dd4d7839f04720524889ee8f1ff97d"
+    },
+    {
+      "output": "assets/source/reader/assets/figures/history-utility-deletion-figure-1.png",
+      "output_sha256": "b7544719f9020d795998f693fc0202fd2c7153ff5546d90435816e86e02c1c2b",
+      "source": "reader/assets/figures/history-utility-deletion-figure-1.png",
+      "source_sha256": "b7544719f9020d795998f693fc0202fd2c7153ff5546d90435816e86e02c1c2b"
+    },
+    {
+      "output": "assets/source/reader/assets/figures/memcon-figure-1.png",
+      "output_sha256": "ac4d2f8a5608739e1d146d43d99cc15005c7cc8a14c0334f787d3a218fd904ed",
+      "source": "reader/assets/figures/memcon-figure-1.png",
+      "source_sha256": "ac4d2f8a5608739e1d146d43d99cc15005c7cc8a14c0334f787d3a218fd904ed"
+    },
+    {
+      "output": "assets/source/reader/assets/figures/memflow-figure-1.png",
+      "output_sha256": "3c0cde8013bbdf507f4a8fbc4805d6a700015620685838fbae6ac7b44885e359",
+      "source": "reader/assets/figures/memflow-figure-1.png",
+      "source_sha256": "3c0cde8013bbdf507f4a8fbc4805d6a700015620685838fbae6ac7b44885e359"
+    },
+    {
+      "output": "assets/source/reader/assets/figures/memory-r1-figure-1.png",
+      "output_sha256": "5ec30d9207803e71d0754ccff953fb67f826085765200a725f3fcef5d00bf904",
+      "source": "reader/assets/figures/memory-r1-figure-1.png",
+      "source_sha256": "5ec30d9207803e71d0754ccff953fb67f826085765200a725f3fcef5d00bf904"
+    },
+    {
+      "output": "assets/source/reader/assets/figures/tencentdb-memory-processing.png",
+      "output_sha256": "b6194463327306c746d964f146a2b7d88e29ea7cabc493b18925cea01ba20292",
+      "source": "reader/assets/figures/tencentdb-memory-processing.png",
+      "source_sha256": "b6194463327306c746d964f146a2b7d88e29ea7cabc493b18925cea01ba20292"
+    },
+    {
+      "output": "assets/source/reader/assets/figures/worldlines-world-state-figure-1.png",
+      "output_sha256": "32f60f1da00ac7e089af76f3ae62d72d1cbaf292d9e3ab99a354a97222abc6e0",
+      "source": "reader/assets/figures/worldlines-world-state-figure-1.png",
+      "source_sha256": "32f60f1da00ac7e089af76f3ae62d72d1cbaf292d9e3ab99a354a97222abc6e0"
+    },
+    {
+      "output": "assets/source/reader/assets/figures/xskill-figure-2.png",
+      "output_sha256": "9a6a2293ad99658c3d221856a9697ce617fee7e03d5df00e96cd7e8999816ecc",
+      "source": "reader/assets/figures/xskill-figure-2.png",
+      "source_sha256": "9a6a2293ad99658c3d221856a9697ce617fee7e03d5df00e96cd7e8999816ecc"
+    }
+  ],
+  "entry": "index.html",
+  "generated_at": "2026-08-27T09:44:29Z",
+  "generated_by": "track-tech-frontier/render_reader_html.py",
+  "page_count": 5,
+  "pages": [
+    {
+      "headings": 4,
+      "output": "index.html",
+      "output_sha256": "0709b5d81236572d57c5424685c7a333afebbafb1094089b7c4d9fe6dfa98c75",
+      "page_type": "landing",
+      "source": "reader/overview.md",
+      "source_sha256": "d5f566613f1651ba2cca62f3ee1d36a5b827e1b430d76fd93b41e68fec8542d4",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 1,
+      "output": "01-input.html",
+      "output_sha256": "42a3850117046d58550cfb1992ae8f3a5852fac44753c9da5cf33b18a85143a9",
+      "page_type": "layer",
+      "source": "reader/01-input.md",
+      "source_sha256": "076ae536e121fcb7ebd63cf51c00a6df57924bd76ffe2bb46cb850d18c8a704b",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 12,
+      "output": "02-write-formation.html",
+      "output_sha256": "0983365096925c05225e79a8f71cbf41b80255e163dc164297c68439bd56662d",
+      "page_type": "layer",
+      "source": "reader/02-write-formation.md",
+      "source_sha256": "515b5a00e11c8c89fb087be21e2dbcdca12efa07449d94ac80df7f01f563cb78",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 4,
+      "output": "03-retrieval-orchestration.html",
+      "output_sha256": "2edb948b95b5f031fc5a17d754d5a1e895b038754310980e9a286d36a2767aca",
+      "page_type": "layer",
+      "source": "reader/05-retrieval-context.md",
+      "source_sha256": "41f80c432bfdc7a2d49c7aa1f95d835719ed4a2782a232b2ed347817781fb117",
+      "warnings": [],
+      "workspace_links": []
+    },
+    {
+      "headings": 11,
+      "output": "04-feedback-learning.html",
+      "output_sha256": "9538adefc93b6f7ce7eb3cb6fcd1d3e317a118e38f9ecdb69438fbd2eef1defa",
+      "page_type": "layer",
+      "source": "reader/06-feedback-learning.md",
+      "source_sha256": "2a94eaad29b389a496668539c857efde3dd69c684ba193c6839b4dbeed5ec580",
+      "warnings": [],
+      "workspace_links": []
+    }
+  ],
+  "presentation_config": {
+    "source": "html-presentation.json",
+    "source_sha256": "2416832b084414fffc435f7f34a017be5645b5684cfee0452907a8cc2932886d"
+  },
+  "schema_version": "1.1",
+  "search_record_count": 36,
+  "source_root": ".",
+  "source_root_name": "2026-08-25",
+  "warnings": [],
+  "workspace_only_link_count": 0
+}

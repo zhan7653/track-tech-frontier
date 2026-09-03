@@ -2,7 +2,7 @@
 
 **证据截止：2026-08-25**
 
-用于现场讲解的单页展示版：[Agent Memory 六层讲解 HTML](../agent-memory-six-layer-guide.zh-CN.html)
+[六层 HTML 阅读版](../site/index.html)
 
 这是一套独立的中文读者报告。它从 TencentDB Agent Memory 与 Codex Local Memory 的固定实现出发，按“输入 → 形成 → 状态 → 管理 → 读取 → 反馈”六层解释 Agent Memory，再用具体论文和仓库展示近期机制。
 

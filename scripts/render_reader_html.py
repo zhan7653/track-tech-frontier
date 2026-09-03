@@ -31,6 +31,7 @@ from urllib.parse import unquote, urlsplit, urlunsplit
 
 
 ASSET_DIRECTORY = Path(__file__).with_name("html_assets")
+PRESENTATION_CONFIG = "html-presentation.json"
 SAFE_SCHEMES = {"http", "https", "mailto"}
 SAFE_ASSET_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".pdf", ".txt", ".csv", ".json", ".jsonl"}
 GENERATOR_ID = "track-tech-frontier/render_reader_html.py"
@@ -72,8 +73,11 @@ class Page:
     description: str
     page_type: str
     page_type_label: str
-    reading_minutes: int
+    length_label: str
     raw: str
+    navigation_group: str | None = None
+    navigation_order: int | None = None
+    navigation_title: str | None = None
     headings: list[Heading] = field(default_factory=list)
     sections: list[SearchSection] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
@@ -143,6 +147,21 @@ def slugify(value: str) -> str:
             pending_dash = True
     slug = "".join(pieces).strip("-")
     return slug or "section"
+
+
+def visible_word_count(text: str) -> int:
+    """Count visible Chinese characters and Latin-style words in Markdown."""
+    text = COMMENT_RE.sub("", text)
+    text = IMAGE_RE.sub(r"\1", text)
+    text = MARKDOWN_LINK_RE.sub(r"\1", text)
+    text = "\n".join("" if FENCE_RE.match(line) else line for line in text.splitlines())
+    chinese = len(CHINESE_RE.findall(text))
+    words = len(WORD_RE.findall(text))
+    return chinese + words
+
+
+def format_word_count(count: int) -> str:
+    return f"{count:,} 字"
 
 
 def reading_minutes(text: str) -> int:
@@ -226,15 +245,47 @@ def output_path(relative: Path) -> Path:
     return relative.with_suffix(".html")
 
 
+def load_presentation_config(root: Path) -> tuple[Path | None, list[dict[str, object]] | None, str]:
+    path = root / PRESENTATION_CONFIG
+    if not path.is_file():
+        return None, None, "reading_time"
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise RenderError(f"invalid {PRESENTATION_CONFIG}: {error}") from error
+    rows = value.get("pages") if isinstance(value, dict) else None
+    if not isinstance(rows, list) or not rows:
+        raise RenderError(f"{PRESENTATION_CONFIG}: pages must be a non-empty array")
+    if not all(isinstance(row, dict) for row in rows):
+        raise RenderError(f"{PRESENTATION_CONFIG}: every page must be an object")
+    length_metric = value.get("page_length_metric", "reading_time")
+    if length_metric not in {"reading_time", "word_count"}:
+        raise RenderError(
+            f"{PRESENTATION_CONFIG}: page_length_metric must be reading_time or word_count"
+        )
+    return path, rows, length_metric
+
+
 def discover_pages(root: Path, output: Path) -> list[Page]:
-    candidates: list[Path] = []
-    if (root / "README.md").is_file():
-        candidates.append(root / "README.md")
-    for directory in (root / "reader", root / "audit"):
-        if directory.is_dir():
-            candidates.extend(sorted(directory.rglob("*.md")))
+    _, configured_rows, page_length_metric = load_presentation_config(root)
+    candidates: list[tuple[Path, dict[str, object] | None]] = []
+    if configured_rows is not None:
+        for row in configured_rows:
+            source_value = row.get("source")
+            if not isinstance(source_value, str) or not source_value:
+                raise RenderError(f"{PRESENTATION_CONFIG}: page source must be a non-empty string")
+            source = (root / source_value).resolve()
+            if not _inside(source, root) or not source.is_file() or source.suffix.casefold() != ".md":
+                raise RenderError(f"{PRESENTATION_CONFIG}: invalid page source {source_value}")
+            candidates.append((source, row))
+    else:
+        if (root / "README.md").is_file():
+            candidates.append((root / "README.md", None))
+        for directory in (root / "reader", root / "audit"):
+            if directory.is_dir():
+                candidates.extend((source, None) for source in sorted(directory.rglob("*.md")))
     pages: list[Page] = []
-    for source in candidates:
+    for source, config in candidates:
         if output == source or output in source.parents:
             continue
         raw_bytes = source.read_bytes()
@@ -248,17 +299,57 @@ def discover_pages(root: Path, output: Path) -> list[Page]:
             raise RenderError(f"replacement character found in {source}")
         relative = source.relative_to(root)
         kind, label = classify_page(relative)
+        target_output = output_path(relative)
+        navigation_label = None
+        navigation_order = None
+        navigation_title = None
+        if config is not None:
+            configured_output = config.get("output")
+            if configured_output is not None:
+                if not isinstance(configured_output, str) or not configured_output:
+                    raise RenderError(f"{PRESENTATION_CONFIG}: page output must be a non-empty string")
+                target_output = Path(configured_output)
+            configured_kind = config.get("page_type")
+            configured_label = config.get("page_type_label")
+            navigation_label = config.get("navigation_group")
+            navigation_order = config.get("navigation_order")
+            navigation_title = config.get("navigation_title")
+            if configured_kind is not None:
+                if not isinstance(configured_kind, str) or not configured_kind:
+                    raise RenderError(f"{PRESENTATION_CONFIG}: page_type must be a non-empty string")
+                kind = configured_kind
+            if configured_label is not None:
+                if not isinstance(configured_label, str) or not configured_label:
+                    raise RenderError(f"{PRESENTATION_CONFIG}: page_type_label must be a non-empty string")
+                label = configured_label
+            if navigation_label is not None and (not isinstance(navigation_label, str) or not navigation_label):
+                raise RenderError(f"{PRESENTATION_CONFIG}: navigation_group must be a non-empty string")
+            if navigation_order is not None and not isinstance(navigation_order, int):
+                raise RenderError(f"{PRESENTATION_CONFIG}: navigation_order must be an integer")
+            if navigation_title is not None and (not isinstance(navigation_title, str) or not navigation_title):
+                raise RenderError(f"{PRESENTATION_CONFIG}: navigation_title must be a non-empty string")
+        normalized_output = (output / target_output).resolve()
+        if target_output.is_absolute() or target_output.suffix.casefold() != ".html" or not _inside(normalized_output, output):
+            raise RenderError(f"{PRESENTATION_CONFIG}: unsafe page output {target_output}")
+        target_output = normalized_output.relative_to(output)
         pages.append(
             Page(
                 source=source,
                 relative_source=relative,
-                output=output_path(relative),
+                output=target_output,
                 title=extract_title(raw, source.stem),
                 description=extract_description(raw),
                 page_type=kind,
                 page_type_label=label,
-                reading_minutes=reading_minutes(raw),
+                length_label=(
+                    format_word_count(visible_word_count(raw))
+                    if page_length_metric == "word_count"
+                    else f"{reading_minutes(raw)} 分钟"
+                ),
                 raw=raw,
+                navigation_group=navigation_label,
+                navigation_order=navigation_order,
+                navigation_title=navigation_title,
             )
         )
     if not any(page.page_type == "landing" for page in pages):
@@ -916,6 +1007,8 @@ def plain_search_text(raw: str) -> str:
 
 
 def navigation_group(page: Page) -> tuple[str, int]:
+    if page.navigation_group is not None:
+        return page.navigation_group, 0
     if page.page_type == "landing":
         return "开始", 0
     if page.page_type in {"overview", "architecture", "landscape", "trends", "radar", "consensus", "boundary"}:
@@ -950,7 +1043,8 @@ def page_sort_key(page: Page) -> tuple[int, int, str]:
         "README.md": 99,
     }
     posix = page.relative_source.as_posix()
-    return group_order, preferred.get(posix, 20), posix
+    page_order = page.navigation_order if page.navigation_order is not None else preferred.get(posix, 20)
+    return group_order, page_order, posix
 
 
 def relative_link(from_output: Path, to_output: Path) -> str:
@@ -971,7 +1065,7 @@ def render_navigation(current: Page, pages: list[Page]) -> str:
             class_name = ' class="active"' if active else ""
             parts.append(
                 f'<li><a{class_name}{aria} href="{html.escape(relative_link(current.output, page.output), quote=True)}">'
-                f'<span>{html.escape(page.title)}</span><small>{page.reading_minutes} 分钟</small></a></li>'
+                f'<span>{html.escape(page.navigation_title or page.title)}</span><small>{page.length_label}</small></a></li>'
             )
         parts.append("</ul></section>")
     parts.append("</nav>")
@@ -1033,9 +1127,10 @@ def render_landing_map(page: Page, pages: list[Page]) -> str:
             cards.append(
                 f'<a class="route-card" href="{html.escape(relative_link(page.output, candidate.output), quote=True)}">'
                 f'<span class="route-card-kicker">{html.escape(candidate.page_type_label)}</span><strong>{html.escape(title)}</strong>'
-                f'<p>{html.escape(note)}</p><small>{candidate.reading_minutes} 分钟 · {html.escape(candidate.title)}</small></a>'
+                f'<p>{html.escape(note)}</p><small>{candidate.length_label} · {html.escape(candidate.title)}</small></a>'
             )
-        return '<section class="reader-map" aria-labelledby="reader-map-title"><div class="reader-map-head"><span>Recommended paths</span><h2 id="reader-map-title">从问题到机制，再到工程证据</h2></div><div class="route-grid">' + "".join(cards) + "</div></section>"
+        if cards:
+            return '<section class="reader-map" aria-labelledby="reader-map-title"><div class="reader-map-head"><span>Recommended paths</span><h2 id="reader-map-title">从问题到机制，再到工程证据</h2></div><div class="route-grid">' + "".join(cards) + "</div></section>"
     headings = [item for item in page.headings if item.level == 2][:8]
     if len(headings) < 3:
         return ""
@@ -1062,6 +1157,12 @@ def render_page(page: Page, pages: list[Page], body: str, destination_root: Path
     if table_count:
         content_signals.append(f"{table_count} 表")
     content_summary = " · ".join(content_signals)
+    about_page = next((candidate for candidate in pages if candidate.output == Path("about.html")), None)
+    about_link = (
+        f'<a href="{html.escape(relative_link(page.output, about_page.output), quote=True)}">关于本套件</a>'
+        if about_page is not None
+        else ""
+    )
     return f'''<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -1093,14 +1194,14 @@ def render_page(page: Page, pages: list[Page], body: str, destination_root: Path
     <article class="reader-article">
       {render_breadcrumb(page)}
       <header class="article-hero">
-        <div class="article-meta"><span>{html.escape(page.page_type_label)}</span><span>{page.reading_minutes} 分钟</span><span>{html.escape(content_summary)}</span><span>{html.escape(page.relative_source.as_posix())}</span></div>
+        <div class="article-meta"><span>{html.escape(page.page_type_label)}</span><span>{page.length_label}</span><span>{html.escape(content_summary)}</span><span>{html.escape(page.relative_source.as_posix())}</span></div>
         <h1>{html.escape(page.title)}</h1>
         <p>{html.escape(lead)}</p>
       </header>
       {map_html}
       <div class="article-body">{body}</div>
       {render_pager(page, pages)}
-      <footer class="article-footer"><span>Markdown 是权威内容源</span><a href="{html.escape(relative_link(page.output, Path("about.html")), quote=True)}">关于本套件</a><button type="button" onclick="window.print()">打印 / 导出 PDF</button></footer>
+      <footer class="article-footer"><span>Markdown 是权威内容源</span>{about_link}<button type="button" onclick="window.print()">打印 / 导出 PDF</button></footer>
     </article>
   </main>
   <aside class="page-outline" aria-label="本页目录"><div><span class="outline-kicker">On this page</span><h2>本页目录</h2>{outline}</div></aside>
@@ -1219,6 +1320,16 @@ def validate_manifest(destination: Path, source_root: Path) -> list[str]:
         errors.append("build-manifest.json: generated_by does not identify this renderer")
     if manifest.get("source_root") != ".":
         errors.append("build-manifest.json: source_root must be portable '.'")
+
+    config_path = source_root / PRESENTATION_CONFIG
+    config_row = manifest.get("presentation_config")
+    if config_path.is_file():
+        if not isinstance(config_row, dict):
+            errors.append(f"build-manifest.json: {PRESENTATION_CONFIG} metadata is missing")
+        elif config_row.get("source") != PRESENTATION_CONFIG or config_row.get("source_sha256") != sha256(config_path):
+            errors.append(f"build-manifest.json: {PRESENTATION_CONFIG} hash mismatch")
+    elif config_row is not None:
+        errors.append(f"build-manifest.json: stale {PRESENTATION_CONFIG} metadata")
 
     allowed: set[str] = {"build-manifest.json"}
     page_rows = manifest.get("pages")
@@ -1360,6 +1471,7 @@ def build_search_index(pages: list[Page], destination: Path) -> Path:
 
 
 def _build_site_into(root: Path, destination: Path) -> dict[str, object]:
+    config_path, _, _ = load_presentation_config(root)
     pages = discover_pages(root, destination)
     source_map = {page.source.resolve(): page.output for page in pages}
     destination.mkdir(parents=True, exist_ok=True)
@@ -1426,6 +1538,11 @@ def _build_site_into(root: Path, destination: Path) -> dict[str, object]:
         "pages": output_entries,
         "warnings": sum((page.warnings for page in pages), []),
     }
+    if config_path is not None:
+        manifest["presentation_config"] = {
+            "source": PRESENTATION_CONFIG,
+            "source_sha256": sha256(config_path),
+        }
     manifest_path = destination / "build-manifest.json"
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     return manifest

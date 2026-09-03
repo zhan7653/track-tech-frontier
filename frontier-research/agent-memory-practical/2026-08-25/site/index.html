@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Agent Memory 是让 Agent 把一次任务中的经历，转化为以后还能继续使用的状态与能力的机制。这里的“经历”不只包括用户说过的话，也包括 Agent 的输出、工具调用、工具结果、文档、代码和环境变化。">
+  <title>Agent Memory 总览与架构 · Frontier Atlas</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+  <script src="assets/search-index.js" defer></script>
+  <script src="assets/site.js" defer></script>
+</head>
+<body data-page-type="landing">
+  <a class="skip-link" href="#main-content">跳到正文</a>
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+  <header class="topbar">
+    <button class="icon-button nav-toggle" type="button" aria-controls="suite-nav" aria-expanded="false"><span aria-hidden="true">☰</span><span class="sr-only">打开套件导航</span></button>
+    <a class="brand" href="index.html"><span class="brand-mark">F</span><span><strong>Frontier Atlas</strong><small>技术调研 · 理解优先</small></span></a>
+    <div class="top-actions">
+      <button class="search-trigger" type="button" aria-haspopup="dialog"><span aria-hidden="true">⌕</span><span>搜索整套报告</span><kbd>Ctrl K</kbd></button>
+      <button class="icon-button focus-toggle" type="button" aria-pressed="false" title="专注阅读"><span aria-hidden="true">◫</span><span class="sr-only">切换专注阅读</span></button>
+      <button class="icon-button theme-toggle" type="button" title="切换主题"><span aria-hidden="true">◐</span><span class="sr-only">切换明暗主题</span></button>
+    </div>
+  </header>
+  <noscript><div class="noscript-note">JavaScript 已关闭：正文、图表、链接和打印仍可使用；全文搜索、主题切换与当前章节高亮不可用。</div></noscript>
+  <aside class="suite-nav" id="suite-nav"><nav class="suite-nav-inner" aria-label="研究套件"><section class="nav-group"><h2>核心内容</h2><ul><li><a class="active" aria-current="page" href="index.html"><span>总览与架构</span><small>574 字</small></a></li><li><a href="01-input.html"><span>01 · 输入</span><small>447 字</small></a></li><li><a href="02-write-formation.html"><span>02 · 提炼与管理</span><small>4,563 字</small></a></li><li><a href="03-retrieval-orchestration.html"><span>03 · 读取与编排</span><small>3,658 字</small></a></li><li><a href="04-feedback-learning.html"><span>04 · 反馈与持续学习</span><small>4,301 字</small></a></li></ul></section></nav></aside>
+  <button class="nav-backdrop" type="button" tabindex="-1" aria-label="关闭导航"></button>
+  <main class="reader-main" id="main-content">
+    <article class="reader-article">
+      <nav class="breadcrumb" aria-label="面包屑"><a href="index.html">调研入口</a><span>/</span><span>核心内容</span></nav>
+      <header class="article-hero">
+        <div class="article-meta"><span>架构总览</span><span>574 字</span><span>2 节 · 1 表</span><span>reader/overview.md</span></div>
+        <h1>Agent Memory 总览与架构</h1>
+        <p>Agent Memory 是让 Agent 把一次任务中的经历，转化为以后还能继续使用的状态与能力的机制。这里的“经历”不只包括用户说过的话，也包括 Agent 的输出、工具调用、工具结果、文档、代码和环境变化。</p>
+      </header>
+      
+      <div class="article-body"><p>Agent Memory 是让 Agent 把一次任务中的经历，转化为以后还能继续使用的状态与能力的机制。这里的“经历”不只包括用户说过的话，也包括 Agent 的输出、工具调用、工具结果、文档、代码和环境变化。</p>
+<p>它不是简单地保存聊天记录，也不等于“接一个向量数据库”。真正的 Agent Memory 要回答四个连续问题：系统收到了什么，哪些内容应该形成、更新或退出 Memory，需要时怎样进入当前上下文，以及使用结果怎样影响下一轮。</p>
+<h2 id="四个处理阶段"><a class="heading-anchor" href="#四个处理阶段" aria-label="链接到本节">#</a>四个处理阶段</h2>
+<div class="table-frame"><div class="table-toolbar"><span>Comparison · 2 列</span><small>横向滚动 · 点击一行聚焦</small></div><div class="table-wrap" tabindex="0" role="region" aria-label="可横向滚动的比较表"><table><thead><tr><th scope="col">阶段</th><th scope="col">回答的问题</th></tr></thead><tbody><tr><td>输入材料</td><td>Agent 实际收到了哪些对话、工具结果、文档、代码和环境变化？</td></tr><tr><td>提炼与管理</td><td>哪些信息值得保留，应该新增、更新、合并还是删除？</td></tr><tr><td>读取与编排</td><td>当前任务需要哪些 Memory，它们怎样进入上下文？</td></tr><tr><td>反馈与持续学习</td><td>Memory 使用后的结果，怎样改变下一轮行为和 Memory？</td></tr></tbody></table></div></div>
+<p>历史记录、当前有效内容和检索索引是这四个阶段共同使用的持久状态：提炼与管理负责改变它们，读取与编排负责从中选择当前任务需要的内容。</p>
+<h2 id="为什么选择-tencentdb-和-codex"><a class="heading-anchor" href="#为什么选择-tencentdb-和-codex" aria-label="链接到本节">#</a>为什么选择 TencentDB 和 Codex</h2>
+<p>这套报告主要用 TencentDB Agent Memory 和 OpenAI Codex Local Memory 来讲解，是因为两者都能从公开实现中看到一条相对完整的 Memory 生命周期，但采用了不同的组织方式。</p>
+<h3 id="tencentdb-agent-memory"><a class="heading-anchor" href="#tencentdb-agent-memory" aria-label="链接到本节">#</a>TencentDB Agent Memory</h3>
+<p><a href="https://github.com/TencentCloud/TencentDB-Agent-Memory/tree/0aff21a" data-link-kind="external" target="_blank" rel="noopener noreferrer">TencentDB Agent Memory</a>把聊天经历逐步整理为原始记录、原子记忆、场景和长期 Persona，同时还分别处理 Skill、文档知识和代码知识。它适合用来说明：不同类型的材料怎样形成不同 Memory，以及这些 Memory 怎样分层存储、更新和读取。</p>
+<h3 id="codex-local-memory"><a class="heading-anchor" href="#codex-local-memory" aria-label="链接到本节">#</a>Codex Local Memory</h3>
+<p><a href="https://github.com/openai/codex/tree/c9b19deb09c1841ce7acc33ddb96276030936a29" data-link-kind="external" target="_blank" rel="noopener noreferrer">Codex Local Memory</a>以 Coding Agent 的真实任务轨迹为起点，先从单次任务中提取候选，再把多次候选整理成可供新任务读取的本地文件。它适合用来说明：执行历史怎样跨任务沉淀，以及短摘要、完整 Memory 和原始证据怎样逐层展开。</p></div>
+      <nav class="page-pager" aria-label="同组页面导航"><span class="pager-empty" aria-hidden="true"></span><a class="pager-card next" href="01-input.html"><small>→ 下一篇 · 第 1 层</small><strong>第 1 层：输入</strong></a></nav>
+      <footer class="article-footer"><span>Markdown 是权威内容源</span><button type="button" onclick="window.print()">打印 / 导出 PDF</button></footer>
+    </article>
+  </main>
+  <aside class="page-outline" aria-label="本页目录"><div><span class="outline-kicker">On this page</span><h2>本页目录</h2><ol><li class="level-2"><a href="#四个处理阶段">四个处理阶段</a></li><li class="level-2"><a href="#为什么选择-tencentdb-和-codex">为什么选择 TencentDB 和 Codex</a></li><li class="level-3"><a href="#tencentdb-agent-memory">TencentDB Agent Memory</a></li><li class="level-3"><a href="#codex-local-memory">Codex Local Memory</a></li></ol></div></aside>
+  <dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title">
+    <form method="dialog" class="search-shell">
+      <header><div><span>Search the research suite</span><h2 id="search-title">搜索整套报告</h2></div><button value="close" aria-label="关闭搜索">×</button></header>
+      <label class="search-field"><span class="sr-only">输入技术概念</span><input id="search-input" type="search" autocomplete="off" placeholder="输入机制、项目、风险或术语…"></label>
+      <p class="search-hint">标题和章节优先；支持中文子串。↑ ↓ 选择，Enter 打开，Esc 关闭。</p>
+      <div class="search-results" id="search-results" role="listbox" aria-label="搜索结果"></div>
+    </form>
+  </dialog>
+</body>
+</html>
